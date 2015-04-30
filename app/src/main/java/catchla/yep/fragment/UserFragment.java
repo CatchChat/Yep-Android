@@ -9,14 +9,15 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 
 import catchla.yep.R;
+import catchla.yep.util.MathUtils;
 import catchla.yep.view.HeaderDrawerLayout;
 
 /**
@@ -25,6 +26,7 @@ import catchla.yep.view.HeaderDrawerLayout;
 public class UserFragment extends Fragment implements HeaderDrawerLayout.DrawerCallback {
     private HeaderDrawerLayout mHeaderDrawerLayout;
     private ScrollView mScrollView;
+    private ImageView mProfileImageView;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class UserFragment extends Fragment implements HeaderDrawerLayout.DrawerC
         super.onViewCreated(view, savedInstanceState);
         mHeaderDrawerLayout = (HeaderDrawerLayout) view.findViewById(R.id.header_drawer);
         mScrollView = (ScrollView) view.findViewById(R.id.scroll_view);
+        mProfileImageView = (ImageView) view.findViewById(R.id.profile_image);
     }
 
     @Nullable
@@ -82,6 +85,6 @@ public class UserFragment extends Fragment implements HeaderDrawerLayout.DrawerC
 
     @Override
     public void topChanged(int offset) {
-
+        mProfileImageView.setTranslationY(MathUtils.clamp(offset, 0, -mProfileImageView.getHeight()) * 0.3f);
     }
 }
