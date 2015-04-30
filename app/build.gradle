@@ -29,6 +29,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.mariotaku:MessageBubbleView:1.0'
+    compile 'org.apmem.tools:layouts:1.8@aar'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

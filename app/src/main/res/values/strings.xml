@@ -11,4 +11,6 @@
     <string name="tab_title_explore">Explore</string>
     <string name="tab_title_my_profile">My Profile</string>
     <string name="title_activity_chat">Chat</string>
+    <string name="label_master">Master</string>
+    <string name="label_learning">Learning</string>
 </resources>

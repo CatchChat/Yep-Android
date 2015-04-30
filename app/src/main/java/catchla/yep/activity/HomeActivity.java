@@ -19,7 +19,7 @@ import catchla.yep.R;
 import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.ExploreFragment;
-import catchla.yep.fragment.MyProfileFragment;
+import catchla.yep.fragment.UserFragment;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
         mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), 0, null);
         mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), 0, null);
         mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), 0, null);
-        mAdapter.addTab(MyProfileFragment.class, getString(R.string.tab_title_my_profile), 0, null);
+        mAdapter.addTab(UserFragment.class, getString(R.string.tab_title_my_profile), 0, null);
     }
 
     private class HomeTabsAdapter extends FragmentStatePagerAdapter {
