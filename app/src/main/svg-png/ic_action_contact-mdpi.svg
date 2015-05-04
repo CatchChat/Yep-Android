@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.1 (12002) - http://www.bohemiancoding.com/sketch -->
+    <title>icon_contact</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Android" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Chat" sketch:type="MSArtboardGroup" transform="translate(-69.000000, -36.000000)" fill="#FFFFFF">
+            <g id="app-bar" sketch:type="MSLayerGroup">
+                <g id="tabs" transform="translate(0.000000, 24.000000)" sketch:type="MSShapeGroup">
+                    <g id="icon_contact" transform="translate(69.000000, 12.000000)">
+                        <path d="M12.5,17.3703704 C15.3251489,17.3703704 17.6153846,15.0488839 17.6153846,12.1851852 C17.6153846,9.32148648 15.3251489,7 12.5,7 C9.67485109,7 7.38461538,9.32148648 7.38461538,12.1851852 C7.38461538,15.0488839 9.67485109,17.3703704 12.5,17.3703704 Z M3.3175944,22.9139902 C3.4919722,20.6705331 5.4643195,18.8518519 7.70171821,18.8518519 L17.2982818,18.8518519 C19.5451887,18.8518519 21.5080107,20.6703136 21.6824056,22.9139902 L22,27 L3,27 L3.3175944,22.9139902 Z M20,13 L29,13 L29,15 L20,15 L20,13 Z M23,18 L29,18 L29,20 L23,20 L23,18 Z M25,23 L29,23 L29,25 L25,25 L25,23 Z" id="Mask"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

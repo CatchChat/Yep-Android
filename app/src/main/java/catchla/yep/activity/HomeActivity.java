@@ -11,9 +11,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ import catchla.yep.R;
 import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.ExploreFragment;
 import catchla.yep.fragment.FriendsListFragment;
+import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.iface.PagerIndicator;
 
@@ -40,6 +44,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        final ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        MenuItemCompat.setActionProvider(menu.findItem(R.id.menu), new HomeMenuActionProvider(actionBar.getThemedContext()));
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final ActionBar actionBar = getSupportActionBar();
@@ -48,11 +61,13 @@ public class HomeActivity extends AppCompatActivity {
         actionBar.setCustomView(R.layout.layout_home_tabs);
         mPagerIndicator = (TabPagerIndicator) actionBar.getCustomView().findViewById(R.id.pager_indicator);
         setContentView(R.layout.activity_home);
+        final Toolbar toolbar = (Toolbar) getWindow().findViewById(android.support.v7.appcompat.R.id.action_bar);
+        toolbar.setContentInsetsRelative(getResources().getDimensionPixelSize(R.dimen.element_spacing_normal), 0);
         mAdapter = new HomeTabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
-        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), android.R.drawable.ic_menu_preferences, null);
-        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), android.R.drawable.ic_menu_preferences, null);
-        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), android.R.drawable.ic_menu_preferences, null);
+        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, null);
+        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, null);
+        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
     }

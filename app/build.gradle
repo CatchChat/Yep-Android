@@ -1,4 +1,7 @@
+import fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
+
 apply plugin: 'com.android.application'
+apply plugin: "androidsvgdrawable"
 
 android {
     compileSdkVersion 22
@@ -32,5 +35,23 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.mariotaku:MessageBubbleView:1.0'
     compile 'org.apmem.tools:layouts:1.8@aar'
+    compile 'com.commonsware.cwac:merge:1.1.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task svgToPng(type: SvgDrawableTask) {
+    // specify where to pick SVG from
+    from = file('src/main/svg-png')
+    // specify the android res folder
+    to = file('src/main/res')
+    // create qualified directories if missing
+    createMissingDirectories = true
+    // override files only if necessary
+    overrideMode = 'ifModified'
+    // let generate PNG for the following densities only
+    targetedDensities = ['hdpi', 'mdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi']
+    // relative path of the file specifying nine patch specs
+    ninePatchConfig = file('src/main/svg-png/9patch.json')
+    // output format of the generated resources
+    outputFormat = 'PNG'
 }

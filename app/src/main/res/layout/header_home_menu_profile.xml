@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2015. Catch Inc,
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:minWidth="180dp"
+    android:padding="@dimen/element_spacing_mlarge">
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/home_menu_profile_image"
+        android:layout_width="@dimen/icon_size_home_menu_profile_image"
+        android:layout_height="@dimen/icon_size_home_menu_profile_image"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile_image_kevin" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/element_spacing_normal"
+        android:layout_marginStart="@dimen/element_spacing_normal"
+        android:layout_toEndOf="@+id/home_menu_profile_image"
+        android:layout_toRightOf="@+id/home_menu_profile_image"
+        android:text="Kevin Zhow"
+        android:textAppearance="?textAppearanceLargePopupMenu"
+        android:textColor="?android:textColorPrimary" />
+
+</RelativeLayout>
