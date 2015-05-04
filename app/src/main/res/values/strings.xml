@@ -13,4 +13,5 @@
     <string name="title_activity_chat">Chat</string>
     <string name="label_master">Master</string>
     <string name="label_learning">Learning</string>
+    <string name="icon">Icon</string>
 </resources>

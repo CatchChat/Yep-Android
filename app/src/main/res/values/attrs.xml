@@ -4,4 +4,20 @@
         <attr name="headerLayout" format="reference" />
         <attr name="contentLayout" format="reference" />
     </declare-styleable>
+    <declare-styleable name="TabPagerIndicator">
+        <attr name="tabStripColor" format="color" />
+        <attr name="tabIconColor" format="color" />
+        <attr name="tabLabelColor" format="color" />
+        <attr name="tabHorizontalPadding" format="dimension" />
+        <attr name="tabVerticalPadding" format="dimension" />
+        <attr name="tabDividerVerticalPadding" format="dimension" />
+        <attr name="tabDividerHorizontalPadding" format="dimension" />
+        <attr name="tabExpandEnabled" format="boolean" />
+        <attr name="tabShowDivider" format="boolean" />
+        <attr name="tabDisplayOption" />
+    </declare-styleable>
+    <attr name="tabDisplayOption">
+        <flag name="label" value="0x1" />
+        <flag name="icon" value="0x2" />
+    </attr>
 </resources>

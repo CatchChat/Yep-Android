@@ -7,20 +7,26 @@ package catchla.yep.util;
 import android.content.Context;
 import android.util.TypedValue;
 
-import catchla.yep.R;
-
 /**
  * Created by mariotaku on 15/4/30.
  */
 public class ThemeUtils {
 
     public static int getColorAccent(Context context) {
-        final TypedValue outValue = new TypedValue();
-        if (!context.getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.colorAccent, outValue, true))
-            return context.getResources().getColor(R.color.branding_color);
-        if (outValue.type == TypedValue.TYPE_REFERENCE)
-            return context.getResources().getColor(outValue.resourceId);
-        return outValue.data;
+        return getColorFromAttribute(context, android.support.v7.appcompat.R.attr.colorAccent, 0);
     }
 
+    public static int getTextColorPrimary(Context context) {
+        return getColorFromAttribute(context, android.R.attr.textColorPrimary, 0);
+    }
+
+
+    public static int getColorFromAttribute(Context context, int attr, int def) {
+        final TypedValue outValue = new TypedValue();
+        if (!context.getTheme().resolveAttribute(attr, outValue, true))
+            return def;
+        if (outValue.type == TypedValue.TYPE_REFERENCE)
+            return context.getResources().getColor(attr);
+        return outValue.data;
+    }
 }

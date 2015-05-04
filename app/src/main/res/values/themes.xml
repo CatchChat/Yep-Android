@@ -4,6 +4,7 @@
     <style name="Theme.Yep" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/branding_color</item>
+        <item name="colorPrimary">@color/branding_color</item>
     </style>
 
 </resources>

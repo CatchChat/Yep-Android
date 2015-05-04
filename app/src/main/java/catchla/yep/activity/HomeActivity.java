@@ -5,11 +5,14 @@
 package catchla.yep.activity;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -17,9 +20,10 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.fragment.ChatsListFragment;
-import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.ExploreFragment;
-import catchla.yep.fragment.UserFragment;
+import catchla.yep.fragment.FriendsListFragment;
+import catchla.yep.view.TabPagerIndicator;
+import catchla.yep.view.iface.PagerIndicator;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -27,6 +31,7 @@ import catchla.yep.fragment.UserFragment;
 public class HomeActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private HomeTabsAdapter mAdapter;
+    private TabPagerIndicator mPagerIndicator;
 
     @Override
     public void onContentChanged() {
@@ -37,16 +42,22 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.layout_home_tabs);
+        mPagerIndicator = (TabPagerIndicator) actionBar.getCustomView().findViewById(R.id.pager_indicator);
         setContentView(R.layout.activity_home);
-        mAdapter = new HomeTabsAdapter(this, getSupportFragmentManager());
+        mAdapter = new HomeTabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
-        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), 0, null);
-        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), 0, null);
-        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), 0, null);
-        mAdapter.addTab(UserFragment.class, getString(R.string.tab_title_my_profile), 0, null);
+        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), android.R.drawable.ic_menu_preferences, null);
+        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), android.R.drawable.ic_menu_preferences, null);
+        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), android.R.drawable.ic_menu_preferences, null);
+        mPagerIndicator.setViewPager(mViewPager);
+        mPagerIndicator.updateAppearance();
     }
 
-    private class HomeTabsAdapter extends FragmentStatePagerAdapter {
+    private class HomeTabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider {
         private final Context mContext;
 
         public HomeTabsAdapter(Context context, FragmentManager fm) {
@@ -70,6 +81,11 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return mTabs.size();
+        }
+
+        @Override
+        public Drawable getPageIcon(int position) {
+            return ContextCompat.getDrawable(mContext, mTabs.get(position).icon);
         }
     }
 
