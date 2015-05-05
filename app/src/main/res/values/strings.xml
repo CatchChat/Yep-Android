@@ -15,4 +15,6 @@
     <string name="label_learning">Learning</string>
     <string name="icon">Icon</string>
     <string name="menu">Menu</string>
+    <string name="about">About</string>
+    <string name="title_activity_user">UserActivity</string>
 </resources>

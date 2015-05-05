@@ -12,6 +12,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -37,6 +38,19 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
     private boolean mHasContentWidth;
     private int mContentWidth;
     private Runnable mPostedOpenRunnable;
+    private AdapterView.OnItemClickListener mOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (mOnActionListener == null) return;
+            if (position == 0) {
+                mOnActionListener.onProfileClick();
+            } else {
+                mOnActionListener.onActionClick((Action) mAdapter.getItem(position));
+            }
+            dismissPopup();
+        }
+    };
+    private OnActionListener mOnActionListener;
 
     /**
      * Creates a new instance.
@@ -104,6 +118,11 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
         mAdapter.addView(LayoutInflater.from(popupContext).inflate(R.layout.layout_divider_vertical, null), false);
         mAdapter.addAdapter(mActionsAdapter = new HomeMenuActionsAdapter(popupContext));
 
+
+        mActionsAdapter.clear();
+        mActionsAdapter.add(new Action(popupContext.getString(R.string.action_settings), R.id.settings));
+        mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
+
         mOverflowPopup = new ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0);
         mOverflowPopup.setModal(true);
         mOverflowPopup.setAdapter(mAdapter);
@@ -111,6 +130,7 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
         mOverflowPopup.setDropDownGravity(GravityCompat.END);
         mOverflowPopup.setHorizontalOffset(-popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_normal));
         mOverflowPopup.setVerticalOffset(popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_small));
+        mOverflowPopup.setOnItemClickListener(mOnItemClickListener);
 
 
         if (!mHasContentWidth) {
@@ -140,11 +160,6 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
     public void onClick(View v) {
         dismissPopup();
 
-        mActionsAdapter.clear();
-        mActionsAdapter.add("Item 1");
-        mActionsAdapter.add("Item 2");
-        mActionsAdapter.add("Item 3");
-
 //        mOverflowPopup.getListView().setOnKeyListener(this);
         showPopup();
     }
@@ -154,7 +169,17 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
         mOverflowPopup.dismiss();
     }
 
-    private static class HomeMenuActionsAdapter extends ArrayAdapter<String> {
+    public static final class Action {
+        public String title;
+        public int id;
+
+        public Action(String title, int id) {
+            this.title = title;
+            this.id = id;
+        }
+    }
+
+    private static class HomeMenuActionsAdapter extends ArrayAdapter<Action> {
 
         public HomeMenuActionsAdapter(Context context) {
             super(context, R.layout.list_item_menu);
@@ -166,7 +191,7 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
             final ImageView icon = ((ImageView) view.findViewById(android.R.id.icon));
             icon.setVisibility(View.GONE);
             final TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-            text1.setText(getItem(position));
+            text1.setText(getItem(position).title);
             return view;
         }
     }
@@ -223,5 +248,15 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
             }
             mPostedOpenRunnable = null;
         }
+    }
+
+    public void setOnActionListener(OnActionListener listener) {
+        mOnActionListener = listener;
+    }
+
+    public interface OnActionListener {
+        void onProfileClick();
+
+        void onActionClick(Action action);
     }
 }

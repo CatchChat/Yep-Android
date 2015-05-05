@@ -6,8 +6,12 @@ package catchla.yep.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.internal.view.ContextThemeWrapper;
 import android.util.TypedValue;
+
+import catchla.yep.graphic.ActionBarColorDrawable;
 
 /**
  * Created by mariotaku on 15/4/30.
@@ -32,6 +36,11 @@ public class ThemeUtils {
         return outValue.data;
     }
 
+
+    @NonNull
+    public static Drawable getActionBarBackground(final int primaryColor, final boolean outlineEnabled) {
+        return ActionBarColorDrawable.create(primaryColor, outlineEnabled);
+    }
 
     public static Context getActionBarPopupThemedContext(Context base) {
         final TypedValue outValue = new TypedValue();

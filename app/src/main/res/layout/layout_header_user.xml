@@ -2,8 +2,9 @@
   ~ Copyright (c) 2015. Catch Inc,
   -->
 
-<catchla.yep.view.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<catchla.yep.view.UserHeaderSpaceLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:id="@+id/header_space"
     android:layout_height="wrap_content">
 
     <View
@@ -11,4 +12,4 @@
         android:background="@drawable/shadow_top"
         android:layout_gravity="bottom"
         android:layout_height="@dimen/element_spacing_small" />
-</catchla.yep.view.SquareFrameLayout>
+</catchla.yep.view.UserHeaderSpaceLayout>

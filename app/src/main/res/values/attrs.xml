@@ -16,6 +16,9 @@
         <attr name="tabShowDivider" format="boolean" />
         <attr name="tabDisplayOption" />
     </declare-styleable>
+    <declare-styleable name="TintedStatusLayout">
+        <attr name="setPadding" format="boolean" />
+    </declare-styleable>
     <attr name="tabDisplayOption">
         <flag name="label" value="0x1" />
         <flag name="icon" value="0x2" />
