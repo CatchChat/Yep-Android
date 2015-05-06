@@ -16,5 +16,5 @@
     <string name="icon">Icon</string>
     <string name="menu">Menu</string>
     <string name="about">About</string>
-    <string name="title_activity_user">UserActivity</string>
+    <string name="title_activity_user">User</string>
 </resources>

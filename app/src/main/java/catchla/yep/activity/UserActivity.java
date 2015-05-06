@@ -61,6 +61,8 @@ public class UserActivity extends AppCompatActivity implements HeaderDrawerLayou
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new UserFragment()).commit();
 
         topChanged(0);
+
+        setTitle("Kevin Zhow");
     }
 
 
