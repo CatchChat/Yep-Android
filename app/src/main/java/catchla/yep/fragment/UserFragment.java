@@ -109,6 +109,7 @@ public class UserFragment extends Fragment implements HeaderDrawerLayout.DrawerC
     }
 
     public int getHeaderPaddingTop() {
+        if (mHeaderDrawerLayout == null) return 0;
         return mHeaderDrawerLayout.getPaddingTop();
     }
 }

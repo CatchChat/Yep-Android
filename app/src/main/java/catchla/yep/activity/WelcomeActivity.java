@@ -11,11 +11,12 @@ import android.view.MenuItem;
 
 import catchla.yep.R;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends ContentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
     }
 
 

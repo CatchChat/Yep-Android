@@ -120,7 +120,7 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
 
 
         mActionsAdapter.clear();
-        mActionsAdapter.add(new Action(popupContext.getString(R.string.action_settings), R.id.settings));
+        mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
         mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
 
         mOverflowPopup = new ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0);

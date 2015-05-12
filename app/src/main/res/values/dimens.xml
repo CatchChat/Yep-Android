@@ -13,4 +13,5 @@
     <dimen name="element_spacing_minus_small">-4dp</dimen>
     <dimen name="element_spacing_xsmall">2dp</dimen>
     <dimen name="icon_size_home_menu_profile_image">40dp</dimen>
+    <dimen name="icon_size_account_info_profile_image">72dp</dimen>
 </resources>

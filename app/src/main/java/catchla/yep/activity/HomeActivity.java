@@ -22,10 +22,12 @@ import android.view.Menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.ExploreFragment;
 import catchla.yep.fragment.FriendsListFragment;
+import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.view.TabPagerIndicator;
@@ -35,7 +37,7 @@ import catchla.yep.view.iface.PagerIndicator;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements Constants {
     private ViewPager mViewPager;
     private HomeTabsAdapter mAdapter;
     private TabPagerIndicator mPagerIndicator;
@@ -64,7 +66,12 @@ public class HomeActivity extends AppCompatActivity {
             public void onActionClick(HomeMenuActionProvider.Action action) {
                 switch (action.id) {
                     case R.id.settings: {
-                        startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
+                        final Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
+                        final Bundle args = new Bundle();
+                        args.putInt(EXTRA_RESID, R.xml.pref_general);
+                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+                        startActivity(intent);
                         break;
                     }
                 }

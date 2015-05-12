@@ -23,4 +23,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:enabled="true"
-    app:setPadding="true" />
+    app:setPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.pkmmte.view.CircularImageView
+            android:layout_width="@dimen/icon_size_account_info_profile_image"
+            android:layout_height="@dimen/icon_size_account_info_profile_image"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_profile_image_kevin" />
+
+
+    </RelativeLayout>
+
+
+</catchla.yep.view.TintedStatusFrameLayout>

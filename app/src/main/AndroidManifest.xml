@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="catchla.yep">
+    package="catchla.yep" >
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Yep">
-        <activity android:name=".activity.MainActivity">
+        android:theme="@style/Theme.Yep" >
+        <activity android:name=".activity.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +24,8 @@
             android:name=".activity.ChatActivity"
             android:label="@string/title_activity_chat"
             android:parentActivityName=".activity.HomeActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:theme="@style/Theme.Yep.Content"
+            android:windowSoftInputMode="adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity" />
@@ -32,7 +33,7 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".activity.HomeActivity">
+            android:parentActivityName=".activity.HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity" />
@@ -40,10 +41,15 @@
         <activity
             android:name=".activity.UserActivity"
             android:label="@string/title_activity_user"
-            android:parentActivityName=".activity.MainActivity">
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/Theme.Yep.Content" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.ProfileEditorActivity"
+            android:label="@string/title_activity_profile_editor" >
         </activity>
     </application>
 

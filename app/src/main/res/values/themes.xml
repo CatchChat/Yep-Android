@@ -15,4 +15,8 @@
         <item name="android:windowTranslucentStatus" tools:ignore="NewApi">true</item>
     </style>
 
+    <style name="Theme.Yep.Content">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
 </resources>

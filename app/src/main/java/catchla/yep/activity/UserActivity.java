@@ -5,6 +5,7 @@
 package catchla.yep.activity;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -15,7 +16,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import catchla.yep.R;
 import catchla.yep.fragment.UserFragment;
@@ -26,7 +28,7 @@ import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;
 
-public class UserActivity extends AppCompatActivity implements HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
+public class UserActivity extends SwipeBackContentActivity implements HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
 
     private TintedStatusFrameLayout mMainContent;
     private ActionBarDrawable mActionBarBackground;
@@ -65,6 +67,22 @@ public class UserActivity extends AppCompatActivity implements HeaderDrawerLayou
         setTitle("Kevin Zhow");
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_user, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings: {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public boolean canScroll(float dy) {
