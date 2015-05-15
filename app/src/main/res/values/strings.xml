@@ -22,4 +22,6 @@
     <string name="profile">Profile</string>
     <string name="title_activity_profile_editor">ProfileEditorActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="sign_up">Sign up</string>
+    <string name="login">Login</string>
 </resources>

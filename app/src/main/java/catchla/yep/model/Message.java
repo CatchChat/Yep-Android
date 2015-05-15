@@ -1,24 +1,64 @@
 package catchla.yep.model;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
 
 import io.realm.RealmObject;
 
 /**
- * Created by mariotaku on 15/5/8.
+ * Created by mariotaku on 15/5/12.
  */
-@JsonObject
 public class Message extends RealmObject {
 
-    @JsonField(name = "message_id")
-    private String messageId;
+    @SerializedName("id")
+    private String id;
+    @SerializedName("recipient_id")
+    private String recipientId;
+    @SerializedName("text_content")
+    private String textContent;
+    @SerializedName("parent_id")
+    private String parentId;
+    @SerializedName("created_at")
+    private Date createdAt;
 
-    public String getMessageId() {
-        return messageId;
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(String recipientId) {
+        this.recipientId = recipientId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTextContent() {
+        return textContent;
+    }
+
+    public String getParentId() {
+        return parentId;
     }
 }

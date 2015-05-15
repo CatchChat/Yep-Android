@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2015. Catch Inc,
- */
-
 package catchla.yep.view;
 
 import android.content.Context;
@@ -9,6 +5,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.v4.view.PagerAdapter;
@@ -23,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import catchla.yep.R;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.view.BadgeView;
 import catchla.yep.view.iface.PagerIndicator;
 
 /**
@@ -68,7 +67,6 @@ public class TabPagerIndicator extends RecyclerView implements PagerIndicator {
         setLayoutManager(mLayoutManager = new TabLayoutManager(this));
         setItemContext(context);
         setAdapter(mIndicatorAdapter);
-        setTabDisplayOption(ICON);
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabPagerIndicator);
         setTabExpandEnabled(a.getBoolean(R.styleable.TabPagerIndicator_tabExpandEnabled, false));
         setHorizontalPadding(a.getDimensionPixelSize(R.styleable.TabPagerIndicator_tabHorizontalPadding, 0));
@@ -172,7 +170,6 @@ public class TabPagerIndicator extends RecyclerView implements PagerIndicator {
     @DisplayOption
     public void setTabDisplayOption(int flags) {
         mOption = flags;
-        notifyDataSetChanged();
     }
 
     private void dispatchTabClick(int position) {
@@ -251,7 +248,6 @@ public class TabPagerIndicator extends RecyclerView implements PagerIndicator {
 
     private void setHorizontalPadding(int padding) {
         mHorizontalPadding = padding;
-        notifyDataSetChanged();
     }
 
     private void setTabShowDivider(boolean showDivider) {
@@ -264,7 +260,6 @@ public class TabPagerIndicator extends RecyclerView implements PagerIndicator {
 
     private void setVerticalPadding(int padding) {
         mVerticalPadding = padding;
-        notifyDataSetChanged();
     }
 
     @IntDef({ICON, LABEL, BOTH})
@@ -411,6 +406,11 @@ public class TabPagerIndicator extends RecyclerView implements PagerIndicator {
             final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(parentHeight, MeasureSpec.EXACTLY);
             final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
             child.measure(widthMeasureSpec, heightMeasureSpec);
+        }
+
+        @Override
+        protected boolean isLayoutRTL() {
+            return false;
         }
     }
 

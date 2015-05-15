@@ -12,9 +12,10 @@
         android:id="@+id/pager_indicator"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:tabDisplayOption="icon"
-        app:tabExpandEnabled="false"
+        app:tabDisplayOption="label"
+        app:tabExpandEnabled="true"
         app:tabHorizontalPadding="@dimen/element_spacing_mlarge"
+        app:tabLabelColor="?android:textColorPrimary"
         app:tabShowDivider="false"
         app:tabStripColor="?android:colorForeground" />
 </LinearLayout>
