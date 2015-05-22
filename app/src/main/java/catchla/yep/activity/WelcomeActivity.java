@@ -5,6 +5,7 @@
 package catchla.yep.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,31 +16,35 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.fragment.ChatsListFragment;
-import catchla.yep.fragment.ExploreFragment;
-import catchla.yep.fragment.FriendsListFragment;
+import catchla.yep.fragment.UserSuggestionsFragment;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.PagerIndicator;
 
-public class WelcomeActivity extends AppCompatActivity implements Constants {
+public class WelcomeActivity extends AppCompatActivity implements Constants, View.OnClickListener {
     private ViewPager mViewPager;
     private HomeTabsAdapter mAdapter;
     private TabPagerIndicator mPagerIndicator;
     private TintedStatusFrameLayout mMainContent;
+    private Button mSignInButton;
+    private Button mSignUpButton;
 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mSignInButton = (Button) findViewById(R.id.sign_in);
+        mSignUpButton = (Button) findViewById(R.id.sign_up);
     }
 
     @Override
@@ -57,17 +62,33 @@ public class WelcomeActivity extends AppCompatActivity implements Constants {
         final Toolbar toolbar = (Toolbar) getWindow().findViewById(android.support.v7.appcompat.R.id.action_bar);
         toolbar.setContentInsetsRelative(0, 0);
 
+        mSignInButton.setOnClickListener(this);
+        mSignUpButton.setOnClickListener(this);
+
         mAdapter = new HomeTabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
-        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, null);
-        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, null);
-        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
+        mAdapter.addTab(UserSuggestionsFragment.class, getString(R.string.suggestions), 0, null);
+        mAdapter.addTab(UserRankFragment.class, getString(R.string.rank), 0, null);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in: {
+                startActivity(new Intent(this, SignInActivity.class));
+                break;
+            }
+            case R.id.sign_up: {
+                startActivity(new Intent(this, SignUpActivity.class));
+                break;
+            }
+        }
     }
 
     private class HomeTabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider {
@@ -103,7 +124,9 @@ public class WelcomeActivity extends AppCompatActivity implements Constants {
 
         @Override
         public Drawable getPageIcon(int position) {
-            return ContextCompat.getDrawable(mContext, mTabs.get(position).icon);
+            final TabSpec tabSpec = mTabs.get(position);
+            if (tabSpec.icon == 0) return null;
+            return ContextCompat.getDrawable(mContext, tabSpec.icon);
         }
     }
 

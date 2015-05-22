@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="catchla.yep" >
+    package="catchla.yep">
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Yep" >
-        <activity android:name=".activity.MainActivity" >
+        android:theme="@style/Theme.Yep">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,15 +30,15 @@
             android:label="@string/title_activity_chat"
             android:parentActivityName=".activity.HomeActivity"
             android:theme="@style/Theme.Yep.Content"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity" />
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".activity.HomeActivity" >
+            android:label="@string/settings"
+            android:parentActivityName=".activity.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity" />
@@ -42,15 +47,22 @@
             android:name=".activity.UserActivity"
             android:label="@string/title_activity_user"
             android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/Theme.Yep.Content" >
+            android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.MainActivity" />
         </activity>
         <activity
             android:name=".activity.ProfileEditorActivity"
-            android:label="@string/title_activity_profile_editor" >
-        </activity>
+            android:label="@string/title_activity_profile_editor"></activity>
+        <activity
+            android:name=".activity.SignInActivity"
+            android:label="@string/sign_in"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity
+            android:name=".activity.SignUpActivity"
+            android:label="@string/sign_up"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
     </application>
 
 </manifest>

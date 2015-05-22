@@ -21,6 +21,16 @@ public class Message extends RealmObject {
     private String parentId;
     @SerializedName("created_at")
     private Date createdAt;
+    @SerializedName("sender")
+    private User sender;
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
 
     public void setTextContent(String textContent) {
         this.textContent = textContent;
