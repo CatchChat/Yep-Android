@@ -20,19 +20,25 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
+import catchla.yep.util.ParseUtils;
 
 public class SignUpActivity extends ContentActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
 
     private Button mNextButton;
+    private String mName;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,26 +96,12 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         }
     }
 
-    private abstract static class AbsSignUpPageFragment extends Fragment {
-        public abstract void onNextPage();
-
-
-        public SignUpActivity getSignUpActivity() {
-            return (SignUpActivity) getActivity();
-        }
+    private void setName(final String name) {
+        mName = name;
     }
 
-    public static class EditNameFragment extends AbsSignUpPageFragment {
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_sign_up_edit_name, container, false);
-        }
-
-        @Override
-        public void onNextPage() {
-            getSignUpActivity().gotoNextPage();
-        }
+    private void setNextEnabled(boolean enabled) {
+        mNextButton.setEnabled(enabled);
     }
 
     private void gotoNextPage() {
@@ -118,7 +110,89 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         mViewPager.setCurrentItem(currentItem + 1);
     }
 
+    private void sendVerifyCode(final String phoneNumber) {
+        Toast.makeText(this, String.format("%s to %s", mName, phoneNumber), Toast.LENGTH_SHORT).show();
+    }
+
+    private abstract static class AbsSignUpPageFragment extends Fragment {
+        protected abstract void updateNextButton();
+
+        public abstract void onNextPage();
+
+        @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (isVisibleToUser) {
+                updateNextButton();
+            }
+        }
+
+        public SignUpActivity getSignUpActivity() {
+            return (SignUpActivity) getActivity();
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            updateNextButton();
+        }
+    }
+
+    public static class EditNameFragment extends AbsSignUpPageFragment {
+        private EditText mEditName;
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_sign_up_edit_name, container, false);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            mEditName = (EditText) view.findViewById(R.id.edit_name);
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            mEditName.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    updateNextButton();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+        }
+
+        @Override
+        protected void updateNextButton() {
+            if (!getUserVisibleHint()) return;
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            if (signUpActivity == null || mEditName == null) return;
+            signUpActivity.setNextEnabled(mEditName.length() > 0);
+        }
+
+        @Override
+        public void onNextPage() {
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            signUpActivity.setName(ParseUtils.parseString(mEditName.getText()));
+            signUpActivity.gotoNextPage();
+        }
+    }
+
     public static class EditPhoneNumberFragment extends AbsSignUpPageFragment {
+        private EditText mEditPhoneNumber;
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -126,8 +200,44 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         }
 
         @Override
-        public void onNextPage() {
+        protected void updateNextButton() {
+            if (!getUserVisibleHint()) return;
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            if (signUpActivity == null || mEditPhoneNumber == null) return;
+            signUpActivity.setNextEnabled(mEditPhoneNumber.length() > 0);
+        }
 
+        @Override
+        public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            mEditPhoneNumber = (EditText) view.findViewById(R.id.edit_phone_number);
+        }
+
+        @Override
+        public void onNextPage() {
+            final String phoneNumber = ParseUtils.parseString(mEditPhoneNumber.getText());
+            getSignUpActivity().sendVerifyCode(phoneNumber);
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            mEditPhoneNumber.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    updateNextButton();
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
         }
     }
 
@@ -136,6 +246,11 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             return inflater.inflate(R.layout.fragment_sign_up_verify_phone, container, false);
+        }
+
+        @Override
+        protected void updateNextButton() {
+
         }
 
         @Override

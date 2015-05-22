@@ -17,6 +17,7 @@
             android:text="What\'s your name?" />
 
         <EditText
+            android:id="@+id/edit_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"

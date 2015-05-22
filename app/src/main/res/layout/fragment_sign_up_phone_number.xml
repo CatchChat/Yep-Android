@@ -14,12 +14,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="What\'s your name?" />
+            android:text="Phone number" />
 
         <EditText
+            android:id="@+id/edit_phone_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
+            android:inputType="phone"
             android:singleLine="true" />
     </LinearLayout>
 </ScrollView>
