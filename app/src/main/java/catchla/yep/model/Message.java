@@ -1,6 +1,7 @@
 package catchla.yep.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
 
@@ -9,19 +10,20 @@ import io.realm.RealmObject;
 /**
  * Created by mariotaku on 15/5/12.
  */
+@JsonObject
 public class Message extends RealmObject {
 
-    @SerializedName("id")
+    @JsonField(name = "id")
     private String id;
-    @SerializedName("recipient_id")
+    @JsonField(name = "recipient_id")
     private String recipientId;
-    @SerializedName("text_content")
+    @JsonField(name = "text_content")
     private String textContent;
-    @SerializedName("parent_id")
+    @JsonField(name = "parent_id")
     private String parentId;
-    @SerializedName("created_at")
+    @JsonField(name = "created_at")
     private Date createdAt;
-    @SerializedName("sender")
+    @JsonField(name = "sender")
     private User sender;
 
     public User getSender() {

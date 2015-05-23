@@ -1,8 +1,14 @@
 package catchla.yep.util;
 
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.POST;
+import org.mariotaku.simplerestapi.http.BodyType;
+import org.mariotaku.simplerestapi.method.POST;
+import org.mariotaku.simplerestapi.method.PUT;
+import org.mariotaku.simplerestapi.param.Body;
+import org.mariotaku.simplerestapi.param.Form;
+
+import catchla.yep.model.Client;
+import catchla.yep.model.CreateRegistrationResult;
+import catchla.yep.model.UpdateRegistrationResult;
 
 /**
  * Created by mariotaku on 15/5/12.
@@ -10,9 +16,20 @@ import retrofit.http.POST;
 public interface YepAPI {
 
     @POST("/v1/registration/create")
-    @FormUrlEncoded
-    void createRegistration(@Field("mobile") String mobile, @Field("nickname") String nickname,
-                            @Field("phone_code") String phoneCode, @Field("longitude") double longitude,
-                            @Field("latitude") double latitude);
+    @Body(BodyType.FORM)
+    CreateRegistrationResult createRegistration(@Form("mobile") String mobile,
+                                                @Form("phone_code") String phoneCode,
+                                                @Form("nickname") String nickname,
+                                                @Form("longitude") double longitude,
+                                                @Form("latitude") double latitude);
+
+    @PUT("/v1/registration/update")
+    @Body(BodyType.FORM)
+    UpdateRegistrationResult updateRegistration(@Form("mobile") String mobile,
+                                                @Form("phone_code") String phoneCode,
+                                                @Form("token") String token,
+                                                @Form("client") Client client,
+                                                @Form("expiring") long expiringInseconds);
 
 }
+

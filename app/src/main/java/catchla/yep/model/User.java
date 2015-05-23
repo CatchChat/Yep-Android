@@ -1,28 +1,31 @@
 package catchla.yep.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import catchla.yep.model.util.SkillListTypeConverter;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/5/8.
  */
+@JsonObject
 public class User extends RealmObject {
 
-    @SerializedName("master_skills")
+    @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
     private RealmList<Skill> masterSkills;
-    @SerializedName("learning_skills")
+    @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
     private RealmList<Skill> learningSkills;
-    @SerializedName("id")
+    @JsonField(name = "id")
     private String id;
-    @SerializedName("username")
+    @JsonField(name = "username")
     private String username;
-    @SerializedName("nickname")
+    @JsonField(name = "nickname")
     private String nickname;
-    @SerializedName("introduction")
+    @JsonField(name = "introduction")
     private String introduction;
-    @SerializedName("avatar_url")
+    @JsonField(name = "avatar_url")
     private String avatarUrl;
 
     public String getIntroduction() {

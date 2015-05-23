@@ -1,19 +1,21 @@
 package catchla.yep.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/5/12.
  */
+@JsonObject
 public class Skill extends RealmObject {
 
-    @SerializedName("id")
+    @JsonField(name = "id")
     private String id;
-    @SerializedName("name")
+    @JsonField(name = "name")
     private String name;
-    @SerializedName("name_string")
+    @JsonField(name = "name_string")
     private String nameString;
 
     public String getId() {

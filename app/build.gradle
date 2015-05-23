@@ -36,14 +36,16 @@ dependencies {
     compile 'com.android.support:support-v4:22.1.1'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.github.mariotaku:MessageBubbleView:1.2'
     compile 'org.apmem.tools:layouts:1.8@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
-    compile 'io.realm:realm-android:0.80.2'
+    compile 'io.realm:realm-android:0.80.3'
     compile 'org.jraf:android-switch-backport:2.0.1'
     compile 'com.github.techfreak:wizardpager:1.0.0'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    apt 'com.bluelinelabs:logansquare-compiler:1.1.0'
+    compile 'com.bluelinelabs:logansquare:1.1.0'
 }
 
 task svgToPng(type: SvgDrawableTask) {
