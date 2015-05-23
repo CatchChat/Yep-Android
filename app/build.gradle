@@ -30,7 +30,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    apt 'com.bluelinelabs:logansquare-compiler:1.1.0'
+
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.android.support:support-v4:22.1.1'
@@ -44,8 +45,10 @@ dependencies {
     compile 'org.jraf:android-switch-backport:2.0.1'
     compile 'com.github.techfreak:wizardpager:1.0.0'
     compile 'org.apache.commons:commons-lang3:3.4'
-    apt 'com.bluelinelabs:logansquare-compiler:1.1.0'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile 'com.bluelinelabs:logansquare:1.1.0'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 task svgToPng(type: SvgDrawableTask) {
