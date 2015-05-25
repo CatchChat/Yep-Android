@@ -1,11 +1,11 @@
 package catchla.yep.util;
 
-import org.mariotaku.simplerestapi.http.BodyType;
-import org.mariotaku.simplerestapi.method.PATCH;
-import org.mariotaku.simplerestapi.method.POST;
-import org.mariotaku.simplerestapi.method.PUT;
-import org.mariotaku.simplerestapi.param.Body;
-import org.mariotaku.simplerestapi.param.Form;
+import org.mariotaku.restfu.annotation.method.PATCH;
+import org.mariotaku.restfu.annotation.method.POST;
+import org.mariotaku.restfu.annotation.method.PUT;
+import org.mariotaku.restfu.annotation.param.Body;
+import org.mariotaku.restfu.annotation.param.Form;
+import org.mariotaku.restfu.http.BodyType;
 
 import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
@@ -24,7 +24,7 @@ public interface YepAPI {
                                                 @Form("phone_code") String phoneCode,
                                                 @Form("nickname") String nickname,
                                                 @Form("longitude") double longitude,
-                                                @Form("latitude") double latitude);
+                                                @Form("latitude") double latitude) throws YepException;
 
     @PUT("/v1/registration/update")
     @Body(BodyType.FORM)
@@ -32,10 +32,10 @@ public interface YepAPI {
                                                 @Form("phone_code") String phoneCode,
                                                 @Form("token") String token,
                                                 @Form("client") Client client,
-                                                @Form("expiring") long expiringInseconds);
+                                                @Form("expiring") long expiringInseconds) throws YepException;
 
     @PATCH("/v1/user")
-    User updateProfile(@Form ProfileUpdate profileUpdate);
+    User updateProfile(@Form ProfileUpdate profileUpdate) throws YepException;
 
 }
 

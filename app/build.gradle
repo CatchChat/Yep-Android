@@ -25,7 +25,7 @@ android {
 
 repositories {
     jcenter()
-    maven { url 'https://repo.commonsware.com.s3.amazonaws.com' }
+    maven { url 'http://repo.commonsware.com.s3.amazonaws.com' }
     maven { url "https://jitpack.io" }
 }
 
@@ -38,6 +38,7 @@ dependencies {
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.mariotaku:MessageBubbleView:1.2'
+    compile 'com.github.mariotaku:RestFu:6ef0913'
     compile 'org.apmem.tools:layouts:1.8@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
@@ -47,6 +48,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile 'com.bluelinelabs:logansquare:1.1.0'
+    compile 'com.github.boxme:AsyncManager:9391ed71d7@aar'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

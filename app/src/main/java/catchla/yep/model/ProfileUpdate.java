@@ -1,6 +1,6 @@
 package catchla.yep.model;
 
-import org.mariotaku.simplerestapi.http.SimpleValueMap;
+import org.mariotaku.restfu.http.SimpleValueMap;
 
 /**
  * Created by mariotaku on 15/5/23.

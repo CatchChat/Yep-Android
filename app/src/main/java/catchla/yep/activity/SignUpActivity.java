@@ -27,11 +27,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.desmond.asyncmanager.AsyncManager;
+import com.desmond.asyncmanager.TaskRunnable;
 
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
+import catchla.yep.model.CreateRegistrationResult;
+import catchla.yep.model.TaskResponse;
 import catchla.yep.util.ParseUtils;
+import catchla.yep.util.YepAPI;
+import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.YepException;
 
 public class SignUpActivity extends ContentActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
     private ViewPager mViewPager;
@@ -110,8 +117,32 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         mViewPager.setCurrentItem(currentItem + 1);
     }
 
-    private void sendVerifyCode(final String phoneNumber) {
-        Toast.makeText(this, String.format("%s to %s", mName, phoneNumber), Toast.LENGTH_SHORT).show();
+    private void sendVerifyCode(final String phoneNumber, final String countryCode) {
+        final TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity> task
+                = new TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity>() {
+
+            @Override
+            public TaskResponse<CreateRegistrationResult> doLongOperation(final String[] args) throws InterruptedException {
+                final YepAPI yep = YepAPIFactory.getInstance(null);
+                try {
+                    return TaskResponse.getInstance(yep.createRegistration(args[1], args[2], args[0], 0, 0));
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+
+            @Override
+            public void callback(final SignUpActivity handler, final TaskResponse<CreateRegistrationResult> result) {
+                if (result.hasData()) {
+                    handler.gotoNextPage();
+                } else {
+
+                }
+            }
+        };
+        task.setParams(new String[]{mName, phoneNumber, countryCode});
+        task.setResultHandler(this);
+        AsyncManager.runBackgroundTask(task);
     }
 
     private abstract static class AbsSignUpPageFragment extends Fragment {
@@ -216,7 +247,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         @Override
         public void onNextPage() {
             final String phoneNumber = ParseUtils.parseString(mEditPhoneNumber.getText());
-            getSignUpActivity().sendVerifyCode(phoneNumber);
+            getSignUpActivity().sendVerifyCode(phoneNumber, null);
         }
 
         @Override
