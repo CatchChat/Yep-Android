@@ -12,6 +12,7 @@ import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.User;
+import catchla.yep.model.VerificationMethod;
 
 /**
  * Created by mariotaku on 15/5/12.
@@ -29,10 +30,24 @@ public interface YepAPI {
     @PUT("/v1/registration/update")
     @Body(BodyType.FORM)
     AccessToken updateRegistration(@Form("mobile") String mobile,
-                                                @Form("phone_code") String phoneCode,
-                                                @Form("token") String token,
-                                                @Form("client") Client client,
-                                                @Form("expiring") long expiringInseconds) throws YepException;
+                                   @Form("phone_code") String phoneCode,
+                                   @Form("token") String token,
+                                   @Form("client") Client client,
+                                   @Form("expiring") long expiringInseconds) throws YepException;
+
+    @PUT("/auth/token_by_mobile")
+    @Body(BodyType.FORM)
+    AccessToken tokenByMobile(@Form("mobile") String mobile,
+                              @Form("phone_code") String phoneCode,
+                              @Form("token") String token,
+                              @Form("client") Client client,
+                              @Form("expiring") long expiringInseconds) throws YepException;
+
+    @POST("/v1/sms_verification_codes")
+    @Body(BodyType.FORM)
+    void sendVerifyCode(@Form("mobile") String mobile,
+                        @Form("phone_code") String phoneCode,
+                        @Form("method") VerificationMethod method) throws YepException;
 
     @PATCH("/v1/user")
     User updateProfile(@Form ProfileUpdate profileUpdate) throws YepException;
