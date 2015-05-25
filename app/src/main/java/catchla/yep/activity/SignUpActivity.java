@@ -18,21 +18,25 @@ package catchla.yep.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
+import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.ParseUtils;
@@ -46,6 +50,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
 
     private Button mNextButton;
     private String mName;
+    private CreateRegistrationResult mCreateRegistrationResult;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +123,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
     }
 
     private void sendVerifyCode(final String phoneNumber, final String countryCode) {
+        ProgressDialogFragment.show(this, "create_registration");
         final TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity> task
                 = new TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity>() {
 
@@ -133,16 +139,33 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
 
             @Override
             public void callback(final SignUpActivity handler, final TaskResponse<CreateRegistrationResult> result) {
+                final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("create_registration");
+                if (f instanceof DialogFragment) {
+                    ((DialogFragment) f).dismiss();
+                }
                 if (result.hasData()) {
+                    handler.setCreateRegistrationResult(result.getData());
                     handler.gotoNextPage();
                 } else {
-
+                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+                    final YepException exception = (YepException) result.getException();
+                    final String error = exception.getError();
+                    if (TextUtils.isEmpty(error)) {
+                        Toast.makeText(handler, R.string.unable_to_register, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
+
         };
         task.setParams(new String[]{mName, phoneNumber, countryCode});
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
+    }
+
+    public void setCreateRegistrationResult(final CreateRegistrationResult createRegistrationResult) {
+        mCreateRegistrationResult = createRegistrationResult;
     }
 
     private abstract static class AbsSignUpPageFragment extends Fragment {
@@ -223,6 +246,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
 
     public static class EditPhoneNumberFragment extends AbsSignUpPageFragment {
         private EditText mEditPhoneNumber;
+        private EditText mEditCountryCode;
 
         @Nullable
         @Override
@@ -234,20 +258,23 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         protected void updateNextButton() {
             if (!getUserVisibleHint()) return;
             final SignUpActivity signUpActivity = getSignUpActivity();
-            if (signUpActivity == null || mEditPhoneNumber == null) return;
-            signUpActivity.setNextEnabled(mEditPhoneNumber.length() > 0);
+            if (signUpActivity == null || mEditPhoneNumber == null || mEditCountryCode == null)
+                return;
+            signUpActivity.setNextEnabled(mEditPhoneNumber.length() > 0 && mEditCountryCode.length() > 0);
         }
 
         @Override
         public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             mEditPhoneNumber = (EditText) view.findViewById(R.id.edit_phone_number);
+            mEditCountryCode = (EditText) view.findViewById(R.id.edit_country_code);
         }
 
         @Override
         public void onNextPage() {
             final String phoneNumber = ParseUtils.parseString(mEditPhoneNumber.getText());
-            getSignUpActivity().sendVerifyCode(phoneNumber, null);
+            final String countryCode = ParseUtils.parseString(mEditCountryCode.getText());
+            getSignUpActivity().sendVerifyCode(phoneNumber, countryCode);
         }
 
         @Override
@@ -266,6 +293,22 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
 
                 @Override
                 public void afterTextChanged(Editable s) {
+
+                }
+            });
+            mEditCountryCode.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                    updateNextButton();
+                }
+
+                @Override
+                public void afterTextChanged(final Editable s) {
 
                 }
             });

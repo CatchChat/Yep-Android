@@ -4,6 +4,7 @@ import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
 import org.mariotaku.restfu.annotation.param.Body;
+import org.mariotaku.restfu.annotation.param.File;
 import org.mariotaku.restfu.annotation.param.Form;
 import org.mariotaku.restfu.http.BodyType;
 
@@ -12,6 +13,7 @@ import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.UpdateRegistrationResult;
 import catchla.yep.model.User;
+import catchla.yep.util.net.JSONTypedData;
 
 /**
  * Created by mariotaku on 15/5/12.

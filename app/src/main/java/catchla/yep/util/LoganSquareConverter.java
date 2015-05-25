@@ -48,16 +48,12 @@ public class LoganSquareConverter implements Converter {
     @Override
     public Object convert(RestHttpResponse response, Type type) throws Exception {
         final TypedData body = response.getBody();
-        if (!response.isSuccessful()) {
-            throw parseOrThrow(response, body.stream(), YepException.class);
-        }
         final ContentType contentType = body.contentType();
         final InputStream stream = body.stream();
         try {
             if (type instanceof Class<?>) {
                 final Class<?> cls = (Class<?>) type;
-                final Object object = parseOrThrow(response, stream, cls);
-                return object;
+                return parseOrThrow(response, stream, cls);
             } else if (type instanceof ParameterizedType) {
                 final Type rawType = ((ParameterizedType) type).getRawType();
                 if (rawType instanceof Class<?>) {

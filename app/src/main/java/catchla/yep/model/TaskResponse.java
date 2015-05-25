@@ -18,15 +18,15 @@ public class TaskResponse<D> {
     }
 
     public static <D> TaskResponse<D> getInstance(final Exception exception) {
-        return new TaskResponse<D>(null, exception);
+        return new TaskResponse<>(null, exception);
     }
 
     public static <D> TaskResponse<D> getInstance() {
-        return new TaskResponse<D>(null, null);
+        return new TaskResponse<>(null, null);
     }
 
     public static <D> TaskResponse<D> getInstance(final D data) {
-        return new TaskResponse<D>(data, null);
+        return new TaskResponse<>(data, null);
     }
 
     public boolean hasData() {

@@ -36,4 +36,8 @@
     <string name="previous_step">Previous</string>
     <string name="next_step">Next</string>
     <string name="finish">Finish</string>
+    <string name="plus_symbol">+</string>
+    <string name="phone_number">Phone number</string>
+    <string name="unable_to_register">Unable to register</string>
+    <string name="please_wait">Please wait</string>
 </resources>

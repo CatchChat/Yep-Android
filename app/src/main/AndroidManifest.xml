@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="catchla.yep">
+<manifest
+    package="catchla.yep"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -14,17 +20,17 @@
         android:theme="@style/Theme.Yep">
         <activity android:name=".activity.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.WelcomeActivity"
-            android:label="@string/title_activity_welcome" />
+            android:label="@string/title_activity_welcome"/>
         <activity
             android:name=".activity.HomeActivity"
-            android:label="@string/title_activity_home" />
+            android:label="@string/title_activity_home"/>
         <activity
             android:name=".activity.ChatActivity"
             android:label="@string/title_activity_chat"
@@ -33,7 +39,7 @@
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="catchla.yep.activity.HomeActivity" />
+                android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
@@ -41,7 +47,7 @@
             android:parentActivityName=".activity.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="catchla.yep.activity.HomeActivity" />
+                android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
             android:name=".activity.UserActivity"
@@ -50,7 +56,7 @@
             android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="catchla.yep.activity.MainActivity" />
+                android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
             android:name=".activity.ProfileEditorActivity"
@@ -58,11 +64,11 @@
         <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"
-            android:windowSoftInputMode="adjustResize|stateVisible" />
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
             android:name=".activity.SignUpActivity"
             android:label="@string/sign_up"
-            android:windowSoftInputMode="adjustResize|stateVisible" />
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
     </application>
 
 </manifest>
