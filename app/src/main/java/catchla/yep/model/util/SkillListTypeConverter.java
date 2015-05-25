@@ -25,6 +25,11 @@ public class SkillListTypeConverter implements TypeConverter<RealmList<Skill>> {
     @Override
     public void serialize(RealmList<Skill> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
-        throw new UnsupportedOperationException();
+        if (object != null) {
+            if (writeFieldNameForObject) {
+                jsonGenerator.writeFieldName(fieldName);
+            }
+            LoganSquare.mapperFor(Skill.class).serialize(object, jsonGenerator);
+        }
     }
 }

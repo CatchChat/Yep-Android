@@ -8,7 +8,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
  * Created by mariotaku on 15/2/4.
  */
 @JsonObject
-public class UpdateRegistrationResult {
+public class AccessToken {
 
     @JsonField(name = "access_token")
     private String accessToken;

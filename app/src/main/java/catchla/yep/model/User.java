@@ -27,7 +27,27 @@ public class User extends RealmObject {
     private String introduction;
     @JsonField(name = "avatar_url")
     private String avatarUrl;
+    @JsonField(name = "mobile")
+    private String mobile;
+    @JsonField(name = "phone_code")
+    private String phoneCode;
 
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(final String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getPhoneCode() {
+        return phoneCode;
+    }
+
+    public void setPhoneCode(final String phoneCode) {
+        this.phoneCode = phoneCode;
+    }
     public String getIntroduction() {
         return introduction;
     }

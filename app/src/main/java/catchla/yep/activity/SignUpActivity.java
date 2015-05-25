@@ -16,6 +16,7 @@
 
 package catchla.yep.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -24,6 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +33,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
+import java.io.IOException;
+
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
+import catchla.yep.model.AccessToken;
+import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.ParseUtils;
@@ -44,13 +52,16 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 
-public class SignUpActivity extends ContentActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+public class SignUpActivity extends ContentActivity implements Constants, ViewPager.OnPageChangeListener,
+        View.OnClickListener {
+
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
 
     private Button mNextButton;
     private String mName;
     private CreateRegistrationResult mCreateRegistrationResult;
+    private AccessToken mAccessToken;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +77,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         mAdapter.addTab(EditNameFragment.class, null, 0, null);
         mAdapter.addTab(EditPhoneNumberFragment.class, null, 0, null);
         mAdapter.addTab(VerifyPhoneNumberFragment.class, null, 0, null);
+        mAdapter.addTab(EditAvatarFragment.class, null, 0, null);
     }
 
     @Override
@@ -118,7 +130,7 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
 
     private void gotoNextPage() {
         final int currentItem = mViewPager.getCurrentItem();
-        if (currentItem >= mAdapter.getCount() - 1) return;
+        if (currentItem == mAdapter.getCount() - 1) return;
         mViewPager.setCurrentItem(currentItem + 1);
     }
 
@@ -164,8 +176,57 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         AsyncManager.runBackgroundTask(task);
     }
 
-    public void setCreateRegistrationResult(final CreateRegistrationResult createRegistrationResult) {
-        mCreateRegistrationResult = createRegistrationResult;
+    private void verifyPhoneNumber(final String verifyCode) {
+        ProgressDialogFragment.show(this, "update_registration");
+        final TaskRunnable<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity> task
+                = new TaskRunnable<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity>() {
+
+            @Override
+            public TaskResponse<AccessToken> doLongOperation(final Pair<CreateRegistrationResult, String> args) throws InterruptedException {
+                final YepAPI yep = YepAPIFactory.getInstance(null);
+                try {
+                    final CreateRegistrationResult result = args.first;
+                    final String verifyCode = args.second;
+                    return TaskResponse.getInstance(yep.updateRegistration(result.getMobile(),
+                            result.getPhoneCode(), verifyCode, Client.OFFICIAL, 0));
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+
+            @Override
+            public void callback(final SignUpActivity handler, final TaskResponse<AccessToken> result) {
+                final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("update_registration");
+                if (f instanceof DialogFragment) {
+                    ((DialogFragment) f).dismiss();
+                }
+                if (result.hasData()) {
+                    handler.setUpdateRegistrationResult(result.getData());
+                    handler.gotoNextPage();
+                } else {
+                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+                    final YepException exception = (YepException) result.getException();
+                    final String error = exception.getError();
+                    if (TextUtils.isEmpty(error)) {
+                        Toast.makeText(handler, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+        };
+        task.setParams(Pair.create(mCreateRegistrationResult, verifyCode));
+        task.setResultHandler(this);
+        AsyncManager.runBackgroundTask(task);
+    }
+
+    private void setUpdateRegistrationResult(final AccessToken result) {
+        mAccessToken = result;
+    }
+
+    public void setCreateRegistrationResult(final CreateRegistrationResult result) {
+        mCreateRegistrationResult = result;
     }
 
     private abstract static class AbsSignUpPageFragment extends Fragment {
@@ -316,6 +377,9 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
     }
 
     public static class VerifyPhoneNumberFragment extends AbsSignUpPageFragment {
+
+        private EditText mEditVerifyCode;
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -323,13 +387,84 @@ public class SignUpActivity extends ContentActivity implements ViewPager.OnPageC
         }
 
         @Override
-        protected void updateNextButton() {
+        public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            mEditVerifyCode = (EditText) view.findViewById(R.id.edit_verify_code);
+        }
 
+        @Override
+        public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            mEditVerifyCode.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                    updateNextButton();
+                }
+
+                @Override
+                public void afterTextChanged(final Editable s) {
+
+                }
+            });
+        }
+
+        @Override
+        protected void updateNextButton() {
+            if (!getUserVisibleHint()) return;
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            if (signUpActivity == null || mEditVerifyCode == null)
+                return;
+            signUpActivity.setNextEnabled(mEditVerifyCode.length() > 0);
         }
 
         @Override
         public void onNextPage() {
+            final String verifyCode = ParseUtils.parseString(mEditVerifyCode.getText());
+            getSignUpActivity().verifyPhoneNumber(verifyCode);
 
         }
+    }
+
+    public static class EditAvatarFragment extends AbsSignUpPageFragment {
+
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_sign_up_edit_avatar, container, false);
+        }
+
+        @Override
+        protected void updateNextButton() {
+            if (!getUserVisibleHint()) return;
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            if (signUpActivity == null) return;
+            signUpActivity.setNextEnabled(true);
+        }
+
+        @Override
+        public void onNextPage() {
+            final SignUpActivity signUpActivity = getSignUpActivity();
+            final Intent data = new Intent();
+            signUpActivity.finishAddAddAccount();
+        }
+
+    }
+
+    private void finishAddAddAccount() {
+        if (mAccessToken == null) return;
+        final Intent data = new Intent();
+        try {
+            data.putExtra(EXTRA_TOKEN, LoganSquare.serialize(mAccessToken));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        setResult(RESULT_OK, data);
+        finish();
     }
 }

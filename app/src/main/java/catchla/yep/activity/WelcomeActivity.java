@@ -4,6 +4,8 @@
 
 package catchla.yep.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -19,18 +21,26 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.UserSuggestionsFragment;
+import catchla.yep.model.AccessToken;
+import catchla.yep.model.User;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.PagerIndicator;
 
 public class WelcomeActivity extends AppCompatActivity implements Constants, View.OnClickListener {
+
+    private static final int REQUEST_ADD_ACCOUNT = 101;
+
     private ViewPager mViewPager;
     private HomeTabsAdapter mAdapter;
     private TabPagerIndicator mPagerIndicator;
@@ -45,6 +55,29 @@ public class WelcomeActivity extends AppCompatActivity implements Constants, Vie
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mSignInButton = (Button) findViewById(R.id.sign_in);
         mSignUpButton = (Button) findViewById(R.id.sign_up);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_ADD_ACCOUNT: {
+                final AccessToken token;
+                try {
+                    token = LoganSquare.parse(data.getStringExtra(EXTRA_TOKEN), AccessToken.class);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                final User user = token.getUser();
+                final Account account = new Account(user.getMobile(), ACCOUNT_TYPE);
+                final Bundle userData = new Bundle();
+                userData.putString(USER_DATA_ID, user.getId());
+                final AccountManager am = AccountManager.get(this);
+                am.addAccountExplicitly(account, null, userData);
+                am.setAuthToken(account, AUTH_TOKEN_TYPE, token.getAccessToken());
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -81,11 +114,11 @@ public class WelcomeActivity extends AppCompatActivity implements Constants, Vie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in: {
-                startActivity(new Intent(this, SignInActivity.class));
+                startActivityForResult(new Intent(this, SignInActivity.class), REQUEST_ADD_ACCOUNT);
                 break;
             }
             case R.id.sign_up: {
-                startActivity(new Intent(this, SignUpActivity.class));
+                startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_ADD_ACCOUNT);
                 break;
             }
         }

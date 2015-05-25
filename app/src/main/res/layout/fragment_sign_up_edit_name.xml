@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="What\'s your name?" />
+            android:text="@string/register_name_hint" />
 
         <EditText
             android:id="@+id/edit_name"

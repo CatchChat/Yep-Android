@@ -40,4 +40,7 @@
     <string name="phone_number">Phone number</string>
     <string name="unable_to_register">Unable to register</string>
     <string name="please_wait">Please wait</string>
+    <string name="register_name_hint">What\'s your name?</string>
+    <string name="register_verify_code_hint">Verify code</string>
+    <string name="unable_to_verify_phone">Unable to verify phone</string>
 </resources>
