@@ -4,6 +4,8 @@
 
 package catchla.yep.menu;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.view.ActionProvider;
@@ -20,7 +22,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.squareup.picasso.Picasso;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.util.ThemeUtils;
@@ -28,7 +32,7 @@ import catchla.yep.util.ThemeUtils;
 /**
  * Created by mariotaku on 15/5/4.
  */
-public class HomeMenuActionProvider extends ActionProvider implements View.OnClickListener {
+public class HomeMenuActionProvider extends ActionProvider implements Constants, View.OnClickListener {
 
     private final int mPopupMaxWidth;
     private View mActionView;
@@ -51,6 +55,8 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
         }
     };
     private OnActionListener mOnActionListener;
+    private Account account;
+    private View mProfileView;
 
     /**
      * Creates a new instance.
@@ -114,7 +120,8 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
 
         mAdapter = new MergeAdapter();
         //noinspection Annotator
-        mAdapter.addView(LayoutInflater.from(popupContext).inflate(R.layout.header_home_menu_profile, null), true);
+        mProfileView = LayoutInflater.from(popupContext).inflate(R.layout.header_home_menu_profile, null);
+        mAdapter.addView(mProfileView, true);
         mAdapter.addView(LayoutInflater.from(popupContext).inflate(R.layout.layout_divider_vertical, null), false);
         mAdapter.addAdapter(mActionsAdapter = new HomeMenuActionsAdapter(popupContext));
 
@@ -142,11 +149,14 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
         mOverflowPopup.setContentWidth(mContentWidth);
         mOverflowPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mActionView = view;
+
+        updateProfileView();
         return view;
     }
 
     private void showPopup() {
-        if (mActionView == null || mOverflowPopup == null || mOverflowPopup.isShowing()) return;
+        if (mActionView == null || mOverflowPopup == null || mOverflowPopup.isShowing() || account == null)
+            return;
         mPostedOpenRunnable = new ShowPopupRunnable(mOverflowPopup);
         mActionView.post(mPostedOpenRunnable);
     }
@@ -167,6 +177,20 @@ public class HomeMenuActionProvider extends ActionProvider implements View.OnCli
     private void dismissPopup() {
         if (mOverflowPopup == null || !mOverflowPopup.isShowing()) return;
         mOverflowPopup.dismiss();
+    }
+
+    public void setAccount(final Account account) {
+        this.account = account;
+        updateProfileView();
+    }
+
+    private void updateProfileView() {
+        if (account == null || mProfileView == null) return;
+        final ImageView view = (ImageView) mProfileView.findViewById(R.id.home_menu_profile_image);
+        final TextView name = (TextView) mProfileView.findViewById(R.id.home_menu_name);
+        final AccountManager am = AccountManager.get(getContext());
+        name.setText(am.getUserData(account, USER_DATA_NICKNAME));
+        Picasso.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).into(view);
     }
 
     public static final class Action {

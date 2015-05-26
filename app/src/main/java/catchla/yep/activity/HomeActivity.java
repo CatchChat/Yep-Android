@@ -22,6 +22,7 @@ import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
 
@@ -47,6 +48,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         final ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         final HomeMenuActionProvider provider = new HomeMenuActionProvider(actionBar.getThemedContext());
+        provider.setAccount(Utils.getCurrentAccount(this));
         provider.setOnActionListener(new HomeMenuActionProvider.OnActionListener() {
             @Override
             public void onProfileClick() {

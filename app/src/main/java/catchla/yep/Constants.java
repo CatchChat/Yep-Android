@@ -20,6 +20,9 @@ public interface Constants {
     String AUTH_TOKEN_TYPE = ACCOUNT_TYPE_PREFIX + "auth_token";
 
     String USER_DATA_ID = "id";
+    String USER_DATA_AVATAR = "avatar";
+    String USER_DATA_NICKNAME = "nickname";
+    String USER_DATA_USERNAME = "username";
 
     String EXTRA_RESID = "resid";
     String EXTRA_TOKEN = "token";
