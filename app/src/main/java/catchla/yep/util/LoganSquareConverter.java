@@ -71,6 +71,7 @@ public class LoganSquareConverter implements Converter {
     }
 
     private static <T> T parseOrThrow(RestHttpResponse resp, InputStream stream, Class<T> cls) throws IOException, YepException {
+        if (void.class.isAssignableFrom(cls) || Void.class.isAssignableFrom(cls)) return null;
         try {
             return LoganSquare.parse(stream, cls);
         } catch (JsonParseException e) {

@@ -1,5 +1,7 @@
 package catchla.yep.util;
 
+import android.accounts.Account;
+import android.content.Context;
 import android.util.Pair;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -74,4 +76,7 @@ public class YepAPIFactory {
         return factory.build(YepAPI.class);
     }
 
+    public static YepAPI getInstance(final Context context, final Account account) {
+        return getInstance(null);
+    }
 }

@@ -1,5 +1,6 @@
 package catchla.yep.util;
 
+import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
@@ -52,5 +53,7 @@ public interface YepAPI {
     @PATCH("/v1/user")
     User updateProfile(@Form ProfileUpdate profileUpdate) throws YepException;
 
+    @GET("/v1/user")
+    User getUser() throws YepException;
 }
 

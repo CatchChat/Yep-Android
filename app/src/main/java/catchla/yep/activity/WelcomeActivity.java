@@ -6,6 +6,7 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -16,7 +17,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -33,11 +33,12 @@ import catchla.yep.fragment.UserSuggestionsFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.User;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.PagerIndicator;
 
-public class WelcomeActivity extends AppCompatActivity implements Constants, View.OnClickListener {
+public class WelcomeActivity extends AccountAuthenticatorActivity implements Constants, View.OnClickListener {
 
     private static final int REQUEST_ADD_ACCOUNT = 101;
 
@@ -74,6 +75,17 @@ public class WelcomeActivity extends AppCompatActivity implements Constants, Vie
                 final AccountManager am = AccountManager.get(this);
                 am.addAccountExplicitly(account, null, userData);
                 am.setAuthToken(account, AUTH_TOKEN_TYPE, token.getAccessToken());
+                if (Utils.getCurrentAccount(this) == null) {
+                    Utils.setCurrentAccount(this, account);
+                }
+                final Bundle result = new Bundle();
+                result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
+                setAccountAuthenticatorResult(result);
+                if (!getIntent().hasExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)) {
+                    final Intent launcherIntent = new Intent(this, LauncherActivity.class);
+                    startActivity(launcherIntent);
+                }
+                finish();
                 return;
             }
         }

@@ -9,11 +9,17 @@ package catchla.yep;
  */
 public interface Constants {
 
+    String LOGTAG = "Yep";
+
+    String SHARED_PREFERENCES_NAME = "preferences";
+
+    String KEY_CURRENT_ACCOUNT = "current_account";
+
     String ACCOUNT_TYPE = "catchla.yep.account";
     String ACCOUNT_TYPE_PREFIX = ACCOUNT_TYPE + ":";
     String AUTH_TOKEN_TYPE = ACCOUNT_TYPE_PREFIX + "auth_token";
 
-     String USER_DATA_ID = "id";
+    String USER_DATA_ID = "id";
 
     String EXTRA_RESID = "resid";
     String EXTRA_TOKEN = "token";

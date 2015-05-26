@@ -4,20 +4,27 @@
 
 package catchla.yep.util;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.TypedValue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import catchla.yep.Constants;
+
 /**
  * Created by mariotaku on 15/5/5.
  */
-public class Utils {
+public class Utils implements Constants {
 
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");
 
@@ -69,4 +76,26 @@ public class Utils {
     }
 
 
+    @Nullable
+    public static Account getCurrentAccount(Context context) {
+        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final String currentAccountName = prefs.getString(KEY_CURRENT_ACCOUNT, null);
+        if (TextUtils.isEmpty(currentAccountName)) return null;
+        final AccountManager am = AccountManager.get(context);
+        for (Account account : am.getAccountsByType(ACCOUNT_TYPE)) {
+            if (currentAccountName.equals(account.name)) return account;
+        }
+        return null;
+    }
+
+    public static void setCurrentAccount(Context context, Account account) {
+        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = prefs.edit();
+        if (account != null) {
+            editor.putString(KEY_CURRENT_ACCOUNT, account.name);
+        } else {
+            editor.remove(KEY_CURRENT_ACCOUNT);
+        }
+        editor.apply();
+    }
 }
