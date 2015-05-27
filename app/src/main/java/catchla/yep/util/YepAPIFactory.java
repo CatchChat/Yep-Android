@@ -1,6 +1,7 @@
 package catchla.yep.util;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Pair;
 
@@ -25,12 +26,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import catchla.yep.Constants;
 import catchla.yep.util.net.OkHttpRestClient;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class YepAPIFactory {
+public class YepAPIFactory implements Constants {
+
+    public static YepAPI getInstance(Context context, Account account) {
+        if (account == null) return null;
+        final AccountManager am = AccountManager.get(context);
+        return getInstance(am.peekAuthToken(account, AUTH_TOKEN_TYPE));
+    }
 
     public static YepAPI getInstance(String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
@@ -76,7 +84,4 @@ public class YepAPIFactory {
         return factory.build(YepAPI.class);
     }
 
-    public static YepAPI getInstance(final Context context, final Account account) {
-        return getInstance(null);
-    }
 }

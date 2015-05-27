@@ -17,7 +17,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ChatsListFragment;
-import catchla.yep.fragment.ExploreFragment;
+import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         mMainContent.setColor(primaryColor);
         mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, null);
         mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, null);
-        mAdapter.addTab(ExploreFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
+        mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
     }

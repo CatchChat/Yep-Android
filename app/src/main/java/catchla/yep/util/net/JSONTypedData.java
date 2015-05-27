@@ -15,7 +15,7 @@ public class JSONTypedData extends StringTypedData {
 
     private static final ContentType CONTENT_TYPE = ContentType.parse("application/json");
 
-    JSONTypedData(JSONObject json) {
+    public JSONTypedData(JSONObject json) {
         super(json.toString(), Charset.defaultCharset());
     }
 

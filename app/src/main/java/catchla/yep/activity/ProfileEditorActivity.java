@@ -2,6 +2,10 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -38,13 +42,30 @@ public class ProfileEditorActivity extends ContentActivity {
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final AccountManager am = AccountManager.get(ProfileEditorActivity.this);
-                am.removeAccountExplicitly(account);
-                final Intent intent = new Intent(ProfileEditorActivity.this, WelcomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                final LogoutConfirmDialogFragment df = new LogoutConfirmDialogFragment();
+                df.show(getFragmentManager(), "logout_confirm");
             }
         });
+    }
+
+    public static class LogoutConfirmDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    final AccountManager am = AccountManager.get(getActivity());
+                    final Account account = Utils.getCurrentAccount(getActivity());
+                    am.removeAccountExplicitly(account);
+                    final Intent intent = new Intent(getActivity(), WelcomeActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, null);
+            return builder.create();
+        }
     }
 
     @Override
