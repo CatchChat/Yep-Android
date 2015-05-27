@@ -22,8 +22,10 @@ import android.view.MenuItem;
 import catchla.yep.R;
 import catchla.yep.fragment.UserFragment;
 import catchla.yep.graphic.ActionBarColorDrawable;
+import catchla.yep.model.User;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;
@@ -42,6 +44,14 @@ public class UserActivity extends SwipeBackContentActivity implements HeaderDraw
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final User currentUser = Utils.getCurrentAccountUser(this);
+
+        if (currentUser == null) {
+            finish();
+            return;
+        }
+
         final ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
@@ -64,7 +74,7 @@ public class UserActivity extends SwipeBackContentActivity implements HeaderDraw
 
         topChanged(0);
 
-        setTitle("Kevin Zhow");
+        setTitle(currentUser.getNickname());
     }
 
     @Override
@@ -141,6 +151,11 @@ public class UserActivity extends SwipeBackContentActivity implements HeaderDraw
         if (fragment instanceof IExtendedView.OnFitSystemWindowsListener) {
             ((IExtendedView.OnFitSystemWindowsListener) fragment).onFitSystemWindows(insets);
         }
+    }
+
+    @Override
+    protected boolean isTintBarEnabled() {
+        return false;
     }
 
     private static class ActionBarDrawable extends LayerDrawable {

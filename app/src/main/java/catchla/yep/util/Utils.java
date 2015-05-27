@@ -9,7 +9,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import catchla.yep.Constants;
+import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -86,6 +86,24 @@ public class Utils implements Constants {
             if (currentAccountName.equals(account.name)) return account;
         }
         return null;
+    }
+
+    @Nullable
+    public static User getCurrentAccountUser(Context context) {
+        return getAccountUser(context, getCurrentAccount(context));
+    }
+
+    @Nullable
+    public static User getAccountUser(Context context, Account account) {
+        if (account == null) return null;
+        final AccountManager am = AccountManager.get(context);
+        final User user = new User();
+        user.setId(am.getUserData(account, USER_DATA_ID));
+        user.setNickname(am.getUserData(account, USER_DATA_NICKNAME));
+        user.setAvatarUrl(am.getUserData(account, USER_DATA_AVATAR));
+        user.setPhoneCode(am.getUserData(account, USER_DATA_COUNTRY_CODE));
+        user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
+        return user;
     }
 
     public static void setCurrentAccount(Context context, Account account) {

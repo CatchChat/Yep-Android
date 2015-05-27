@@ -18,8 +18,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
+import com.squareup.picasso.Picasso;
+
 import catchla.yep.R;
+import catchla.yep.model.User;
 import catchla.yep.util.MathUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.UserHeaderSpaceLayout;
 import catchla.yep.view.iface.IExtendedView;
@@ -37,6 +41,11 @@ public class UserFragment extends Fragment implements HeaderDrawerLayout.DrawerC
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mHeaderDrawerLayout.setDrawerCallback(this);
+
+        final User user = Utils.getCurrentAccountUser(getActivity());
+        if (user != null) {
+            Picasso.with(getActivity()).load(user.getAvatarUrl()).into(mProfileImageView);
+        }
     }
 
     @Override

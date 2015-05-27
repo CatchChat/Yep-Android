@@ -23,6 +23,8 @@ public interface Constants {
     String USER_DATA_AVATAR = "avatar";
     String USER_DATA_NICKNAME = "nickname";
     String USER_DATA_USERNAME = "username";
+    String USER_DATA_PHONE_NUMBER = "phone_number";
+    String USER_DATA_COUNTRY_CODE = "country_code";
 
     String EXTRA_RESID = "resid";
     String EXTRA_TOKEN = "token";

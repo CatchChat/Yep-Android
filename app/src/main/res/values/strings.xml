@@ -43,4 +43,5 @@
     <string name="register_name_hint">What\'s your name?</string>
     <string name="register_verify_code_hint">Verify code</string>
     <string name="unable_to_verify_phone">Unable to verify phone</string>
+    <string name="logout">Logout</string>
 </resources>

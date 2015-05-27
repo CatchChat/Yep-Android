@@ -29,9 +29,13 @@ public class ContentActivity extends AppCompatActivity {
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
     }
 
+    protected boolean isTintBarEnabled() {
+        return true;
+    }
+
     private void setupTintStatusBar() {
         final ActionBar actionBar = getSupportActionBar();
-        if (mMainContent == null || actionBar == null) return;
+        if (mMainContent == null || actionBar == null || !isTintBarEnabled()) return;
 
         final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true));

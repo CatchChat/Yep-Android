@@ -75,6 +75,8 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
                 userData.putString(USER_DATA_AVATAR, user.getAvatarUrl());
                 userData.putString(USER_DATA_NICKNAME, user.getNickname());
                 userData.putString(USER_DATA_USERNAME, user.getUsername());
+                userData.putString(USER_DATA_PHONE_NUMBER, user.getMobile());
+                userData.putString(USER_DATA_COUNTRY_CODE, user.getPhoneCode());
                 final AccountManager am = AccountManager.get(this);
                 am.addAccountExplicitly(account, null, userData);
                 am.setAuthToken(account, AUTH_TOKEN_TYPE, token.getAccessToken());
