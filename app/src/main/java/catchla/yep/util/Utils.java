@@ -103,6 +103,7 @@ public class Utils implements Constants {
         user.setAvatarUrl(am.getUserData(account, USER_DATA_AVATAR));
         user.setPhoneCode(am.getUserData(account, USER_DATA_COUNTRY_CODE));
         user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
+        user.setIntroduction(am.getUserData(account, USER_DATA_INTRODUCTION));
         return user;
     }
 

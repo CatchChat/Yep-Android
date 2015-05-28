@@ -1,69 +1,31 @@
 package catchla.yep.model;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import catchla.yep.util.net.JSONTypedData;
+import org.mariotaku.restfu.http.SimpleValueMap;
 
 /**
  * Created by mariotaku on 15/5/27.
  */
-public class DiscoverQuery extends JSONTypedData {
-    DiscoverQuery(final JSONObject json) {
-        super(json);
+public class DiscoverQuery extends SimpleValueMap {
+
+
+    public DiscoverQuery page(int page) {
+        put("page", page);
+        return this;
     }
 
-    public static class Builder {
 
-        private final JSONObject jsonObject = new JSONObject();
+    public DiscoverQuery perPage(int perPage) {
+        put("per_page", perPage);
+        return this;
+    }
 
-        public Builder masterSkills(String[] masterSkills) {
-            final JSONArray array = new JSONArray();
-            for (String skill : masterSkills) {
-                array.put(skill);
-            }
-            try {
-                jsonObject.put("master_skills", array);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            return this;
-        }
+    public DiscoverQuery masterSkills(final String[] strings) {
+        put("master_skills", strings);
+        return this;
+    }
 
-        public Builder learningSkills(String[] learningSkills) {
-            final JSONArray array = new JSONArray();
-            for (String skill : learningSkills) {
-                array.put(skill);
-            }
-            try {
-                jsonObject.put("learning_skills", array);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            return this;
-        }
-
-        public Builder page(int page) {
-            try {
-                jsonObject.put("page", page);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            return this;
-        }
-
-        public Builder prePage(int pre_page) {
-            try {
-                jsonObject.put("pre_page", pre_page);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            return this;
-        }
-
-        public DiscoverQuery build() {
-            return new DiscoverQuery(jsonObject);
-        }
+    public DiscoverQuery learningSkills(final String[] strings) {
+        put("learning_skills", strings);
+        return this;
     }
 }

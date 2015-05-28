@@ -17,7 +17,7 @@ import catchla.yep.view.holder.ChatEntryViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListAdapter extends RecyclerView.Adapter implements ILoadMoreSupportAdapter {
+public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
 

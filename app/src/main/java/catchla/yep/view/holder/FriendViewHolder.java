@@ -10,9 +10,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import catchla.yep.R;
 import catchla.yep.activity.ChatActivity;
 import catchla.yep.adapter.FriendsListAdapter;
+import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -21,7 +24,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
     private final ImageView profileImageView;
     private final TextView nameView, timeView, descriptionView;
 
-    public FriendViewHolder(final FriendsListAdapter adapter, View itemView) {
+    public FriendViewHolder(final RecyclerView.Adapter<RecyclerView.ViewHolder> adapter, View itemView) {
         super(itemView);
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
@@ -40,5 +43,12 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
         nameView.setText(name);
         timeView.setText(time);
         descriptionView.setText(message);
+    }
+
+    public void displayUser(final User user) {
+        Picasso.with(profileImageView.getContext()).load(user.getAvatarUrl()).into(profileImageView);
+        nameView.setText(user.getNickname());
+//        timeView.setText();
+        descriptionView.setText(user.getIntroduction());
     }
 }

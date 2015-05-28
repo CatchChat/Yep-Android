@@ -23,6 +23,7 @@ import org.mariotaku.restfu.http.mime.TypedData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,7 @@ public class YepAPIFactory implements Constants {
         return getInstance(am.peekAuthToken(account, AUTH_TOKEN_TYPE));
     }
 
-    public static YepAPI getInstance(String accessToken) {
+    public static YepAPI getInstance(final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
         factory.setEndpoint(new Endpoint("http://park-staging.catchchatchina.com/api/"));
         final OkHttpClient client = new OkHttpClient();
@@ -62,6 +63,9 @@ public class YepAPIFactory implements Constants {
                 final Map<String, Object> extras = methodInfo.getExtras();
 
                 headers.add(Pair.create("Accept", "application/json"));
+                if (accessToken!= null)
+                headers.add(Pair.create("Authorization",
+                        String.format(Locale.ROOT, "Token token=\"%s\"", accessToken)));
 
                 return new RestRequestInfo(method.value(), path, queries, forms, headers, parts, file,
                         methodInfo.getBody(), extras);

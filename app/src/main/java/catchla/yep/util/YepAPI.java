@@ -7,6 +7,7 @@ import org.mariotaku.restfu.annotation.method.PUT;
 import org.mariotaku.restfu.annotation.param.Body;
 import org.mariotaku.restfu.annotation.param.File;
 import org.mariotaku.restfu.annotation.param.Form;
+import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.http.BodyType;
 
 import catchla.yep.model.AccessToken;
@@ -59,8 +60,7 @@ public interface YepAPI {
     @GET("/v1/user")
     User getUser() throws YepException;
 
-    @POST("/v1/user/discover")
-    @Body(BodyType.FILE)
-    PagedUsers getDiscover(@File DiscoverQuery query) throws YepException;
+    @GET("/v1/user/discover")
+    PagedUsers getDiscover(@Query DiscoverQuery query) throws YepException;
 }
 
