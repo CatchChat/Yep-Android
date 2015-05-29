@@ -9,17 +9,24 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.TypedValue;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import catchla.yep.Constants;
 import catchla.yep.model.User;
+import io.realm.Realm;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -93,6 +100,25 @@ public class Utils implements Constants {
         return getAccountUser(context, getCurrentAccount(context));
     }
 
+
+    @NonNull
+    public static Realm getRealmForAccount(@NonNull Context context, @NonNull Account account) {
+        return getRealmForAccountInternal(context, account, false);
+    }
+
+
+    public static Realm getRealmForAccountInternal(@NonNull Context context, @NonNull Account account, boolean migrated) {
+        final File databaseDir = context.getFilesDir();
+        final String databaseName = String.format(Locale.ROOT, "account_db_%s", account.name);
+        try {
+            return Realm.getInstance(databaseDir, databaseName);
+        } catch (RealmMigrationNeededException e) {
+            if (migrated) throw e;
+            Realm.migrateRealmAtPath(new File(databaseDir, databaseName).getAbsolutePath(), new YepMigration());
+            return getRealmForAccountInternal(context, account, true);
+        }
+    }
+
     @Nullable
     public static User getAccountUser(Context context, Account account) {
         if (account == null) return null;
@@ -116,5 +142,13 @@ public class Utils implements Constants {
             editor.remove(KEY_CURRENT_ACCOUNT);
         }
         editor.apply();
+    }
+
+    public static void closeSilently(final Closeable is) {
+        if (is == null) return;
+        try {
+            is.close();
+        } catch (IOException ignored) {
+        }
     }
 }

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,16 +24,20 @@ import android.widget.TextView;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.picasso.Picasso;
 
+import org.apmem.tools.layouts.FlowLayout;
+
 import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.UserHeaderSpaceLayout;
 import catchla.yep.view.iface.IExtendedView;
+import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -44,6 +49,7 @@ public class UserFragment extends Fragment implements Constants,
     private ImageView mProfileImageView;
     private UserHeaderSpaceLayout mHeaderSpaceLayout;
     private TextView mIntroductionView;
+    private FlowLayout mMasterSkills, mLearningSkills;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -69,6 +75,22 @@ public class UserFragment extends Fragment implements Constants,
             } else {
                 mIntroductionView.setText(introduction);
             }
+            final RealmList<Skill> learningSkills = user.getLearningSkills();
+            if (learningSkills != null) {
+                for (Skill skill : learningSkills) {
+                    final Button button = new Button(getActivity());
+                    button.setText(skill.getNameString());
+                    mLearningSkills.addView(button);
+                }
+            }
+            final RealmList<Skill> masterSkills = user.getMasterSkills();
+            if (masterSkills != null) {
+                for (Skill skill : masterSkills) {
+                    final Button button = new Button(getActivity());
+                    button.setText(skill.getNameString());
+                    mMasterSkills.addView(button);
+                }
+            }
         }
     }
 
@@ -80,6 +102,8 @@ public class UserFragment extends Fragment implements Constants,
         mProfileImageView = (ImageView) view.findViewById(R.id.profile_image);
         mHeaderSpaceLayout = ((UserHeaderSpaceLayout) view.findViewById(R.id.header_space));
         mIntroductionView = (TextView) view.findViewById(R.id.introduction);
+        mMasterSkills = (FlowLayout) view.findViewById(R.id.master_skills);
+        mLearningSkills = (FlowLayout) view.findViewById(R.id.learning_skills);
     }
 
     @Nullable

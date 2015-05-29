@@ -14,6 +14,7 @@ import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.PagedFriendships;
+import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
@@ -62,9 +63,12 @@ public interface YepAPI {
     User getUser() throws YepException;
 
     @GET("/v1/user/discover")
-    PagedUsers getDiscover(@Query DiscoverQuery query) throws YepException;
+    PagedUsers getDiscover(@Query DiscoverQuery query, @Query Paging paging) throws YepException;
 
     @GET("/v1/friendships")
     PagedFriendships getFriendships(@Query Paging paging) throws YepException;
+
+    @GET("/v1/messages/unread")
+    PagedMessages getUnreadMessages(@Query Paging paging) throws YepException;
 }
 

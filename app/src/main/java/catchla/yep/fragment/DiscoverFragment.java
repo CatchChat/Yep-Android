@@ -40,6 +40,8 @@ import catchla.yep.util.Utils;
 public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
 
+    private static final java.lang.String EXTRA_READ_CACHE = "read_cache";
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -54,7 +56,9 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
                 + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
         itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
         recyclerView.addItemDecoration(itemDecoration);
-        getLoaderManager().initLoader(0, null, this);
+        final Bundle args = new Bundle();
+        args.putBoolean(EXTRA_READ_CACHE, true);
+        getLoaderManager().initLoader(0, args, this);
         getAdapter().setClickListener(this);
         showProgress();
     }
@@ -63,8 +67,8 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
         final DiscoverQuery query = new DiscoverQuery();
-        query.masterSkills(new String[]{"ios"});
-        return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query);
+        final boolean readCache = args != null && args.getBoolean(EXTRA_READ_CACHE);
+        return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query, readCache, true);
     }
 
     @Override

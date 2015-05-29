@@ -8,6 +8,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import catchla.yep.util.collection.EmptyIterator;
 
@@ -18,7 +19,7 @@ import catchla.yep.util.collection.EmptyIterator;
 public class PagedUsers extends AbstractCollection<User> {
 
     @JsonField(name = "users")
-    ArrayList<User> users;
+    List<User> users;
     @JsonField(name = "current_page")
     int currentPage;
     @JsonField(name = "per_page")
@@ -41,5 +42,21 @@ public class PagedUsers extends AbstractCollection<User> {
 
     public User get(final int position) {
         return users.get(position);
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }
