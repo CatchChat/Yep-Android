@@ -14,7 +14,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.TypedValue;
+
+import com.squareup.otto.Bus;
 
 import java.io.Closeable;
 import java.io.File;
@@ -36,6 +40,7 @@ public class Utils implements Constants {
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");
 
     public static final Pattern PATTERN_RESOURCE_IDENTIFIER = Pattern.compile("@([\\w_]+)/([\\w_]+)");
+    private static Bus sMessageBus;
 
     public static int getInsetsTopWithoutActionBarHeight(Context context, int top) {
         final int actionBarHeight;
@@ -150,5 +155,20 @@ public class Utils implements Constants {
             is.close();
         } catch (IOException ignored) {
         }
+    }
+
+    public static String formatSameDayTime(final Context context, final long timestamp) {
+        if (context == null) return null;
+        if (DateUtils.isToday(timestamp))
+            //noinspection deprecation
+            return DateUtils.formatDateTime(context, timestamp,
+                    DateFormat.is24HourFormat(context) ? DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_24HOUR
+                            : DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_12HOUR);
+        return DateUtils.formatDateTime(context, timestamp, DateUtils.FORMAT_SHOW_DATE);
+    }
+
+    public static Bus getMessageBus() {
+        if (sMessageBus != null) return sMessageBus;
+        return sMessageBus = new Bus();
     }
 }

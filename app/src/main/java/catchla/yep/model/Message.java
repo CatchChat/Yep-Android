@@ -35,6 +35,8 @@ public class Message extends RealmObject {
     @JsonField(name = "circle")
     private Circle circle;
 
+    private String conversationId;
+
     public String getMediaType() {
         return mediaType;
     }
@@ -105,6 +107,14 @@ public class Message extends RealmObject {
 
     public void setCircle(final Circle circle) {
         this.circle = circle;
+    }
+
+    public String getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(final String conversationId) {
+        this.conversationId = conversationId;
     }
 
     public interface RecipientType {

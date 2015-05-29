@@ -8,8 +8,10 @@ import android.util.Log;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.squareup.otto.Bus;
 
 import catchla.yep.Constants;
+import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.PagedMessages;
@@ -73,6 +75,7 @@ public class MessageService extends Service implements Constants {
                             } else {
                                 throw new UnsupportedOperationException();
                             }
+                            message.setConversationId(conversationId);
                             query.equalTo("id", conversationId);
                             Conversation conversation = query.findFirst();
                             if (conversation == null) {
@@ -106,6 +109,8 @@ public class MessageService extends Service implements Constants {
 
             @Override
             public void callback(final MessageService handler, final TaskResponse<Boolean> result) {
+                final Bus bus = Utils.getMessageBus();
+                bus.post(new MessageRefreshedEvent());
                 super.callback(handler, result);
             }
         };

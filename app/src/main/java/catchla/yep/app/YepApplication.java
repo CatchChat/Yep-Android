@@ -2,6 +2,8 @@ package catchla.yep.app;
 
 import android.app.Application;
 
+import com.squareup.otto.Bus;
+
 import catchla.yep.util.DebugModeUtils;
 
 /**
@@ -14,4 +16,5 @@ public class YepApplication extends Application {
         super.onCreate();
         DebugModeUtils.initForApplication(this);
     }
+
 }

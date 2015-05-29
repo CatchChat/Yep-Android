@@ -20,6 +20,8 @@ import android.view.MenuInflater;
 import android.view.View;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 
@@ -30,6 +32,7 @@ import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.ConversationsLoader;
+import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.service.MessageService;
 import catchla.yep.util.Utils;
@@ -61,7 +64,8 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
                 final Conversation conversation = getAdapter().getConversation(position);
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
                 try {
-                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.serialize(conversation));
+                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.mapperFor(Conversation.class)
+                            .serialize(conversation));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -70,6 +74,26 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
         });
         getLoaderManager().initLoader(0, null, this);
         showProgress();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Bus bus = Utils.getMessageBus();
+        bus.register(this);
+    }
+
+    @Override
+    public void onStop() {
+        Bus bus = Utils.getMessageBus();
+        bus.unregister(this);
+        super.onStop();
+    }
+
+    @Subscribe
+    public void onMessageRefreshed(MessageRefreshedEvent event) {
+        setRefreshing(false);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @NonNull
