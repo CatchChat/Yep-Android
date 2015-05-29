@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015. Catch Inc,
   -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView
     android:id="@+id/scroll_view"
-    android:background="?android:colorBackground"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="@dimen/element_spacing_large">
 
         <TextView
+            android:id="@+id/introduction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="I know how to code and design, come to my bed and I will teach you." />
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/element_spacing_large"
             android:text="@string/label_master"
-            android:textAppearance="?android:textAppearanceLarge" />
+            android:textAppearance="?android:textAppearanceLarge"/>
 
         <org.apmem.tools.layouts.FlowLayout
             android:layout_width="match_parent"
@@ -32,17 +34,17 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="iOS" />
+                android:text="iOS"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Blender" />
+                android:text="Blender"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Design" />
+                android:text="Design"/>
 
         </org.apmem.tools.layouts.FlowLayout>
 
@@ -51,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/element_spacing_large"
             android:text="@string/label_learning"
-            android:textAppearance="?android:textAppearanceLarge" />
+            android:textAppearance="?android:textAppearanceLarge"/>
 
         <org.apmem.tools.layouts.FlowLayout
             android:layout_width="match_parent"
@@ -60,19 +62,19 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Piano" />
+                android:text="Piano"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Android" />
+                android:text="Android"/>
         </org.apmem.tools.layouts.FlowLayout>
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dignissim elit eget dui interdum ultrices. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc fringilla sodales aliquet. Aliquam ac gravida lacus, sed scelerisque lectus. Nulla dictum massa lacus, non consectetur sapien dignissim quis. Vivamus facilisis sapien in egestas rutrum. Proin laoreet fermentum lectus, nec porta erat tristique in. Vestibulum laoreet cursus vulputate. Nam placerat in justo eget scelerisque.
 
-Integer nibh orci, porttitor vitae varius id, consequat non dui. Duis tempus ut arcu at ullamcorper. Donec pulvinar eu tortor sed molestie. Fusce tristique convallis vehicula. Donec accumsan, lectus convallis ultrices iaculis, dui lorem dapibus dolor, quis posuere urna felis eget leo. Phasellus condimentum lorem purus, quis imperdiet ex finibus in. Aenean maximus gravida lorem, sit amet gravida lectus convallis quis. Aliquam vel lacus tortor. Fusce dolor libero, condimentum eget justo nec, blandit posuere ante. Proin non tristique ipsum, quis euismod odio. Vivamus maximus consequat blandit. Proin eu nunc ut augue scelerisque imperdiet. Morbi interdum elit auctor lorem vulputate, tempor sagittis ante egestas. Nam at condimentum magna. Sed blandit mollis ipsum non mollis. Nullam non faucibus purus."
-            android:layout_height="wrap_content" />
+Integer nibh orci, porttitor vitae varius id, consequat non dui. Duis tempus ut arcu at ullamcorper. Donec pulvinar eu tortor sed molestie. Fusce tristique convallis vehicula. Donec accumsan, lectus convallis ultrices iaculis, dui lorem dapibus dolor, quis posuere urna felis eget leo. Phasellus condimentum lorem purus, quis imperdiet ex finibus in. Aenean maximus gravida lorem, sit amet gravida lectus convallis quis. Aliquam vel lacus tortor. Fusce dolor libero, condimentum eget justo nec, blandit posuere ante. Proin non tristique ipsum, quis euismod odio. Vivamus maximus consequat blandit. Proin eu nunc ut augue scelerisque imperdiet. Morbi interdum elit auctor lorem vulputate, tempor sagittis ante egestas. Nam at condimentum magna. Sed blandit mollis ipsum non mollis. Nullam non faucibus purus."/>
     </LinearLayout>
 </ScrollView>

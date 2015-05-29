@@ -14,11 +14,17 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
+import java.io.IOException;
+
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.UserFragment;
 import catchla.yep.graphic.ActionBarColorDrawable;
@@ -30,7 +36,8 @@ import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;
 
-public class UserActivity extends SwipeBackContentActivity implements HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
+public class UserActivity extends SwipeBackContentActivity implements Constants,
+        HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
 
     private TintedStatusFrameLayout mMainContent;
     private ActionBarDrawable mActionBarBackground;
@@ -45,7 +52,20 @@ public class UserActivity extends SwipeBackContentActivity implements HeaderDraw
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final User currentUser = Utils.getCurrentAccountUser(this);
+        final User currentUser;
+        final Intent intent = getIntent();
+        final Bundle fragmentArgs = new Bundle();
+        if (intent.hasExtra(EXTRA_USER)) {
+            final String value = intent.getStringExtra(EXTRA_USER);
+            fragmentArgs.putString(EXTRA_USER, value);
+            try {
+                currentUser = LoganSquare.parse(value, User.class);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            currentUser = Utils.getCurrentAccountUser(this);
+        }
 
         if (currentUser == null) {
             finish();
@@ -70,7 +90,9 @@ public class UserActivity extends SwipeBackContentActivity implements HeaderDraw
         mActionBarBackground.setColor(primaryColor);
         mMainContent.setColor(primaryColor);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, new UserFragment()).commit();
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.main_content, Fragment.instantiate(this, UserFragment.class.getName(), fragmentArgs));
+        ft.commit();
 
         topChanged(0);
 

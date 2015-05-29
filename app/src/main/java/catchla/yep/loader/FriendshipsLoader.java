@@ -3,18 +3,14 @@ package catchla.yep.loader;
 import android.accounts.Account;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import catchla.yep.Constants;
-import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.PagedFriendships;
-import catchla.yep.model.PagedUsers;
+import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
-import catchla.yep.model.User;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
@@ -22,23 +18,23 @@ import catchla.yep.util.YepException;
 /**
  * Created by mariotaku on 15/5/27.
  */
-public class DiscoverLoader extends AsyncTaskLoader<TaskResponse<List<User>>> implements Constants {
+public class FriendshipsLoader extends AsyncTaskLoader<TaskResponse<List<Friendship>>> {
 
     private final Account mAccount;
-    private final DiscoverQuery mQuery;
+    private final Paging mPaging;
 
-    public DiscoverLoader(Context context, Account account, DiscoverQuery query) {
+    public FriendshipsLoader(Context context, Account account, Paging paging) {
         super(context);
         mAccount = account;
-        mQuery = query;
+        mPaging = paging;
     }
 
     @Override
-    public TaskResponse<List<User>> loadInBackground() {
+    public TaskResponse<List<Friendship>> loadInBackground() {
         final YepAPI yep = YepAPIFactory.getInstance(getContext(), mAccount);
         try {
-            final PagedUsers friendships = yep.getDiscover(mQuery);
-            final List<User> list = new ArrayList<>();
+            final PagedFriendships friendships = yep.getFriendships(mPaging);
+            final List<Friendship> list = new ArrayList<>();
             list.addAll(friendships);
             return TaskResponse.getInstance(list);
         } catch (YepException e) {

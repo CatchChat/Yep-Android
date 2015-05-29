@@ -7,6 +7,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import catchla.yep.util.collection.EmptyIterator;
@@ -15,10 +16,10 @@ import catchla.yep.util.collection.EmptyIterator;
  * Created by mariotaku on 15/5/27.
  */
 @JsonObject
-public class PagedUsers extends AbstractCollection<User> {
+public class PagedFriendships extends AbstractCollection<Friendship> implements Iterable<Friendship> {
 
-    @JsonField(name = "users")
-    ArrayList<User> users;
+    @JsonField(name = "friendships")
+    ArrayList<Friendship> friendships;
     @JsonField(name = "current_page")
     int currentPage;
     @JsonField(name = "per_page")
@@ -28,18 +29,18 @@ public class PagedUsers extends AbstractCollection<User> {
 
     @NonNull
     @Override
-    public Iterator<User> iterator() {
-        if (users == null) return new EmptyIterator<>();
-        return users.iterator();
+    public Iterator<Friendship> iterator() {
+        if (friendships == null) return new EmptyIterator<>();
+        return friendships.iterator();
     }
 
     @Override
     public int size() {
-        if (users == null) return 0;
-        return users.size();
+        if (friendships == null) return 0;
+        return friendships.size();
     }
 
-    public User get(final int position) {
-        return users.get(position);
+    public Friendship get(final int position) {
+        return friendships.get(position);
     }
 }

@@ -45,6 +45,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import catchla.yep.util.DebugModeUtils;
 import okio.BufferedSink;
 
 /**
@@ -60,6 +61,7 @@ public class OkHttpRestClient implements RestHttpClient {
 
     public OkHttpRestClient(OkHttpClient client) {
         this.client = client;
+        DebugModeUtils.initForHttpClient(client);
     }
 
     @NonNull

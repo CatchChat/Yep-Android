@@ -7,7 +7,6 @@ import org.mariotaku.restfu.http.SimpleValueMap;
  */
 public class DiscoverQuery extends SimpleValueMap {
 
-
     public DiscoverQuery page(int page) {
         put("page", page);
         return this;

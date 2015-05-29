@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
-import catchla.yep.model.PagedUsers;
+import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.model.User;
 import catchla.yep.view.holder.FriendViewHolder;
 
 /**
@@ -22,16 +25,23 @@ public class DiscoverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int ITEM_VIEW_TYPE_DISCOVER_ITEM = 1;
     private final LayoutInflater mInflater;
 
-    private PagedUsers mData;
+    public void setClickListener(final ItemClickListener listener) {
+        this.mClickListener = listener;
+    }
+
+    private ItemClickListener mClickListener;
+
+    private List<User> mData;
 
     public DiscoverAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(this, view);
+        return new FriendViewHolder(mClickListener, view);
     }
 
     @Override
@@ -76,8 +86,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    public void setData(final PagedUsers data) {
+    public void setData(final List<User> data) {
         mData = data;
         notifyDataSetChanged();
+    }
+
+    public User getUser(final int position) {
+        return mData.get(position);
     }
 }

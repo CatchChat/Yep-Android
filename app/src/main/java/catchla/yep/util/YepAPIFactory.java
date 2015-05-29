@@ -63,9 +63,9 @@ public class YepAPIFactory implements Constants {
                 final Map<String, Object> extras = methodInfo.getExtras();
 
                 headers.add(Pair.create("Accept", "application/json"));
-                if (accessToken!= null)
-                headers.add(Pair.create("Authorization",
-                        String.format(Locale.ROOT, "Token token=\"%s\"", accessToken)));
+                if (accessToken != null)
+                    headers.add(Pair.create("Authorization",
+                            String.format(Locale.ROOT, "Token token=\"%s\"", accessToken)));
 
                 return new RestRequestInfo(method.value(), path, queries, forms, headers, parts, file,
                         methodInfo.getBody(), extras);
@@ -76,7 +76,11 @@ public class YepAPIFactory implements Constants {
             public Exception newException(final Throwable cause, final RestHttpRequest request, final RestHttpResponse response) {
                 YepException exception;
                 try {
-                    exception = LoganSquare.parse(response.getBody().stream(), YepException.class);
+                    if (response != null) {
+                        exception = LoganSquare.parse(response.getBody().stream(), YepException.class);
+                    } else {
+                        exception = new YepException(cause);
+                    }
                 } catch (IOException e) {
                     exception = new YepException(cause);
                 }

@@ -5,7 +5,6 @@ import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
 import org.mariotaku.restfu.annotation.param.Body;
-import org.mariotaku.restfu.annotation.param.File;
 import org.mariotaku.restfu.annotation.param.Form;
 import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.http.BodyType;
@@ -14,7 +13,9 @@ import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
+import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedUsers;
+import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.User;
 import catchla.yep.model.VerificationMethod;
@@ -62,5 +63,8 @@ public interface YepAPI {
 
     @GET("/v1/user/discover")
     PagedUsers getDiscover(@Query DiscoverQuery query) throws YepException;
+
+    @GET("/v1/friendships")
+    PagedFriendships getFriendships(@Query Paging paging) throws YepException;
 }
 

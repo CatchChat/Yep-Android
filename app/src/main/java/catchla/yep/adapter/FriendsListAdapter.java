@@ -10,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
+import catchla.yep.model.Friendship;
 import catchla.yep.view.holder.FriendViewHolder;
 
 /**
@@ -21,14 +24,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
 
-    private static final int[] SAMPLE_PROFILE_IMAGES = {R.drawable.ic_profile_image_kevin,
-            R.drawable.ic_profile_image_ray, R.drawable.ic_profile_image_jony, R.drawable.ic_profile_image_sakura};
-    private static final String[] SAMPLE_PROFILE_NAMES = {"Kevin", "Ray", "Jony", "さくら"};
-    private static final String[] SAMPLE_PROFILE_TIMES = {"100m | just now", "500m | 2 min", "1km | 1h", "1.2 | 1d"};
-    private static final String[] SAMPLE_PROFILE_DESCRIPTIONS = {"Full-stack developer",
-            "Designer & Developer",
-            "Designer at Apple",
-            "ございございございござい"};
+    private List<Friendship> mData;
 
     public FriendsListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -37,7 +33,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(this, view);
+        return new FriendViewHolder(null, view);
     }
 
     @Override
@@ -50,9 +46,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (getItemViewType(position)) {
             case ITEM_VIEW_TYPE_CHAT_ENTRY: {
                 final FriendViewHolder chatEntryViewHolder = (FriendViewHolder) holder;
-                chatEntryViewHolder.displaySample(SAMPLE_PROFILE_IMAGES[position],
-                        SAMPLE_PROFILE_NAMES[position], SAMPLE_PROFILE_TIMES[position],
-                        SAMPLE_PROFILE_DESCRIPTIONS[position]);
+                chatEntryViewHolder.displayFriendship(mData.get(position));
                 break;
             }
         }
@@ -60,7 +54,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return SAMPLE_PROFILE_IMAGES.length;
+        if (mData == null) return 0;
+        return mData.size();
     }
 
     @Override
@@ -81,5 +76,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void setLoadMoreSupported(boolean supported) {
 
+    }
+
+    public void setData(final List<Friendship> data) {
+        mData = data;
+        notifyDataSetChanged();
     }
 }
