@@ -5,24 +5,41 @@
 package catchla.yep.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
+import java.io.IOException;
+
+import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.ChatActivity;
 import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
+import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.loader.ConversationsLoader;
+import catchla.yep.model.Conversation;
+import catchla.yep.service.MessageService;
+import catchla.yep.util.Utils;
+import io.realm.RealmResults;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListAdapter> {
+public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListAdapter> implements Constants,
+        LoaderManager.LoaderCallbacks<RealmResults<Conversation>> {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -38,7 +55,21 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
                 + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
         itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
         recyclerView.addItemDecoration(itemDecoration);
-        showContent();
+        getAdapter().setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
+                final Conversation conversation = getAdapter().getConversation(position);
+                final Intent intent = new Intent(getActivity(), ChatActivity.class);
+                try {
+                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.serialize(conversation));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(intent);
+            }
+        });
+        getLoaderManager().initLoader(0, null, this);
+        showProgress();
     }
 
     @NonNull
@@ -62,4 +93,28 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
         return false;
     }
 
+    @Override
+    public Loader<RealmResults<Conversation>> onCreateLoader(final int id, final Bundle args) {
+        return new ConversationsLoader(getActivity(), Utils.getCurrentAccount(getActivity()));
+    }
+
+    @Override
+    public void onLoadFinished(final Loader<RealmResults<Conversation>> loader, final RealmResults<Conversation> data) {
+        getAdapter().setData(data);
+        showContent();
+    }
+
+    @Override
+    public void onLoaderReset(final Loader<RealmResults<Conversation>> loader) {
+        getAdapter().setData(null);
+    }
+
+    @Override
+    public void onRefresh() {
+        super.onRefresh();
+        final FragmentActivity activity = getActivity();
+        final Intent intent = new Intent(activity, MessageService.class);
+        intent.setAction(MessageService.ACTION_REFRESH_MESSAGES);
+        activity.startService(intent);
+    }
 }

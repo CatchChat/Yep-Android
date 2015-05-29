@@ -6,7 +6,6 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.AbstractCollection;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +37,22 @@ public class PagedMessages extends AbstractCollection<Message> {
     public int size() {
         if (messages == null) return 0;
         return messages.size();
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public Message get(final int position) {

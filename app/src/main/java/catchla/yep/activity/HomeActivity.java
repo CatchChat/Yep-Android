@@ -21,6 +21,7 @@ import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
+import catchla.yep.service.MessageService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -98,6 +99,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
+
     }
 
 }

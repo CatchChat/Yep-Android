@@ -75,6 +75,7 @@
             android:label="@string/sign_up"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
 
+        <service android:name=".service.MessageService"/>
         <service
             android:name=".service.AccountService"
             android:exported="false">

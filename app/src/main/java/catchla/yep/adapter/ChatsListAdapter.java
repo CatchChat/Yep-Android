@@ -12,7 +12,10 @@ import android.view.ViewGroup;
 
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
+import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.model.Conversation;
 import catchla.yep.view.holder.ChatEntryViewHolder;
+import io.realm.RealmResults;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -21,16 +24,13 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
 
-    private static final int[] SAMPLE_PROFILE_IMAGES = {R.drawable.ic_profile_image_lucy,
-            R.drawable.ic_profile_image_jony, R.drawable.ic_profile_image_robert, R.drawable.ic_profile_image_sakura,
-            R.drawable.ic_profile_image_kevin};
-    private static final String[] SAMPLE_PROFILE_NAMES = {"Lucy", "Jony", "Robert", "さくら", "Kevin"};
-    private static final String[] SAMPLE_PROFILE_TIMES = {"just now", "2 mins ago", "1 hour ago", "yesterday", "yesterday"};
-    private static final String[] SAMPLE_PROFILE_MESSAGES = {"So we may should meet at 9",
-            "Lets talk about the iOS 10 Design\nWould like to know your idea",
-            "I want you teach me about coding",
-            "おはよごぜいます 🐱あいしてる",
-            "今晚一起去研究Xbox吧，顺便学学Xcode"};
+    private RealmResults<Conversation> mData;
+
+    public void setItemClickListener(final ItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
+    }
+
+    private ItemClickListener mItemClickListener;
 
     public ChatsListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -39,7 +39,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_chat_entry, parent, false);
-        return new ChatEntryViewHolder(this, view);
+        return new ChatEntryViewHolder(mItemClickListener, view);
     }
 
     @Override
@@ -52,9 +52,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         switch (getItemViewType(position)) {
             case ITEM_VIEW_TYPE_CHAT_ENTRY: {
                 ChatEntryViewHolder chatEntryViewHolder = (ChatEntryViewHolder) holder;
-                chatEntryViewHolder.displaySample(SAMPLE_PROFILE_IMAGES[position],
-                        SAMPLE_PROFILE_NAMES[position], SAMPLE_PROFILE_TIMES[position],
-                        SAMPLE_PROFILE_MESSAGES[position]);
+                chatEntryViewHolder.displayConversation(mData.get(position));
                 break;
             }
         }
@@ -62,7 +60,8 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return SAMPLE_PROFILE_IMAGES.length;
+        if (mData == null) return 0;
+        return mData.size();
     }
 
     @Override
@@ -83,5 +82,13 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void setLoadMoreSupported(boolean supported) {
 
+    }
+
+    public void setData(final RealmResults<Conversation> data) {
+        mData = data;
+    }
+
+    public Conversation getConversation(final int position) {
+        return mData.get(position);
     }
 }
