@@ -156,4 +156,10 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity imp
         }
         return mDelegate;
     }
+
+    @Nullable
+    @Override
+    public ActionMode onWindowStartingSupportActionMode(final ActionMode.Callback callback) {
+        return null;
+    }
 }

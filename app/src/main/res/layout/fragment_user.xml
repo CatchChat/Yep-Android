@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015. Catch Inc,
   -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,13 +17,20 @@
             android:id="@+id/profile_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_profile_image_large_kevin" />
+            android:src="@drawable/ic_profile_image_large_kevin"
+            tools:ignore="ContentDescription"/>
     </catchla.yep.view.SquareFrameLayout>
 
-    <catchla.yep.view.HeaderDrawerLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:id="@+id/header_drawer"
-        android:layout_height="match_parent"
-        app:contentLayout="@layout/layout_content_user"
-        app:headerLayout="@layout/layout_header_user" />
+        android:layout_height="match_parent">
+
+        <catchla.yep.view.HeaderDrawerLayout
+            android:id="@+id/header_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentLayout="@layout/layout_content_user"
+            app:headerLayout="@layout/layout_header_user"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

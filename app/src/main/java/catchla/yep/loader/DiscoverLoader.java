@@ -91,8 +91,7 @@ public class DiscoverLoader extends AsyncTaskLoader<TaskResponse<List<User>>> im
             if (!file.exists() || file.length() == 0) throw new FileNotFoundException();
             is = new FileInputStream(file);
             final List<User> data = LoganSquare.parseList(is, User.class);
-            if (data != null && !data.isEmpty())
-                return TaskResponse.getInstance(data);
+            if (data != null) return TaskResponse.getInstance(data);
         } catch (IOException ignored) {
         } finally {
             Utils.closeSilently(is);

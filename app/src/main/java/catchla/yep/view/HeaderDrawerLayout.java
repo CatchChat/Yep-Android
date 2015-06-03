@@ -274,10 +274,20 @@ public class HeaderDrawerLayout extends ViewGroup {
         return mDrawerCallback.shouldLayoutHeaderBottom();
     }
 
+    @Override
+    public boolean canScrollVertically(final int direction) {
+        if (isInEditMode() || mDragCallback == null) return false;
+        if (mDrawerCallback.canScroll(direction)) return true;
+        if (direction < 0) {
+            return getHeaderTop() < getHeaderTopMaximum();
+        }
+        return getHeaderTop() > getHeaderTopMinimum();
+    }
+
     private void updateViewOffset() {
     }
 
-    public static interface DrawerCallback {
+    public interface DrawerCallback {
 
         boolean canScroll(float dy);
 

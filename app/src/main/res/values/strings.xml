@@ -45,4 +45,7 @@
     <string name="unable_to_verify_phone">Unable to verify phone</string>
     <string name="logout">Logout</string>
     <string name="no_introduction_yet">No introduction yet</string>
+    <string name="nickname">Nickname</string>
+    <string name="introduction">Introduction</string>
+    <string name="skill">Skill</string>
 </resources>

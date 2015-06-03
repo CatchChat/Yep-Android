@@ -23,32 +23,44 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/element_spacing_large"
             android:layout_marginTop="@dimen/element_spacing_large"
             android:text="@string/label_master"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"
+            android:textStyle="bold"/>
 
         <org.apmem.tools.layouts.FlowLayout
-            android:layout_width="match_parent"
             android:id="@+id/master_skills"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/element_spacing_large"
             android:layout_marginTop="@dimen/element_spacing_large"
             android:text="@string/label_learning"
-            android:textAppearance="?android:textAppearanceLarge"/>
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"
+            android:textStyle="bold"/>
 
         <org.apmem.tools.layouts.FlowLayout
-            android:layout_width="match_parent"
             android:id="@+id/learning_skills"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <TextView
+        <View
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dignissim elit eget dui interdum ultrices. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc fringilla sodales aliquet. Aliquam ac gravida lacus, sed scelerisque lectus. Nulla dictum massa lacus, non consectetur sapien dignissim quis. Vivamus facilisis sapien in egestas rutrum. Proin laoreet fermentum lectus, nec porta erat tristique in. Vestibulum laoreet cursus vulputate. Nam placerat in justo eget scelerisque.
+            android:layout_margin="@dimen/element_spacing_normal"
+            android:background="?dividerVertical"/>
 
-Integer nibh orci, porttitor vitae varius id, consequat non dui. Duis tempus ut arcu at ullamcorper. Donec pulvinar eu tortor sed molestie. Fusce tristique convallis vehicula. Donec accumsan, lectus convallis ultrices iaculis, dui lorem dapibus dolor, quis posuere urna felis eget leo. Phasellus condimentum lorem purus, quis imperdiet ex finibus in. Aenean maximus gravida lorem, sit amet gravida lectus convallis quis. Aliquam vel lacus tortor. Fusce dolor libero, condimentum eget justo nec, blandit posuere ante. Proin non tristique ipsum, quis euismod odio. Vivamus maximus consequat blandit. Proin eu nunc ut augue scelerisque imperdiet. Morbi interdum elit auctor lorem vulputate, tempor sagittis ante egestas. Nam at condimentum magna. Sed blandit mollis ipsum non mollis. Nullam non faucibus purus."/>
+        <LinearLayout
+            android:id="@+id/providers_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
     </LinearLayout>
 </ScrollView>

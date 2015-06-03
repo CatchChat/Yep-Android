@@ -39,7 +39,6 @@
         <activity
             android:name=".activity.ChatActivity"
             android:label="@string/title_activity_chat"
-            android:parentActivityName=".activity.HomeActivity"
             android:theme="@style/Theme.Yep.Content"
             android:windowSoftInputMode="adjustResize">
             <meta-data
@@ -47,25 +46,31 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
-            android:name=".activity.SettingsActivity"
-            android:label="@string/settings"
-            android:parentActivityName=".activity.HomeActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="catchla.yep.activity.HomeActivity"/>
-        </activity>
-        <activity
             android:name=".activity.UserActivity"
             android:label="@string/title_activity_user"
-            android:parentActivityName=".activity.MainActivity"
             android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
+            android:name=".activity.SkillActivity"
+            android:label="@string/skill"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
             android:name=".activity.ProfileEditorActivity"
-            android:label="@string/title_activity_profile_editor"></activity>
+            android:label="@string/title_activity_profile_editor"/>
         <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"

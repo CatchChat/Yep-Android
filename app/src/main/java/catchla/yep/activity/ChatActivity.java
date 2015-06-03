@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 

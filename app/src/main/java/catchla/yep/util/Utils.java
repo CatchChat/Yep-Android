@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -18,18 +19,23 @@ import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import catchla.yep.Constants;
+import catchla.yep.model.Provider;
+import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.exceptions.RealmMigrationNeededException;
 
 /**
@@ -119,7 +125,7 @@ public class Utils implements Constants {
             return Realm.getInstance(databaseDir, databaseName);
         } catch (RealmMigrationNeededException e) {
             if (migrated) throw e;
-            Realm.migrateRealmAtPath(new File(databaseDir, databaseName).getAbsolutePath(), new YepMigration());
+            Realm.deleteRealmFile(context, databaseName);
             return getRealmForAccountInternal(context, account, true);
         }
     }
@@ -135,6 +141,42 @@ public class Utils implements Constants {
         user.setPhoneCode(am.getUserData(account, USER_DATA_COUNTRY_CODE));
         user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
         user.setIntroduction(am.getUserData(account, USER_DATA_INTRODUCTION));
+        final String learningJson = am.getUserData(account, USER_DATA_LEARNING_SKILLS);
+        if (learningJson != null) {
+            try {
+                final List<Skill> learningSkills = LoganSquare.parseList(learningJson, Skill.class);
+                if (learningSkills != null) {
+                    final RealmList<Skill> list = new RealmList<>();
+                    list.addAll(learningSkills);
+                    user.setLearningSkills(list);
+                }
+            } catch (IOException ignore) {
+            }
+        }
+        final String masterJson = am.getUserData(account, USER_DATA_MASTER_SKILLS);
+        if (masterJson != null) {
+            try {
+                final List<Skill> masterSkills = LoganSquare.parseList(masterJson, Skill.class);
+                if (masterSkills != null) {
+                    final RealmList<Skill> list = new RealmList<>();
+                    list.addAll(masterSkills);
+                    user.setMasterSkills(list);
+                }
+            } catch (IOException ignore) {
+            }
+        }
+        final String providersJson = am.getUserData(account, USER_DATA_PROVIDERS);
+        if (providersJson != null) {
+            try {
+                final List<Provider> providers = LoganSquare.parseList(providersJson, Provider.class);
+                if (providers != null) {
+                    final RealmList<Provider> list = new RealmList<>();
+                    list.addAll(providers);
+                    user.setProviders(list);
+                }
+            } catch (IOException ignore) {
+            }
+        }
         return user;
     }
 
@@ -170,5 +212,36 @@ public class Utils implements Constants {
     public static Bus getMessageBus() {
         if (sMessageBus != null) return sMessageBus;
         return sMessageBus = new Bus();
+    }
+
+    public static void writeUserToUserData(final User user, final Bundle userData) {
+        userData.putString(USER_DATA_ID, user.getId());
+        userData.putString(USER_DATA_AVATAR, user.getAvatarUrl());
+        userData.putString(USER_DATA_NICKNAME, user.getNickname());
+        userData.putString(USER_DATA_USERNAME, user.getUsername());
+        userData.putString(USER_DATA_PHONE_NUMBER, user.getMobile());
+        userData.putString(USER_DATA_COUNTRY_CODE, user.getPhoneCode());
+        userData.putString(USER_DATA_INTRODUCTION, user.getIntroduction());
+        if (user.getLearningSkills() != null) {
+            try {
+                userData.putString(USER_DATA_LEARNING_SKILLS,
+                        LoganSquare.serialize(user.getLearningSkills(), Skill.class));
+            } catch (IOException ignore) {
+            }
+        }
+        if (user.getMasterSkills() != null) {
+            try {
+                userData.putString(USER_DATA_MASTER_SKILLS,
+                        LoganSquare.serialize(user.getMasterSkills(), Skill.class));
+            } catch (IOException ignore) {
+            }
+        }
+        if (user.getProviders() != null) {
+            try {
+                userData.putString(USER_DATA_PROVIDERS,
+                        LoganSquare.serialize(user.getProviders(), Provider.class));
+            } catch (IOException ignore) {
+            }
+        }
     }
 }

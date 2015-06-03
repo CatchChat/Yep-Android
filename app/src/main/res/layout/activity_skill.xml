@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<catchla.yep.view.TintedStatusFrameLayout
+    android:id="@+id/main_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <catchla.yep.view.HeaderDrawerLayout
+            android:id="@+id/header_drawer"
+            app:contentLayout="@layout/layout_content_skill"
+            app:headerLayout="@layout/layout_header_skill"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</catchla.yep.view.TintedStatusFrameLayout>

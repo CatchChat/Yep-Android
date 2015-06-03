@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +27,8 @@ public class ProfileEditorActivity extends ContentActivity {
     private TextView mCountryCodeView;
     private TextView mPhoneNumberView;
     private View mLogoutButton;
+    private EditText mEditNickname;
+    private EditText mEditIntroduction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,8 @@ public class ProfileEditorActivity extends ContentActivity {
             Picasso.with(this).load(user.getAvatarUrl()).into(mProfileImageView);
             mCountryCodeView.setText(user.getPhoneCode());
             mPhoneNumberView.setText(user.getMobile());
+            mEditNickname.setText(user.getNickname());
+            mEditIntroduction.setText(user.getIntroduction());
         }
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +80,8 @@ public class ProfileEditorActivity extends ContentActivity {
         mCountryCodeView = (TextView) findViewById(R.id.country_code);
         mPhoneNumberView = (TextView) findViewById(R.id.phone_number);
         mLogoutButton = findViewById(R.id.logout);
+        mEditNickname = (EditText) findViewById(R.id.edit_nickname);
+        mEditIntroduction = (EditText) findViewById(R.id.edit_introduction);
     }
 
     @Override

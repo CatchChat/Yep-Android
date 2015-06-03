@@ -3,6 +3,7 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -31,7 +32,16 @@ public class User extends RealmObject {
     private String mobile;
     @JsonField(name = "phone_code")
     private String phoneCode;
+    @JsonField(name = "providers", typeConverter = ProviderConverter.class)
+    private RealmList<Provider> providers;
 
+    public RealmList<Provider> getProviders() {
+        return providers;
+    }
+
+    public void setProviders(final RealmList<Provider> providers) {
+        this.providers = providers;
+    }
 
     public String getMobile() {
         return mobile;

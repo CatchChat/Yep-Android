@@ -21,6 +21,7 @@
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:enabled="true"
@@ -52,14 +53,40 @@
                 <TextView
                     android:id="@+id/country_code"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    tools:text="86"/>
 
                 <TextView
                     android:id="@+id/phone_number"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    tools:text="13800138000"/>
 
             </LinearLayout>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/element_spacing_large"
+                android:layout_marginRight="@dimen/element_spacing_large"
+                android:gravity="top"
+                android:singleLine="true"
+                app:met_floatingLabel="normal"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="@string/nickname"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_introduction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/element_spacing_large"
+                android:layout_marginRight="@dimen/element_spacing_large"
+                android:gravity="top"
+                android:minLines="4"
+                app:met_floatingLabel="normal"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="@string/introduction"/>
 
             <Button
                 android:id="@+id/logout"
