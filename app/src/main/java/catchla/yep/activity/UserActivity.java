@@ -4,14 +4,9 @@
 
 package catchla.yep.activity;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.graphics.Outline;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -27,9 +22,8 @@ import java.io.IOException;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.UserFragment;
-import catchla.yep.graphic.ActionBarColorDrawable;
+import catchla.yep.graphic.ActionBarDrawable;
 import catchla.yep.model.User;
-import catchla.yep.util.MathUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.HeaderDrawerLayout;
@@ -40,6 +34,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
 
     private TintedStatusFrameLayout mMainContent;
+
     private ActionBarDrawable mActionBarBackground;
 
     @Override
@@ -178,71 +173,6 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     @Override
     protected boolean isTintBarEnabled() {
         return false;
-    }
-
-    private static class ActionBarDrawable extends LayerDrawable {
-
-        private final Drawable mShadowDrawable;
-        private final ColorDrawable mColorDrawable;
-
-        private float mFactor;
-        private int mColor;
-        private int mAlpha;
-        private float mOutlineAlphaFactor;
-
-        public ActionBarDrawable(Drawable shadow) {
-            super(new Drawable[]{shadow, ActionBarColorDrawable.create(true)});
-            mShadowDrawable = getDrawable(0);
-            mColorDrawable = (ColorDrawable) getDrawable(1);
-            setAlpha(0xFF);
-            setOutlineAlphaFactor(1);
-        }
-
-        public int getColor() {
-            return mColor;
-        }
-
-        public void setColor(int color) {
-            mColor = color;
-            mColorDrawable.setColor(color);
-            setFactor(mFactor);
-        }
-
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void getOutline(Outline outline) {
-            mColorDrawable.getOutline(outline);
-            outline.setAlpha(mFactor * mOutlineAlphaFactor * 0.99f);
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-            mAlpha = alpha;
-            setFactor(mFactor);
-        }
-
-        @Override
-        public int getIntrinsicWidth() {
-            return mColorDrawable.getIntrinsicWidth();
-        }
-
-        @Override
-        public int getIntrinsicHeight() {
-            return mColorDrawable.getIntrinsicHeight();
-        }
-
-        public void setFactor(float f) {
-            mFactor = f;
-            mShadowDrawable.setAlpha(Math.round(mAlpha * MathUtils.clamp(1 - f, 0, 1)));
-            final boolean hasColor = mColor != 0;
-            mColorDrawable.setAlpha(hasColor ? Math.round(mAlpha * MathUtils.clamp(f, 0, 1)) : 0);
-        }
-
-        public void setOutlineAlphaFactor(float f) {
-            mOutlineAlphaFactor = f;
-            invalidateSelf();
-        }
-
     }
 
 }

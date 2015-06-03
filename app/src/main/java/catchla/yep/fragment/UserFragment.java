@@ -51,7 +51,7 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 import catchla.yep.view.HeaderDrawerLayout;
-import catchla.yep.view.UserHeaderSpaceLayout;
+import catchla.yep.view.HeaderSpaceLayout;
 import catchla.yep.view.iface.IExtendedView;
 import io.realm.RealmList;
 
@@ -65,7 +65,7 @@ public class UserFragment extends Fragment implements Constants,
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ScrollView mScrollView;
     private ImageView mProfileImageView;
-    private UserHeaderSpaceLayout mHeaderSpaceLayout;
+    private HeaderSpaceLayout mHeaderSpaceLayout;
     private TextView mIntroductionView;
     private FlowLayout mMasterSkills, mLearningSkills;
     private LinearLayout mProvidersContainer;
@@ -189,7 +189,7 @@ public class UserFragment extends Fragment implements Constants,
         mHeaderDrawerLayout = (HeaderDrawerLayout) view.findViewById(R.id.header_drawer);
         mScrollView = (ScrollView) view.findViewById(R.id.scroll_view);
         mProfileImageView = (ImageView) view.findViewById(R.id.profile_image);
-        mHeaderSpaceLayout = ((UserHeaderSpaceLayout) view.findViewById(R.id.header_space));
+        mHeaderSpaceLayout = ((HeaderSpaceLayout) view.findViewById(R.id.header_space));
         mIntroductionView = (TextView) view.findViewById(R.id.introduction);
         mMasterSkills = (FlowLayout) view.findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) view.findViewById(R.id.learning_skills);

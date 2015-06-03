@@ -47,7 +47,15 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements PagerIndic
 
     @Override
     public Drawable getPageIcon(int position) {
-        return ContextCompat.getDrawable(mContext, mTabs.get(position).icon);
+        final TabSpec spec = mTabs.get(position);
+        if (spec.icon == 0) return null;
+        return ContextCompat.getDrawable(mContext, spec.icon);
+    }
+
+    @Override
+    public CharSequence getPageTitle(final int position) {
+        final TabSpec spec = mTabs.get(position);
+        return spec.title;
     }
 
     @Override

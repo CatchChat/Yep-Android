@@ -29,6 +29,7 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.UserSuggestionsFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.User;
@@ -43,7 +44,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
     private static final int REQUEST_ADD_ACCOUNT = 101;
 
     private ViewPager mViewPager;
-    private HomeTabsAdapter mAdapter;
+    private TabsAdapter mAdapter;
     private TabPagerIndicator mPagerIndicator;
     private TintedStatusFrameLayout mMainContent;
     private Button mSignInButton;
@@ -110,7 +111,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
         mSignInButton.setOnClickListener(this);
         mSignUpButton.setOnClickListener(this);
 
-        mAdapter = new HomeTabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
+        mAdapter = new TabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
         mMainContent.setDrawColor(true);
@@ -133,45 +134,6 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
                 startActivityForResult(new Intent(this, SignUpActivity.class), REQUEST_ADD_ACCOUNT);
                 break;
             }
-        }
-    }
-
-    private class HomeTabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider {
-        private final Context mContext;
-
-        public HomeTabsAdapter(Context context, FragmentManager fm) {
-            super(fm);
-            mContext = context;
-        }
-
-        private List<TabSpec> mTabs = new ArrayList<>();
-
-        @Override
-        public Fragment getItem(int position) {
-            final TabSpec spec = mTabs.get(position);
-            return Fragment.instantiate(mContext, spec.cls.getName(), spec.args);
-        }
-
-        public void addTab(Class<? extends Fragment> cls, CharSequence title, int icon, Bundle args) {
-            mTabs.add(new TabSpec(cls, title, icon, args));
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return mTabs.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mTabs.get(position).title;
-        }
-
-        @Override
-        public Drawable getPageIcon(int position) {
-            final TabSpec tabSpec = mTabs.get(position);
-            if (tabSpec.icon == 0) return null;
-            return ContextCompat.getDrawable(mContext, tabSpec.icon);
         }
     }
 

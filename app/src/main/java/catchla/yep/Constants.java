@@ -35,4 +35,7 @@ public interface Constants {
     String EXTRA_USER = "user";
     String EXTRA_CONVERSATION = "conversation";
     String EXTRA_SKILL = "skill";
+    String EXTRA_READ_CACHE = "read_cache";
+    String EXTRA_LEARNING = "learning";
+    String EXTRA_MASTER = "master";
 }

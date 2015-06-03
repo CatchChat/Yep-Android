@@ -48,4 +48,6 @@
     <string name="nickname">Nickname</string>
     <string name="introduction">Introduction</string>
     <string name="skill">Skill</string>
+    <string name="master">Master</string>
+    <string name="learning">Learning</string>
 </resources>

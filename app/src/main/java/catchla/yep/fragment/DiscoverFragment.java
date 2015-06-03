@@ -33,14 +33,13 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
+import catchla.yep.view.HeaderDrawerLayout;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
-
-    private static final java.lang.String EXTRA_READ_CACHE = "read_cache";
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -56,9 +55,15 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
                 + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
         itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
         recyclerView.addItemDecoration(itemDecoration);
-        final Bundle args = new Bundle();
-        args.putBoolean(EXTRA_READ_CACHE, true);
-        getLoaderManager().initLoader(0, args, this);
+        final Bundle fragmentArgs = getArguments();
+        final Bundle loaderArgs = new Bundle();
+        if (fragmentArgs != null) {
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING)
+                    && !fragmentArgs.containsKey(EXTRA_MASTER));
+        } else {
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, true);
+        }
+        getLoaderManager().initLoader(0, loaderArgs, this);
         getAdapter().setClickListener(this);
         showProgress();
     }
@@ -67,7 +72,16 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
         final DiscoverQuery query = new DiscoverQuery();
-        final boolean readCache = args != null && args.getBoolean(EXTRA_READ_CACHE);
+        final Bundle fragmentArgs = getArguments();
+        if (fragmentArgs != null) {
+            if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
+                query.learningSkills(fragmentArgs.getStringArray(EXTRA_LEARNING));
+            }
+            if (fragmentArgs.containsKey(EXTRA_MASTER)) {
+                query.masterSkills(fragmentArgs.getStringArray(EXTRA_MASTER));
+            }
+        }
+        final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
         return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query, readCache, true);
     }
 
@@ -101,7 +115,8 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
 
     @Override
     public void onRefresh() {
-        getLoaderManager().restartLoader(0, null, this);
+        final Bundle loaderArgs = new Bundle();
+        getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
     @Override

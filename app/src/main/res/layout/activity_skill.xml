@@ -2,21 +2,30 @@
 <catchla.yep.view.TintedStatusFrameLayout
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
+    <catchla.yep.view.RatioFrameLayout
+        android:id="@+id/banner_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
 
-        <catchla.yep.view.HeaderDrawerLayout
-            android:id="@+id/header_drawer"
-            app:contentLayout="@layout/layout_content_skill"
-            app:headerLayout="@layout/layout_header_skill"
+        <ImageView
+            android:id="@+id/banner_image"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription"/>
+    </catchla.yep.view.RatioFrameLayout>
+
+    <catchla.yep.view.HeaderDrawerLayout
+        android:id="@+id/header_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:contentLayout="@layout/layout_content_skill"
+        app:headerLayout="@layout/layout_header_skill"/>
 
 </catchla.yep.view.TintedStatusFrameLayout>
