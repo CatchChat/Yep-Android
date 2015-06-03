@@ -74,7 +74,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
         final DiscoverQuery query = new DiscoverQuery();
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
-        boolean writeCache = readCache;
+        boolean writeCache = true;
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
                 query.learningSkills(fragmentArgs.getStringArray(EXTRA_LEARNING));

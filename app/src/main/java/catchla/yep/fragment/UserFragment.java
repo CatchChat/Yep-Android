@@ -180,6 +180,7 @@ public class UserFragment extends Fragment implements Constants,
         }
         final RealmList<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();
+        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user);
         View.OnClickListener providerOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -187,10 +188,12 @@ public class UserFragment extends Fragment implements Constants,
                 final Intent intent;
                 if (provider.isSupported()) {
                     intent = new Intent(getActivity(), ProviderContentActivity.class);
-                } else if (Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user)) {
-                    intent = new Intent(getActivity(), ProviderOAuthActivity.class);
                 } else {
-                    return;
+                    if (isMySelf) {
+                        intent = new Intent(getActivity(), ProviderOAuthActivity.class);
+                    } else {
+                        return;
+                    }
                 }
                 intent.putExtra(EXTRA_PROVIDER_NAME, provider.getName());
                 try {
@@ -203,6 +206,7 @@ public class UserFragment extends Fragment implements Constants,
         };
         if (providers != null) {
             for (Provider provider : providers) {
+                if (!isMySelf && !provider.isSupported()) continue;
                 final View view = Utils.inflateProviderItemView(getActivity(),
                         LayoutInflater.from(getActivity()), provider, mProvidersContainer);
                 view.setTag(provider);

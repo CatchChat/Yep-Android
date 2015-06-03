@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -260,21 +262,26 @@ public class Utils implements Constants {
         } else {
             view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
         }
+        final ImageView iconView = (ImageView) view.findViewById(android.R.id.icon);
         final TextView titleView = (TextView) view.findViewById(android.R.id.title);
-        titleView.setText(getProviderName(context, name));
+        titleView.setText(Provider.getProviderName(context, name));
+        final int icon = Provider.getProviderIcon(context, name);
+        if (icon != 0) {
+            iconView.setImageResource(icon);
+        } else {
+            iconView.setImageDrawable(null);
+        }
+        if (provider.isSupported()) {
+            iconView.setColorFilter(Provider.getProviderColor(context, name), PorterDuff.Mode.SRC_ATOP);
+        } else {
+            iconView.setColorFilter(titleView.getCurrentTextColor(), PorterDuff.Mode.SRC_ATOP);
+        }
         return view;
     }
 
-    public static String getProviderName(final Context context, final String name) {
-        if ("dribbble".equals(name)) {
-            return context.getString(R.string.dribbble);
-        } else if ("github".equals(name)) {
-            return context.getString(R.string.github);
-        }
-        return null;
-    }
-
     public static boolean isMySelf(final Context context, final Account account, final User user) {
-        return user.getId().equals(getAccountUser(context, account).getId());
+        final User accountUser = getAccountUser(context, account);
+        if (accountUser == null || user == null) return false;
+        return user.getId().equals(accountUser.getId());
     }
 }

@@ -1,8 +1,11 @@
 package catchla.yep.model;
 
+import android.content.Context;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import catchla.yep.R;
 import io.realm.RealmObject;
 
 /**
@@ -24,6 +27,15 @@ public class Provider extends RealmObject {
         this.supported = supported;
     }
 
+    public static String getProviderName(final Context context, final String name) {
+        if ("dribbble".equals(name)) {
+            return context.getString(R.string.dribbble);
+        } else if ("github".equals(name)) {
+            return context.getString(R.string.github);
+        }
+        return null;
+    }
+
     public String getName() {
         return name;
     }
@@ -40,4 +52,21 @@ public class Provider extends RealmObject {
         this.supported = supported;
     }
 
+    public static int getProviderIcon(final Context context, final String name) {
+        if ("dribbble".equals(name)) {
+            return R.drawable.ic_provider_dribbble;
+        } else if ("github".equals(name)) {
+            return R.drawable.ic_provider_github;
+        }
+        return 0;
+    }
+
+    public static int getProviderColor(final Context context, final String name) {
+        if ("dribbble".equals(name)) {
+            return context.getResources().getColor(R.color.color_dribbble);
+        } else if ("github".equals(name)) {
+            return context.getResources().getColor(R.color.color_github);
+        }
+        return 0;
+    }
 }
