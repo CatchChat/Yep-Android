@@ -23,11 +23,11 @@ import org.mariotaku.restfu.http.mime.TypedData;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import catchla.yep.Constants;
+import catchla.yep.model.TokenAuthorization;
 import catchla.yep.util.net.OkHttpRestClient;
 
 /**
@@ -49,6 +49,7 @@ public class YepAPIFactory implements Constants {
         client.setReadTimeout(10, TimeUnit.SECONDS);
         factory.setClient(new OkHttpRestClient(client));
         factory.setConverter(new LoganSquareConverter());
+        factory.setAuthorization(new TokenAuthorization(accessToken));
         factory.setRequestInfoFactory(new RequestInfoFactory() {
             @Override
             public RestRequestInfo create(final RestMethodInfo methodInfo) {
@@ -61,12 +62,7 @@ public class YepAPIFactory implements Constants {
                 final List<Pair<String, TypedData>> parts = methodInfo.getParts();
                 final FileValue file = methodInfo.getFile();
                 final Map<String, Object> extras = methodInfo.getExtras();
-
                 headers.add(Pair.create("Accept", "application/json"));
-                if (accessToken != null)
-                    headers.add(Pair.create("Authorization",
-                            String.format(Locale.ROOT, "Token token=\"%s\"", accessToken)));
-
                 return new RestRequestInfo(method.value(), path, queries, forms, headers, parts, file,
                         methodInfo.getBody(), extras);
             }

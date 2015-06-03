@@ -73,16 +73,19 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
         final DiscoverQuery query = new DiscoverQuery();
         final Bundle fragmentArgs = getArguments();
+        final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
+        boolean writeCache = readCache;
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
                 query.learningSkills(fragmentArgs.getStringArray(EXTRA_LEARNING));
+                writeCache = false;
             }
             if (fragmentArgs.containsKey(EXTRA_MASTER)) {
                 query.masterSkills(fragmentArgs.getStringArray(EXTRA_MASTER));
+                writeCache = false;
             }
         }
-        final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
-        return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query, readCache, true);
+        return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query, readCache, writeCache);
     }
 
     @Override
@@ -116,6 +119,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
     @Override
     public void onRefresh() {
         final Bundle loaderArgs = new Bundle();
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
         getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 

@@ -46,7 +46,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayUser(final User user) {
-        Picasso.with(profileImageView.getContext()).load(user.getAvatarUrl()).into(profileImageView);
+        Picasso.with(profileImageView.getContext()).load(user.getAvatarUrl()).noPlaceholder().into(profileImageView);
         nameView.setText(user.getNickname());
 //        timeView.setText();
         descriptionView.setText(user.getIntroduction());

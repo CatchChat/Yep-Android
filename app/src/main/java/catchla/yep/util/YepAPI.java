@@ -6,13 +6,18 @@ import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
 import org.mariotaku.restfu.annotation.param.Body;
 import org.mariotaku.restfu.annotation.param.Form;
+import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.http.BodyType;
+
+import java.util.ArrayList;
 
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
+import catchla.yep.model.DribbbleShot;
+import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedUsers;
@@ -70,5 +75,8 @@ public interface YepAPI {
 
     @GET("/v1/messages/unread")
     PagedMessages getUnreadMessages(@Query Paging paging) throws YepException;
+
+    @GET("/v1/users/{id}/dribbble")
+    DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
 }
 

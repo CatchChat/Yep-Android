@@ -40,6 +40,8 @@ import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.ProviderContentActivity;
+import catchla.yep.activity.ProviderOAuthActivity;
 import catchla.yep.activity.SkillActivity;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
@@ -139,18 +141,8 @@ public class UserFragment extends Fragment implements Constants,
         } else {
             mIntroductionView.setText(introduction);
         }
-        final RealmList<Skill> learningSkills = user.getLearningSkills();
-        mLearningSkills.removeAllViews();
-        if (learningSkills != null) {
-            for (Skill skill : learningSkills) {
-                final Button button = new Button(getActivity());
-                button.setText(skill.getNameString());
-                mLearningSkills.addView(button);
-            }
-        }
-        final RealmList<Skill> masterSkills = user.getMasterSkills();
-        mMasterSkills.removeAllViews();
-        View.OnClickListener masterOnClickListener = new View.OnClickListener() {
+
+        View.OnClickListener skillOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 final Skill skill = (Skill) v.getTag();
@@ -163,21 +155,58 @@ public class UserFragment extends Fragment implements Constants,
                 startActivity(intent);
             }
         };
+
+        final RealmList<Skill> learningSkills = user.getLearningSkills();
+        mLearningSkills.removeAllViews();
+        if (learningSkills != null) {
+            for (Skill skill : learningSkills) {
+                final Button button = new Button(getActivity());
+                button.setText(skill.getNameString());
+                button.setTag(skill);
+                button.setOnClickListener(skillOnClickListener);
+                mLearningSkills.addView(button);
+            }
+        }
+        final RealmList<Skill> masterSkills = user.getMasterSkills();
+        mMasterSkills.removeAllViews();
         if (masterSkills != null) {
             for (Skill skill : masterSkills) {
                 final Button button = new Button(getActivity());
                 button.setText(skill.getNameString());
                 button.setTag(skill);
-                button.setOnClickListener(masterOnClickListener);
+                button.setOnClickListener(skillOnClickListener);
                 mMasterSkills.addView(button);
             }
         }
         final RealmList<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();
+        View.OnClickListener providerOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final Provider provider = (Provider) v.getTag();
+                final Intent intent;
+                if (provider.isSupported()) {
+                    intent = new Intent(getActivity(), ProviderContentActivity.class);
+                } else if (Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user)) {
+                    intent = new Intent(getActivity(), ProviderOAuthActivity.class);
+                } else {
+                    return;
+                }
+                intent.putExtra(EXTRA_PROVIDER_NAME, provider.getName());
+                try {
+                    intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(user));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(intent);
+            }
+        };
         if (providers != null) {
             for (Provider provider : providers) {
-                final TextView view = new TextView(getActivity());
-                view.setText(provider.getName());
+                final View view = Utils.inflateProviderItemView(getActivity(),
+                        LayoutInflater.from(getActivity()), provider, mProvidersContainer);
+                view.setTag(provider);
+                view.setOnClickListener(providerOnClickListener);
                 mProvidersContainer.addView(view);
             }
         }

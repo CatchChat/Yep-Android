@@ -18,6 +18,10 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
@@ -31,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import catchla.yep.Constants;
+import catchla.yep.R;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
@@ -243,5 +248,28 @@ public class Utils implements Constants {
             } catch (IOException ignore) {
             }
         }
+    }
+
+    public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
+        final String name = provider.getName();
+        final View view;
+        final String title;
+        if ("dribbble".equals(name)) {
+            view = inflater.inflate(R.layout.list_item_provider_dribbble, parent, false);
+            title = context.getString(R.string.dribbble);
+        } else if ("github".equals(name)) {
+            view = inflater.inflate(R.layout.list_item_provider_github, parent, false);
+            title = context.getString(R.string.github);
+        } else {
+            view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
+            title = name;
+        }
+        final TextView titleView = (TextView) view.findViewById(android.R.id.title);
+        titleView.setText(title);
+        return view;
+    }
+
+    public static boolean isMySelf(final Context context, final Account account, final User user) {
+        return user.getId().equals(getAccountUser(context, account).getId());
     }
 }

@@ -62,6 +62,13 @@
                 android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
+            android:name=".activity.ProviderContentActivity"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/settings">
             <meta-data

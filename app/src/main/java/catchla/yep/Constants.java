@@ -38,4 +38,5 @@ public interface Constants {
     String EXTRA_READ_CACHE = "read_cache";
     String EXTRA_LEARNING = "learning";
     String EXTRA_MASTER = "master";
+    String EXTRA_PROVIDER_NAME = "provider_name";
 }

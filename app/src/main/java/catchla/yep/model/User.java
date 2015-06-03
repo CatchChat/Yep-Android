@@ -1,5 +1,7 @@
 package catchla.yep.model;
 
+import android.os.Bundle;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
@@ -113,4 +115,5 @@ public class User extends RealmObject {
     public void setLearningSkills(RealmList<Skill> learningSkills) {
         this.learningSkills = learningSkills;
     }
+
 }

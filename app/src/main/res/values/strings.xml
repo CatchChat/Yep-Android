@@ -50,4 +50,6 @@
     <string name="skill">Skill</string>
     <string name="master">Master</string>
     <string name="learning">Learning</string>
+    <string name="dribbble">Dribbble</string>
+    <string name="github">Github</string>
 </resources>
