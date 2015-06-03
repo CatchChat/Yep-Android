@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MenuItemCompat;
+import android.view.Menu;
+import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -28,6 +31,7 @@ import catchla.yep.util.YepAPIFactory;
  */
 public class ProviderOAuthActivity extends ContentActivity implements Constants {
     private WebView mWebView;
+    private View mLoadProgress;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -61,18 +65,23 @@ public class ProviderOAuthActivity extends ContentActivity implements Constants 
                     }
                     return true;
                 }
-                System.identityHashCode(url);
                 return super.shouldOverrideUrlLoading(view, url);
             }
 
             @Override
             public void onPageFinished(final WebView view, final String url) {
                 super.onPageFinished(view, url);
+                if (mLoadProgress != null) {
+                    mLoadProgress.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onPageStarted(final WebView view, final String url, final Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
+                if (mLoadProgress != null) {
+                    mLoadProgress.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -88,6 +97,13 @@ public class ProviderOAuthActivity extends ContentActivity implements Constants 
         settings.setJavaScriptEnabled(true);
         settings.setBlockNetworkLoads(false);
         settings.setBlockNetworkImage(false);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_provider_oauth, menu);
+        mLoadProgress = MenuItemCompat.getActionView(menu.findItem(R.id.load_progress));
+        return true;
     }
 
     @Override
