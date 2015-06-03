@@ -18,11 +18,15 @@ public class TokenAuthorization implements Authorization {
 
     @Override
     public String getHeader(final Endpoint endpoint, final RestRequestInfo restRequestInfo) {
+        return getAuthorizationHeaderValue(accessToken);
+    }
+
+    public static String getAuthorizationHeaderValue(String accessToken) {
         return String.format(Locale.ROOT, "Token token=\"%s\"", accessToken);
     }
 
     @Override
     public boolean hasAuthorization() {
-        return accessToken!=null;
+        return accessToken != null;
     }
 }

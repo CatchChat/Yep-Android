@@ -1,4 +1,4 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?><resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Yep</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -52,4 +52,5 @@
     <string name="learning">Learning</string>
     <string name="dribbble">Dribbble</string>
     <string name="github">Github</string>
+    <string name="sign_in_to_provider_name">Sign in to <xliff:g id="name">%s</xliff:g></string>
 </resources>

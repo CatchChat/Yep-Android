@@ -253,20 +253,25 @@ public class Utils implements Constants {
     public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
         final String name = provider.getName();
         final View view;
-        final String title;
         if ("dribbble".equals(name)) {
             view = inflater.inflate(R.layout.list_item_provider_dribbble, parent, false);
-            title = context.getString(R.string.dribbble);
         } else if ("github".equals(name)) {
             view = inflater.inflate(R.layout.list_item_provider_github, parent, false);
-            title = context.getString(R.string.github);
         } else {
             view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
-            title = name;
         }
         final TextView titleView = (TextView) view.findViewById(android.R.id.title);
-        titleView.setText(title);
+        titleView.setText(getProviderName(context, name));
         return view;
+    }
+
+    public static String getProviderName(final Context context, final String name) {
+        if ("dribbble".equals(name)) {
+            return context.getString(R.string.dribbble);
+        } else if ("github".equals(name)) {
+            return context.getString(R.string.github);
+        }
+        return null;
     }
 
     public static boolean isMySelf(final Context context, final Account account, final User user) {

@@ -3,6 +3,7 @@ package catchla.yep.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Pair;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -37,8 +38,7 @@ public class YepAPIFactory implements Constants {
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
-        final AccountManager am = AccountManager.get(context);
-        return getInstance(am.peekAuthToken(account, AUTH_TOKEN_TYPE));
+        return getInstance(getAuthToken(context, account));
     }
 
     public static YepAPI getInstance(final String accessToken) {
@@ -88,4 +88,25 @@ public class YepAPIFactory implements Constants {
         return factory.build(YepAPI.class);
     }
 
+    public static String getProviderOAuthUrl(final String providerName) {
+        return "https://park-staging.catchchatchina.com/users/auth/" + providerName;
+    }
+
+    public static String getAuthToken(final Context context, final Account account) {
+        if (account == null) return null;
+        final AccountManager am = AccountManager.get(context);
+        return am.peekAuthToken(account, AUTH_TOKEN_TYPE);
+    }
+
+    public static boolean isAPIUrl(final Uri uri) {
+        return "park-staging.catchchatchina.com".equalsIgnoreCase(uri.getHost());
+    }
+
+    public static boolean isAuthSuccessUrl(final String url) {
+        return "https://park.catchchatchina.com/auth/success".equals(url);
+    }
+
+    public static boolean isAuthFailureUrl(final String url) {
+        return "https://park.catchchatchina.com/auth/failure".equals(url);
+    }
 }
