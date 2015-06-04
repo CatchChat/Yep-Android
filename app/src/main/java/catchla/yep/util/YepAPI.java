@@ -10,15 +10,14 @@ import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.http.BodyType;
 
-import java.util.ArrayList;
-
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
-import catchla.yep.model.DribbbleShot;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.GithubUserInfo;
+import catchla.yep.model.InstagramMedia;
+import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedUsers;
@@ -82,5 +81,8 @@ public interface YepAPI {
 
     @GET("/v1/users/{id}/github")
     GithubUserInfo getGithubUserInfo(@Path("id") String userId) throws YepException;
+
+    @GET("/v1/users/{id}/instagram")
+    InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 }
 

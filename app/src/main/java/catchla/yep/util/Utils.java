@@ -254,13 +254,9 @@ public class Utils implements Constants {
 
     public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
         final String name = provider.getName();
-        final View view;
+        final View view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
         if ("dribbble".equals(name)) {
-            view = inflater.inflate(R.layout.list_item_provider_dribbble, parent, false);
         } else if ("github".equals(name)) {
-            view = inflater.inflate(R.layout.list_item_provider_github, parent, false);
-        } else {
-            view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
         }
         final ImageView iconView = (ImageView) view.findViewById(android.R.id.icon);
         final TextView titleView = (TextView) view.findViewById(android.R.id.title);
@@ -272,9 +268,14 @@ public class Utils implements Constants {
             iconView.setImageDrawable(null);
         }
         if (provider.isSupported()) {
-            iconView.setColorFilter(Provider.getProviderColor(context, name), PorterDuff.Mode.SRC_ATOP);
+            final int providerColor = Provider.getProviderColor(context, name);
+            iconView.setColorFilter(providerColor, PorterDuff.Mode.SRC_ATOP);
+            titleView.setTextColor(providerColor);
         } else {
-            iconView.setColorFilter(titleView.getCurrentTextColor(), PorterDuff.Mode.SRC_ATOP);
+            final int secondaryColor = ThemeUtils.getColorFromAttribute(context,
+                    android.R.attr.textColorSecondary, 0);
+            iconView.setColorFilter(secondaryColor, PorterDuff.Mode.SRC_ATOP);
+            titleView.setTextColor(secondaryColor);
         }
         return view;
     }

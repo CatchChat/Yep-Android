@@ -3,9 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
     android:gravity="center_vertical"
     android:minHeight="?listPreferredItemHeightSmall"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/element_spacing_normal"
+    android:paddingRight="@dimen/element_spacing_normal">
 
     <ImageView
         android:id="@android:id/icon"
@@ -15,11 +18,17 @@
 
     <TextView
         android:id="@android:id/title"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginStart="@dimen/element_spacing_normal"
-        android:layout_weight="1"
+        android:layout_weight="0"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorPrimary"/>
+
+    <FrameLayout
+        android:id="@+id/provider_widget_frame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"/>
 </LinearLayout>

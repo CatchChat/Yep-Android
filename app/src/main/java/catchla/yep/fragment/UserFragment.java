@@ -206,12 +206,22 @@ public class UserFragment extends Fragment implements Constants,
         };
         if (providers != null) {
             for (Provider provider : providers) {
-                if (!isMySelf && !provider.isSupported()) continue;
+                if (!provider.isSupported()) continue;
                 final View view = Utils.inflateProviderItemView(getActivity(),
                         LayoutInflater.from(getActivity()), provider, mProvidersContainer);
                 view.setTag(provider);
                 view.setOnClickListener(providerOnClickListener);
                 mProvidersContainer.addView(view);
+            }
+            if (isMySelf) {
+                for (Provider provider : providers) {
+                    if (provider.isSupported()) continue;
+                    final View view = Utils.inflateProviderItemView(getActivity(),
+                            LayoutInflater.from(getActivity()), provider, mProvidersContainer);
+                    view.setTag(provider);
+                    view.setOnClickListener(providerOnClickListener);
+                    mProvidersContainer.addView(view);
+                }
             }
         }
     }

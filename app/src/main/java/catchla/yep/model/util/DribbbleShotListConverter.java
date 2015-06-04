@@ -7,30 +7,31 @@ import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
 
-import catchla.yep.model.GithubRepo;
+import catchla.yep.model.DribbbleShot;
+import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.Skill;
 import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class GithubRepoListTypeConverter implements TypeConverter<RealmList<GithubRepo>> {
+public class DribbbleShotListConverter implements TypeConverter<RealmList<DribbbleShot>> {
 
     @Override
-    public RealmList<GithubRepo> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<GithubRepo> skills = new RealmList<>();
-        skills.addAll(LoganSquare.mapperFor(GithubRepo.class).parseList(jsonParser));
+    public RealmList<DribbbleShot> parse(final JsonParser jsonParser) throws IOException {
+        final RealmList<DribbbleShot> skills = new RealmList<>();
+        skills.addAll(LoganSquare.mapperFor(DribbbleShot.class).parseList(jsonParser));
         return skills;
     }
 
     @Override
-    public void serialize(RealmList<GithubRepo> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(RealmList<DribbbleShot> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {
                 jsonGenerator.writeFieldName(fieldName);
             }
-            LoganSquare.mapperFor(GithubRepo.class).serialize(object, jsonGenerator);
+            LoganSquare.mapperFor(DribbbleShot.class).serialize(object, jsonGenerator);
         }
     }
 }

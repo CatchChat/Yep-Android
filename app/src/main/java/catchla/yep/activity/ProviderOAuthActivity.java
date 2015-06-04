@@ -47,10 +47,6 @@ public class ProviderOAuthActivity extends ContentActivity implements Constants 
         setTitle(getString(R.string.sign_in_to_provider_name, Provider.getProviderName(this, providerName)));
         mWebView.loadUrl(url, headers);
         mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedError(final WebView view, final int errorCode, final String description, final String failingUrl) {
-                super.onReceivedError(view, errorCode, description, failingUrl);
-            }
 
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view, final String url) {

@@ -4,4 +4,5 @@
     <color name="unread_color">@color/material_red</color>
     <color name="color_dribbble">#E74880</color>
     <color name="color_github">#181616</color>
+    <color name="color_instagram">#275D89</color>
 </resources>

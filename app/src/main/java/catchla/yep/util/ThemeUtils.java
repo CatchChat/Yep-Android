@@ -31,8 +31,8 @@ public class ThemeUtils {
         final TypedValue outValue = new TypedValue();
         if (!context.getTheme().resolveAttribute(attr, outValue, true))
             return def;
-        if (outValue.type == TypedValue.TYPE_REFERENCE)
-            return context.getResources().getColor(attr);
+        if (outValue.resourceId != 0)
+            return context.getResources().getColor(outValue.resourceId);
         return outValue.data;
     }
 
