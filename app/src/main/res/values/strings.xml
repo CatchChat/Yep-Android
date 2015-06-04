@@ -53,4 +53,7 @@
     <string name="dribbble">Dribbble</string>
     <string name="github">Github</string>
     <string name="sign_in_to_provider_name">Sign in to <xliff:g id="name">%s</xliff:g></string>
+    <string name="stars">Stars</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
 </resources>

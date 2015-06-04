@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,25 +18,26 @@ import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.adapter.DribbbleShotsAdapter;
-import catchla.yep.loader.DribbbleShotsLoader;
-import catchla.yep.model.DribbbleShots;
+import catchla.yep.adapter.GithubUserAdapter;
+import catchla.yep.loader.GithubUserInfoLoader;
+import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
 
 /**
- * Created by mariotaku on 15/6/3.
+ * Created by mariotaku on 15/6/4.
  */
-public class DribbbleShotsFragment extends Fragment implements Constants,
-        LoaderManager.LoaderCallbacks<TaskResponse<DribbbleShots>> {
+public class GithubUserInfoFragment extends Fragment implements Constants,
+        LoaderManager.LoaderCallbacks<TaskResponse<GithubUserInfo>> {
+
 
     private RecyclerView mRecyclerView;
-    private DribbbleShotsAdapter mAdapter;
+    private GithubUserAdapter mAdapter;
     private View mLoadProgress;
 
     @Override
-    public Loader<TaskResponse<DribbbleShots>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<TaskResponse<GithubUserInfo>> onCreateLoader(final int id, final Bundle args) {
         final String userId;
         try {
             final Bundle fragmentArgs = getArguments();
@@ -44,7 +46,7 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new DribbbleShotsLoader(getActivity(), Utils.getCurrentAccount(getActivity()), userId,
+        return new GithubUserInfoLoader(getActivity(), Utils.getCurrentAccount(getActivity()), userId,
                 false, false);
     }
 
@@ -52,8 +54,8 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new DribbbleShotsAdapter(getActivity());
-        final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        mAdapter = new GithubUserAdapter(getActivity());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -63,9 +65,9 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<DribbbleShots>> loader, final TaskResponse<DribbbleShots> data) {
+    public void onLoadFinished(final Loader<TaskResponse<GithubUserInfo>> loader, final TaskResponse<GithubUserInfo> data) {
         if (data.hasData()) {
-            mAdapter.setData(data.getData().getShots());
+            mAdapter.setData(data.getData());
         } else {
             mAdapter.setData(null);
         }
@@ -73,7 +75,7 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<DribbbleShots>> loader) {
+    public void onLoaderReset(final Loader<TaskResponse<GithubUserInfo>> loader) {
         mAdapter.setData(null);
     }
 
@@ -99,5 +101,4 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_recycler_view, container, false);
     }
-
 }
