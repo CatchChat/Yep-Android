@@ -18,6 +18,7 @@ import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShot;
 import catchla.yep.model.DribbbleShots;
+import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedUsers;
@@ -78,5 +79,8 @@ public interface YepAPI {
 
     @GET("/v1/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
+
+    @GET("/v1/users/{id}/github")
+    GithubUserInfo getGithubUserInfo(@Path("id") String userId) throws YepException;
 }
 
