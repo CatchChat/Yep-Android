@@ -154,6 +154,9 @@ public class UserFragment extends Fragment implements Constants,
                 startActivity(intent);
             }
         };
+
+        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user);
+
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         final RealmList<Skill> learningSkills = user.getLearningSkills();
@@ -167,6 +170,9 @@ public class UserFragment extends Fragment implements Constants,
                 mLearningSkills.addView(view);
             }
         }
+        if (isMySelf) {
+            mLearningSkills.addView(Utils.inflateAddSkillView(getActivity(), inflater, mLearningSkills));
+        }
         final RealmList<Skill> masterSkills = user.getMasterSkills();
         mMasterSkills.removeAllViews();
         if (masterSkills != null) {
@@ -178,9 +184,11 @@ public class UserFragment extends Fragment implements Constants,
                 mMasterSkills.addView(view);
             }
         }
+        if (isMySelf) {
+            mMasterSkills.addView(Utils.inflateAddSkillView(getActivity(), inflater, mMasterSkills));
+        }
         final RealmList<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();
-        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user);
         View.OnClickListener providerOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
