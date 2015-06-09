@@ -28,6 +28,8 @@ import android.widget.TextView;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 
+import org.apmem.tools.layouts.FlowLayout;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import catchla.yep.model.User;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.exceptions.RealmMigrationNeededException;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -284,5 +287,12 @@ public class Utils implements Constants {
         final User accountUser = getAccountUser(context, account);
         if (accountUser == null || user == null) return false;
         return user.getId().equals(accountUser.getId());
+    }
+
+    public static View inflateSkillItemView(final Context context, final LayoutInflater inflater, final Skill skill, final ViewGroup parent) {
+        final View view = inflater.inflate(R.layout.layout_skill_label_button, parent, false);
+        final FancyButton button = (FancyButton) view.findViewById(R.id.skill_button);
+        button.setText(skill.getNameString());
+        return view;
     }
 }

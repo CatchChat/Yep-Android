@@ -1,7 +1,4 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="element_spacing_normal">8dp</dimen>
     <dimen name="icon_size_status_profile_image">60dp</dimen>
     <dimen name="element_spacing_large">16dp</dimen>

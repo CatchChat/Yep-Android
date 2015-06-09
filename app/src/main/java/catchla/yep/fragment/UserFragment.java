@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -155,27 +154,28 @@ public class UserFragment extends Fragment implements Constants,
                 startActivity(intent);
             }
         };
+        final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         final RealmList<Skill> learningSkills = user.getLearningSkills();
         mLearningSkills.removeAllViews();
         if (learningSkills != null) {
             for (Skill skill : learningSkills) {
-                final Button button = new Button(getActivity());
-                button.setText(skill.getNameString());
-                button.setTag(skill);
-                button.setOnClickListener(skillOnClickListener);
-                mLearningSkills.addView(button);
+                final View view = Utils.inflateSkillItemView(getActivity(), inflater, skill, mLearningSkills);
+                final View skillButton = view.findViewById(R.id.skill_button);
+                skillButton.setTag(skill);
+                skillButton.setOnClickListener(skillOnClickListener);
+                mLearningSkills.addView(view);
             }
         }
         final RealmList<Skill> masterSkills = user.getMasterSkills();
         mMasterSkills.removeAllViews();
         if (masterSkills != null) {
             for (Skill skill : masterSkills) {
-                final Button button = new Button(getActivity());
-                button.setText(skill.getNameString());
-                button.setTag(skill);
-                button.setOnClickListener(skillOnClickListener);
-                mMasterSkills.addView(button);
+                final View view = Utils.inflateSkillItemView(getActivity(), inflater, skill, mMasterSkills);
+                final View skillButton = view.findViewById(R.id.skill_button);
+                skillButton.setTag(skill);
+                skillButton.setOnClickListener(skillOnClickListener);
+                mMasterSkills.addView(view);
             }
         }
         final RealmList<Provider> providers = user.getProviders();
@@ -208,7 +208,7 @@ public class UserFragment extends Fragment implements Constants,
             for (Provider provider : providers) {
                 if (!provider.isSupported()) continue;
                 final View view = Utils.inflateProviderItemView(getActivity(),
-                        LayoutInflater.from(getActivity()), provider, mProvidersContainer);
+                        inflater, provider, mProvidersContainer);
                 view.setTag(provider);
                 view.setOnClickListener(providerOnClickListener);
                 mProvidersContainer.addView(view);
@@ -217,7 +217,7 @@ public class UserFragment extends Fragment implements Constants,
                 for (Provider provider : providers) {
                     if (provider.isSupported()) continue;
                     final View view = Utils.inflateProviderItemView(getActivity(),
-                            LayoutInflater.from(getActivity()), provider, mProvidersContainer);
+                            inflater, provider, mProvidersContainer);
                     view.setTag(provider);
                     view.setOnClickListener(providerOnClickListener);
                     mProvidersContainer.addView(view);
@@ -297,6 +297,7 @@ public class UserFragment extends Fragment implements Constants,
     }
 
     public int getHeaderSpaceHeight() {
+        if (mHeaderSpaceLayout == null) return 0;
         return mHeaderSpaceLayout.getMeasuredHeight();
     }
 
