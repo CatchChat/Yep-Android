@@ -58,4 +58,6 @@
     <string name="following">Following</string>
     <string name="instagram">Instagram</string>
     <string name="add">Add</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="add_skill">Add skill</string>
 </resources>

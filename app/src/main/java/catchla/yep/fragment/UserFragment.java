@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.AddSkillActivity;
 import catchla.yep.activity.ProviderContentActivity;
 import catchla.yep.activity.ProviderOAuthActivity;
 import catchla.yep.activity.SkillActivity;
@@ -171,7 +172,15 @@ public class UserFragment extends Fragment implements Constants,
             }
         }
         if (isMySelf) {
-            mLearningSkills.addView(Utils.inflateAddSkillView(getActivity(), inflater, mLearningSkills));
+            final View view = Utils.inflateAddSkillView(getActivity(), inflater, mLearningSkills);
+            final View skillButton = view.findViewById(R.id.skill_button);
+            skillButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    startActivity(new Intent(getActivity(), AddSkillActivity.class));
+                }
+            });
+            mLearningSkills.addView(view);
         }
         final RealmList<Skill> masterSkills = user.getMasterSkills();
         mMasterSkills.removeAllViews();
@@ -185,7 +194,15 @@ public class UserFragment extends Fragment implements Constants,
             }
         }
         if (isMySelf) {
-            mMasterSkills.addView(Utils.inflateAddSkillView(getActivity(), inflater, mMasterSkills));
+            final View view = Utils.inflateAddSkillView(getActivity(), inflater, mMasterSkills);
+            final View skillButton = view.findViewById(R.id.skill_button);
+            skillButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    startActivity(new Intent(getActivity(), AddSkillActivity.class));
+                }
+            });
+            mMasterSkills.addView(view);
         }
         final RealmList<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();

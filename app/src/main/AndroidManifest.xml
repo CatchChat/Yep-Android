@@ -84,7 +84,10 @@
         </activity>
         <activity
             android:name=".activity.ProfileEditorActivity"
-            android:label="@string/title_activity_profile_editor"/>
+            android:label="@string/edit_profile"/>
+        <activity
+            android:name=".activity.AddSkillActivity"
+            android:label="@string/add_skill"/>
         <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"

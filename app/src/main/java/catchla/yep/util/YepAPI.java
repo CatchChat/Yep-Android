@@ -16,10 +16,10 @@ import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.GithubUserInfo;
-import catchla.yep.model.InstagramMedia;
 import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
+import catchla.yep.model.PagedSkillCategories;
 import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
@@ -69,6 +69,9 @@ public interface YepAPI {
 
     @GET("/v1/user/discover")
     PagedUsers getDiscover(@Query DiscoverQuery query, @Query Paging paging) throws YepException;
+
+    @GET("/v1/skill_categories")
+    PagedSkillCategories getSkillCategories() throws YepException;
 
     @GET("/v1/friendships")
     PagedFriendships getFriendships(@Query Paging paging) throws YepException;
