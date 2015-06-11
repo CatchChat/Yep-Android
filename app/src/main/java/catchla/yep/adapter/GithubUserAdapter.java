@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import catchla.yep.R;
+import catchla.yep.model.GithubRepo;
 import catchla.yep.model.GithubUserInfo;
 import catchla.yep.view.holder.GithubRepoItemViewHolder;
 import catchla.yep.view.holder.GithubUserHeaderViewHolder;
@@ -32,7 +33,7 @@ public class GithubUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return new GithubUserHeaderViewHolder(view);
         }
         final View view = mInflater.inflate(R.layout.list_item_github_repo, parent, false);
-        return new GithubRepoItemViewHolder(view);
+        return new GithubRepoItemViewHolder(view, this);
     }
 
     @Override
@@ -59,5 +60,10 @@ public class GithubUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setData(GithubUserInfo data) {
         mData = data;
         notifyDataSetChanged();
+    }
+
+    public GithubRepo getRepoAt(final int layoutPosition) {
+        if (mData == null) return null;
+        return mData.getRepos().get(layoutPosition - 1);
     }
 }

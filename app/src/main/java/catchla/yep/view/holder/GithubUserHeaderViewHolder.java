@@ -28,6 +28,7 @@ public class GithubUserHeaderViewHolder extends RecyclerView.ViewHolder {
         followersCount = (TextView) itemView.findViewById(R.id.followers_count);
         starsCount = (TextView) itemView.findViewById(R.id.stars_count);
         followingCount = (TextView) itemView.findViewById(R.id.following_count);
+
     }
 
     public void displayUser(final GithubUserInfo userInfo) {

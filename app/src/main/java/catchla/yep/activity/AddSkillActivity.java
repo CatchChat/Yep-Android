@@ -66,6 +66,7 @@ public class AddSkillActivity extends ContentActivity {
             super.onActivityCreated(savedInstanceState);
             getLoaderManager().initLoader(0, null, this);
             setListAdapter(mCategoriesAdapter = new CategoriesAdapter(getActivity()));
+            setListShownNoAnimation(false);
         }
 
         @Override
@@ -79,6 +80,7 @@ public class AddSkillActivity extends ContentActivity {
             if (data.hasData()) {
                 mCategoriesAdapter.addAll(data.getData());
             }
+            setListShown(true);
         }
 
         @Override
