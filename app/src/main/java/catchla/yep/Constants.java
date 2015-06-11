@@ -39,4 +39,5 @@ public interface Constants {
     String EXTRA_LEARNING = "learning";
     String EXTRA_MASTER = "master";
     String EXTRA_PROVIDER_NAME = "provider_name";
+    String EXTRA_SKILLS = "skills";
 }

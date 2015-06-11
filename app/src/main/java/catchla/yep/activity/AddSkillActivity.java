@@ -12,8 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
+import java.io.IOException;
 import java.util.List;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.loader.SkillCategoriesLoader;
@@ -21,11 +25,12 @@ import catchla.yep.model.Skill;
 import catchla.yep.model.SkillCategory;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.Utils;
+import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/10.
  */
-public class AddSkillActivity extends ContentActivity {
+public class AddSkillActivity extends ContentActivity implements Constants {
 
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
@@ -57,6 +62,14 @@ public class AddSkillActivity extends ContentActivity {
         return selectedCategory;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mViewPager.getCurrentItem() != 0) {
+            mViewPager.setCurrentItem(0);
+            return;
+        }
+        super.onBackPressed();
+    }
 
     public static class CategoriesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<TaskResponse<List<SkillCategory>>> {
         private CategoriesAdapter mCategoriesAdapter;
@@ -129,18 +142,40 @@ public class AddSkillActivity extends ContentActivity {
         public void setUserVisibleHint(final boolean isVisibleToUser) {
             super.setUserVisibleHint(isVisibleToUser);
             if (isVisibleToUser) {
+                final ListView listView = getListView();
+                listView.clearChoices();
                 final AddSkillActivity activity = (AddSkillActivity) getActivity();
+                List<Skill> selected;
+                try {
+                    selected = LoganSquare.parseList(activity.getIntent().getStringExtra(EXTRA_SKILLS), Skill.class);
+                } catch (IOException e) {
+                    selected = null;
+                }
                 final SkillCategory skillCategory = activity.getSelectedCategory();
                 mSkillsAdapter.clear();
                 if (skillCategory != null) {
-                    mSkillsAdapter.addAll(skillCategory.getSkills());
+                    final RealmList<Skill> skills = skillCategory.getSkills();
+                    mSkillsAdapter.addAll(skills);
+                    for (int i = 0, j = listView.getCount(); i < j; i++) {
+                        listView.setItemChecked(i, isSelected(selected, mSkillsAdapter.getItem(i).getId()));
+                    }
                 }
             }
+
+        }
+
+        private boolean isSelected(List<Skill> skills, String id) {
+            if (skills == null || id == null) return false;
+            for (Skill skill : skills) {
+                if (id.equals(skill.getId())) return true;
+            }
+            return false;
         }
 
         private class SkillsAdapter extends ArrayAdapter<Skill> {
             public SkillsAdapter(final Context context) {
-                super(context, android.R.layout.simple_list_item_1);
+                super(context, android.R.layout.simple_list_item_multiple_choice);
+                getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             }
 
             @Override

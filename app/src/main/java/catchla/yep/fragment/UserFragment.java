@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -177,7 +178,13 @@ public class UserFragment extends Fragment implements Constants,
             skillButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    startActivity(new Intent(getActivity(), AddSkillActivity.class));
+                    final Intent intent = new Intent(getActivity(), AddSkillActivity.class);
+                    try {
+                        intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(learningSkills, Skill.class));
+                    } catch (IOException e) {
+                        Log.e(LOGTAG, "Error serializing", e);
+                    }
+                    startActivity(intent);
                 }
             });
             mLearningSkills.addView(view);
@@ -199,7 +206,13 @@ public class UserFragment extends Fragment implements Constants,
             skillButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    startActivity(new Intent(getActivity(), AddSkillActivity.class));
+                    final Intent intent = new Intent(getActivity(), AddSkillActivity.class);
+                    try {
+                        intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(masterSkills, Skill.class));
+                    } catch (IOException e) {
+                        Log.e(LOGTAG, "Error serializing", e);
+                    }
+                    startActivity(intent);
                 }
             });
             mMasterSkills.addView(view);
