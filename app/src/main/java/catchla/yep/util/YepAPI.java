@@ -17,6 +17,8 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.InstagramMediaList;
+import catchla.yep.model.Message;
+import catchla.yep.model.NewMessage;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedSkillCategories;
@@ -87,5 +89,8 @@ public interface YepAPI {
 
     @GET("/v1/users/{id}/instagram")
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
+
+    @POST("/v1/messages")
+    Message createMessage(@Form NewMessage message) throws YepException;
 }
 

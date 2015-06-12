@@ -159,7 +159,7 @@ public class UserFragment extends Fragment implements Constants,
 
         final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user);
 
-        final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
 
         final RealmList<Skill> learningSkills = user.getLearningSkills();
         mLearningSkills.removeAllViews();
