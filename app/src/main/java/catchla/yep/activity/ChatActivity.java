@@ -16,10 +16,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.squareup.picasso.Picasso;
+import com.desmond.asyncmanager.AsyncManager;
+import com.desmond.asyncmanager.TaskRunnable;
 
 import java.io.IOException;
 
@@ -28,8 +30,14 @@ import catchla.yep.R;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
+import catchla.yep.model.NewMessage;
+import catchla.yep.model.TaskResponse;
+import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
+import catchla.yep.util.YepAPI;
+import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.YepException;
 import catchla.yep.view.TintedStatusFrameLayout;
 import io.realm.RealmResults;
 
@@ -44,11 +52,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     private FixedLinearLayoutManager mLayoutManager;
     private ChatAdapter mAdapter;
+    private EditText mEditText;
 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-
+        mEditText = (EditText) findViewById(R.id.edit_text);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
     }
@@ -73,6 +82,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
+        EditTextEnterHandler.attach(mEditText, new EditTextEnterHandler.EnterListener() {
+            @Override
+            public void onHitEnter() {
+                sendMessage();
+            }
+        }, true);
 
         final Intent intent = getIntent();
         if (!intent.hasExtra(EXTRA_CONVERSATION)) {
@@ -80,6 +95,25 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             return;
         }
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
+    }
+
+    private void sendMessage() {
+        final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity>() {
+            @Override
+            public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
+                YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
+                try {
+                    return TaskResponse.getInstance(yep.createMessage(newMessage));
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+        };
+        final NewMessage newMessage = new NewMessage();
+        newMessage.textContent(String.valueOf(mEditText.getText()));
+        task.setParams(newMessage);
+        task.setResultHandler(this);
+        AsyncManager.runBackgroundTask(task);
     }
 
     @Override

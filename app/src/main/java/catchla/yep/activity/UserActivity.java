@@ -159,6 +159,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         }
         final float factor = (paddingTop - offset) / (float) spaceHeight;
         mActionBarBackground.setFactor(factor);
+        Utils.setCompatToolbarOverlayAlpha(this, factor);
         mMainContent.setFactor(factor);
     }
 

@@ -10,9 +10,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -300,5 +303,18 @@ public class Utils implements Constants {
         button.setText(context.getString(R.string.add));
         button.setIconResource("\uf067");
         return view;
+    }
+
+
+    public static void setCompatToolbarOverlayAlpha(FragmentActivity activity, float alpha) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return;
+//        final View windowOverlay = activity.findViewById(R.id.window_overlay);
+//        if (windowOverlay != null) {
+//            windowOverlay.setAlpha(alpha);
+//            return;
+//        }
+        final Drawable drawable = ThemeUtils.getCompatToolbarOverlay(activity);
+        if (drawable == null) return;
+        drawable.setAlpha(Math.round(alpha * 255));
     }
 }
