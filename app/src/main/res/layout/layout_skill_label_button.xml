@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<TextView
+    android:id="@+id/skill_button"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/skill_button_size"
     android:layout_margin="@dimen/element_spacing_small"
-    android:orientation="horizontal">
-
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:id="@+id/skill_button"
-        xmlns:fancy="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/skill_button_size"
-        fancy:fb_defaultColor="@color/branding_color"
-        fancy:fb_focusColor="@color/branding_color_focused"
-        fancy:fb_radius="30dp"
-        fancy:fb_text="Test"
-        fancy:fb_textColor="#FFFFFF"
-        fancy:fb_textGravity="center"/>
-
-</LinearLayout>
+    android:background="@drawable/btn_skill"
+    android:gravity="center"
+    android:padding="@dimen/element_spacing_normal"
+    android:textColor="?android:colorBackground"/>
