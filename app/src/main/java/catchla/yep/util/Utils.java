@@ -298,10 +298,7 @@ public class Utils implements Constants {
     }
 
     public static View inflateAddSkillView(final Context context, final LayoutInflater inflater, final ViewGroup parent) {
-        final View view = inflater.inflate(R.layout.layout_skill_label_button, parent, false);
-        final FancyButton button = (FancyButton) view.findViewById(R.id.skill_button);
-        button.setText(context.getString(R.string.add));
-        button.setIconResource("\uf067");
+        final View view = inflater.inflate(R.layout.layout_skill_add_button, parent, false);
         return view;
     }
 

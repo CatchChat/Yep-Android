@@ -2,6 +2,7 @@
 <resources>
     <color name="branding_color">#38A6F9</color>
     <color name="branding_color_focused">#74C0FA</color>
+    <color name="add_skill_color_focused">#4074C0FA</color>
     <color name="unread_color">@color/material_red</color>
     <color name="color_dribbble">#E74880</color>
     <color name="color_github">#181616</color>

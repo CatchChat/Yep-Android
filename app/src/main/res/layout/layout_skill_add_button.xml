@@ -7,19 +7,17 @@
     android:orientation="horizontal">
 
     <mehdi.sakout.fancybuttons.FancyButton
-        android:id="@+id/add_skill_button"
+        android:id="@+id/skill_button"
         xmlns:fancy="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="42dp"
-        android:minWidth="42dp"
-        android:padding="@dimen/element_spacing_normal"
-        fancy:defaultColor="@color/branding_color"
-        fancy:focusColor="@color/branding_color_focused"
-        fancy:fontIconResource="&#xf067;"
-        fancy:iconPaddingLeft="0dp"
-        fancy:iconPaddingRight="0dp"
-        fancy:radius="40dp"
-        fancy:textColor="#FFFFFF"/>
+        android:layout_width="@dimen/skill_button_size"
+        android:layout_height="@dimen/skill_button_size"
+        fancy:fb_borderColor="@color/branding_color"
+        fancy:fb_borderWidth="1dp"
+        fancy:fb_defaultColor="@android:color/transparent"
+        fancy:fb_focusColor="@color/add_skill_color_focused"
+        fancy:fb_radius="40dp"
+        fancy:fb_text="+"
+        fancy:fb_textColor="@color/branding_color"
+        fancy:fb_textGravity="center"/>
 
 </LinearLayout>

@@ -15,4 +15,5 @@
     <dimen name="text_field_country_code_width">56dp</dimen>
     <dimen name="profile_image_size_github_user_info">60dp</dimen>
     <dimen name="element_spacing_xlarge">24dp</dimen>
+    <dimen name="skill_button_size">36dp</dimen>
 </resources>
