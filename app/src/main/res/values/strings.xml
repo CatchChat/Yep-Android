@@ -60,4 +60,5 @@
     <string name="add">Add</string>
     <string name="edit_profile">Edit profile</string>
     <string name="add_skill">Add skill</string>
+    <string name="say_hello">Say hello</string>
 </resources>

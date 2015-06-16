@@ -33,7 +33,6 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
-import catchla.yep.view.HeaderDrawerLayout;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -134,7 +133,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
         final User user = getAdapter().getUser(position);
         final Intent intent = new Intent(getActivity(), UserActivity.class);
         try {
-            intent.putExtra(EXTRA_USER, LoganSquare.serialize(user));
+            intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(user));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

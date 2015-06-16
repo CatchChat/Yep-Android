@@ -104,4 +104,12 @@ public class Conversation extends RealmObject {
     public Date getCreatedAt() {
         return createdAt;
     }
+
+    public static Conversation fromUser(User user) {
+        final Conversation conversation = new Conversation();
+        conversation.setId(user.getId());
+        conversation.setRecipientId(user.getId());
+        conversation.setRecipientType(Message.RecipientType.USER);
+        return conversation;
+    }
 }

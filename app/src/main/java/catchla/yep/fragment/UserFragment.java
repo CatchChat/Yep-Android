@@ -41,9 +41,12 @@ import java.io.IOException;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.AddSkillActivity;
+import catchla.yep.activity.ChatActivity;
 import catchla.yep.activity.ProviderContentActivity;
 import catchla.yep.activity.ProviderOAuthActivity;
 import catchla.yep.activity.SkillActivity;
+import catchla.yep.activity.UserActivity;
+import catchla.yep.model.Conversation;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
@@ -72,6 +75,8 @@ public class UserFragment extends Fragment implements Constants,
     private TextView mIntroductionView;
     private FlowLayout mMasterSkills, mLearningSkills;
     private LinearLayout mProvidersContainer;
+    private View mSayHelloContainer;
+    private View mSayHelloButton;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -262,6 +267,20 @@ public class UserFragment extends Fragment implements Constants,
                 }
             }
         }
+        mSayHelloContainer.setVisibility(isMySelf ? View.GONE : View.VISIBLE);
+        mSayHelloButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final Intent intent = new Intent(getActivity(), ChatActivity.class);
+                try {
+                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.mapperFor(Conversation.class)
+                            .serialize(Conversation.fromUser(user)));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -276,6 +295,8 @@ public class UserFragment extends Fragment implements Constants,
         mLearningSkills = (FlowLayout) view.findViewById(R.id.learning_skills);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         mProvidersContainer = (LinearLayout) view.findViewById(R.id.providers_container);
+        mSayHelloContainer = view.findViewById(R.id.say_hello_container);
+        mSayHelloButton = view.findViewById(R.id.say_hello);
     }
 
     @Nullable

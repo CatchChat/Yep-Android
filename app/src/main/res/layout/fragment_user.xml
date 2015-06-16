@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2015. Catch Inc,
   -->
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,7 +24,8 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/say_hello_container">
 
         <catchla.yep.view.HeaderDrawerLayout
             android:id="@+id/header_drawer"
@@ -33,4 +34,20 @@
             app:contentLayout="@layout/layout_content_user"
             app:headerLayout="@layout/layout_header_user"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-</FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/say_hello_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:colorBackground">
+
+        <Button
+            android:layout_width="match_parent"
+            android:id="@+id/say_hello"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/say_hello"/>
+
+    </FrameLayout>
+</RelativeLayout>
