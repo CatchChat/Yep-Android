@@ -2,10 +2,11 @@
   ~ Copyright (c) 2015. Catch Inc,
   -->
 
-<catchla.yep.view.TintedStatusFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<catchla.yep.view.TintedStatusFrameLayout
+    android:id="@+id/main_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:setPadding="true">
@@ -25,7 +26,7 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical" />
+                android:scrollbars="vertical"/>
 
         </FrameLayout>
 
@@ -34,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/element_spacing_small"
             android:layout_above="@+id/input_panel"
-            android:background="@drawable/shadow_top" />
+            android:background="@drawable/shadow_top"/>
 
         <RelativeLayout
             android:id="@+id/input_panel"
@@ -45,10 +46,11 @@
             android:gravity="bottom"
             android:orientation="horizontal"
             android:outlineProvider="bounds"
-            android:padding="@dimen/element_spacing_normal"
+            android:paddingBottom="@dimen/element_spacing_normal"
+            android:paddingTop="@dimen/element_spacing_normal"
             tools:ignore="UnusedAttribute">
 
-            <ImageView
+            <catchla.yep.view.ActionIconView
                 android:id="@+id/add_image"
                 android:layout_width="@dimen/element_size_normal"
                 android:layout_height="@dimen/element_size_normal"
@@ -57,10 +59,11 @@
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:color="?android:textColorSecondary"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_action_mic"/>
 
-            <ImageView
-                android:id="@+id/send"
+            <catchla.yep.view.ActionIconView
+                android:id="@+id/attachment_send"
                 android:layout_width="@dimen/element_size_normal"
                 android:layout_height="@dimen/element_size_normal"
                 android:layout_alignParentEnd="true"
@@ -68,17 +71,20 @@
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:color="?android:textColorSecondary"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_action_attachment"/>
 
             <org.mariotaku.messagebubbleview.library.MessageBubbleView
                 android:id="@+id/edit_text_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
+                android:layout_marginEnd="-8dp"
+                android:layout_marginRight="-8dp"
                 android:layout_toEndOf="@+id/add_image"
-                android:layout_toLeftOf="@+id/send"
+                android:layout_toLeftOf="@+id/attachment_send"
                 android:layout_toRightOf="@+id/add_image"
-                android:layout_toStartOf="@+id/send"
+                android:layout_toStartOf="@+id/attachment_send"
                 app:bubbleColor="#fff"
                 app:caretHeight="8dp"
                 app:caretPosition="topRight"
@@ -106,7 +112,7 @@
                         android:textAppearance="?android:textAppearanceMedium"
                         android:textColor="?android:textColorPrimary">
 
-                        <requestFocus />
+                        <requestFocus/>
                     </EditText>
                 </FrameLayout>
             </org.mariotaku.messagebubbleview.library.MessageBubbleView>
