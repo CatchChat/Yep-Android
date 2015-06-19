@@ -96,6 +96,9 @@
             android:name=".activity.SignUpActivity"
             android:label="@string/sign_up"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
+        <activity
+            android:name=".activity.ThemedImagePickerActivity"
+            android:theme="@style/Theme.Yep.NoDisplay"/>
 
         <service android:name=".service.MessageService"/>
         <service

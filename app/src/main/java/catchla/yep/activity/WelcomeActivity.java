@@ -6,15 +6,9 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.LauncherActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -24,8 +18,6 @@ import android.widget.Button;
 import com.bluelinelabs.logansquare.LoganSquare;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -37,7 +29,6 @@ import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
-import catchla.yep.view.iface.PagerIndicator;
 
 public class WelcomeActivity extends AccountAuthenticatorActivity implements Constants, View.OnClickListener {
 
@@ -63,6 +54,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
             case REQUEST_ADD_ACCOUNT: {
+                if (resultCode != RESULT_OK) return;
                 final AccessToken token;
                 try {
                     token = LoganSquare.parse(data.getStringExtra(EXTRA_TOKEN), AccessToken.class);
@@ -83,7 +75,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
                 result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true);
                 setAccountAuthenticatorResult(result);
                 if (!getIntent().hasExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)) {
-                    final Intent launcherIntent = new Intent(this, LauncherActivity.class);
+                    final Intent launcherIntent = new Intent(this, MainActivity.class);
                     startActivity(launcherIntent);
                 }
                 finish();

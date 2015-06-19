@@ -13,10 +13,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.FixedLinearLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -48,8 +51,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     private RecyclerView mRecyclerView;
     private TintedStatusFrameLayout mMainContent;
-
-
+    private ImageView mAttachSendButton;
     private FixedLinearLayoutManager mLayoutManager;
     private ChatAdapter mAdapter;
     private EditText mEditText;
@@ -60,6 +62,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mEditText = (EditText) findViewById(R.id.edit_text);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
+        mAttachSendButton = (ImageView) findViewById(R.id.attachment_send);
     }
 
     @Override
@@ -82,12 +85,28 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        EditTextEnterHandler.attach(mEditText, new EditTextEnterHandler.EnterListener() {
+        final EditTextEnterHandler handler = EditTextEnterHandler.attach(mEditText, new EditTextEnterHandler.EnterListener() {
             @Override
             public void onHitEnter() {
                 sendMessage();
             }
         }, true);
+        handler.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                mAttachSendButton.setImageResource(s.length() > 0 ? R.drawable.ic_action_send : R.drawable.ic_action_attachment);
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+
+            }
+        });
 
         final Intent intent = getIntent();
         if (!intent.hasExtra(EXTRA_CONVERSATION)) {

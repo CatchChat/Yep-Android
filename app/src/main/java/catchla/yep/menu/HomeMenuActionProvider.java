@@ -190,7 +190,7 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         final TextView name = (TextView) mProfileView.findViewById(R.id.home_menu_name);
         final AccountManager am = AccountManager.get(getContext());
         name.setText(am.getUserData(account, USER_DATA_NICKNAME));
-        Picasso.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).into(view);
+        Picasso.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).placeholder(R.drawable.ic_profile_image_default).into(view);
     }
 
     public static final class Action {

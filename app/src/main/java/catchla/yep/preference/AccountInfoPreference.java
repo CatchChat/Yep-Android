@@ -46,7 +46,7 @@ public class AccountInfoPreference extends Preference implements Constants {
         if (mAccount != null) {
             final ImageView profileImageView = (ImageView) view.findViewById(R.id.account_profile_image);
             final TextView nameView = (TextView) view.findViewById(R.id.account_name);
-            Picasso.with(getContext()).load(mAccountUser.getAvatarUrl()).into(profileImageView);
+            Picasso.with(getContext()).load(mAccountUser.getAvatarUrl()).placeholder(R.drawable.ic_profile_image_default).into(profileImageView);
             nameView.setText(mAccountUser.getNickname());
         }
     }

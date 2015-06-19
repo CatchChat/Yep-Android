@@ -15,20 +15,38 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.picasso.Picasso;
 
+import org.mariotaku.pickncrop.library.ImagePickerActivity;
+
 import catchla.yep.R;
+import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
 
 public class ProfileEditorActivity extends ContentActivity {
 
+    private static final int REQUEST_PICK_IMAGE = 101;
     private ImageView mProfileImageView;
     private TextView mCountryCodeView;
     private TextView mPhoneNumberView;
     private View mLogoutButton;
     private EditText mEditNickname;
     private EditText mEditIntroduction;
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_PICK_IMAGE: {
+                if (resultCode != RESULT_OK)return;
+
+//                mTask = task;
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +56,7 @@ public class ProfileEditorActivity extends ContentActivity {
         final Account account = Utils.getCurrentAccount(this);
         final User user = Utils.getAccountUser(this, account);
         if (user != null) {
-            Picasso.with(this).load(user.getAvatarUrl()).into(mProfileImageView);
+            Picasso.with(this).load(user.getAvatarUrl()).placeholder(R.drawable.ic_profile_image_default).into(mProfileImageView);
             mCountryCodeView.setText(user.getPhoneCode());
             mPhoneNumberView.setText(user.getMobile());
             mEditNickname.setText(user.getNickname());
@@ -49,6 +67,14 @@ public class ProfileEditorActivity extends ContentActivity {
             public void onClick(final View v) {
                 final LogoutConfirmDialogFragment df = new LogoutConfirmDialogFragment();
                 df.show(getFragmentManager(), "logout_confirm");
+            }
+        });
+        mProfileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final Intent intent = ImagePickerActivity.with(ProfileEditorActivity.this).aspectRatio(1, 1).maximumSize(512, 512).build();
+                intent.setClass(ProfileEditorActivity.this, ThemedImagePickerActivity.class);
+                startActivityForResult(intent, REQUEST_PICK_IMAGE);
             }
         });
     }
