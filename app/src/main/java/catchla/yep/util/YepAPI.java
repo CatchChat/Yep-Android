@@ -1,5 +1,6 @@
 package catchla.yep.util;
 
+import org.mariotaku.restfu.annotation.method.DELETE;
 import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
@@ -25,6 +26,7 @@ import catchla.yep.model.PagedSkillCategories;
 import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
+import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.User;
 import catchla.yep.model.VerificationMethod;
 
@@ -64,6 +66,7 @@ public interface YepAPI {
                         @Form("method") VerificationMethod method) throws YepException;
 
     @PATCH("/v1/user")
+    @Body(BodyType.FORM)
     User updateProfile(@Form ProfileUpdate profileUpdate) throws YepException;
 
     @GET("/v1/user")
@@ -92,5 +95,22 @@ public interface YepAPI {
 
     @POST("/v1/messages")
     Message createMessage(@Form NewMessage message) throws YepException;
+
+    @DELETE("/v1/learning_skills/{id}")
+    void removeLearningSkill(@Path("id") String id) throws YepException;
+
+    @POST("/v1/learning_skills")
+    @Body(BodyType.FORM)
+    void addLearningSkill(@Form("skill_id") String id) throws YepException;
+
+    @DELETE("/v1/master_skills/{id}")
+    void removeMasterSkill(@Path("id") String id) throws YepException;
+
+    @POST("/v1/master_skills")
+    @Body(BodyType.FORM)
+    void addMasterSkill(@Form("skill_id") String id) throws YepException;
+
+    @GET("/v1/attachments/s3_upload_public_form_fields")
+    S3UploadToken getS3UploadToken() throws YepException;
 }
 

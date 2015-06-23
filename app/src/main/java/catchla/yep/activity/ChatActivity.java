@@ -55,6 +55,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private FixedLinearLayoutManager mLayoutManager;
     private ChatAdapter mAdapter;
     private EditText mEditText;
+    private Conversation mConversation;
 
     @Override
     public void onContentChanged() {
@@ -84,6 +85,16 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mAdapter = new ChatAdapter(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        mAttachSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (mEditText.length() > 0) {
+                    sendMessage();
+                } else {
+                    openAttachmentMenu();
+                }
+            }
+        });
 
         final EditTextEnterHandler handler = EditTextEnterHandler.attach(mEditText, new EditTextEnterHandler.EnterListener() {
             @Override
@@ -116,7 +127,13 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
+    private void openAttachmentMenu() {
+
+    }
+
     private void sendMessage() {
+        final Conversation conversation = mConversation;
+        if (conversation == null) return;
         final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity>() {
             @Override
             public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
@@ -130,6 +147,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         };
         final NewMessage newMessage = new NewMessage();
         newMessage.textContent(String.valueOf(mEditText.getText()));
+        newMessage.recipientId(conversation.getRecipientId());
+        newMessage.recipientType(conversation.getRecipientType());
         task.setParams(newMessage);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
@@ -140,6 +159,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         final Conversation conversation;
         try {
             conversation = LoganSquare.parse(args.getString(EXTRA_CONVERSATION), Conversation.class);
+            mConversation = conversation;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

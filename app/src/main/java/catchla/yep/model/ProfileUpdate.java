@@ -19,4 +19,7 @@ public class ProfileUpdate extends SimpleValueMap {
         put("username", username);
     }
 
+    public void setIntroduction(final String introduction) {
+        put("introduction", introduction);
+    }
 }

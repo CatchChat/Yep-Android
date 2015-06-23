@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>ic_launcher</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.14 0" in="shadowBlurOuter1" type="matrix" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="-1" in="SourceAlpha" result="shadowOffsetInner1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetInner1" result="shadowBlurInner1"></feGaussianBlur>
+            <feComposite in="shadowBlurInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.07 0" in="shadowInnerInner1" type="matrix" result="shadowMatrixInner1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+                <feMergeNode in="shadowMatrixInner1"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path id="path-2" d="M12.5027705,5.61433597 L12.6415796,5.55746684 L20.779073,0.980882869 L24.3114658,2.95842883 L24.3033785,6.9271659 L15.9749927,11.611109 L15.9749927,20.4290413 L12.5027705,22.390806 L9.03054829,20.4290413 L9.03054829,11.6142253 L0.696621547,6.9271659 L0.688534203,2.95842883 L4.22092697,0.980882869 L12.3611973,5.55902856 L12.5027705,5.61433597 Z"></path>
+    </defs>
+    <g id="App-icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="ic_launcher" sketch:type="MSArtboardGroup">
+            <circle id="O" fill="#FFFFFF" filter="url(#filter-1)" sketch:type="MSShapeGroup" cx="24" cy="24" r="22"></circle>
+            <g id="Logo" sketch:type="MSLayerGroup" transform="translate(11.500000, 14.400000)">
+                <mask id="mask-3" sketch:name="Polygon" fill="white">
+                    <use xlink:href="#path-2"></use>
+                </mask>
+                <use id="Polygon" fill="#38A6F9" sketch:type="MSShapeGroup" xlink:href="#path-2"></use>
+                <polygon id="l" opacity="0.2" fill="#FFFFFF" sketch:type="MSShapeGroup" mask="url(#mask-3)" points="12.5 -24.2176465 27.5351633 -15.7617642 27.5351633 1.15000052 12.5 9.60588287 -2.53516326 1.15000052 -2.53516326 -15.7617642 "></polygon>
+                <polygon id="s" opacity="0.100000016" fill="#000000" sketch:type="MSShapeGroup" mask="url(#mask-3)" points="27.534722 1.15000052 42.5698852 9.60588287 42.5698852 26.5176476 27.534722 34.9735299 12.4995587 26.5176476 12.4995587 9.60588287 "></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

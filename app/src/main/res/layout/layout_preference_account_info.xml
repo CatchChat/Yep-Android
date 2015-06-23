@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="@dimen/element_spacing_large">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="@dimen/element_spacing_large">
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/account_profile_image"
         android:layout_width="@dimen/icon_size_account_info_profile_image"
         android:layout_height="@dimen/icon_size_account_info_profile_image"
-        android:src="@drawable/ic_profile_image_kevin" />
+        android:src="@drawable/ic_profile_image_kevin"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,18 +20,18 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
             android:id="@+id/account_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="?android:textColorPrimary" />
+            android:textColor="?android:textColorPrimary"/>
 
         <TextView
+            android:id="@+id/account_introduction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="I'm good at iOS development and signing. Come here, let me teach you."
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorPrimary" />
+            android:textColor="?android:textColorPrimary"/>
 
     </LinearLayout>
 </LinearLayout>

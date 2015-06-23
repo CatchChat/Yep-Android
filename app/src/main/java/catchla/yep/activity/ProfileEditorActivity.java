@@ -4,30 +4,43 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mariotaku.pickncrop.library.ImagePickerActivity;
 
 import catchla.yep.R;
+import catchla.yep.fragment.ProgressDialogFragment;
+import catchla.yep.model.ProfileUpdate;
+import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
+import catchla.yep.util.YepAPI;
+import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.YepException;
 
 public class ProfileEditorActivity extends ContentActivity {
 
     private static final int REQUEST_PICK_IMAGE = 101;
+
+    // Views
     private ImageView mProfileImageView;
     private TextView mCountryCodeView;
     private TextView mPhoneNumberView;
@@ -35,13 +48,18 @@ public class ProfileEditorActivity extends ContentActivity {
     private EditText mEditNickname;
     private EditText mEditIntroduction;
 
+    // Data fields
+    private Uri mProfileImageUri;
+    private User mCurrentUser;
+    private UpdateProfileTask mTask;
+
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         switch (requestCode) {
             case REQUEST_PICK_IMAGE: {
-                if (resultCode != RESULT_OK)return;
-
-//                mTask = task;
+                if (resultCode != RESULT_OK) return;
+                mProfileImageUri = data.getData();
+                loadUser();
                 return;
             }
         }
@@ -53,20 +71,12 @@ public class ProfileEditorActivity extends ContentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_editor);
 
-        final Account account = Utils.getCurrentAccount(this);
-        final User user = Utils.getAccountUser(this, account);
-        if (user != null) {
-            Picasso.with(this).load(user.getAvatarUrl()).placeholder(R.drawable.ic_profile_image_default).into(mProfileImageView);
-            mCountryCodeView.setText(user.getPhoneCode());
-            mPhoneNumberView.setText(user.getMobile());
-            mEditNickname.setText(user.getNickname());
-            mEditIntroduction.setText(user.getIntroduction());
-        }
+        loadUser();
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 final LogoutConfirmDialogFragment df = new LogoutConfirmDialogFragment();
-                df.show(getFragmentManager(), "logout_confirm");
+                df.show(getSupportFragmentManager(), "logout_confirm");
             }
         });
         mProfileImageView.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +89,30 @@ public class ProfileEditorActivity extends ContentActivity {
         });
     }
 
+    private void loadUser() {
+        final Account account = Utils.getCurrentAccount(this);
+        final User user = Utils.getAccountUser(this, account);
+        if (user != null) {
+            displayUser(user);
+        }
+    }
+
+    private void displayUser(final User user) {
+        mCurrentUser = user;
+        final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
+        Picasso.with(this).load(url).placeholder(R.drawable.ic_profile_image_default).into(mProfileImageView);
+        mCountryCodeView.setText(user.getPhoneCode());
+        mPhoneNumberView.setText(user.getMobile());
+        mEditNickname.setText(user.getNickname());
+        mEditIntroduction.setText(user.getIntroduction());
+    }
+
     public static class LogoutConfirmDialogFragment extends DialogFragment {
+        @NonNull
         @Override
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.logout_confirm_message);
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(final DialogInterface dialog, final int which) {
@@ -118,9 +148,84 @@ public class ProfileEditorActivity extends ContentActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        return super.onOptionsItemSelected(item);
+    public void onBackPressed() {
+        if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
+        boolean changed = mProfileImageUri != null;
+        if (!TextUtils.equals(mCurrentUser.getNickname(), mEditNickname.getText())) {
+            changed |= true;
+        }
+        if (!TextUtils.equals(mCurrentUser.getIntroduction(), mEditIntroduction.getText())) {
+            changed |= true;
+        }
+        if (changed) {
+            mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this),
+                    String.valueOf(mEditNickname.getText()), String.valueOf(mEditIntroduction.getText()),
+                    mProfileImageUri);
+            mTask.execute();
+            return;
+        }
+        super.onBackPressed();
     }
 
+    private static class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<User>> {
+        private static final String UPDATE_PROFILE_DIALOG_FRAGMENT_TAG = "update_profile";
+        private final ProfileEditorActivity mActivity;
+        private final Account mAccount;
+        private final String mNickname;
+        private final String mIntroduction;
+        private final Uri mProfileImageUri;
+
+        public UpdateProfileTask(final ProfileEditorActivity activity, final Account account, final String nickname, final String introduction, final Uri profileImageUri) {
+            mActivity = activity;
+            mAccount = account;
+            mNickname = nickname;
+            mIntroduction = introduction;
+            mProfileImageUri = profileImageUri;
+        }
+
+        @Override
+        protected TaskResponse<User> doInBackground(final Object... params) {
+            final YepAPI yep = YepAPIFactory.getInstance(mActivity, mAccount);
+            final ProfileUpdate profileUpdate = new ProfileUpdate();
+            if (mProfileImageUri != null) {
+                try {
+                    final S3UploadToken token = yep.getS3UploadToken();
+                    System.identityHashCode(token);
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+            profileUpdate.setNickname(mNickname);
+            profileUpdate.setIntroduction(mIntroduction);
+            try {
+                yep.updateProfile(profileUpdate);
+                final User data = yep.getUser();
+                Utils.saveUserInfo(mActivity, mAccount, data);
+                return TaskResponse.getInstance(data);
+            } catch (YepException e) {
+                return TaskResponse.getInstance(e);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogFragment df = ProgressDialogFragment.show(mActivity, UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
+            df.setCancelable(false);
+        }
+
+        @Override
+        protected void onPostExecute(final TaskResponse<User> result) {
+            final FragmentManager fm = mActivity.getSupportFragmentManager();
+            final Fragment fragment = fm.findFragmentByTag(UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
+            if (fragment instanceof DialogFragment) {
+                ((DialogFragment) fragment).dismiss();
+            }
+            if (result.hasData()) {
+                mActivity.displayUser(result.getData());
+                mActivity.finish();
+            }
+            super.onPostExecute(result);
+        }
+    }
 }

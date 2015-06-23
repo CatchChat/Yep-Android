@@ -5,15 +5,18 @@
 package catchla.yep.fragment;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -26,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
@@ -37,15 +41,16 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.activity.AddSkillActivity;
 import catchla.yep.activity.ChatActivity;
 import catchla.yep.activity.ProviderContentActivity;
 import catchla.yep.activity.ProviderOAuthActivity;
 import catchla.yep.activity.SkillActivity;
-import catchla.yep.activity.UserActivity;
+import catchla.yep.activity.SkillSelectorActivity;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
@@ -67,6 +72,8 @@ import io.realm.RealmList;
 public class UserFragment extends Fragment implements Constants,
         HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
 
+    private static final int REQUEST_SELECT_MASTER_SKILLS = 111;
+    private static final int REQUEST_SELECT_LEARNING_SKILLS = 112;
     private HeaderDrawerLayout mHeaderDrawerLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ScrollView mScrollView;
@@ -77,6 +84,8 @@ public class UserFragment extends Fragment implements Constants,
     private LinearLayout mProvidersContainer;
     private View mSayHelloContainer;
     private View mSayHelloButton;
+    private User mCurrentUser;
+    private UpdateSkillsTask mTask;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -107,16 +116,13 @@ public class UserFragment extends Fragment implements Constants,
                     @Override
                     public TaskResponse<User> doLongOperation(final Triple<Context, Account, User> param)
                             throws InterruptedException {
-                        final YepAPI yep = YepAPIFactory.getInstance(param.getLeft(), param.getMiddle());
+                        final Context context = param.getLeft();
+                        final Account account = param.getMiddle();
+                        final YepAPI yep = YepAPIFactory.getInstance(context, account);
                         try {
                             if (param.getRight() != null) throw new YepException();
                             final User user = yep.getUser();
-                            final AccountManager am = AccountManager.get(param.getLeft());
-                            final Bundle userData = new Bundle();
-                            Utils.writeUserToUserData(user, userData);
-                            for (String key : userData.keySet()) {
-                                am.setUserData(param.getMiddle(), key, userData.getString(key));
-                            }
+                            Utils.saveUserInfo(context, account, user);
                             return TaskResponse.getInstance(user);
                         } catch (YepException e) {
                             return TaskResponse.getInstance(e);
@@ -128,6 +134,13 @@ public class UserFragment extends Fragment implements Constants,
                         handler.mSwipeRefreshLayout.setRefreshing(false);
                         if (result.hasData()) {
                             handler.displayUser(result.getData());
+                        } else if (result.hasException()) {
+                            final String error = Utils.getErrorMessage(result.getException());
+                            if (TextUtils.isEmpty(error)) {
+                                Toast.makeText(getActivity(), R.string.unable_to_get_profile, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 };
@@ -138,8 +151,48 @@ public class UserFragment extends Fragment implements Constants,
         });
     }
 
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_SELECT_LEARNING_SKILLS: {
+                if (resultCode != Activity.RESULT_OK) return;
+                if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
+                final List<Skill> skills;
+                try {
+                    skills = LoganSquare.parseList(data.getStringExtra(EXTRA_SKILLS), Skill.class);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                mTask = new UpdateSkillsTask(this, Utils.getCurrentAccount(getActivity()), mCurrentUser, skills, true);
+                return;
+            }
+            case REQUEST_SELECT_MASTER_SKILLS: {
+                if (resultCode != Activity.RESULT_OK) return;
+                if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
+                final List<Skill> skills;
+                try {
+                    skills = LoganSquare.parseList(data.getStringExtra(EXTRA_SKILLS), Skill.class);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                mTask = new UpdateSkillsTask(this, Utils.getCurrentAccount(getActivity()), mCurrentUser, skills, false);
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mTask != null && mTask.getStatus() == AsyncTask.Status.PENDING) {
+            mTask.execute();
+        }
+    }
+
     private void displayUser(final User user) {
         if (user == null) return;
+        mCurrentUser = user;
         Picasso.with(getActivity()).load(user.getAvatarUrl()).into(mProfileImageView);
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {
@@ -183,13 +236,13 @@ public class UserFragment extends Fragment implements Constants,
             skillButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final Intent intent = new Intent(getActivity(), AddSkillActivity.class);
+                    final Intent intent = new Intent(getActivity(), SkillSelectorActivity.class);
                     try {
                         intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(learningSkills, Skill.class));
                     } catch (IOException e) {
                         Log.e(LOGTAG, "Error serializing", e);
                     }
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_SELECT_LEARNING_SKILLS);
                 }
             });
             mLearningSkills.addView(view);
@@ -211,13 +264,13 @@ public class UserFragment extends Fragment implements Constants,
             skillButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    final Intent intent = new Intent(getActivity(), AddSkillActivity.class);
+                    final Intent intent = new Intent(getActivity(), SkillSelectorActivity.class);
                     try {
                         intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(masterSkills, Skill.class));
                     } catch (IOException e) {
                         Log.e(LOGTAG, "Error serializing", e);
                     }
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_SELECT_MASTER_SKILLS);
                 }
             });
             mMasterSkills.addView(view);
@@ -363,5 +416,91 @@ public class UserFragment extends Fragment implements Constants,
     public int getHeaderPaddingTop() {
         if (mHeaderDrawerLayout == null) return 0;
         return mHeaderDrawerLayout.getPaddingTop();
+    }
+
+    private static class UpdateSkillsTask extends AsyncTask<Object, Object, TaskResponse<User>> {
+        private static final String UPDATE_SKILLS_DIALOG_FRAGMENT_TAG = "update_skills";
+        private final UserFragment mFragment;
+        private final Account mAccount;
+        private final User mUser;
+        private final List<Skill> mSkills;
+        private final boolean mLearning;
+
+        public UpdateSkillsTask(final UserFragment fragment, final Account account, final User user, final List<Skill> skills, final boolean learning) {
+            mFragment = fragment;
+            mAccount = account;
+            mUser = user;
+            mSkills = skills;
+            mLearning = learning;
+        }
+
+        @Override
+        protected TaskResponse<User> doInBackground(final Object... params) {
+            final YepAPI yep = YepAPIFactory.getInstance(mFragment.getActivity(), mAccount);
+            List<Skill> currentSkills;
+            if (mLearning) {
+                currentSkills = mUser.getLearningSkills();
+            } else {
+                currentSkills = mUser.getMasterSkills();
+            }
+            if (currentSkills == null) {
+                currentSkills = new ArrayList<>();
+            }
+            for (Skill current : currentSkills) {
+                final String id = current.getId();
+                if (Utils.findSkill(mSkills, id) == null) {
+                    try {
+                        if (mLearning) {
+                            yep.removeLearningSkill(id);
+                        } else {
+                            yep.removeMasterSkill(id);
+                        }
+                    } catch (YepException e) {
+
+                    }
+                }
+            }
+            for (Skill skill : mSkills) {
+                final String id = skill.getId();
+                if (Utils.findSkill(currentSkills, id) == null) {
+                    try {
+                        if (mLearning) {
+                            yep.addLearningSkill(id);
+                        } else {
+                            yep.addMasterSkill(id);
+                        }
+                    } catch (YepException e) {
+
+                    }
+                }
+            }
+            try {
+                final User user = yep.getUser();
+                Utils.saveUserInfo(mFragment.getActivity(), mAccount, user);
+                return TaskResponse.getInstance(user);
+            } catch (YepException e) {
+                return TaskResponse.getInstance(e);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogFragment df = ProgressDialogFragment.show(mFragment.getActivity(), UPDATE_SKILLS_DIALOG_FRAGMENT_TAG);
+            df.setCancelable(false);
+        }
+
+        @Override
+        protected void onPostExecute(final TaskResponse<User> result) {
+            final FragmentManager fm = mFragment.getFragmentManager();
+            final Fragment fragment = fm.findFragmentByTag(UPDATE_SKILLS_DIALOG_FRAGMENT_TAG);
+            if (fragment instanceof DialogFragment) {
+                ((DialogFragment) fragment).dismiss();
+            }
+            if (result.hasData()) {
+                mFragment.displayUser(result.getData());
+            }
+            super.onPostExecute(result);
+        }
     }
 }

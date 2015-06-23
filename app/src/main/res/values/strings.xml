@@ -61,4 +61,6 @@
     <string name="edit_profile">Edit profile</string>
     <string name="add_skill">Add skill</string>
     <string name="say_hello">Say hello</string>
+    <string name="unable_to_get_profile">Unable to get profile</string>
+    <string name="logout_confirm_message">Are you sure to logout?</string>
 </resources>

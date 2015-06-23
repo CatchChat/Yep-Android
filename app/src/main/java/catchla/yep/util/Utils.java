@@ -31,6 +31,8 @@ import android.widget.TextView;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -311,5 +313,30 @@ public class Utils implements Constants {
         final Drawable drawable = ThemeUtils.getCompatToolbarOverlay(activity);
         if (drawable == null) return;
         drawable.setAlpha(Math.round(alpha * 255));
+    }
+
+    public static String getErrorMessage(final Exception exception) {
+        if (exception instanceof YepException) {
+            return ((YepException) exception).getError();
+        }
+        return null;
+    }
+
+    public static Skill findSkill(List<Skill> skills, String id) {
+        if (skills == null || id == null) return null;
+        for (Skill skill : skills) {
+            if (id.equals(skill.getId())) return skill;
+        }
+        return null;
+    }
+
+    public static void saveUserInfo(final Context context, final Account account, final User user) {
+        final AccountManager am = AccountManager.get(context);
+        if (!TextUtils.equals(user.getId(), am.getUserData(account, USER_DATA_ID))) return;
+        final Bundle userData = new Bundle();
+        writeUserToUserData(user, userData);
+        for (String key : userData.keySet()) {
+            am.setUserData(account, key, userData.getString(key));
+        }
     }
 }

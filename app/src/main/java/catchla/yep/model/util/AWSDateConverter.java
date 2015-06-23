@@ -12,10 +12,10 @@ import java.util.Locale;
 /**
  * Created by mariotaku on 15/5/29.
  */
-public class ISO8601DateConverter extends DateTypeConverter {
+public class AWSDateConverter extends DateTypeConverter {
     @Override
     public DateFormat getDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
     }
 
     @Override
