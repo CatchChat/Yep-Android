@@ -14,6 +14,7 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
+import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Friendship;
 import catchla.yep.view.holder.FriendViewHolder;
 
@@ -25,6 +26,15 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final LayoutInflater mInflater;
 
     private List<Friendship> mData;
+    private ItemClickListener mItemClickListener;
+    private ItemClickListener mInternalItemClickListener = new ItemClickListener() {
+        @Override
+        public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(position, holder);
+            }
+        }
+    };
 
     public FriendsListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -33,7 +43,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(null, view);
+        return new FriendViewHolder(mInternalItemClickListener, view);
     }
 
     @Override
@@ -58,6 +68,11 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mData.size();
     }
 
+    public Friendship getFriendship(int position) {
+        if (mData == null) return null;
+        return mData.get(position);
+    }
+
     @Override
     public boolean isLoadMoreIndicatorVisible() {
         return false;
@@ -66,6 +81,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void setLoadMoreIndicatorVisible(boolean enabled) {
 
+    }
+
+    public void setItemClickListener(final ItemClickListener listener) {
+        mItemClickListener = listener;
     }
 
     @Override

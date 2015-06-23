@@ -136,6 +136,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         if (conversation == null) return;
         final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity>() {
             @Override
+            public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
+                super.callback(handler, result);
+            }
+
+            @Override
             public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
                 YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
                 try {
@@ -152,6 +157,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         task.setParams(newMessage);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
+        mEditText.setText("");
     }
 
     @Override

@@ -94,6 +94,7 @@ public interface YepAPI {
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
     @POST("/v1/messages")
+    @Body(BodyType.FORM)
     Message createMessage(@Form NewMessage message) throws YepException;
 
     @DELETE("/v1/learning_skills/{id}")

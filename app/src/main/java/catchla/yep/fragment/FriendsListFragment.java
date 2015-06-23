@@ -5,6 +5,7 @@
 package catchla.yep.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,14 +18,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
+import java.io.IOException;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.FriendsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
+import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.FriendshipsLoader;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.User;
 import catchla.yep.util.Utils;
 
 /**
@@ -49,6 +56,19 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
         recyclerView.addItemDecoration(itemDecoration);
         getLoaderManager().initLoader(0, null, this);
         showContent();
+        getAdapter().setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
+                final Friendship friendship = getAdapter().getFriendship(position);
+                final Intent intent = new Intent(getActivity(), UserActivity.class);
+                try {
+                    intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(friendship.getFriend()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                startActivity(intent);
+            }
+        });
     }
 
     @NonNull
