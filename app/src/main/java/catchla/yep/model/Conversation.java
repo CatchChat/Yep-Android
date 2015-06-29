@@ -5,7 +5,7 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
 
-import catchla.yep.model.util.ISO8601DateConverter;
+import catchla.yep.model.util.YepTimestampDateConverter;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -46,7 +46,7 @@ public class Conversation extends RealmObject {
     @JsonField(name = "id")
     private String id;
 
-    @JsonField(name = "created_at", typeConverter = ISO8601DateConverter.class)
+    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     private Date createdAt;
 
     public User getSender() {

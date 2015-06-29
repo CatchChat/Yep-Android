@@ -19,6 +19,7 @@
 
 package catchla.yep.util.net;
 
+import android.content.Context;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -59,11 +60,7 @@ public class OkHttpRestClient implements RestHttpClient {
 
     private final OkHttpClient client;
 
-    public OkHttpRestClient() {
-        this(new OkHttpClient());
-    }
-
-    public OkHttpRestClient(OkHttpClient client) {
+    public OkHttpRestClient(Context context, OkHttpClient client) {
         this.client = client;
         DebugModeUtils.initForHttpClient(client);
     }
@@ -85,6 +82,7 @@ public class OkHttpRestClient implements RestHttpClient {
                 builder.addHeader(header.first, header.second);
             }
         }
+        builder.tag(restHttpRequest.getExtra());
         return client.newCall(builder.build());
     }
 
@@ -130,6 +128,11 @@ public class OkHttpRestClient implements RestHttpClient {
         @Override
         public void writeTo(BufferedSink sink) throws IOException {
             body.writeTo(sink.outputStream());
+        }
+
+        @Override
+        public long contentLength() throws IOException {
+            return body.length();
         }
 
         @Nullable

@@ -4,6 +4,7 @@
 
 package catchla.yep.activity;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 import catchla.yep.view.TintedStatusFrameLayout;
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -132,19 +134,28 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     private void sendMessage() {
+        final Account account = Utils.getCurrentAccount(ChatActivity.this);
         final Conversation conversation = mConversation;
-        if (conversation == null) return;
+        if (account == null || conversation == null) return;
         final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity>() {
             @Override
             public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
+                if (result.hasData()) {
+                    Realm realm = Utils.getRealmForAccount(handler, account);
+                    realm.beginTransaction();
+                    realm.copyToRealmOrUpdate(result.getData());
+                    realm.commitTransaction();
+                }
                 super.callback(handler, result);
             }
 
             @Override
             public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
-                YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
+                YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, account);
                 try {
-                    return TaskResponse.getInstance(yep.createMessage(newMessage));
+                    final Message message = yep.createMessage(newMessage);
+                    message.setConversationId(conversation.getId());
+                    return TaskResponse.getInstance(message);
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
                 }

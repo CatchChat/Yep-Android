@@ -134,7 +134,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
             @Override
             public TaskResponse<Pair<String, String>> doLongOperation(final String[] args) throws InterruptedException {
-                final YepAPI yep = YepAPIFactory.getInstance(null);
+                final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
                     yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS);
                     return TaskResponse.getInstance(Pair.create(args[0], args[1]));
@@ -183,7 +183,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
             @Override
             public TaskResponse<AccessToken> doLongOperation(final String[] args) throws InterruptedException {
-                final YepAPI yep = YepAPIFactory.getInstance(null);
+                final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
                     return TaskResponse.getInstance(yep.updateRegistration(args[0], args[1], args[2],
                             Client.OFFICIAL, 0));

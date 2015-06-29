@@ -98,7 +98,11 @@
             android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
             android:name=".activity.ThemedImagePickerActivity"
-            android:theme="@style/Theme.Yep.NoDisplay"/>
+            android:theme="@style/Theme.Yep.NoDisplay"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name=".activity.ThemedImageCropperActivity"
+            android:theme="@android:style/Theme.DeviceDefault.Light"/>
 
         <service android:name=".service.MessageService"/>
         <service

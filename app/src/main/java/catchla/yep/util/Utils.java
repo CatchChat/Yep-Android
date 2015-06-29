@@ -31,11 +31,18 @@ import android.widget.TextView;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 
-import org.apache.commons.lang3.StringUtils;
+import org.mariotaku.restfu.annotation.method.POST;
+import org.mariotaku.restfu.http.RestHttpClient;
+import org.mariotaku.restfu.http.RestHttpRequest;
+import org.mariotaku.restfu.http.RestHttpResponse;
+import org.mariotaku.restfu.http.mime.FileTypedData;
+import org.mariotaku.restfu.http.mime.MultipartTypedBody;
+import org.mariotaku.restfu.http.mime.StringTypedData;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -44,6 +51,7 @@ import java.util.regex.Pattern;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.model.Provider;
+import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import io.realm.Realm;
@@ -338,5 +346,35 @@ public class Utils implements Constants {
         for (String key : userData.keySet()) {
             am.setUserData(account, key, userData.getString(key));
         }
+    }
+
+    public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, File file) throws IOException {
+        return uploadToS3(client, token, new FileTypedData(file));
+    }
+
+    public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, FileTypedData file) throws IOException {
+        final S3UploadToken.Options options = token.getOptions();
+        final S3UploadToken.Policy policy = options.getPolicy();
+        final RestHttpRequest.Builder builder = new RestHttpRequest.Builder();
+        builder.method(POST.METHOD);
+        builder.url(options.getUrl());
+        final MultipartTypedBody body = new MultipartTypedBody();
+        final Charset charset = Charset.forName("UTF-8");
+        final S3UploadToken.Condition key = S3UploadToken.Policy.getCondition(policy, "key");
+        final S3UploadToken.Condition acl = S3UploadToken.Policy.getCondition(policy, "acl");
+        final S3UploadToken.Condition algorithm = S3UploadToken.Policy.getCondition(policy, "x-amz-algorithm");
+        final S3UploadToken.Condition credential = S3UploadToken.Policy.getCondition(policy, "x-amz-credential");
+        final S3UploadToken.Condition date = S3UploadToken.Policy.getCondition(policy, "x-amz-date");
+        assert key != null && acl != null && algorithm != null && credential != null && date != null;
+        body.add("key", new StringTypedData(key.getValue(), charset));
+        body.add("acl", new StringTypedData(acl.getValue(), charset));
+        body.add("X-Amz-Algorithm", new StringTypedData(algorithm.getValue(), charset));
+        body.add("X-Amz-Signature", new StringTypedData(options.getSignature(), charset));
+        body.add("X-Amz-Date", new StringTypedData(date.getValue(), charset));
+        body.add("X-Amz-Credential", new StringTypedData(credential.getValue(), charset));
+        body.add("Policy", new StringTypedData(options.getEncodedPolicy(), charset));
+        body.add("file", file);
+        builder.body(body);
+        return client.execute(builder.build());
     }
 }

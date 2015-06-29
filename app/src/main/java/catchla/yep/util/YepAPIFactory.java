@@ -12,16 +12,20 @@ import com.squareup.okhttp.OkHttpClient;
 import org.mariotaku.restfu.ExceptionFactory;
 import org.mariotaku.restfu.RequestInfoFactory;
 import org.mariotaku.restfu.RestAPIFactory;
+import org.mariotaku.restfu.RestClient;
 import org.mariotaku.restfu.RestMethodInfo;
 import org.mariotaku.restfu.RestRequestInfo;
 import org.mariotaku.restfu.annotation.RestMethod;
 import org.mariotaku.restfu.http.Endpoint;
 import org.mariotaku.restfu.http.FileValue;
+import org.mariotaku.restfu.http.RestHttpClient;
 import org.mariotaku.restfu.http.RestHttpRequest;
 import org.mariotaku.restfu.http.RestHttpResponse;
 import org.mariotaku.restfu.http.mime.TypedData;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,16 +42,16 @@ public class YepAPIFactory implements Constants {
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
-        return getInstance(getAuthToken(context, account));
+        return getInstanceWithToken(context, getAuthToken(context, account));
     }
 
-    public static YepAPI getInstance(final String accessToken) {
+    public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
         factory.setEndpoint(new Endpoint("http://park-staging.catchchatchina.com/api/"));
         final OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         client.setReadTimeout(10, TimeUnit.SECONDS);
-        factory.setClient(new OkHttpRestClient(client));
+        factory.setClient(new OkHttpRestClient(context, client));
         factory.setConverter(new LoganSquareConverter());
         factory.setAuthorization(new TokenAuthorization(accessToken));
         factory.setRequestInfoFactory(new RequestInfoFactory() {
@@ -108,5 +112,11 @@ public class YepAPIFactory implements Constants {
 
     public static boolean isAuthFailureUrl(final String url) {
         return "https://park.catchchatchina.com/auth/failure".equals(url);
+    }
+
+    public static RestHttpClient getHttpClient(final Object o) {
+        final InvocationHandler handler = Proxy.getInvocationHandler(o);
+        final RestClient client = (RestClient) handler;
+        return client.getRestClient();
     }
 }

@@ -32,6 +32,7 @@ public class ConditionConverter implements TypeConverter<S3UploadToken.Condition
         jsonParser.nextToken();
         condition.setValue(jsonParser.getValueAsString());
         jsonParser.skipChildren();
+        jsonParser.nextToken();
         return condition;
     }
 

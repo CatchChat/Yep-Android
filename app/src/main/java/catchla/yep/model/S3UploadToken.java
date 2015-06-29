@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import catchla.yep.model.util.AWSDateConverter;
-import catchla.yep.model.util.ConditionConverter;
-import catchla.yep.model.util.ISO8601DateConverter;
 
 /**
  * Created by mariotaku on 15/6/23.
@@ -126,6 +124,12 @@ public class S3UploadToken implements UploadToken {
             return conditions;
         }
 
+        public static Condition getCondition(final Policy policy, final String key) {
+            for (Condition condition : policy.conditions) {
+                if (key.equalsIgnoreCase(condition.getName())) return condition;
+            }
+            return null;
+        }
     }
 
     public static class Condition {

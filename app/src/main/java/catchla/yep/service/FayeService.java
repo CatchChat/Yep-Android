@@ -31,9 +31,7 @@ public class FayeService extends IntentService implements FayeClient.FayeListene
 
         try {
 
-            String baseUrl = "";
-
-            URI uri = URI.create(String.format("wss://%s:443/events", baseUrl));
+            URI uri = URI.create("ws://faye-staging.catchchatchina.com/faye");
             String channel = String.format("/%s/**", "");
 
             JSONObject ext = new JSONObject();

@@ -22,8 +22,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.apache.commons.lang3.StringUtils;
-import org.mariotaku.pickncrop.library.ImagePickerActivity;
+import org.mariotaku.restfu.http.RestHttpResponse;
+
+import java.io.File;
+import java.io.IOException;
 
 import catchla.yep.R;
 import catchla.yep.fragment.ProgressDialogFragment;
@@ -82,7 +84,7 @@ public class ProfileEditorActivity extends ContentActivity {
         mProfileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Intent intent = ImagePickerActivity.with(ProfileEditorActivity.this).aspectRatio(1, 1).maximumSize(512, 512).build();
+                final Intent intent = ThemedImagePickerActivity.withThemed(ProfileEditorActivity.this).aspectRatio(1, 1).maximumSize(512, 512).build();
                 intent.setClass(ProfileEditorActivity.this, ThemedImagePickerActivity.class);
                 startActivityForResult(intent, REQUEST_PICK_IMAGE);
             }
@@ -190,8 +192,15 @@ public class ProfileEditorActivity extends ContentActivity {
             if (mProfileImageUri != null) {
                 try {
                     final S3UploadToken token = yep.getS3UploadToken();
-                    System.identityHashCode(token);
+                    final RestHttpResponse response = Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, new File(mProfileImageUri.getPath()));
+                    if (response.isSuccessful()) {
+                        profileUpdate.setAvatarUrl(response.getHeader("Location"));
+                    } else {
+                        throw new YepException("Unable to upload to s3", response);
+                    }
                 } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                } catch (IOException e) {
                     return TaskResponse.getInstance(e);
                 }
             }

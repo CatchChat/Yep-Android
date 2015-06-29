@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.desmond.asyncmanager.AsyncManager;
+import com.desmond.asyncmanager.PersistedTaskRunnable;
 import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
@@ -53,7 +54,7 @@ public class MessageService extends Service implements Constants {
         final Account account = Utils.getCurrentAccount(this);
         if (account == null) return;
         final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
-                task = new TaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
+                task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
                 final Realm realm = Utils.getRealmForAccount(getApplication(), account);
@@ -108,11 +109,11 @@ public class MessageService extends Service implements Constants {
             }
 
             @Override
-            public void callback(final MessageService handler, final TaskResponse<Boolean> result) {
+            public void callback(final TaskResponse<Boolean> response) {
                 final Bus bus = Utils.getMessageBus();
                 bus.post(new MessageRefreshedEvent());
-                super.callback(handler, result);
             }
+
         };
         task.setParams(account);
         task.setResultHandler(this);
