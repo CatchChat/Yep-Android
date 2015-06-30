@@ -25,12 +25,6 @@ public class Conversation extends RealmObject {
     private Circle circle;
 
     /**
-     * Corresponding to {@link Message#getRecipientId()} ()}
-     */
-    @JsonField(name = "recipient_id")
-    private String recipientId;
-
-    /**
      * Corresponding to {@link Message#getRecipientType()}
      */
     @JsonField(name = "recipient_type")
@@ -55,14 +49,6 @@ public class Conversation extends RealmObject {
 
     public void setSender(final User sender) {
         this.sender = sender;
-    }
-
-    public String getRecipientId() {
-        return recipientId;
-    }
-
-    public void setRecipientId(final String recipientId) {
-        this.recipientId = recipientId;
     }
 
     public String getRecipientType() {
@@ -108,7 +94,6 @@ public class Conversation extends RealmObject {
     public static Conversation fromUser(User user) {
         final Conversation conversation = new Conversation();
         conversation.setId(user.getId());
-        conversation.setRecipientId(user.getId());
         conversation.setRecipientType(Message.RecipientType.USER);
         return conversation;
     }

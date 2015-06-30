@@ -3,9 +3,26 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="catchla.yep.activity.UserActivity">
-    <item android:id="@+id/action_settings" android:title="@string/settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/group_menu_myself">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_action_settings"
+            android:title="@string/settings"
+            app:showAsAction="ifRoom"/>
+    </group>
+    <group android:id="@+id/group_menu_friend">
+        <item
+            android:id="@+id/do_not_disturb"
+            android:title="@string/do_not_disturb"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/block_user"
+            android:title="@string/block_user"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/report_user"
+            android:title="@string/report_user"
+            app:showAsAction="never"/>
+    </group>
 </menu>

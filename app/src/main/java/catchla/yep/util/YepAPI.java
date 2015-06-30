@@ -84,6 +84,9 @@ public interface YepAPI {
     @GET("/v1/messages/unread")
     PagedMessages getUnreadMessages(@Query Paging paging) throws YepException;
 
+    @GET("/v1/messages/sent_unread")
+    PagedMessages getSentUnreadMessages(@Query Paging paging) throws YepException;
+
     @GET("/v1/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
 

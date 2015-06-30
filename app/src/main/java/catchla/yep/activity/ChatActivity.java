@@ -155,6 +155,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 try {
                     final Message message = yep.createMessage(newMessage);
                     message.setConversationId(conversation.getId());
+                    message.setOutgoing(true);
                     return TaskResponse.getInstance(message);
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
@@ -163,7 +164,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         };
         final NewMessage newMessage = new NewMessage();
         newMessage.textContent(String.valueOf(mEditText.getText()));
-        newMessage.recipientId(conversation.getRecipientId());
+        newMessage.recipientId(conversation.getId());
         newMessage.recipientType(conversation.getRecipientType());
         task.setParams(newMessage);
         task.setResultHandler(this);
@@ -195,6 +196,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     private static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+        private static final int VIEW_TYPE_MESSAGE_INCOMING = 1;
+        private static final int VIEW_TYPE_MESSAGE_OUTGOING = 2;
         private final LayoutInflater mInflater;
         private RealmResults<Message> mData;
 
@@ -205,12 +208,26 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ChatViewHolder(mInflater.inflate(android.R.layout.simple_list_item_1, parent, false));
+            switch (viewType) {
+                case VIEW_TYPE_MESSAGE_INCOMING: {
+                    return new IncomingChatViewHolder(mInflater.inflate(R.layout.list_item_message_incoming, parent, false));
+                }
+                case VIEW_TYPE_MESSAGE_OUTGOING: {
+                    return new OutgoingChatViewHolder(mInflater.inflate(R.layout.list_item_message_outgoing, parent, false));
+                }
+            }
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((ChatViewHolder) holder).displayMessage(mData.get(position));
+            ((MessageViewHolder) holder).displayMessage(mData.get(position));
+        }
+
+        @Override
+        public int getItemViewType(final int position) {
+            if (mData.get(position).isOutgoing()) return VIEW_TYPE_MESSAGE_OUTGOING;
+            return VIEW_TYPE_MESSAGE_INCOMING;
         }
 
         @Override
@@ -223,11 +240,33 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             notifyDataSetChanged();
         }
 
-        private static class ChatViewHolder extends RecyclerView.ViewHolder {
-            public ChatViewHolder(final View itemView) {
+        private static abstract class MessageViewHolder extends RecyclerView.ViewHolder {
+
+            public MessageViewHolder(final View itemView) {
                 super(itemView);
             }
 
+            public abstract void displayMessage(Message message);
+        }
+
+        private static class IncomingChatViewHolder extends MessageViewHolder {
+            public IncomingChatViewHolder(final View itemView) {
+                super(itemView);
+            }
+
+            @Override
+            public void displayMessage(Message message) {
+                final TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
+                text1.setText(message.getTextContent());
+            }
+        }
+
+        private static class OutgoingChatViewHolder extends MessageViewHolder {
+            public OutgoingChatViewHolder(final View itemView) {
+                super(itemView);
+            }
+
+            @Override
             public void displayMessage(Message message) {
                 final TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
                 text1.setText(message.getTextContent());

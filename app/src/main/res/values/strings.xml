@@ -63,4 +63,8 @@
     <string name="say_hello">Say hello</string>
     <string name="unable_to_get_profile">Unable to get profile</string>
     <string name="logout_confirm_message">Are you sure to logout?</string>
+    <string name="add_friend">Add friend</string>
+    <string name="do_not_disturb">Do not disturb</string>
+    <string name="block_user">Block</string>
+    <string name="report_user">Report</string>
 </resources>

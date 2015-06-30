@@ -89,6 +89,14 @@
             android:name=".activity.SkillSelectorActivity"
             android:label="@string/add_skill"/>
         <activity
+            android:name=".activity.FindFriendActivity"
+            android:label="@string/add_skill"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"
             android:windowSoftInputMode="adjustResize|stateVisible"/>

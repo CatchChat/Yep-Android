@@ -22,6 +22,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +60,7 @@ import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.MathUtils;
+import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -90,6 +94,7 @@ public class UserFragment extends Fragment implements Constants,
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
         final Account currentAccount = Utils.getCurrentAccount(getActivity());
 
         mHeaderDrawerLayout.setDrawerCallback(this);
@@ -416,6 +421,30 @@ public class UserFragment extends Fragment implements Constants,
     public int getHeaderPaddingTop() {
         if (mHeaderDrawerLayout == null) return 0;
         return mHeaderDrawerLayout.getPaddingTop();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_user, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(final Menu menu) {
+        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), mCurrentUser);
+        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_friend, !isMySelf);
+        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_myself, isMySelf);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings: {
+                Utils.openSettings(getActivity());
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private static class UpdateSkillsTask extends AsyncTask<Object, Object, TaskResponse<User>> {

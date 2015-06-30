@@ -77,6 +77,32 @@ public class MessageService extends Service implements Constants {
                                 throw new UnsupportedOperationException();
                             }
                             message.setConversationId(conversationId);
+                            message.setOutgoing(false);
+                            query.equalTo("id", conversationId);
+                            Conversation conversation = query.findFirst();
+                            if (conversation == null) {
+                                conversation = new Conversation();
+                                conversation.setCircle(message.getCircle());
+                                conversation.setSender(message.getSender());
+                                conversation.setRecipientType(recipientType);
+                                conversation.setId(conversationId);
+                            }
+                            conversation.setCreatedAt(message.getCreatedAt());
+                            conversation.setTextContent(message.getTextContent());
+                            realm.copyToRealmOrUpdate(conversation);
+                        }
+                        realm.copyToRealmOrUpdate(messages);
+                        paging.page(++page);
+                        if (messages.getCount() < messages.getPerPage()) break;
+                    }
+                    page = 1;
+                    while ((messages = yep.getSentUnreadMessages(paging)).size() > 0) {
+                        for (Message message : messages) {
+                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
+                            final String recipientType = message.getRecipientType();
+                            final String conversationId = message.getRecipientId();
+                            message.setConversationId(conversationId);
+                            message.setOutgoing(true);
                             query.equalTo("id", conversationId);
                             Conversation conversation = query.findFirst();
                             if (conversation == null) {
@@ -114,6 +140,10 @@ public class MessageService extends Service implements Constants {
                 bus.post(new MessageRefreshedEvent());
             }
 
+            @Override
+            public void callback(final MessageService messageService, final TaskResponse<Boolean> response) {
+                callback(response);
+            }
         };
         task.setParams(account);
         task.setResultHandler(this);

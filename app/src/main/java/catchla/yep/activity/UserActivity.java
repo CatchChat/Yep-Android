@@ -12,8 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 
@@ -92,23 +90,6 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         topChanged(0);
 
         setTitle(currentUser.getNickname());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_user, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings: {
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

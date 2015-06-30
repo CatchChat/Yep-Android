@@ -19,9 +19,7 @@ import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
-import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
-import catchla.yep.service.MessageService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -60,12 +58,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
             public void onActionClick(HomeMenuActionProvider.Action action) {
                 switch (action.id) {
                     case R.id.settings: {
-                        final Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
-                        final Bundle args = new Bundle();
-                        args.putInt(EXTRA_RESID, R.xml.pref_general);
-                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
-                        startActivity(intent);
+                        Utils.openSettings(HomeActivity.this);
                         break;
                     }
                 }

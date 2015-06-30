@@ -5,7 +5,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
 
-import catchla.yep.model.util.ISO8601DateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -36,7 +35,10 @@ public class Message extends RealmObject {
     @JsonField(name = "circle")
     private Circle circle;
 
+    @JsonField(name = "conversation_id")
     private String conversationId;
+    @JsonField(name = "outgoing")
+    private boolean outgoing;
 
     public String getMediaType() {
         return mediaType;
@@ -116,6 +118,14 @@ public class Message extends RealmObject {
 
     public void setConversationId(final String conversationId) {
         this.conversationId = conversationId;
+    }
+
+    public boolean isOutgoing() {
+        return outgoing;
+    }
+
+    public void setOutgoing(final boolean outgoing) {
+        this.outgoing = outgoing;
     }
 
     public interface RecipientType {

@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.FindFriendActivity;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.FriendsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
@@ -79,7 +81,18 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_fragment_chats_list, menu);
+        inflater.inflate(R.menu.menu_fragment_friends_list, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_friend: {
+                startActivity(new Intent(getActivity(), FindFriendActivity.class));
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

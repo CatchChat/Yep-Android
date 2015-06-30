@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2015. Catch Inc,
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu"
+        android:id="@+id/add_friend"
+        android:icon="@drawable/ic_action_add"
+        android:orderInCategory="0"
         android:menuCategory="container"
-        android:orderInCategory="99"
-        android:title="@string/menu"
+        android:title="@string/add_friend"
         app:showAsAction="always"/>
 </menu>

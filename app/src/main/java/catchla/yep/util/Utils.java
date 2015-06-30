@@ -7,6 +7,7 @@ package catchla.yep.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -50,6 +51,8 @@ import java.util.regex.Pattern;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.SettingsActivity;
+import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
@@ -376,5 +379,14 @@ public class Utils implements Constants {
         body.add("file", file);
         builder.body(body);
         return client.execute(builder.build());
+    }
+
+    public static void openSettings(Context context) {
+        final Intent intent = new Intent(context, SettingsActivity.class);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
+        final Bundle args = new Bundle();
+        args.putInt(EXTRA_RESID, R.xml.pref_general);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+        context.startActivity(intent);
     }
 }
