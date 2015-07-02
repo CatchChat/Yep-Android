@@ -133,6 +133,9 @@ public interface YepAPI {
 
     @POST("/v1/contacts/upload")
     @Body(BodyType.FORM)
-    ArrayList<User> uploadContact(ContactUpload contactUpload) throws YepException;
+    ArrayList<User> uploadContact(@Form ContactUpload contactUpload) throws YepException;
+
+    @GET("/v1/users/search")
+    PagedUsers searchUsers(@Query("q") String query) throws YepException;
 }
 
