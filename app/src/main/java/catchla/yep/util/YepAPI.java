@@ -11,8 +11,11 @@ import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.http.BodyType;
 
+import java.util.ArrayList;
+
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
+import catchla.yep.model.ContactUpload;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
@@ -114,7 +117,22 @@ public interface YepAPI {
     @Body(BodyType.FORM)
     void addMasterSkill(@Form("skill_id") String id) throws YepException;
 
+    @POST("/v1/do_not_disturb_users")
+    @Body(BodyType.FORM)
+    void addDoNotDisturb(@Form("user_id") String id) throws YepException;
+
+    @POST("/v1/user_reports")
+    @Body(BodyType.FORM)
+    void reportUser(@Form("recipient_id") String id, @Form("report_type") int reportType, @Form("reason") String reason) throws YepException;
+
+    @DELETE("/v1/do_not_disturb_users/{user_id}")
+    void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
+
     @GET("/v1/attachments/s3_upload_public_form_fields")
     S3UploadToken getS3UploadToken() throws YepException;
+
+    @POST("/v1/contacts/upload")
+    @Body(BodyType.FORM)
+    ArrayList<User> uploadContact(ContactUpload contactUpload) throws YepException;
 }
 

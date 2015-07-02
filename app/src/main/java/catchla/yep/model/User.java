@@ -34,6 +34,8 @@ public class User extends RealmObject {
     private String mobile;
     @JsonField(name = "phone_code")
     private String phoneCode;
+    @JsonField(name = "contact_name")
+    private String contactName;
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
     private RealmList<Provider> providers;
 
@@ -106,6 +108,14 @@ public class User extends RealmObject {
 
     public void setMasterSkills(RealmList<Skill> masterSkills) {
         this.masterSkills = masterSkills;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(final String contactName) {
+        this.contactName = contactName;
     }
 
     public RealmList<Skill> getLearningSkills() {

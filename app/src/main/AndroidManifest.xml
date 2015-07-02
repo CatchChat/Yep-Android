@@ -90,7 +90,7 @@
             android:label="@string/add_skill"/>
         <activity
             android:name=".activity.FindFriendActivity"
-            android:label="@string/add_skill"
+            android:label="@string/find_friend"
             android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

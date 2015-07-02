@@ -51,7 +51,7 @@ dependencies {
     compile 'org.apmem.tools:layouts:1.9@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
-    compile 'io.realm:realm-android:0.80.3'
+    compile 'io.realm:realm-android:0.81.1'
     compile 'org.jraf:android-switch-backport:2.0.1'
     compile 'com.github.techfreak:wizardpager:1.0.0'
     compile 'org.apache.commons:commons-lang3:3.4'
