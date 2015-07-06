@@ -4,16 +4,15 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
+import java.util.List;
 
 import catchla.yep.model.util.DribbbleShotImageConverter;
-import io.realm.RealmList;
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
 @JsonObject
-public class DribbbleShot extends RealmObject {
+public class DribbbleShot {
 
     @JsonField(name = "id")
     private long id;
@@ -24,7 +23,7 @@ public class DribbbleShot extends RealmObject {
     @JsonField(name = "html_url")
     private String htmlUrl;
     @JsonField(name = "images", typeConverter = DribbbleShotImageConverter.class)
-    private RealmList<DribbbleShotImage> images;
+    private List<DribbbleShotImage> images;
     @JsonField(name = "views_count")
     private long viewsCount;
     @JsonField(name = "likes_count")
@@ -74,11 +73,11 @@ public class DribbbleShot extends RealmObject {
         this.id = id;
     }
 
-    public RealmList<DribbbleShotImage> getImages() {
+    public List<DribbbleShotImage> getImages() {
         return images;
     }
 
-    public void setImages(final RealmList<DribbbleShotImage> images) {
+    public void setImages(final List<DribbbleShotImage> images) {
         this.images = images;
     }
 

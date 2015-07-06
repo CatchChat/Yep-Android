@@ -1,11 +1,10 @@
 package catchla.yep.model;
 
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
-public class DribbbleShotImage extends RealmObject {
+public class DribbbleShotImage {
 
     private String resolution;
     private String url;

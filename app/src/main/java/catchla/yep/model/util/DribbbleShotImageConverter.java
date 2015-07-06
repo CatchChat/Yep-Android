@@ -6,17 +6,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.model.DribbbleShotImage;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/2.
  */
-public class DribbbleShotImageConverter implements TypeConverter<RealmList<DribbbleShotImage>> {
+public class DribbbleShotImageConverter implements TypeConverter<List<DribbbleShotImage>> {
     @Override
-    public RealmList<DribbbleShotImage> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<DribbbleShotImage> providers = new RealmList<>();
+    public List<DribbbleShotImage> parse(final JsonParser jsonParser) throws IOException {
+        final List<DribbbleShotImage> providers = new ArrayList<>();
         if (jsonParser.getCurrentToken() == null) {
             jsonParser.nextToken();
         }
@@ -34,7 +35,7 @@ public class DribbbleShotImageConverter implements TypeConverter<RealmList<Dribb
     }
 
     @Override
-    public void serialize(final RealmList<DribbbleShotImage> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(final List<DribbbleShotImage> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {

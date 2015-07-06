@@ -3,13 +3,11 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import io.realm.RealmObject;
-
 /**
  * Created by mariotaku on 15/6/4.
  */
 @JsonObject
-public class InstagramImage extends RealmObject {
+public class InstagramImage {
 
     private String resolution;
     @JsonField(name = "url")

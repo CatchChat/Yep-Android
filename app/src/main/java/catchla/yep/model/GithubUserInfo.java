@@ -3,25 +3,23 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.List;
+
 import catchla.yep.model.util.GithubRepoListConverter;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mariotaku on 15/6/4.
  */
 @JsonObject
-public class GithubUserInfo extends RealmObject {
+public class GithubUserInfo {
 
-    @PrimaryKey
     private String yepUserId;
 
     @JsonField(name = "user")
     private GithubUser user;
 
     @JsonField(name = "repos", typeConverter = GithubRepoListConverter.class)
-    private RealmList<GithubRepo> repos;
+    private List<GithubRepo> repos;
 
     public String getYepUserId() {
         return yepUserId;
@@ -39,11 +37,11 @@ public class GithubUserInfo extends RealmObject {
         this.user = user;
     }
 
-    public RealmList<GithubRepo> getRepos() {
+    public List<GithubRepo> getRepos() {
         return repos;
     }
 
-    public void setRepos(final RealmList<GithubRepo> repos) {
+    public void setRepos(final List<GithubRepo> repos) {
         this.repos = repos;
     }
 }

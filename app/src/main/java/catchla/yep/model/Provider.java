@@ -6,13 +6,12 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import catchla.yep.R;
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/6/2.
  */
 @JsonObject
-public class Provider extends RealmObject {
+public class Provider {
 
     public static final String PROVIDER_INSTAGRAM = "instagram";
     public static final String PROVIDER_GITHUB = "github";

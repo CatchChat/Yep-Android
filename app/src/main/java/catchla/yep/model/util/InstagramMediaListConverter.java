@@ -6,25 +6,25 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import catchla.yep.model.GithubRepo;
 import catchla.yep.model.InstagramMedia;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class InstagramMediaListConverter implements TypeConverter<RealmList<InstagramMedia>> {
+public class InstagramMediaListConverter implements TypeConverter<List<InstagramMedia>> {
 
     @Override
-    public RealmList<InstagramMedia> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<InstagramMedia> skills = new RealmList<>();
+    public List<InstagramMedia> parse(final JsonParser jsonParser) throws IOException {
+        final List<InstagramMedia> skills = new ArrayList<>();
         skills.addAll(LoganSquare.mapperFor(InstagramMedia.class).parseList(jsonParser));
         return skills;
     }
 
     @Override
-    public void serialize(RealmList<InstagramMedia> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(List<InstagramMedia> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {

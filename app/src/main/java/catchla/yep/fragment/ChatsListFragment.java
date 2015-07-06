@@ -24,6 +24,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
+import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -36,13 +37,12 @@ import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.service.MessageService;
 import catchla.yep.util.Utils;
-import io.realm.RealmResults;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListAdapter> implements Constants,
-        LoaderManager.LoaderCallbacks<RealmResults<Conversation>> {
+        LoaderManager.LoaderCallbacks<List<Conversation>> {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -118,18 +118,18 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
     }
 
     @Override
-    public Loader<RealmResults<Conversation>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Conversation>> onCreateLoader(final int id, final Bundle args) {
         return new ConversationsLoader(getActivity(), Utils.getCurrentAccount(getActivity()));
     }
 
     @Override
-    public void onLoadFinished(final Loader<RealmResults<Conversation>> loader, final RealmResults<Conversation> data) {
+    public void onLoadFinished(final Loader<List<Conversation>> loader, final List<Conversation> data) {
         getAdapter().setData(data);
         showContent();
     }
 
     @Override
-    public void onLoaderReset(final Loader<RealmResults<Conversation>> loader) {
+    public void onLoaderReset(final Loader<List<Conversation>> loader) {
         getAdapter().setData(null);
     }
 

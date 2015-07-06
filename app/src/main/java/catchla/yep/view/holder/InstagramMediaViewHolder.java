@@ -7,10 +7,11 @@ import android.widget.ImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import catchla.yep.R;
 import catchla.yep.model.InstagramImage;
 import catchla.yep.model.InstagramMedia;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/3.
@@ -36,7 +37,7 @@ public class InstagramMediaViewHolder extends RecyclerView.ViewHolder implements
         }
     }
 
-    private InstagramImage getBestImage(final RealmList<InstagramImage> images) {
+    private InstagramImage getBestImage(final List<InstagramImage> images) {
         if (images == null) return null;
         for (InstagramImage image : images) {
             if ("low_resolution".equals(image.getResolution())) return image;

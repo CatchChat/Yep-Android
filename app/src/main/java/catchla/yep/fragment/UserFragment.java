@@ -68,7 +68,6 @@ import catchla.yep.util.YepException;
 import catchla.yep.view.HeaderDrawerLayout;
 import catchla.yep.view.HeaderSpaceLayout;
 import catchla.yep.view.iface.IExtendedView;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -224,7 +223,7 @@ public class UserFragment extends Fragment implements Constants,
 
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        final RealmList<Skill> learningSkills = user.getLearningSkills();
+        final List<Skill> learningSkills = user.getLearningSkills();
         mLearningSkills.removeAllViews();
         if (learningSkills != null) {
             for (Skill skill : learningSkills) {
@@ -252,7 +251,7 @@ public class UserFragment extends Fragment implements Constants,
             });
             mLearningSkills.addView(view);
         }
-        final RealmList<Skill> masterSkills = user.getMasterSkills();
+        final List<Skill> masterSkills = user.getMasterSkills();
         mMasterSkills.removeAllViews();
         if (masterSkills != null) {
             for (Skill skill : masterSkills) {
@@ -280,7 +279,7 @@ public class UserFragment extends Fragment implements Constants,
             });
             mMasterSkills.addView(view);
         }
-        final RealmList<Provider> providers = user.getProviders();
+        final List<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();
         View.OnClickListener providerOnClickListener = new View.OnClickListener() {
             @Override

@@ -1,19 +1,19 @@
 package catchla.yep.model;
 
+import android.database.Cursor;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
 
 import catchla.yep.model.util.YepTimestampDateConverter;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mariotaku on 15/5/29.
  */
 @JsonObject
-public class Conversation extends RealmObject {
+public class Conversation {
 
     /**
      * Corresponding to {@link Message#getSender()}
@@ -36,7 +36,6 @@ public class Conversation extends RealmObject {
     @JsonField(name = "text_content")
     private String textContent;
 
-    @PrimaryKey
     @JsonField(name = "id")
     private String id;
 
@@ -96,5 +95,18 @@ public class Conversation extends RealmObject {
         conversation.setId(user.getId());
         conversation.setRecipientType(Message.RecipientType.USER);
         return conversation;
+    }
+
+    public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
+
+        public Indices(final Cursor cursor) {
+            super(cursor);
+        }
+
+        @Override
+        protected Conversation newObject(final Cursor cursor) {
+            final Conversation conversation = new Conversation();
+            return conversation;
+        }
     }
 }

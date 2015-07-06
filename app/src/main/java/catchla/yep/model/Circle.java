@@ -3,13 +3,11 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import io.realm.RealmObject;
-
 /**
  * Created by mariotaku on 15/5/29.
  */
 @JsonObject
-public class Circle extends RealmObject {
+public class Circle {
 
     @JsonField(name = "id")
     private String id;

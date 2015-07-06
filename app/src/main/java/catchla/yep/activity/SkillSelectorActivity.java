@@ -27,7 +27,6 @@ import catchla.yep.model.Skill;
 import catchla.yep.model.SkillCategory;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.Utils;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/10.
@@ -175,7 +174,7 @@ public class SkillSelectorActivity extends ContentActivity implements Constants 
                 final SkillCategory skillCategory = activity.getSelectedCategory();
                 mSkillsAdapter.clear();
                 if (skillCategory != null) {
-                    final RealmList<Skill> skills = skillCategory.getSkills();
+                    final List<Skill> skills = skillCategory.getSkills();
                     mSkillsAdapter.addAll(skills);
                     for (int i = 0, j = listView.getCount(); i < j; i++) {
                         listView.setItemChecked(i, isSelected(selected, mSkillsAdapter.getItem(i).getId()));

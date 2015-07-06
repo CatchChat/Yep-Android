@@ -3,20 +3,20 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.List;
+
 import catchla.yep.model.util.InstagramImageConverter;
-import io.realm.RealmList;
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/6/4.
  */
 @JsonObject
-public class InstagramMedia extends RealmObject {
+public class InstagramMedia {
 
     @JsonField(name = "id")
     private String id;
     @JsonField(name = "images", typeConverter = InstagramImageConverter.class)
-    private RealmList<InstagramImage> images;
+    private List<InstagramImage> images;
     @JsonField(name = "link")
     private String link;
     @JsonField(name = "type")
@@ -30,11 +30,11 @@ public class InstagramMedia extends RealmObject {
         this.id = id;
     }
 
-    public RealmList<InstagramImage> getImages() {
+    public List<InstagramImage> getImages() {
         return images;
     }
 
-    public void setImages(final RealmList<InstagramImage> images) {
+    public void setImages(final List<InstagramImage> images) {
         this.images = images;
     }
 

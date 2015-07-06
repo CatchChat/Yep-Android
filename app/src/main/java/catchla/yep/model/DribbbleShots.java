@@ -3,27 +3,25 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.List;
+
 import catchla.yep.model.util.DribbbleShotListConverter;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
 @JsonObject
-public class DribbbleShots extends RealmObject {
+public class DribbbleShots {
 
     @JsonField(name = "shots", typeConverter = DribbbleShotListConverter.class)
-    private RealmList<DribbbleShot> shots;
-    @PrimaryKey
+    private List<DribbbleShot> shots;
     private String yepUserId;
 
-    public RealmList<DribbbleShot> getShots() {
+    public List<DribbbleShot> getShots() {
         return shots;
     }
 
-    public void setShots(final RealmList<DribbbleShot> shots) {
+    public void setShots(final List<DribbbleShot> shots) {
         this.shots = shots;
     }
 

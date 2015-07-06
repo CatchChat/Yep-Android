@@ -28,6 +28,7 @@ import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
 import java.io.IOException;
+import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -43,13 +44,11 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 import catchla.yep.view.TintedStatusFrameLayout;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by mariotaku on 15/4/30.
  */
-public class ChatActivity extends SwipeBackContentActivity implements Constants, LoaderManager.LoaderCallbacks<RealmResults<Message>> {
+public class ChatActivity extends SwipeBackContentActivity implements Constants, LoaderManager.LoaderCallbacks<List<Message>> {
 
     private RecyclerView mRecyclerView;
     private TintedStatusFrameLayout mMainContent;
@@ -141,10 +140,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
                 if (result.hasData()) {
-                    Realm realm = Utils.getRealmForAccount(handler, account);
-                    realm.beginTransaction();
-                    realm.copyToRealmOrUpdate(result.getData());
-                    realm.commitTransaction();
+//                    Realm realm = Utils.getRealmForAccount(handler, account);
+//                    realm.beginTransaction();
+//                    realm.copyToRealmOrUpdate(result.getData());
+//                    realm.commitTransaction();
                 }
                 super.callback(handler, result);
             }
@@ -173,7 +172,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     @Override
-    public Loader<RealmResults<Message>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Message>> onCreateLoader(final int id, final Bundle args) {
         final Conversation conversation;
         try {
             conversation = LoganSquare.parse(args.getString(EXTRA_CONVERSATION), Conversation.class);
@@ -185,12 +184,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     @Override
-    public void onLoadFinished(final Loader<RealmResults<Message>> loader, final RealmResults<Message> data) {
+    public void onLoadFinished(final Loader<List<Message>> loader, final List<Message> data) {
         mAdapter.setData(data);
     }
 
     @Override
-    public void onLoaderReset(final Loader<RealmResults<Message>> loader) {
+    public void onLoaderReset(final Loader<List<Message>> loader) {
         mAdapter.setData(null);
     }
 
@@ -199,7 +198,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static final int VIEW_TYPE_MESSAGE_INCOMING = 1;
         private static final int VIEW_TYPE_MESSAGE_OUTGOING = 2;
         private final LayoutInflater mInflater;
-        private RealmResults<Message> mData;
+        private List<Message> mData;
 
         ChatAdapter(Context context) {
             mInflater = LayoutInflater.from(context);
@@ -235,7 +234,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             return mData.size();
         }
 
-        public void setData(final RealmResults<Message> data) {
+        public void setData(final List<Message> data) {
             mData = data;
             notifyDataSetChanged();
         }

@@ -10,12 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Conversation;
 import catchla.yep.view.holder.ChatEntryViewHolder;
-import io.realm.RealmResults;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -24,7 +25,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
 
-    private RealmResults<Conversation> mData;
+    private List<Conversation> mData;
 
     public void setItemClickListener(final ItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
@@ -84,7 +85,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     }
 
-    public void setData(final RealmResults<Conversation> data) {
+    public void setData(final List<Conversation> data) {
         mData = data;
     }
 

@@ -22,8 +22,6 @@ import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
-import io.realm.Realm;
-import io.realm.RealmQuery;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -57,80 +55,79 @@ public class MessageService extends Service implements Constants {
                 task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
-                final Realm realm = Utils.getRealmForAccount(getApplication(), account);
-                final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
-                realm.beginTransaction();
+//                final Realm realm = Utils.getRealmForAccount(getApplication(), account);
+//                final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
+//                realm.beginTransaction();
                 try {
-                    PagedMessages messages;
-                    int page = 1;
-                    final Paging paging = new Paging();
-                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
-                        for (Message message : messages) {
-                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
-                            final String recipientType = message.getRecipientType();
-                            final String conversationId;
-                            if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-                                conversationId = message.getSender().getId();
-                            } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-                                conversationId = message.getCircle().getId();
-                            } else {
-                                throw new UnsupportedOperationException();
-                            }
-                            message.setConversationId(conversationId);
-                            message.setOutgoing(false);
-                            query.equalTo("id", conversationId);
-                            Conversation conversation = query.findFirst();
-                            if (conversation == null) {
-                                conversation = new Conversation();
-                                conversation.setCircle(message.getCircle());
-                                conversation.setSender(message.getSender());
-                                conversation.setRecipientType(recipientType);
-                                conversation.setId(conversationId);
-                            }
-                            conversation.setCreatedAt(message.getCreatedAt());
-                            conversation.setTextContent(message.getTextContent());
-                            realm.copyToRealmOrUpdate(conversation);
-                        }
-                        realm.copyToRealmOrUpdate(messages);
-                        paging.page(++page);
-                        if (messages.getCount() < messages.getPerPage()) break;
-                    }
-                    page = 1;
-                    while ((messages = yep.getSentUnreadMessages(paging)).size() > 0) {
-                        for (Message message : messages) {
-                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
-                            final String recipientType = message.getRecipientType();
-                            final String conversationId = message.getRecipientId();
-                            message.setConversationId(conversationId);
-                            message.setOutgoing(true);
-                            query.equalTo("id", conversationId);
-                            Conversation conversation = query.findFirst();
-                            if (conversation == null) {
-                                conversation = new Conversation();
-                                conversation.setCircle(message.getCircle());
-                                conversation.setSender(message.getSender());
-                                conversation.setRecipientType(recipientType);
-                                conversation.setId(conversationId);
-                            }
-                            conversation.setCreatedAt(message.getCreatedAt());
-                            conversation.setTextContent(message.getTextContent());
-                            realm.copyToRealmOrUpdate(conversation);
-                        }
-                        realm.copyToRealmOrUpdate(messages);
-                        paging.page(++page);
-                        if (messages.getCount() < messages.getPerPage()) break;
-                    }
-                    realm.commitTransaction();
+//                    PagedMessages messages;
+//                    int page = 1;
+//                    final Paging paging = new Paging();
+//                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
+//                        for (Message message : messages) {
+//                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
+//                            final String recipientType = message.getRecipientType();
+//                            final String conversationId;
+//                            if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
+//                                conversationId = message.getSender().getId();
+//                            } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
+//                                conversationId = message.getCircle().getId();
+//                            } else {
+//                                throw new UnsupportedOperationException();
+//                            }
+//                            message.setConversationId(conversationId);
+//                            message.setOutgoing(false);
+//                            query.equalTo("id", conversationId);
+//                            Conversation conversation = query.findFirst();
+//                            if (conversation == null) {
+//                                conversation = new Conversation();
+//                                conversation.setCircle(message.getCircle());
+//                                conversation.setSender(message.getSender());
+//                                conversation.setRecipientType(recipientType);
+//                                conversation.setId(conversationId);
+//                            }
+//                            conversation.setCreatedAt(message.getCreatedAt());
+//                            conversation.setTextContent(message.getTextContent());
+//                            realm.copyToRealmOrUpdate(conversation);
+//                        }
+//                        realm.copyToRealmOrUpdate(messages);
+//                        paging.page(++page);
+//                        if (messages.getCount() < messages.getPerPage()) break;
+//                    }
+//                    page = 1;
+//                    while ((messages = yep.getSentUnreadMessages(paging)).size() > 0) {
+//                        for (Message message : messages) {
+//                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
+//                            final String recipientType = message.getRecipientType();
+//                            final String conversationId = message.getRecipientId();
+//                            message.setConversationId(conversationId);
+//                            message.setOutgoing(true);
+//                            query.equalTo("id", conversationId);
+//                            Conversation conversation = query.findFirst();
+//                            if (conversation == null) {
+//                                conversation = new Conversation();
+//                                conversation.setCircle(message.getCircle());
+//                                conversation.setSender(message.getSender());
+//                                conversation.setRecipientType(recipientType);
+//                                conversation.setId(conversationId);
+//                            }
+//                            conversation.setCreatedAt(message.getCreatedAt());
+//                            conversation.setTextContent(message.getTextContent());
+//                            realm.copyToRealmOrUpdate(conversation);
+//                        }
+//                        realm.copyToRealmOrUpdate(messages);
+//                        paging.page(++page);
+//                        if (messages.getCount() < messages.getPerPage()) break;
+//                    }
+//                    realm.commitTransaction();
                     return TaskResponse.getInstance(true);
-                } catch (YepException e) {
-                    Log.w(LOGTAG, e);
-                    realm.cancelTransaction();
-                    return TaskResponse.getInstance(e);
-                } catch (Exception e) {
-                    Log.e(LOGTAG, "Error getting messages", e);
-                    return TaskResponse.getInstance(e);
+//                } catch (YepException e) {
+//                    Log.w(LOGTAG, e);
+//                    realm.cancelTransaction();
+//                    return TaskResponse.getInstance(e);
+//                } catch (Exception e) {
+//                    Log.e(LOGTAG, "Error getting messages", e);
+//                    return TaskResponse.getInstance(e);
                 } finally {
-                    realm.close();
                 }
             }
 

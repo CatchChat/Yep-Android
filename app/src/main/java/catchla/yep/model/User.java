@@ -1,25 +1,23 @@
 package catchla.yep.model;
 
-import android.os.Bundle;
-
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.List;
+
 import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
-import io.realm.RealmList;
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/5/8.
  */
 @JsonObject
-public class User extends RealmObject {
+public class User {
 
     @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
-    private RealmList<Skill> masterSkills;
+    private List<Skill> masterSkills;
     @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
-    private RealmList<Skill> learningSkills;
+    private List<Skill> learningSkills;
     @JsonField(name = "id")
     private String id;
     @JsonField(name = "username")
@@ -37,13 +35,13 @@ public class User extends RealmObject {
     @JsonField(name = "contact_name")
     private String contactName;
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
-    private RealmList<Provider> providers;
+    private List<Provider> providers;
 
-    public RealmList<Provider> getProviders() {
+    public List<Provider> getProviders() {
         return providers;
     }
 
-    public void setProviders(final RealmList<Provider> providers) {
+    public void setProviders(final List<Provider> providers) {
         this.providers = providers;
     }
 
@@ -62,6 +60,7 @@ public class User extends RealmObject {
     public void setPhoneCode(final String phoneCode) {
         this.phoneCode = phoneCode;
     }
+
     public String getIntroduction() {
         return introduction;
     }
@@ -102,11 +101,11 @@ public class User extends RealmObject {
         this.id = id;
     }
 
-    public RealmList<Skill> getMasterSkills() {
+    public List<Skill> getMasterSkills() {
         return masterSkills;
     }
 
-    public void setMasterSkills(RealmList<Skill> masterSkills) {
+    public void setMasterSkills(List<Skill> masterSkills) {
         this.masterSkills = masterSkills;
     }
 
@@ -118,11 +117,11 @@ public class User extends RealmObject {
         this.contactName = contactName;
     }
 
-    public RealmList<Skill> getLearningSkills() {
+    public List<Skill> getLearningSkills() {
         return learningSkills;
     }
 
-    public void setLearningSkills(RealmList<Skill> learningSkills) {
+    public void setLearningSkills(List<Skill> learningSkills) {
         this.learningSkills = learningSkills;
     }
 

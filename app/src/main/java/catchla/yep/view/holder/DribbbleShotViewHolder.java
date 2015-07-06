@@ -7,10 +7,11 @@ import android.widget.ImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import catchla.yep.R;
 import catchla.yep.model.DribbbleShot;
 import catchla.yep.model.DribbbleShotImage;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/3.
@@ -36,7 +37,7 @@ public class DribbbleShotViewHolder extends RecyclerView.ViewHolder implements C
         }
     }
 
-    private DribbbleShotImage getBestImage(final RealmList<DribbbleShotImage> images) {
+    private DribbbleShotImage getBestImage(final List<DribbbleShotImage> images) {
         if (images == null) return null;
         for (DribbbleShotImage image : images) {
             if ("normal".equals(image.getResolution())) return image;

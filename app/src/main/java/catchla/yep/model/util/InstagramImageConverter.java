@@ -7,17 +7,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.model.InstagramImage;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/2.
  */
-public class InstagramImageConverter implements TypeConverter<RealmList<InstagramImage>> {
+public class InstagramImageConverter implements TypeConverter<List<InstagramImage>> {
     @Override
-    public RealmList<InstagramImage> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<InstagramImage> providers = new RealmList<>();
+    public List<InstagramImage> parse(final JsonParser jsonParser) throws IOException {
+        final List<InstagramImage> providers = new ArrayList<>();
         if (jsonParser.getCurrentToken() == null) {
             jsonParser.nextToken();
         }
@@ -37,7 +38,7 @@ public class InstagramImageConverter implements TypeConverter<RealmList<Instagra
     }
 
     @Override
-    public void serialize(final RealmList<InstagramImage> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(final List<InstagramImage> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {

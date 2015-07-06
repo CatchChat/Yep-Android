@@ -6,24 +6,25 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.model.Skill;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class SkillListTypeConverter implements TypeConverter<RealmList<Skill>> {
+public class SkillListTypeConverter implements TypeConverter<List<Skill>> {
 
     @Override
-    public RealmList<Skill> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<Skill> skills = new RealmList<>();
+    public List<Skill> parse(final JsonParser jsonParser) throws IOException {
+        final List<Skill> skills = new ArrayList<>();
         skills.addAll(LoganSquare.mapperFor(Skill.class).parseList(jsonParser));
         return skills;
     }
 
     @Override
-    public void serialize(RealmList<Skill> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(List<Skill> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {

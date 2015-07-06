@@ -6,13 +6,12 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.util.Date;
 
 import catchla.yep.model.util.ISO8601DateConverter;
-import io.realm.RealmObject;
 
 /**
  * Created by mariotaku on 15/6/4.
  */
 @JsonObject
-public class GithubUser extends RealmObject {
+public class GithubUser {
 
     @JsonField(name = "id")
     private long id;

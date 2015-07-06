@@ -6,17 +6,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.model.Provider;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/6/2.
  */
-public class ProviderConverter implements TypeConverter<RealmList<Provider>> {
+public class ProviderConverter implements TypeConverter<List<Provider>> {
     @Override
-    public RealmList<Provider> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<Provider> providers = new RealmList<>();
+    public List<Provider> parse(final JsonParser jsonParser) throws IOException {
+        final List<Provider> providers = new ArrayList<>();
         if (jsonParser.getCurrentToken() == null) {
             jsonParser.nextToken();
         }
@@ -34,7 +35,7 @@ public class ProviderConverter implements TypeConverter<RealmList<Provider>> {
     }
 
     @Override
-    public void serialize(final RealmList<Provider> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(final List<Provider> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {

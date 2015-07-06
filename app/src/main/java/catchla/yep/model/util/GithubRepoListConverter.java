@@ -6,25 +6,25 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import catchla.yep.model.GithubRepo;
-import catchla.yep.model.Skill;
-import io.realm.RealmList;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class GithubRepoListConverter implements TypeConverter<RealmList<GithubRepo>> {
+public class GithubRepoListConverter implements TypeConverter<List<GithubRepo>> {
 
     @Override
-    public RealmList<GithubRepo> parse(final JsonParser jsonParser) throws IOException {
-        final RealmList<GithubRepo> skills = new RealmList<>();
+    public List<GithubRepo> parse(final JsonParser jsonParser) throws IOException {
+        final List<GithubRepo> skills = new ArrayList<>();
         skills.addAll(LoganSquare.mapperFor(GithubRepo.class).parseList(jsonParser));
         return skills;
     }
 
     @Override
-    public void serialize(RealmList<GithubRepo> object, String fieldName, boolean writeFieldNameForObject,
+    public void serialize(List<GithubRepo> object, String fieldName, boolean writeFieldNameForObject,
                           JsonGenerator jsonGenerator) throws IOException {
         if (object != null) {
             if (writeFieldNameForObject) {
