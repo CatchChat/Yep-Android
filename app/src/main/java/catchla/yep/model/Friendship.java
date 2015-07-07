@@ -1,5 +1,8 @@
 package catchla.yep.model;
 
+import android.database.Cursor;
+import android.support.annotation.NonNull;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
@@ -51,5 +54,16 @@ public class Friendship {
 
     public void setFriend(final User friend) {
         this.friend = friend;
+    }
+
+    public class Indices extends ObjectCursor.CursorIndices<Friendship> {
+        public Indices(@NonNull final Cursor cursor) {
+            super(cursor);
+        }
+
+        @Override
+        Friendship newObject(final Cursor cursor) {
+            return new Friendship();
+        }
     }
 }

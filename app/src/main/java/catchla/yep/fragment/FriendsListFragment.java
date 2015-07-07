@@ -32,7 +32,6 @@ import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.FriendshipsLoader;
 import catchla.yep.model.Friendship;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
 
@@ -40,7 +39,7 @@ import catchla.yep.util.Utils;
  * Created by mariotaku on 15/4/29.
  */
 public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsListAdapter>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<Friendship>>> {
+        implements LoaderManager.LoaderCallbacks<List<Friendship>> {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -107,17 +106,17 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
 
 
     @Override
-    public Loader<TaskResponse<List<Friendship>>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Friendship>> onCreateLoader(final int id, final Bundle args) {
         return new FriendshipsLoader(getActivity(), Utils.getCurrentAccount(getActivity()), null);
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<List<Friendship>>> loader, final TaskResponse<List<Friendship>> data) {
-        getAdapter().setData(data.getData());
+    public void onLoadFinished(final Loader<List<Friendship>> loader, final List<Friendship> data) {
+        getAdapter().setData(data);
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<List<Friendship>>> loader) {
+    public void onLoaderReset(final Loader<List<Friendship>> loader) {
 
     }
 }

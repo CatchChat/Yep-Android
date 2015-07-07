@@ -31,9 +31,9 @@ public interface YepDataStore {
         String[] COLUMNS = {};
     }
 
-    interface Friends extends BaseColumns {
+    interface Friendships extends BaseColumns {
 
-        String CONTENT_PATH = "friends";
+        String CONTENT_PATH = "friendships";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
         String[] COLUMNS = {};
     }
