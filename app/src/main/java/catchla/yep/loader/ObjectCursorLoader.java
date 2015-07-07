@@ -60,7 +60,7 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
             cursor.getCount();
             cursor.registerContentObserver(mObserver);
         }
-        if (cursor == null) throw new NullPointerException("Cursor is null");
+        if (cursor == null) return null;
         return new ObjectCursor<>(cursor, createIndices(cursor));
     }
 
@@ -83,7 +83,7 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(List<T> data) {
-        final ObjectCursor<T> cursor = (ObjectCursor<T>) data;
+        final ObjectCursor<T> cursor = data instanceof ObjectCursor ? (ObjectCursor<T>) data : null;
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -161,7 +161,7 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
 
     @Override
     public void onCanceled(List<T> data) {
-        final ObjectCursor<T> cursor = (ObjectCursor<T>) data;
+        final ObjectCursor<T> cursor = data instanceof ObjectCursor ? (ObjectCursor<T>) data : null;
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }

@@ -133,8 +133,8 @@ public class Message {
         String CIRCLE = "Circle";
     }
 
-    public static class CursorIndices extends ObjectCursor.CursorIndices<Message> {
-        public CursorIndices(@NonNull final Cursor cursor) {
+    public static class Indices extends ObjectCursor.CursorIndices<Message> {
+        public Indices(@NonNull final Cursor cursor) {
             super(cursor);
         }
 
@@ -143,4 +143,5 @@ public class Message {
             return new Message();
         }
     }
+
 }
