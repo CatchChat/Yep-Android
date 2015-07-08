@@ -11,6 +11,8 @@ import com.desmond.asyncmanager.PersistedTaskRunnable;
 import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
+import org.mariotaku.sqliteqb.library.Expression;
+
 import catchla.yep.Constants;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
@@ -18,6 +20,7 @@ import catchla.yep.model.Message;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -55,16 +58,14 @@ public class MessageService extends Service implements Constants {
                 task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
-//                final Realm realm = Utils.getRealmForAccount(getApplication(), account);
-//                final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
-//                realm.beginTransaction();
+                final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
-//                    PagedMessages messages;
-//                    int page = 1;
-//                    final Paging paging = new Paging();
+                    PagedMessages messages;
+                    int page = 1;
+                    final Paging paging = new Paging();
 //                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
 //                        for (Message message : messages) {
-//                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
+//                            Expression expression = Expression.equalsArgs(Conversations.CONVERSATION_ID);
 //                            final String recipientType = message.getRecipientType();
 //                            final String conversationId;
 //                            if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
@@ -76,7 +77,7 @@ public class MessageService extends Service implements Constants {
 //                            }
 //                            message.setConversationId(conversationId);
 //                            message.setOutgoing(false);
-//                            query.equalTo("id", conversationId);
+//
 //                            Conversation conversation = query.findFirst();
 //                            if (conversation == null) {
 //                                conversation = new Conversation();
@@ -87,34 +88,9 @@ public class MessageService extends Service implements Constants {
 //                            }
 //                            conversation.setCreatedAt(message.getCreatedAt());
 //                            conversation.setTextContent(message.getTextContent());
-//                            realm.copyToRealmOrUpdate(conversation);
+//
 //                        }
-//                        realm.copyToRealmOrUpdate(messages);
-//                        paging.page(++page);
-//                        if (messages.getCount() < messages.getPerPage()) break;
-//                    }
-//                    page = 1;
-//                    while ((messages = yep.getSentUnreadMessages(paging)).size() > 0) {
-//                        for (Message message : messages) {
-//                            final RealmQuery<Conversation> query = realm.where(Conversation.class);
-//                            final String recipientType = message.getRecipientType();
-//                            final String conversationId = message.getRecipientId();
-//                            message.setConversationId(conversationId);
-//                            message.setOutgoing(true);
-//                            query.equalTo("id", conversationId);
-//                            Conversation conversation = query.findFirst();
-//                            if (conversation == null) {
-//                                conversation = new Conversation();
-//                                conversation.setCircle(message.getCircle());
-//                                conversation.setSender(message.getSender());
-//                                conversation.setRecipientType(recipientType);
-//                                conversation.setId(conversationId);
-//                            }
-//                            conversation.setCreatedAt(message.getCreatedAt());
-//                            conversation.setTextContent(message.getTextContent());
-//                            realm.copyToRealmOrUpdate(conversation);
-//                        }
-//                        realm.copyToRealmOrUpdate(messages);
+
 //                        paging.page(++page);
 //                        if (messages.getCount() < messages.getPerPage()) break;
 //                    }
@@ -123,9 +99,6 @@ public class MessageService extends Service implements Constants {
 //                } catch (YepException e) {
 //                    Log.w(LOGTAG, e);
 //                    realm.cancelTransaction();
-//                    return TaskResponse.getInstance(e);
-//                } catch (Exception e) {
-//                    Log.e(LOGTAG, "Error getting messages", e);
 //                    return TaskResponse.getInstance(e);
                 } finally {
                 }

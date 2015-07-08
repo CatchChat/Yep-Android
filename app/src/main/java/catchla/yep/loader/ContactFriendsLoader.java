@@ -43,12 +43,6 @@ public class ContactFriendsLoader extends AsyncTaskLoader<TaskResponse<List<User
             c.moveToNext();
             c.close();
             final List<User> user = yep.uploadContact(contact);
-//            Realm realm = Utils.getRealmForAccount(getContext(), mAccount);
-//            realm.beginTransaction();
-//            realm.copyToRealmOrUpdate(user);
-//            realm.commitTransaction();
-//            realm.close();
-
             return TaskResponse.getInstance(user);
         } catch (YepException e) {
             return TaskResponse.getInstance(e);
