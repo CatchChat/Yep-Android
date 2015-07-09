@@ -51,7 +51,24 @@ public interface YepDataStore {
         String[] COLUMNS = {};
     }
 
-    interface ContactFriends extends BaseColumns {
+    interface Users extends BaseColumns {
+        String USER_ID = "user_id";
+        String USERNAME = "username";
+        String NICKNAME = "nickname";
+        String INTRODUCTION = "introduction";
+        String AVATAR_URL = "avatar_url";
+        String MOBILE = "mobile";
+        String PHONE_CODE = "phone_code";
+        String CONTACT_NAME = "contact_name";
+        String LEARNING_SKILLS = "learning_skill";
+        String MASTER_SKILLS = "master_skills";
+        String PROVIDERS = "providers";
+
+        String[] COLUMNS = {USER_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE, PHONE_CODE,
+                CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
+    }
+
+    interface ContactFriends extends Users {
 
     }
 
