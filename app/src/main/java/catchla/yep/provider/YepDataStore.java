@@ -1,8 +1,13 @@
 package catchla.yep.provider;
 
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+
+import catchla.yep.model.ObjectCursor;
+import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/7/2.
@@ -66,6 +71,18 @@ public interface YepDataStore {
 
         String[] COLUMNS = {USER_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE, PHONE_CODE,
                 CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
+
+        class Indices extends ObjectCursor.CursorIndices<User> {
+
+            public Indices(@NonNull final Cursor cursor) {
+                super(cursor);
+            }
+
+            @Override
+            public User newObject(final Cursor cursor) {
+                return new User();
+            }
+        }
     }
 
     interface ContactFriends extends Users {

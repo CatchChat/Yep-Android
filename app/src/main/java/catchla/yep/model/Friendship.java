@@ -62,7 +62,7 @@ public class Friendship {
         }
 
         @Override
-        Friendship newObject(final Cursor cursor) {
+        public Friendship newObject(final Cursor cursor) {
             return new Friendship();
         }
     }

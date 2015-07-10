@@ -104,7 +104,7 @@ public class Conversation {
         }
 
         @Override
-        protected Conversation newObject(final Cursor cursor) {
+        public Conversation newObject(final Cursor cursor) {
             final Conversation conversation = new Conversation();
             return conversation;
         }

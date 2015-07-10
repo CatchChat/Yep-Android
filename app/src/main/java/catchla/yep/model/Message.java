@@ -139,7 +139,7 @@ public class Message {
         }
 
         @Override
-        protected Message newObject(final Cursor cursor) {
+        public Message newObject(final Cursor cursor) {
             return new Message();
         }
     }
