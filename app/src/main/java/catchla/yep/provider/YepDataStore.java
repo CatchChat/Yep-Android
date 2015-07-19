@@ -14,6 +14,8 @@ import catchla.yep.model.User;
  */
 public interface YepDataStore {
 
+    String TYPE_INTEGER = "INTEGER";
+    String TYPE_REAL = "REAL";
     String AUTHORITY = "catchla.yep";
     Uri BASE_CONTENT_URI = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
             .authority(AUTHORITY).build();
