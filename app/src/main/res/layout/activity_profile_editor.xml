@@ -41,8 +41,7 @@
                 android:id="@+id/profile_image"
                 android:layout_width="@dimen/icon_size_account_info_edit_profile_image"
                 android:layout_height="@dimen/icon_size_account_info_edit_profile_image"
-                android:layout_marginTop="64dp"
-                android:src="@drawable/ic_profile_image_kevin"/>
+                android:layout_marginTop="64dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

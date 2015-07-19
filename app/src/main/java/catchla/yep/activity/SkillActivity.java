@@ -15,7 +15,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 
-import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
@@ -115,9 +114,6 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
             Picasso.with(this).load(coverUrl).into(mBannerImageView);
         } else {
             Picasso.with(this).cancelRequest(mBannerImageView);
-            if (BuildConfig.DEBUG) {
-                Picasso.with(this).load(R.drawable.ic_profile_image_large_kevin).into(mBannerImageView);
-            }
         }
         setTitle(skill.getNameString());
     }
