@@ -8,6 +8,8 @@ package catchla.yep;
  * Created by mariotaku on 15/4/30.
  */
 public interface Constants {
+    String YEP_DATABASE_NAME = "yep_data.db";
+    int YEP_DATABASE_VERSION = 1;
 
     String LOGTAG = "Yep";
 

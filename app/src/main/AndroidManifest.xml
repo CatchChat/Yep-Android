@@ -112,6 +112,11 @@
             android:name=".activity.ThemedImageCropperActivity"
             android:theme="@android:style/Theme.DeviceDefault.Light"/>
 
+        <provider
+            android:name=".provider.YepDataProvider"
+            android:authorities="catchla.yep"
+            android:exported="false"/>
+
         <service android:name=".service.MessageService"/>
         <service
             android:name=".service.AccountService"

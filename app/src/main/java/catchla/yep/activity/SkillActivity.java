@@ -95,9 +95,9 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
             final Skill skill = LoganSquare.parse(intent.getStringExtra(EXTRA_SKILL), Skill.class);
             displaySkill(skill);
             final Bundle masterArgs = new Bundle();
-            masterArgs.putStringArray(EXTRA_MASTER, new String[]{skill.getName()});
+            masterArgs.putStringArray(EXTRA_MASTER, new String[]{skill.getId()});
             final Bundle learningArgs = new Bundle();
-            learningArgs.putStringArray(EXTRA_LEARNING, new String[]{skill.getName()});
+            learningArgs.putStringArray(EXTRA_LEARNING, new String[]{skill.getId()});
             mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.master), 0, masterArgs);
             mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.learning), 0, learningArgs);
         } catch (IOException e) {

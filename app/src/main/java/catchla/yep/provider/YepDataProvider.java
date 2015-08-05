@@ -3,14 +3,21 @@ package catchla.yep.provider;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+
+import catchla.yep.util.YepSQLiteOpenHelper;
 
 /**
  * Created by mariotaku on 15/7/9.
  */
 public class YepDataProvider extends ContentProvider {
+
+    private SQLiteDatabase mDatabase;
+
     @Override
     public boolean onCreate() {
+        mDatabase = new YepSQLiteOpenHelper(getContext()).getWritableDatabase();
         return true;
     }
 
