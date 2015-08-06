@@ -1,13 +1,10 @@
 package catchla.yep.provider;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
 
-import catchla.yep.model.ObjectCursor;
-import catchla.yep.model.User;
+import org.mariotaku.sqliteqb.library.DataType;
 
 /**
  * Created by mariotaku on 15/7/2.
@@ -34,7 +31,10 @@ public interface YepDataStore {
 
         String CONTENT_PATH = "messages";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
-        String[] COLUMNS = {};
+        String[] COLUMNS = {MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
+                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE};
+        String[] TYPES = {DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
     }
 
     interface Conversations extends BaseColumns {
@@ -51,15 +51,17 @@ public interface YepDataStore {
         String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT, CIRCLE, RECIPIENT, RECIPIENT_TYPE, UPDATED_AT};
     }
 
-    interface Friendships extends BaseColumns {
+    interface Friendships extends Users {
 
         String CONTENT_PATH = "friendships";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
-        String[] COLUMNS = {};
+        String TABLE_NAME = "friendships";
+
     }
 
     interface Users extends BaseColumns {
         String USER_ID = "user_id";
+        String FRIEND_ID = "friend_id";
         String USERNAME = "username";
         String NICKNAME = "nickname";
         String INTRODUCTION = "introduction";
@@ -71,20 +73,12 @@ public interface YepDataStore {
         String MASTER_SKILLS = "master_skills";
         String PROVIDERS = "providers";
 
-        String[] COLUMNS = {USER_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE, PHONE_CODE,
-                CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
+        String[] COLUMNS = {USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
+                PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
+        String[] TYPES = {DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
 
-        class Indices extends ObjectCursor.CursorIndices<User> {
-
-            public Indices(@NonNull final Cursor cursor) {
-                super(cursor);
-            }
-
-            @Override
-            public User newObject(final Cursor cursor) {
-                return new User();
-            }
-        }
     }
 
     interface ContactFriends extends Users {

@@ -41,9 +41,9 @@ repositories {
 
 dependencies {
     apt 'com.bluelinelabs:logansquare-compiler:1.1.0'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-v4:22.2.1'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.mariotaku:MessageBubbleView:1.2'
@@ -62,7 +62,7 @@ dependencies {
     compile 'com.github.boxme:asyncmanager:1.0.0'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.github.mariotaku:PickNCrop:a7abe5316c'
-    compile 'com.github.mariotaku:SQLiteQB:ef3f596199'
+    compile 'com.github.mariotaku:SQLiteQB:e5d17df99b'
     compile 'com.saulpower.fayeclient:library:1.0'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
     debugCompile 'com.facebook.stetho:stetho-okhttp:1.1.1'

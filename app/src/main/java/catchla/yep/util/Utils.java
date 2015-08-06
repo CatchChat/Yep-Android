@@ -9,9 +9,11 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,11 +58,20 @@ import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Friendships;
 
 /**
  * Created by mariotaku on 15/5/5.
  */
 public class Utils implements Constants {
+
+    private static final UriMatcher DATABASE_URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final SparseArray<String> TABLE_NAMES = new SparseArray<>();
+
+    static {
+        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
+        TABLE_NAMES.append(TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME);
+    }
 
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");
 
@@ -350,5 +362,18 @@ public class Utils implements Constants {
         args.putInt(EXTRA_RESID, R.xml.pref_general);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
         context.startActivity(intent);
+    }
+
+
+    public static String getTableName(final Uri uri) {
+        return getTableName(getTableId(uri));
+    }
+
+    public static String getTableName(final int id) {
+        return TABLE_NAMES.get(id);
+    }
+
+    private static int getTableId(final Uri uri) {
+        return DATABASE_URI_MATCHER.match(uri);
     }
 }

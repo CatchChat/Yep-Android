@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.ChatActivity;
@@ -124,8 +125,12 @@ public class UserFragment extends Fragment implements Constants,
                         final Account account = param.getMiddle();
                         final YepAPI yep = YepAPIFactory.getInstance(context, account);
                         try {
-                            if (param.getRight() != null) throw new YepException();
-                            final User user = yep.getUser();
+                            final User user;
+                            if (param.getRight() != null) {
+                                user = yep.showUser(param.getRight().getId());
+                            } else {
+                                user = yep.getUser();
+                            }
                             Utils.saveUserInfo(context, account, user);
                             return TaskResponse.getInstance(user);
                         } catch (YepException e) {
@@ -139,6 +144,9 @@ public class UserFragment extends Fragment implements Constants,
                         if (result.hasData()) {
                             handler.displayUser(result.getData());
                         } else if (result.hasException()) {
+                            if (BuildConfig.DEBUG) {
+                                Log.w(LOGTAG, result.getException());
+                            }
                             final String error = Utils.getErrorMessage(result.getException());
                             if (TextUtils.isEmpty(error)) {
                                 Toast.makeText(getActivity(), R.string.unable_to_get_profile, Toast.LENGTH_SHORT).show();

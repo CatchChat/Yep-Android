@@ -9,7 +9,8 @@ package catchla.yep;
  */
 public interface Constants {
     String YEP_DATABASE_NAME = "yep_data.db";
-    int YEP_DATABASE_VERSION = 1;
+    int YEP_DATABASE_VERSION = 3;
+    String AUTHORITY_YEP = "catchla.yep";
 
     String LOGTAG = "Yep";
 
@@ -42,4 +43,6 @@ public interface Constants {
     String EXTRA_MASTER = "master";
     String EXTRA_PROVIDER_NAME = "provider_name";
     String EXTRA_SKILLS = "skills";
+
+    int TABLE_ID_FRIENDSHIPS = 1;
 }

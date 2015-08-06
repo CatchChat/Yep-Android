@@ -75,6 +75,9 @@ public interface YepAPI {
     @GET("/v1/user")
     User getUser() throws YepException;
 
+    @GET("/v1/users/{id}")
+    User showUser(@Path("id") String userId) throws YepException;
+
     @GET("/v1/user/discover")
     PagedUsers getDiscover(@Query DiscoverQuery query, @Query Paging paging) throws YepException;
 

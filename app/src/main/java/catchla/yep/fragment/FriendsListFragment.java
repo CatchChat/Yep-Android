@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +34,7 @@ import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.FriendshipsLoader;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.User;
+import catchla.yep.service.MessageService;
 import catchla.yep.util.Utils;
 
 /**
@@ -113,6 +115,15 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     @Override
     public void onLoadFinished(final Loader<List<Friendship>> loader, final List<Friendship> data) {
         getAdapter().setData(data);
+    }
+
+    @Override
+    public boolean triggerRefresh() {
+        final FragmentActivity activity = getActivity();
+        final Intent intent = new Intent(activity, MessageService.class);
+        intent.setAction(MessageService.ACTION_REFRESH_FRIENDSHIPS);
+        activity.startService(intent);
+        return true;
     }
 
     @Override

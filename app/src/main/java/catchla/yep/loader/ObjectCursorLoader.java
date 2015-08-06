@@ -29,6 +29,7 @@ import android.support.v4.content.LoaderTrojan;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,6 +68,9 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
     @SuppressWarnings("TryWithIdenticalCatches")
     @NonNull
     private ObjectCursor.CursorIndices<T> createIndices(final Cursor cursor) {
+        if (mIndicesClass.isMemberClass() && !Modifier.isStatic(mIndicesClass.getModifiers())) {
+            throw new IllegalArgumentException("Indices class must be static");
+        }
         try {
             return mIndicesClass.getConstructor(Cursor.class).newInstance(cursor);
         } catch (NoSuchMethodException e) {

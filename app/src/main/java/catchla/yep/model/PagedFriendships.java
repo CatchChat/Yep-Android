@@ -6,8 +6,6 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,6 +37,18 @@ public class PagedFriendships extends AbstractCollection<Friendship> {
     public int size() {
         if (friendships == null) return 0;
         return friendships.size();
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public int getPerPage() {
+        return perPage;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public Friendship get(final int position) {
