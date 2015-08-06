@@ -62,7 +62,7 @@ public class Friendship {
     public static class Indices extends ObjectCursor.CursorIndices<Friendship> {
 
         public final int user_id, friend_id, nickname, username, avatar_url, introduction,
-                learning_skills, master_skills;
+                learning_skills, master_skills, providers;
 
         public Indices(@NonNull final Cursor cursor) {
             super(cursor);
@@ -74,6 +74,7 @@ public class Friendship {
             introduction = cursor.getColumnIndex(Friendships.INTRODUCTION);
             learning_skills = cursor.getColumnIndex(Friendships.LEARNING_SKILLS);
             master_skills = cursor.getColumnIndex(Friendships.MASTER_SKILLS);
+            providers = cursor.getColumnIndex(Friendships.PROVIDERS);
         }
 
         @Override
@@ -88,6 +89,7 @@ public class Friendship {
             friend.setIntroduction(cursor.getString(introduction));
             friend.setLearningSkills(JsonSerializer.parseList(cursor.getString(learning_skills), Skill.class));
             friend.setMasterSkills(JsonSerializer.parseList(cursor.getString(master_skills), Skill.class));
+            friend.setProviders(JsonSerializer.parseList(cursor.getString(providers), Provider.class));
             friendship.setFriend(friend);
             return friendship;
         }

@@ -6,6 +6,7 @@ package catchla.yep.fragment;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -42,6 +43,7 @@ import com.squareup.picasso.Picasso;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apmem.tools.layouts.FlowLayout;
+import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +62,8 @@ import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Friendships;
+import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
@@ -116,51 +120,61 @@ public class UserFragment extends Fragment implements Constants,
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment> task
-                        = new TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment>() {
-                    @Override
-                    public TaskResponse<User> doLongOperation(final Triple<Context, Account, User> param)
-                            throws InterruptedException {
-                        final Context context = param.getLeft();
-                        final Account account = param.getMiddle();
-                        final YepAPI yep = YepAPIFactory.getInstance(context, account);
-                        try {
-                            final User user;
-                            if (param.getRight() != null) {
-                                user = yep.showUser(param.getRight().getId());
-                            } else {
-                                user = yep.getUser();
-                            }
-                            Utils.saveUserInfo(context, account, user);
-                            return TaskResponse.getInstance(user);
-                        } catch (YepException e) {
-                            return TaskResponse.getInstance(e);
-                        }
-                    }
-
-                    @Override
-                    public void callback(final UserFragment handler, final TaskResponse<User> result) {
-                        handler.mSwipeRefreshLayout.setRefreshing(false);
-                        if (result.hasData()) {
-                            handler.displayUser(result.getData());
-                        } else if (result.hasException()) {
-                            if (BuildConfig.DEBUG) {
-                                Log.w(LOGTAG, result.getException());
-                            }
-                            final String error = Utils.getErrorMessage(result.getException());
-                            if (TextUtils.isEmpty(error)) {
-                                Toast.makeText(getActivity(), R.string.unable_to_get_profile, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                };
-                task.setParams(new ImmutableTriple<Context, Account, User>(getActivity(), currentAccount, user));
-                task.setResultHandler(UserFragment.this);
-                AsyncManager.runBackgroundTask(task);
+                refreshUser(currentAccount);
             }
         });
+    }
+
+    private void refreshUser(final Account currentAccount) {
+        final User user = mCurrentUser;
+        TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment> task
+                = new TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment>() {
+            @Override
+            public TaskResponse<User> doLongOperation(final Triple<Context, Account, User> param)
+                    throws InterruptedException {
+                final Context context = param.getLeft();
+                final Account account = param.getMiddle();
+                final YepAPI yep = YepAPIFactory.getInstance(context, account);
+                try {
+                    final User user;
+                    if (param.getRight() != null) {
+                        user = yep.showUser(param.getRight().getId());
+                    } else {
+                        user = yep.getUser();
+                    }
+                    final ContentValues values = ContentValuesCreator.fromUser(user);
+                    final String where = Expression.equalsArgs(Friendships.FRIEND_ID).getSQL();
+                    final String[] whereArgs = {user.getId()};
+                    context.getContentResolver().update(Friendships.CONTENT_URI, values, where,
+                            whereArgs);
+                    Utils.saveUserInfo(context, account, user);
+                    return TaskResponse.getInstance(user);
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+
+            @Override
+            public void callback(final UserFragment handler, final TaskResponse<User> result) {
+                handler.mSwipeRefreshLayout.setRefreshing(false);
+                if (result.hasData()) {
+                    handler.displayUser(result.getData());
+                } else if (result.hasException()) {
+                    if (BuildConfig.DEBUG) {
+                        Log.w(LOGTAG, result.getException());
+                    }
+                    final String error = Utils.getErrorMessage(result.getException());
+                    if (TextUtils.isEmpty(error)) {
+                        Toast.makeText(getActivity(), R.string.unable_to_get_profile, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        };
+        task.setParams(new ImmutableTriple<Context, Account, User>(getActivity(), currentAccount, user));
+        task.setResultHandler(UserFragment.this);
+        AsyncManager.runBackgroundTask(task);
     }
 
     @Override

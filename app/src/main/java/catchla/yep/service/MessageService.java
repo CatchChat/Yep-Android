@@ -77,7 +77,7 @@ public class MessageService extends Service implements Constants {
                     final ArrayList<ContentValues> values = new ArrayList<>();
                     while ((friendships = yep.getFriendships(paging)).size() > 0) {
                         for (Friendship friendship : friendships) {
-                            values.add(ContentValuesCreator.fromFriendships(friendship));
+                            values.add(ContentValuesCreator.fromFriendship(friendship));
                         }
                         paging.page(++page);
                         if (friendships.getCount() < friendships.getPerPage()) break;
