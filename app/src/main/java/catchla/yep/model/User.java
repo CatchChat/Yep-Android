@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
 
 import java.util.List;
 
@@ -36,6 +37,20 @@ public class User {
     private String contactName;
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
     private List<Provider> providers;
+    @JsonField(name = "latitude")
+    double latitude = Double.NaN;
+    @JsonField(name = "longitude")
+    double longitude = Double.NaN;
+
+    private LatLng location;
+
+    public LatLng getLocation() {
+        return location;
+    }
+
+    public void setLocation(final LatLng location) {
+        this.location = location;
+    }
 
     public List<Provider> getProviders() {
         return providers;
@@ -125,4 +140,12 @@ public class User {
         this.learningSkills = learningSkills;
     }
 
+    @OnJsonParseComplete
+    void onParseComplete() {
+        if (Double.isNaN(latitude) || Double.isNaN(longitude)) {
+            location = null;
+        } else {
+            location = new LatLng(latitude, longitude);
+        }
+    }
 }
