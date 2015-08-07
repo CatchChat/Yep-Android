@@ -23,6 +23,17 @@ public class Conversation {
     @JsonField(name = "user")
     private User user;
 
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(final User sender) {
+        this.sender = sender;
+    }
+
+    @JsonField(name = "sender")
+    private User sender;
+
     @JsonField(name = "circle")
     private Circle circle;
 
@@ -97,6 +108,17 @@ public class Conversation {
         conversation.setId(user.getId());
         conversation.setRecipientType(Message.RecipientType.USER);
         return conversation;
+    }
+
+    public static String generateId(Message message) {
+        final String recipientType = message.getRecipientType();
+        if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
+            return message.getSender().getId();
+        } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
+            return message.getCircle().getId();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {

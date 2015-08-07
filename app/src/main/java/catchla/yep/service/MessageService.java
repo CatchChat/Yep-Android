@@ -14,10 +14,12 @@ import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.message.MessageRefreshedEvent;
+import catchla.yep.model.Conversation;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
 import catchla.yep.model.PagedFriendships;
@@ -122,32 +124,25 @@ public class MessageService extends Service implements Constants {
                     PagedMessages messages;
                     int page = 1;
                     final Paging paging = new Paging();
+                    HashMap<String, Conversation> conversations = new HashMap<>();
                     while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
                         for (Message message : messages) {
-//                            Expression expression = Expression.equalsArgs(Conversations.CONVERSATION_ID);
-//                            final String recipientType = message.getRecipientType();
-//                            final String conversationId;
-//                            if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-//                                conversationId = message.getSender().getId();
-//                            } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-//                                conversationId = message.getCircle().getId();
-//                            } else {
-//                                throw new UnsupportedOperationException();
-//                            }
-//                            message.setConversationId(conversationId);
-//                            message.setOutgoing(false);
-//
-//                            Conversation conversation = query.findFirst();
-//                            if (conversation == null) {
-//                                conversation = new Conversation();
-//                                conversation.setCircle(message.getCircle());
-//                                conversation.setSender(message.getSender());
-//                                conversation.setRecipientType(recipientType);
-//                                conversation.setId(conversationId);
-//                            }
-//                            conversation.setCreatedAt(message.getCreatedAt());
-//                            conversation.setTextContent(message.getTextContent());
-//
+                            final String recipientType = message.getRecipientType();
+                            final String conversationId = Conversation.generateId(message);
+                            message.setConversationId(conversationId);
+                            message.setOutgoing(false);
+
+                            Conversation conversation = conversations.get(conversationId);
+                            if (conversation == null) {
+                                conversation = new Conversation();
+                                conversation.setCircle(message.getCircle());
+                                conversation.setUser(message.getSender());
+                                conversation.setRecipientType(recipientType);
+                                conversation.setId(conversationId);
+                                conversations.put(conversationId, conversation);
+                            }
+                            conversation.setCreatedAt(message.getCreatedAt());
+                            conversation.setTextContent(message.getTextContent());
                         }
 
                         paging.page(++page);
