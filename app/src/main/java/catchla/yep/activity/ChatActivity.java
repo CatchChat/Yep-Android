@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -184,6 +185,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
+
+    @Override
     public void onLoadFinished(final Loader<List<Message>> loader, final List<Message> data) {
         mAdapter.setData(data);
     }
@@ -231,6 +238,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         @Override
         public int getItemCount() {
+            if (mData == null) return 0;
             return mData.size();
         }
 

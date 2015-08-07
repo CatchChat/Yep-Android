@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="160px" height="161px" viewBox="0 0 160 161" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+<svg width="160px" height="160px" viewBox="0 0 160 160" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
     <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
-    <title>Default_Avatar</title>
+    <title>Artboard</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="Signup" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="Sign-Up" sketch:type="MSArtboardGroup" transform="translate(-109.000000, -175.000000)">
-            <rect id="BG" fill="#FAFAFA" sketch:type="MSShapeGroup" x="0" y="64" width="375" height="603"></rect>
-            <g id="Default_Avatar" sketch:type="MSLayerGroup" transform="translate(109.000000, 175.000000)">
-                <rect id="Mask" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="160" height="160" rx="80"></rect>
-                <rect id="Rectangle-222" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="160" height="160"></rect>
-                <path d="M118.618511,126.207111 C100.260638,119.4192 94.3925532,113.6936 94.3925532,101.432444 C94.3925532,94.0718222 99.9985106,96.476 102.458936,82.9968889 C103.480638,77.4057778 108.431277,82.9062222 109.378511,70.1418667 C109.378511,65.0539556 106.676809,63.7906667 106.676809,63.7906667 C106.676809,63.7906667 108.05,56.2623111 108.58766,50.4687111 C109.253404,43.2501333 104.477021,24.6 78.9985106,24.6 C53.52,24.6 48.7406383,43.2501333 49.4093617,50.4687111 C49.9470213,56.2623111 51.3202128,63.7906667 51.3202128,63.7906667 C51.3202128,63.7906667 48.6185106,65.0539556 48.6185106,70.1418667 C49.5642553,82.9062222 54.5148936,77.4057778 55.5365957,82.9968889 C58,96.4744889 63.6029787,94.0718222 63.6029787,101.432444 C63.6029787,113.692089 57.7378723,119.417689 39.38,126.207111 C20.9640426,133.016178 9,139.958222 9,144.692533 L9,160.6 L79,160.6 L149,160.6 L149,144.692533 C148.998511,139.956711 137.034468,133.016178 118.618511,126.207111 L118.618511,126.207111 Z" id="Shape" fill="#F3F3F3" sketch:type="MSShapeGroup"></path>
-            </g>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Artboard" sketch:type="MSArtboardGroup">
+            <rect id="Rectangle-351" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="160" height="160"></rect>
+            <path d="M95.3925532,102.432444 C95.3925532,95.0718222 100.998511,97.476 103.458936,83.9968889 C104.480638,78.4057778 109.431277,83.9062222 110.378511,71.1418667 C110.378511,66.0539556 107.676809,64.7906667 107.676809,64.7906667 C107.676809,64.7906667 109.05,57.2623111 109.58766,51.4687111 C110.253404,44.2501333 105.477021,25.6 79.9985106,25.6 C54.52,25.6 49.7406383,44.2501333 50.4093617,51.4687111 C50.9470213,57.2623111 52.3202128,64.7906667 52.3202128,64.7906667 C52.3202128,64.7906667 49.6185106,66.0539556 49.6185106,71.1418667 C50.5642553,83.9062222 55.5148936,78.4057778 56.5365957,83.9968889 C59,97.4744889 64.6029787,95.0718222 64.6029787,102.432444 C64.6029787,114.692089 58.7378723,120.417689 40.38,127.207111 C21.9640426,134.016178 10,140.958222 10,145.692533 L10,161.6 L80,161.6 L150,161.6 L150,145.692533 C149.998511,140.956711 138.034468,134.016178 119.618511,127.207111 C101.260638,120.4192 95.3925532,114.6936 95.3925532,102.432444 L95.3925532,102.432444 Z" id="Shape" fill="#F3F3F3" sketch:type="MSShapeGroup"></path>
         </g>
     </g>
 </svg>

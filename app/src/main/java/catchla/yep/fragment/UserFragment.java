@@ -64,6 +64,7 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
@@ -219,7 +220,13 @@ public class UserFragment extends Fragment implements Constants,
     private void displayUser(final User user) {
         if (user == null) return;
         mCurrentUser = user;
-        Picasso.with(getActivity()).load(user.getAvatarUrl()).into(mProfileImageView);
+        final String avatarUrl = user.getAvatarUrl();
+        if (TextUtils.isEmpty(avatarUrl)) {
+            Picasso.with(getActivity()).cancelRequest(mProfileImageView);
+            mProfileImageView.setImageResource(R.drawable.ic_profile_image_default);
+        } else {
+            Picasso.with(getActivity()).load(avatarUrl).into(mProfileImageView);
+        }
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {
             mIntroductionView.setText(R.string.no_introduction_yet);
@@ -351,12 +358,8 @@ public class UserFragment extends Fragment implements Constants,
             @Override
             public void onClick(final View v) {
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
-                try {
-                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.mapperFor(Conversation.class)
-                            .serialize(Conversation.fromUser(user)));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(Conversation.fromUser(user),
+                        Conversation.class));
                 startActivity(intent);
             }
         });

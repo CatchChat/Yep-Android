@@ -11,8 +11,6 @@ import org.mariotaku.sqliteqb.library.DataType;
  */
 public interface YepDataStore {
 
-    String TYPE_INTEGER = "INTEGER";
-    String TYPE_REAL = "REAL";
     String AUTHORITY = "catchla.yep";
     Uri BASE_CONTENT_URI = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
             .authority(AUTHORITY).build();
@@ -31,24 +29,31 @@ public interface YepDataStore {
 
         String CONTENT_PATH = "messages";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
-        String[] COLUMNS = {MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
+
+        String TABLE_NAME = "messages";
+
+        String[] COLUMNS = {_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
                 CIRCLE, PARENT_ID, CONVERSATION_ID, STATE};
-        String[] TYPES = {DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT};
     }
 
     interface Conversations extends BaseColumns {
 
         String CONTENT_PATH = "conversations";
+        String TABLE_NAME = "conversations";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
         String CONVERSATION_ID = "conversation_id";
-        String TEXT = "text";
-        String RECIPIENT = "recipient";
+        String TEXT_CONTENT = "text_content";
+        String USER = "user";
         String CIRCLE = "circle";
         String UPDATED_AT = "updated_at";
         String RECIPIENT_TYPE = "recipient_type";
 
-        String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT, CIRCLE, RECIPIENT, RECIPIENT_TYPE, UPDATED_AT};
+        String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE, UPDATED_AT};
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.INTEGER};
     }
 
     interface Friendships extends Users {
@@ -73,10 +78,10 @@ public interface YepDataStore {
         String MASTER_SKILLS = "master_skills";
         String PROVIDERS = "providers";
 
-        String[] COLUMNS = {USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
+        String[] COLUMNS = {_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
                 PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
-        String[] TYPES = {DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT,
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
 
     }

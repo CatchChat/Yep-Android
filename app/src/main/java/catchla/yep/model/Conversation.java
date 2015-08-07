@@ -8,6 +8,8 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import java.util.Date;
 
 import catchla.yep.model.util.YepTimestampDateConverter;
+import catchla.yep.provider.YepDataStore.Conversations;
+import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -18,8 +20,8 @@ public class Conversation {
     /**
      * Corresponding to {@link Message#getSender()}
      */
-    @JsonField(name = "sender")
-    private User sender;
+    @JsonField(name = "user")
+    private User user;
 
     @JsonField(name = "circle")
     private Circle circle;
@@ -42,12 +44,12 @@ public class Conversation {
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     private Date createdAt;
 
-    public User getSender() {
-        return sender;
+    public User getUser() {
+        return user;
     }
 
-    public void setSender(final User sender) {
-        this.sender = sender;
+    public void setUser(final User user) {
+        this.user = user;
     }
 
     public String getRecipientType() {
@@ -99,13 +101,23 @@ public class Conversation {
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
 
+        private final int conversation_id, circle, user, text_content;
+
         public Indices(final Cursor cursor) {
             super(cursor);
+            conversation_id = cursor.getColumnIndex(Conversations.CONVERSATION_ID);
+            circle = cursor.getColumnIndex(Conversations.CIRCLE);
+            user = cursor.getColumnIndex(Conversations.USER);
+            text_content = cursor.getColumnIndex(Conversations.TEXT_CONTENT);
         }
 
         @Override
         public Conversation newObject(final Cursor cursor) {
             final Conversation conversation = new Conversation();
+            conversation.setId(cursor.getString(conversation_id));
+            conversation.setTextContent(cursor.getString(text_content));
+            conversation.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
+            conversation.setUser(JsonSerializer.parse(cursor.getString(user), User.class));
             return conversation;
         }
     }

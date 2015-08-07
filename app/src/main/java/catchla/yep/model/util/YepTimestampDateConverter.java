@@ -10,11 +10,13 @@ import java.util.Date;
 public class YepTimestampDateConverter extends StringBasedTypeConverter<Date> {
     @Override
     public Date getFromString(final String s) {
+        if (s == null) return null;
         return new Date((long) (Double.parseDouble(s) * 1000));
     }
 
     @Override
     public String convertToString(final Date date) {
+        if (date == null) return null;
         return String.valueOf(date.getTime() / 1000.0);
     }
 }

@@ -62,7 +62,7 @@ dependencies {
     compile 'com.github.boxme:asyncmanager:1.0.0'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.github.mariotaku:PickNCrop:a7abe5316c'
-    compile 'com.github.mariotaku:SQLiteQB:e5d17df99b'
+    compile 'com.github.mariotaku:SQLiteQB:9d5617eb22'
     compile 'com.saulpower.fayeclient:library:1.0'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
     debugCompile 'com.facebook.stetho:stetho-okhttp:1.1.1'

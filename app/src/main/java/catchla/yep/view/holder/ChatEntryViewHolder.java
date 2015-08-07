@@ -45,7 +45,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
     public void displayConversation(final Conversation conversation) {
         final String recipientType = conversation.getRecipientType();
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-            final User sender = conversation.getSender();
+            final User sender = conversation.getUser();
             nameView.setText(sender.getNickname());
             Picasso.with(profileImageView.getContext()).load(sender.getAvatarUrl()).into(profileImageView);
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {

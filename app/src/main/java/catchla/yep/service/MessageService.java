@@ -19,6 +19,7 @@ import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Friendship;
+import catchla.yep.model.Message;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
@@ -121,8 +122,8 @@ public class MessageService extends Service implements Constants {
                     PagedMessages messages;
                     int page = 1;
                     final Paging paging = new Paging();
-//                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
-//                        for (Message message : messages) {
+                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
+                        for (Message message : messages) {
 //                            Expression expression = Expression.equalsArgs(Conversations.CONVERSATION_ID);
 //                            final String recipientType = message.getRecipientType();
 //                            final String conversationId;
@@ -147,17 +148,16 @@ public class MessageService extends Service implements Constants {
 //                            conversation.setCreatedAt(message.getCreatedAt());
 //                            conversation.setTextContent(message.getTextContent());
 //
-//                        }
+                        }
 
-//                        paging.page(++page);
-//                        if (messages.getCount() < messages.getPerPage()) break;
-//                    }
+                        paging.page(++page);
+                        if (messages.getCount() < messages.getPerPage()) break;
+                    }
 //                    realm.commitTransaction();
                     return TaskResponse.getInstance(true);
-//                } catch (YepException e) {
-//                    Log.w(LOGTAG, e);
-//                    realm.cancelTransaction();
-//                    return TaskResponse.getInstance(e);
+                } catch (YepException e) {
+                    Log.w(LOGTAG, e);
+                    return TaskResponse.getInstance(e);
                 } finally {
                 }
             }
