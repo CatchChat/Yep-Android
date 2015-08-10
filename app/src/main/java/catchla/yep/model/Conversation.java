@@ -6,6 +6,7 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
+import java.util.Locale;
 
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Conversations;
@@ -105,20 +106,17 @@ public class Conversation {
 
     public static Conversation fromUser(User user) {
         final Conversation conversation = new Conversation();
-        conversation.setId(user.getId());
+        conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
         conversation.setRecipientType(Message.RecipientType.USER);
         return conversation;
     }
 
     public static String generateId(Message message) {
-        final String recipientType = message.getRecipientType();
-        if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-            return message.getSender().getId();
-        } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-            return message.getCircle().getId();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return generateId(message.getRecipientType(), message.getCircle().getId());
+    }
+
+    private static String generateId(final String recipientType, final String id) {
+        return recipientType.toLowerCase(Locale.US) + ":" + id;
     }
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {

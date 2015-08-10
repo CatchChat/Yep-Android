@@ -5,6 +5,7 @@
 package catchla.yep.activity;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,6 +39,8 @@ import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.provider.YepDataStore.Messages;
+import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
@@ -141,10 +144,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
                 if (result.hasData()) {
-//                    Realm realm = Utils.getRealmForAccount(handler, account);
-//                    realm.beginTransaction();
-//                    realm.copyToRealmOrUpdate(result.getData());
-//                    realm.commitTransaction();
+                    final ContentResolver cr = getContentResolver();
+                    cr.insert(Messages.CONTENT_URI, ContentValuesCreator.fromMessage(result.getData()));
                 }
                 super.callback(handler, result);
             }

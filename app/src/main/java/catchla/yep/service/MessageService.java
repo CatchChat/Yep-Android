@@ -91,6 +91,7 @@ public class MessageService extends Service implements Constants {
                         paging.page(++page);
                         if (friendships.getCount() < friendships.getPerPage()) break;
                     }
+
                     final ContentResolver cr = getContentResolver();
                     cr.delete(Friendships.CONTENT_URI, null, null);
                     ContentResolverUtils.bulkInsert(cr, Friendships.CONTENT_URI, values);
