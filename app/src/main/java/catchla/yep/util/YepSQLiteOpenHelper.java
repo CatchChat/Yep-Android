@@ -4,7 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.mariotaku.sqliteqb.library.Columns;
+import org.mariotaku.sqliteqb.library.Constraint;
 import org.mariotaku.sqliteqb.library.NewColumn;
+import org.mariotaku.sqliteqb.library.OnConflict;
 import org.mariotaku.sqliteqb.library.SQLQueryBuilder;
 
 import catchla.yep.Constants;
@@ -22,13 +25,20 @@ public class YepSQLiteOpenHelper extends SQLiteOpenHelper implements Constants {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
+        db.beginTransaction();
         db.execSQL(createTable(Friendships.TABLE_NAME, Friendships.COLUMNS, Friendships.TYPES, true));
         db.execSQL(createTable(Messages.TABLE_NAME, Messages.COLUMNS, Messages.TYPES, true));
-        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true));
+        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true,
+                Constraint.unique(new Columns(Conversations.CONVERSATION_ID), OnConflict.REPLACE)));
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
-    private String createTable(final String name, final String[] columns, final String[] types, final boolean createIfNotExists) {
-        return SQLQueryBuilder.createTable(createIfNotExists, name).columns(NewColumn.createNewColumns(columns, types)).buildSQL();
+    private String createTable(final String name, final String[] columns, final String[] types, final boolean createIfNotExists, Constraint... constraints) {
+        return SQLQueryBuilder.createTable(createIfNotExists, name)
+                .columns(NewColumn.createNewColumns(columns, types))
+                .constraint(constraints)
+                .buildSQL();
     }
 
     @Override
@@ -39,7 +49,8 @@ public class YepSQLiteOpenHelper extends SQLiteOpenHelper implements Constants {
         db.execSQL(SQLQueryBuilder.dropTable(true, Messages.TABLE_NAME).getSQL());
         db.execSQL(createTable(Messages.TABLE_NAME, Messages.COLUMNS, Messages.TYPES, true));
         db.execSQL(SQLQueryBuilder.dropTable(true, Conversations.TABLE_NAME).getSQL());
-        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true));
+        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true,
+                Constraint.unique(new Columns(Conversations.CONVERSATION_ID), OnConflict.REPLACE)));
         db.setTransactionSuccessful();
         db.endTransaction();
     }

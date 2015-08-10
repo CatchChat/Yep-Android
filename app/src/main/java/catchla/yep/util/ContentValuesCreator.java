@@ -2,11 +2,14 @@ package catchla.yep.util;
 
 import android.content.ContentValues;
 
+import catchla.yep.model.Circle;
 import catchla.yep.model.Friendship;
+import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Friendships;
+import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.provider.YepDataStore.Users;
 
 /**
@@ -46,6 +49,20 @@ public class ContentValuesCreator {
         values.put(Friendships.LEARNING_SKILLS, JsonSerializer.serialize(friend.getLearningSkills(), Skill.class));
         values.put(Friendships.MASTER_SKILLS, JsonSerializer.serialize(friend.getMasterSkills(), Skill.class));
         values.put(Friendships.PROVIDERS, JsonSerializer.serialize(friend.getProviders(), Provider.class));
+        return values;
+    }
+
+    public static ContentValues fromMessage(final Message message) {
+        final ContentValues values = new ContentValues();
+        values.put(Messages.MESSAGE_ID, message.getId());
+        values.put(Messages.CONVERSATION_ID, message.getConversationId());
+        values.put(Messages.CREATED_AT, message.getCreatedAt().getTime());
+        values.put(Messages.PARENT_ID, message.getParentId());
+        values.put(Messages.RECIPIENT_ID, message.getRecipientId());
+        values.put(Messages.RECIPIENT_TYPE, message.getRecipientType());
+        values.put(Messages.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
+        values.put(Messages.SENDER, JsonSerializer.serialize(message.getSender(), User.class));
+        values.put(Messages.TEXT_CONTENT, message.getTextContent());
         return values;
     }
 }

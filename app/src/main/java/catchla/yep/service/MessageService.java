@@ -19,6 +19,7 @@ import java.util.HashMap;
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.message.MessageRefreshedEvent;
+import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
@@ -26,9 +27,13 @@ import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
+import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentResolverUtils;
 import catchla.yep.util.ContentValuesCreator;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -50,6 +55,7 @@ public class MessageService extends Service implements Constants {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
+        if (intent == null) return START_NOT_STICKY;
         final String action = intent.getAction();
         if (action == null) return START_NOT_STICKY;
         switch (action) {
@@ -124,7 +130,7 @@ public class MessageService extends Service implements Constants {
                     PagedMessages messages;
                     int page = 1;
                     final Paging paging = new Paging();
-                    HashMap<String, Conversation> conversations = new HashMap<>();
+                    HashMap<String, ContentValues> conversations = new HashMap<>();
                     while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
                         for (Message message : messages) {
                             final String recipientType = message.getRecipientType();
@@ -132,23 +138,29 @@ public class MessageService extends Service implements Constants {
                             message.setConversationId(conversationId);
                             message.setOutgoing(false);
 
-                            Conversation conversation = conversations.get(conversationId);
+                            ContentValues conversation = conversations.get(conversationId);
                             if (conversation == null) {
-                                conversation = new Conversation();
-                                conversation.setCircle(message.getCircle());
-                                conversation.setUser(message.getSender());
-                                conversation.setRecipientType(recipientType);
-                                conversation.setId(conversationId);
+                                conversation = new ContentValues();
+                                conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
+                                conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
+                                conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
+                                conversation.put(Conversations.CONVERSATION_ID, conversationId);
                                 conversations.put(conversationId, conversation);
                             }
-                            conversation.setCreatedAt(message.getCreatedAt());
-                            conversation.setTextContent(message.getTextContent());
+                            conversation.put(Conversations.UPDATED_AT, message.getCreatedAt().getTime());
+                            conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
                         }
 
                         paging.page(++page);
                         if (messages.getCount() < messages.getPerPage()) break;
                     }
-//                    realm.commitTransaction();
+                    final ArrayList<ContentValues> messagesValues = new ArrayList<>();
+                    for (Message message : messages) {
+                        messagesValues.add(ContentValuesCreator.fromMessage(message));
+                    }
+                    final ContentResolver cr = getContentResolver();
+                    ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
+                    ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
                     return TaskResponse.getInstance(true);
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
