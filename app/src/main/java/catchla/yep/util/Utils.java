@@ -58,7 +58,9 @@ import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
+import catchla.yep.provider.YepDataStore.Messages;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -70,7 +72,11 @@ public class Utils implements Constants {
 
     static {
         DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
+        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Messages.CONTENT_PATH, TABLE_ID_MESSAGES);
+        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Conversations.CONTENT_PATH, TABLE_ID_CONVERSATIONS);
         TABLE_NAMES.append(TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME);
+        TABLE_NAMES.append(TABLE_ID_MESSAGES, Messages.TABLE_NAME);
+        TABLE_NAMES.append(TABLE_ID_CONVERSATIONS, Conversations.TABLE_NAME);
     }
 
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");

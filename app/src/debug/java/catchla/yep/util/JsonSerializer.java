@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class JsonSerializer {
     public static <T> String serialize(final List<T> list, final Class<T> cls) {
+        if (list == null) return null;
         try {
             return LoganSquare.serialize(list, cls);
         } catch (IOException e) {
@@ -18,6 +19,7 @@ public class JsonSerializer {
     }
 
     public static <T> String serialize(final T object, final Class<T> cls) {
+        if (object == null) return null;
         try {
             return LoganSquare.mapperFor(cls).serialize(object);
         } catch (IOException e) {

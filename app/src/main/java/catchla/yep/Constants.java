@@ -45,4 +45,6 @@ public interface Constants {
     String EXTRA_SKILLS = "skills";
 
     int TABLE_ID_FRIENDSHIPS = 1;
+    int TABLE_ID_MESSAGES = 11;
+    int TABLE_ID_CONVERSATIONS = 12;
 }

@@ -54,7 +54,7 @@ public class Conversation {
     private String id;
 
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
-    private Date createdAt;
+    private Date updatedAt;
 
     public User getUser() {
         return user;
@@ -96,12 +96,12 @@ public class Conversation {
         this.textContent = textContent;
     }
 
-    public void setCreatedAt(final Date createdAt) {
-        this.createdAt = createdAt;
+    public void setUpdatedAt(final Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     public static Conversation fromUser(User user) {
@@ -112,7 +112,13 @@ public class Conversation {
     }
 
     public static String generateId(Message message) {
-        return generateId(message.getRecipientType(), message.getCircle().getId());
+        final String recipientType = message.getRecipientType();
+        if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
+            return generateId(recipientType, message.getCircle().getId());
+        } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
+            return generateId(recipientType, message.getSender().getId());
+        }
+        throw new UnsupportedOperationException();
     }
 
     private static String generateId(final String recipientType, final String id) {
@@ -121,7 +127,7 @@ public class Conversation {
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
 
-        private final int conversation_id, circle, user, text_content;
+        private final int conversation_id, circle, user, text_content, recipient_type, updated_at;
 
         public Indices(final Cursor cursor) {
             super(cursor);
@@ -129,6 +135,8 @@ public class Conversation {
             circle = cursor.getColumnIndex(Conversations.CIRCLE);
             user = cursor.getColumnIndex(Conversations.USER);
             text_content = cursor.getColumnIndex(Conversations.TEXT_CONTENT);
+            recipient_type = cursor.getColumnIndex(Conversations.RECIPIENT_TYPE);
+            updated_at = cursor.getColumnIndex(Conversations.UPDATED_AT);
         }
 
         @Override
@@ -138,6 +146,8 @@ public class Conversation {
             conversation.setTextContent(cursor.getString(text_content));
             conversation.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
             conversation.setUser(JsonSerializer.parse(cursor.getString(user), User.class));
+            conversation.setRecipientType(cursor.getString(recipient_type));
+            conversation.setUpdatedAt(new Date(cursor.getLong(updated_at)));
             return conversation;
         }
     }

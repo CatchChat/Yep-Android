@@ -51,9 +51,9 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             nameView.setText(conversation.getCircle().getName());
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException(recipientType);
         }
         messageView.setText(conversation.getTextContent());
-        timeView.setTime(conversation.getCreatedAt().getTime());
+        timeView.setTime(conversation.getUpdatedAt().getTime());
     }
 }
