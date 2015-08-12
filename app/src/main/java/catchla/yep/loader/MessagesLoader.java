@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.content.Context;
 
 import org.mariotaku.sqliteqb.library.Expression;
+import org.mariotaku.sqliteqb.library.OrderBy;
 
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
@@ -20,6 +21,7 @@ public class MessagesLoader extends ObjectCursorLoader<Message> {
         mConversation = conversation;
         setSelection(Expression.equalsArgs(Messages.CONVERSATION_ID).getSQL());
         setSelectionArgs(new String[]{conversation.getId()});
+        setSortOrder(new OrderBy(Messages.CREATED_AT, false).getSQL());
     }
 
 

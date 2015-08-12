@@ -46,6 +46,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -381,5 +382,10 @@ public class Utils implements Constants {
 
     private static int getTableId(final Uri uri) {
         return DATABASE_URI_MATCHER.match(uri);
+    }
+
+    public static long getTime(final Date date) {
+        if (date == null) return 0;
+        return date.getTime();
     }
 }

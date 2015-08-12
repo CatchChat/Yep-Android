@@ -88,6 +88,15 @@ public class Conversation {
         return id;
     }
 
+    public String getRecipientId() {
+        if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
+            return circle.getId();
+        } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
+            return user.getId();
+        }
+        throw new UnsupportedOperationException();
+    }
+
     public void setId(final String id) {
         this.id = id;
     }
@@ -108,6 +117,7 @@ public class Conversation {
         final Conversation conversation = new Conversation();
         conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
         conversation.setRecipientType(Message.RecipientType.USER);
+        conversation.setUser(user);
         return conversation;
     }
 

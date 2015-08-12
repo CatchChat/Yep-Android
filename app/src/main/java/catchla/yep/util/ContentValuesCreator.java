@@ -3,11 +3,14 @@ package catchla.yep.util;
 import android.content.ContentValues;
 
 import catchla.yep.model.Circle;
+import catchla.yep.model.Conversation;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
+import catchla.yep.model.NewMessage;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.provider.YepDataStore.Users;
@@ -56,13 +59,37 @@ public class ContentValuesCreator {
         final ContentValues values = new ContentValues();
         values.put(Messages.MESSAGE_ID, message.getId());
         values.put(Messages.CONVERSATION_ID, message.getConversationId());
-        values.put(Messages.CREATED_AT, message.getCreatedAt().getTime());
+        values.put(Messages.CREATED_AT, Utils.getTime(message.getCreatedAt()));
         values.put(Messages.PARENT_ID, message.getParentId());
         values.put(Messages.RECIPIENT_ID, message.getRecipientId());
         values.put(Messages.RECIPIENT_TYPE, message.getRecipientType());
         values.put(Messages.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
         values.put(Messages.SENDER, JsonSerializer.serialize(message.getSender(), User.class));
         values.put(Messages.TEXT_CONTENT, message.getTextContent());
+        return values;
+    }
+
+    public static ContentValues fromNewMessage(final NewMessage newMessage) {
+        final ContentValues values = new ContentValues();
+        values.put(Messages.CONVERSATION_ID, newMessage.conversationId());
+        values.put(Messages.CREATED_AT, newMessage.createdAt());
+        values.put(Messages.PARENT_ID, newMessage.parentId());
+        values.put(Messages.RECIPIENT_ID, newMessage.recipientId());
+        values.put(Messages.RECIPIENT_TYPE, newMessage.recipientType());
+        values.put(Messages.CIRCLE, JsonSerializer.serialize(newMessage.circle(), Circle.class));
+        values.put(Messages.SENDER, JsonSerializer.serialize(newMessage.sender(), User.class));
+        values.put(Messages.TEXT_CONTENT, newMessage.textContent());
+        return values;
+    }
+
+    public static ContentValues fromConversation(final Conversation conversation) {
+        final ContentValues values = new ContentValues();
+        values.put(Conversations.CONVERSATION_ID, conversation.getId());
+        values.put(Conversations.UPDATED_AT, Utils.getTime(conversation.getUpdatedAt()));
+        values.put(Conversations.RECIPIENT_TYPE, conversation.getRecipientType());
+        values.put(Conversations.USER, JsonSerializer.serialize(conversation.getUser(), User.class));
+        values.put(Conversations.CIRCLE, JsonSerializer.serialize(conversation.getCircle(), Circle.class));
+        values.put(Conversations.TEXT_CONTENT, conversation.getTextContent());
         return values;
     }
 }

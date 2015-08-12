@@ -6,6 +6,7 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -29,6 +31,8 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
+import org.mariotaku.sqliteqb.library.Expression;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -39,9 +43,11 @@ import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.EditTextEnterHandler;
+import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
@@ -85,8 +91,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
-        mLayoutManager = new FixedLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mLayoutManager.setStackFromEnd(true);
+        mLayoutManager = new FixedLinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        mLayoutManager.setStackFromEnd(false);
         mAdapter = new ChatAdapter(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -144,8 +150,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
                 if (result.hasData()) {
-                    final ContentResolver cr = getContentResolver();
-                    cr.insert(Messages.CONTENT_URI, ContentValuesCreator.fromMessage(result.getData()));
+                    getSupportLoaderManager().restartLoader(0, getIntent().getExtras(), ChatActivity.this);
                 }
                 super.callback(handler, result);
             }
@@ -153,20 +158,41 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
                 YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, account);
+                final ContentResolver cr = getContentResolver();
+                final ContentValues values = ContentValuesCreator.fromNewMessage(newMessage);
+                values.put(Messages.STATE, Messages.MessageState.SENDING);
+                values.put(Messages.OUTGOING, true);
+                final long rowId = ParseUtils.parseLong(cr.insert(Messages.CONTENT_URI, values).getLastPathSegment());
+                values.clear();
+                TaskResponse<Message> response;
                 try {
                     final Message message = yep.createMessage(newMessage);
-                    message.setConversationId(conversation.getId());
-                    message.setOutgoing(true);
-                    return TaskResponse.getInstance(message);
+                    values.put(Messages.MESSAGE_ID, message.getId());
+                    values.put(Messages.STATE, Messages.MessageState.SENT);
+                    final long createdAt = Utils.getTime(message.getCreatedAt());
+                    values.put(Messages.CREATED_AT, createdAt);
+                    final ContentValues conversationValues = ContentValuesCreator.fromConversation(conversation);
+                    conversationValues.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                    conversationValues.put(Conversations.UPDATED_AT, createdAt);
+                    cr.insert(Conversations.CONTENT_URI, conversationValues);
+                    response = TaskResponse.getInstance(message);
                 } catch (YepException e) {
-                    return TaskResponse.getInstance(e);
+                    values.put(Messages.STATE, Messages.MessageState.FAILED);
+                    Log.w(LOGTAG, e);
+                    response = TaskResponse.getInstance(e);
                 }
+                cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, rowId).getSQL(),
+                        null);
+                return response;
             }
         };
         final NewMessage newMessage = new NewMessage();
         newMessage.textContent(String.valueOf(mEditText.getText()));
-        newMessage.recipientId(conversation.getId());
+        newMessage.conversationId(conversation.getId());
+        newMessage.recipientId(conversation.getRecipientId());
         newMessage.recipientType(conversation.getRecipientType());
+        newMessage.circle(conversation.getCircle());
+        newMessage.sender(conversation.getSender());
         task.setParams(newMessage);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);

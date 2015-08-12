@@ -16,6 +16,7 @@ import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.User;
+import catchla.yep.util.Utils;
 import catchla.yep.view.ShortTimeView;
 
 /**
@@ -54,6 +55,6 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
             throw new UnsupportedOperationException(recipientType);
         }
         messageView.setText(conversation.getTextContent());
-        timeView.setTime(conversation.getUpdatedAt().getTime());
+        timeView.setTime(Utils.getTime(conversation.getUpdatedAt()));
     }
 }

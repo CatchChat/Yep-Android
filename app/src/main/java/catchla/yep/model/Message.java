@@ -135,13 +135,14 @@ public class Message {
     }
 
     public static class Indices extends ObjectCursor.CursorIndices<Message> {
-        private final int message_id, created_at, text_content;
+        private final int message_id, created_at, text_content, outgoing;
 
         public Indices(@NonNull final Cursor cursor) {
             super(cursor);
             message_id = cursor.getColumnIndex(Messages.MESSAGE_ID);
             created_at = cursor.getColumnIndex(Messages.CREATED_AT);
             text_content = cursor.getColumnIndex(Messages.TEXT_CONTENT);
+            outgoing = cursor.getColumnIndex(Messages.OUTGOING);
         }
 
         @Override
@@ -150,6 +151,7 @@ public class Message {
             message.setId(cursor.getString(message_id));
             message.setCreatedAt(new Date(cursor.getLong(created_at)));
             message.setTextContent(cursor.getString(text_content));
+            message.setOutgoing(cursor.getShort(outgoing) == 1);
             return message;
         }
     }

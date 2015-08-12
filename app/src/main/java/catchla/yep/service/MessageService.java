@@ -13,8 +13,14 @@ import com.desmond.asyncmanager.PersistedTaskRunnable;
 import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
+import org.mariotaku.sqliteqb.library.ArgsArray;
+import org.mariotaku.sqliteqb.library.Columns;
+import org.mariotaku.sqliteqb.library.Expression;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
@@ -132,8 +138,11 @@ public class MessageService extends Service implements Constants {
                     int page = 1;
                     final Paging paging = new Paging();
                     HashMap<String, ContentValues> conversations = new HashMap<>();
+                    final ContentResolver cr = getContentResolver();
                     while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
+                        final Set<String> ids = new HashSet<>();
                         for (Message message : messages) {
+                            ids.add(message.getId());
                             final String recipientType = message.getRecipientType();
                             final String conversationId = Conversation.generateId(message);
                             message.setConversationId(conversationId);
@@ -148,10 +157,16 @@ public class MessageService extends Service implements Constants {
                                 conversation.put(Conversations.CONVERSATION_ID, conversationId);
                                 conversations.put(conversationId, conversation);
                             }
-                            conversation.put(Conversations.UPDATED_AT, message.getCreatedAt().getTime());
-                            conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                            final long createdAt = Utils.getTime(message.getCreatedAt());
+                            if (!conversation.containsKey(Conversations.UPDATED_AT)
+                                    || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
+                                conversation.put(Conversations.UPDATED_AT, createdAt);
+                                conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                            }
+                            cr.delete(Messages.CONTENT_URI,
+                                    Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(ids.size())).getSQL(),
+                                    ids.toArray(new String[ids.size()]));
                         }
-
                         paging.page(++page);
                         if (messages.getCount() < messages.getPerPage()) break;
                     }
@@ -159,7 +174,6 @@ public class MessageService extends Service implements Constants {
                     for (Message message : messages) {
                         messagesValues.add(ContentValuesCreator.fromMessage(message));
                     }
-                    final ContentResolver cr = getContentResolver();
                     ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
                     ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
                     return TaskResponse.getInstance(true);

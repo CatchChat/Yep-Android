@@ -26,6 +26,7 @@ public interface YepDataStore {
         String PARENT_ID = "parent_id";
         String CONVERSATION_ID = "conversation_id";
         String STATE = "state";
+        String OUTGOING = "outgoing";
 
         String CONTENT_PATH = "messages";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
@@ -33,10 +34,16 @@ public interface YepDataStore {
         String TABLE_NAME = "messages";
 
         String[] COLUMNS = {_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
-                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE};
+                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT};
+                DataType.TEXT, DataType.INTEGER};
+
+        interface MessageState {
+            String SENT = "sent";
+            String SENDING = "sending";
+            String FAILED = "failed";
+        }
     }
 
     interface Conversations extends BaseColumns {
