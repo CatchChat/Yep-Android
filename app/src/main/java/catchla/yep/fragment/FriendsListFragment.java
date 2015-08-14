@@ -20,9 +20,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bluelinelabs.logansquare.LoganSquare;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
 import java.util.List;
 
 import catchla.yep.R;
@@ -32,9 +32,11 @@ import catchla.yep.adapter.FriendsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.FriendshipsLoader;
+import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.User;
 import catchla.yep.service.MessageService;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 
 /**
@@ -64,11 +66,7 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
                 final Friendship friendship = getAdapter().getFriendship(position);
                 final Intent intent = new Intent(getActivity(), UserActivity.class);
-                try {
-                    intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(friendship.getFriend()));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                intent.putExtra(EXTRA_USER, JsonSerializer.serialize(friendship.getFriend(), User.class));
                 startActivity(intent);
             }
         });
@@ -118,6 +116,26 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Bus bus = Utils.getMessageBus();
+        bus.register(this);
+    }
+
+    @Override
+    public void onStop() {
+        Bus bus = Utils.getMessageBus();
+        bus.unregister(this);
+        super.onStop();
+    }
+
+    @Subscribe
+    public void onMessageRefreshed(FriendshipsRefreshedEvent event) {
+        setRefreshing(false);
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
     public boolean triggerRefresh() {
         final FragmentActivity activity = getActivity();
         final Intent intent = new Intent(activity, MessageService.class);
@@ -128,6 +146,6 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
 
     @Override
     public void onLoaderReset(final Loader<List<Friendship>> loader) {
-
+        getAdapter().setData(null);
     }
 }

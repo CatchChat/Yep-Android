@@ -24,6 +24,7 @@ import java.util.Set;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
+import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
@@ -112,7 +113,7 @@ public class MessageService extends Service implements Constants {
             @Override
             public void callback(final TaskResponse<Boolean> response) {
                 final Bus bus = Utils.getMessageBus();
-                bus.post(new MessageRefreshedEvent());
+                bus.post(new FriendshipsRefreshedEvent());
             }
 
             @Override

@@ -19,11 +19,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.io.IOException;
 import java.util.List;
 
 import catchla.yep.Constants;
@@ -36,6 +34,7 @@ import catchla.yep.loader.ConversationsLoader;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.service.MessageService;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 
 /**
@@ -63,12 +62,7 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
                 final Conversation conversation = getAdapter().getConversation(position);
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
-                try {
-                    intent.putExtra(EXTRA_CONVERSATION, LoganSquare.mapperFor(Conversation.class)
-                            .serialize(conversation));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(conversation, Conversation.class));
                 startActivity(intent);
             }
         });
