@@ -13,6 +13,8 @@ import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -334,6 +336,26 @@ public class Utils implements Constants {
 
     public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, File file) throws IOException {
         return uploadToS3(client, token, new FileTypedData(file));
+    }
+
+    public static Location getCachedLocation(Context context) {
+        Location location = null;
+        try {
+            final LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            try {
+                location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            } catch (Exception ignore) {
+
+            }
+            if (location != null) return location;
+            try {
+                location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            } catch (Exception ignore) {
+
+            }
+        } catch (Exception ignore) {
+        }
+        return location;
     }
 
     public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, FileTypedData file) throws IOException {

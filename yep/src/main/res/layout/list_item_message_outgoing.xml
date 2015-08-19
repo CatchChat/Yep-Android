@@ -18,14 +18,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/element_spacing_normal"
             android:orientation="vertical">
 
             <TextView
                 android:id="@android:id/text1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"/>
+                android:layout_gravity="end"
+                android:layout_margin="@dimen/element_spacing_normal"/>
+
+
+            <FrameLayout
+                android:id="@+id/attachment_container"
+                android:layout_width="180dp"
+                android:layout_height="96dp"
+                android:visibility="gone"/>
         </LinearLayout>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>
 </FrameLayout>

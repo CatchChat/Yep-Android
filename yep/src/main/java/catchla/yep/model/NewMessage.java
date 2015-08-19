@@ -54,6 +54,12 @@ public class NewMessage extends SimpleValueMap {
         return this;
     }
 
+    public NewMessage location(double latitude, double longitude) {
+        put("latitude", latitude);
+        put("longitude", longitude);
+        return this;
+    }
+
     public String conversationId() {
         return conversationId;
     }
@@ -100,10 +106,22 @@ public class NewMessage extends SimpleValueMap {
         put("attachments", JsonSerializer.serialize(attachment, (Class<T>) attachment.getClass()));
     }
 
+    public String mediaType() {
+        return ParseUtils.parseString(get("media_type"));
+    }
+
+    public double latitude() {
+        return ParseUtils.parseDouble(ParseUtils.parseString(get("latitude")), Double.NaN);
+    }
+
+    public double longitude() {
+        return ParseUtils.parseDouble(ParseUtils.parseString(get("longitude")), Double.NaN);
+    }
+
     public interface Attachment {
 
         @JsonObject
-        public static class File {
+        class File {
             @JsonField(name = "file")
             String file;
 

@@ -162,7 +162,7 @@ public class Message {
 
     public static class Indices extends ObjectCursor.CursorIndices<Message> {
         private final int message_id, created_at, text_content, outgoing, latitude, longitude,
-                sender, circle, recipient_id, recipient_type;
+                sender, circle, recipient_id, recipient_type, media_type;
 
         public Indices(@NonNull final Cursor cursor) {
             super(cursor);
@@ -176,6 +176,7 @@ public class Message {
             circle = cursor.getColumnIndex(Messages.CIRCLE);
             recipient_id = cursor.getColumnIndex(Messages.RECIPIENT_ID);
             recipient_type = cursor.getColumnIndex(Messages.RECIPIENT_TYPE);
+            media_type = cursor.getColumnIndex(Messages.MEDIA_TYPE);
         }
 
         @Override
@@ -191,6 +192,7 @@ public class Message {
             message.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
             message.setRecipientId(cursor.getString(recipient_id));
             message.setRecipientType(cursor.getString(recipient_type));
+            message.setMediaType(cursor.getString(media_type));
             return message;
         }
     }

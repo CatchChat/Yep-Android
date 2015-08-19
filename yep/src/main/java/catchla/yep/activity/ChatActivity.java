@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -34,7 +36,11 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
+import org.mariotaku.restfu.http.RestHttpClient;
 import org.mariotaku.sqliteqb.library.Expression;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +81,6 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private EditText mEditText;
     private Conversation mConversation;
     private PopupMenu mAttachPopupMenu;
-    private Uri mImageUri;
 
     @Override
     public void onContentChanged() {
@@ -92,8 +97,20 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             case REQUEST_PICK_IMAGE:
             case REQUEST_TAKE_PHOTO: {
                 if (resultCode != RESULT_OK) return;
-                mImageUri = data.getData();
-                sendMessage();
+                final Uri imageUri = data.getData();
+                sendMessage(new SendMessageHandler() {
+                    @Override
+                    public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                        final S3UploadToken token = yep.getS3UploadToken();
+                        final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                        try {
+                            Utils.uploadToS3(client, token, new File(imageUri.getPath()));
+                        } catch (IOException e) {
+                            throw new YepException(e);
+                        }
+                        message.attachment(new NewMessage.ImageAttachment(token));
+                    }
+                });
                 return;
             }
         }
@@ -122,7 +139,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void onClick(final View v) {
                 if (mEditText.length() > 0) {
-                    sendMessage();
+                    sendTextMessage();
                 } else {
                     openAttachmentMenu();
                 }
@@ -132,7 +149,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         final EditTextEnterHandler handler = EditTextEnterHandler.attach(mEditText, new EditTextEnterHandler.EnterListener() {
             @Override
             public void onHitEnter() {
-                sendMessage();
+                sendTextMessage();
             }
         }, true);
         handler.addTextChangedListener(new TextWatcher() {
@@ -170,6 +187,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                         startActivityForResult(ThemedImagePickerActivity.withThemed(ChatActivity.this).takePhoto().build(), REQUEST_TAKE_PHOTO);
                         return true;
                     }
+                    case R.id.location: {
+                        sendLocation();
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -178,11 +199,37 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
+    private void sendLocation() {
+        sendMessage(new SendMessageHandler() {
+            @Override
+            public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                Location location = Utils.getCachedLocation(ChatActivity.this);
+                if (location != null) {
+                    message.location(location.getLatitude(), location.getLongitude());
+                    message.mediaType(Message.MediaType.LOCATION);
+                }
+            }
+        });
+    }
+
+    private void sendTextMessage() {
+        sendMessage(new SendMessageHandler() {
+            @Override
+            public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                message.mediaType(Message.MediaType.TEXT);
+            }
+        });
+    }
+
     private void openAttachmentMenu() {
         mAttachPopupMenu.show();
     }
 
-    private void sendMessage() {
+    interface SendMessageHandler {
+        void beforeSend(YepAPI yep, NewMessage message) throws YepException;
+    }
+
+    private void sendMessage(final SendMessageHandler sendMessageHandler) {
         final Account account = Utils.getCurrentAccount(ChatActivity.this);
         final Conversation conversation = mConversation;
         if (account == null || conversation == null) return;
@@ -199,19 +246,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
                 YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, account);
                 final ContentResolver cr = getContentResolver();
-                final ContentValues values = ContentValuesCreator.fromNewMessage(newMessage);
+                ContentValues values = ContentValuesCreator.fromNewMessage(newMessage);
                 values.put(Messages.STATE, Messages.MessageState.SENDING);
                 values.put(Messages.OUTGOING, true);
                 final long rowId = ParseUtils.parseLong(cr.insert(Messages.CONTENT_URI, values).getLastPathSegment());
-                values.clear();
                 TaskResponse<Message> response;
                 try {
-                    if (mImageUri != null) {
-                        final S3UploadToken token = yep.getS3UploadToken();
-                        final File file = new File(mImageUri.getPath());
-                        Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, file);
-                        newMessage.attachment(new NewMessage.ImageAttachment(token));
-                    }
+                    sendMessageHandler.beforeSend(yep, newMessage);
+                    values = ContentValuesCreator.fromNewMessage(newMessage);
                     final Message message = yep.createMessage(newMessage);
                     values.put(Messages.MESSAGE_ID, message.getId());
                     values.put(Messages.STATE, Messages.MessageState.SENT);
@@ -226,14 +268,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     values.put(Messages.STATE, Messages.MessageState.FAILED);
                     Log.w(LOGTAG, e);
                     response = TaskResponse.getInstance(e);
-                } catch (IOException e) {
-                    values.put(Messages.STATE, Messages.MessageState.FAILED);
-                    Log.w(LOGTAG, e);
-                    response = TaskResponse.getInstance(e);
                 }
                 cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, rowId).getSQL(),
                         null);
-                mImageUri = null;
                 return response;
             }
         };
@@ -280,8 +317,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     private static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        private static final int VIEW_TYPE_MESSAGE_INCOMING = 1;
-        private static final int VIEW_TYPE_MESSAGE_OUTGOING = 2;
+        private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
+        private static final int VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001;
+        private static final int VIEW_SUBTYPE_MESSAGE_LOCATION = 0x0002;
         private final LayoutInflater mInflater;
         private List<Message> mData;
 
@@ -292,12 +330,23 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType) {
-                case VIEW_TYPE_MESSAGE_INCOMING: {
-                    return new IncomingChatViewHolder(mInflater.inflate(R.layout.list_item_message_incoming, parent, false));
+            final boolean isOutgoing = (viewType & FLAG_MESSAGE_OUTGOING) != 0;
+            final View baseView;
+            if (isOutgoing) {
+                baseView = mInflater.inflate(R.layout.list_item_message_outgoing, parent, false);
+            } else {
+                baseView = mInflater.inflate(R.layout.list_item_message_incoming, parent, false);
+            }
+            final int subType = viewType & ~FLAG_MESSAGE_OUTGOING;
+            switch (subType) {
+                case VIEW_SUBTYPE_MESSAGE_TEXT: {
+                    return new MessageViewHolder(baseView);
                 }
-                case VIEW_TYPE_MESSAGE_OUTGOING: {
-                    return new OutgoingChatViewHolder(mInflater.inflate(R.layout.list_item_message_outgoing, parent, false));
+                case VIEW_SUBTYPE_MESSAGE_LOCATION: {
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    attachmentContainer.setVisibility(View.VISIBLE);
+                    View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_location, attachmentContainer);
+                    return new LocationChatViewHolder(baseView);
                 }
             }
             throw new UnsupportedOperationException();
@@ -310,8 +359,15 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         @Override
         public int getItemViewType(final int position) {
-            if (mData.get(position).isOutgoing()) return VIEW_TYPE_MESSAGE_OUTGOING;
-            return VIEW_TYPE_MESSAGE_INCOMING;
+            final Message message = mData.get(position);
+            int subType = getItemViewSubType(message.getMediaType());
+            if (message.isOutgoing()) return subType | FLAG_MESSAGE_OUTGOING;
+            return subType;
+        }
+
+        private int getItemViewSubType(final String mediaType) {
+            if (Message.MediaType.LOCATION.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_LOCATION;
+            return VIEW_SUBTYPE_MESSAGE_TEXT;
         }
 
         @Override
@@ -325,7 +381,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             notifyDataSetChanged();
         }
 
-        private static abstract class MessageViewHolder extends RecyclerView.ViewHolder {
+        private static class MessageViewHolder extends RecyclerView.ViewHolder {
 
             private final TextView text1;
 
@@ -340,24 +396,30 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         }
 
-        private static class IncomingChatViewHolder extends MessageViewHolder {
-            public IncomingChatViewHolder(final View itemView) {
+        private static class LocationChatViewHolder extends MessageViewHolder {
+            private final MapView mapView;
+
+            public LocationChatViewHolder(final View itemView) {
                 super(itemView);
+                mapView = (MapView) itemView.findViewById(R.id.map_view);
+                mapView.setTilesScaledToDpi(true);
+                mapView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(final View v, final MotionEvent event) {
+                        return true;
+                    }
+                });
             }
 
             @Override
             public void displayMessage(Message message) {
+                super.displayMessage(message);
+                final GeoPoint gp = new GeoPoint((int) (message.getLatitude() * 1E6), (int) (message.getLongitude() * 1E6));
+                final IMapController mc = mapView.getController();
+                mc.setZoom(12);
+                mc.setCenter(gp);
             }
         }
 
-        private static class OutgoingChatViewHolder extends MessageViewHolder {
-            public OutgoingChatViewHolder(final View itemView) {
-                super(itemView);
-            }
-
-            @Override
-            public void displayMessage(Message message) {
-            }
-        }
     }
 }

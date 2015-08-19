@@ -68,6 +68,7 @@ public class ContentValuesCreator {
         values.put(Messages.LATITUDE, message.getLatitude());
         values.put(Messages.LONGITUDE, message.getLongitude());
         values.put(Messages.TEXT_CONTENT, message.getTextContent());
+        values.put(Messages.MEDIA_TYPE, message.getMediaType());
         return values;
     }
 
@@ -81,6 +82,9 @@ public class ContentValuesCreator {
         values.put(Messages.CIRCLE, JsonSerializer.serialize(newMessage.circle(), Circle.class));
         values.put(Messages.SENDER, JsonSerializer.serialize(newMessage.sender(), User.class));
         values.put(Messages.TEXT_CONTENT, newMessage.textContent());
+        values.put(Messages.MEDIA_TYPE, newMessage.mediaType());
+        values.put(Messages.LATITUDE, newMessage.latitude());
+        values.put(Messages.LONGITUDE, newMessage.longitude());
         return values;
     }
 
