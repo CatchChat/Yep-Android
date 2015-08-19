@@ -56,6 +56,8 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         }
         if (Message.MediaType.LOCATION.equalsIgnoreCase(conversation.getMediaType())) {
             messageView.setText(R.string.location);
+        } else if (Message.MediaType.IMAGE.equalsIgnoreCase(conversation.getMediaType())) {
+            messageView.setText(R.string.image);
         } else {
             messageView.setText(conversation.getTextContent());
         }

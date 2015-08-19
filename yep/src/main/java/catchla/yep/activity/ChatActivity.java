@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.squareup.picasso.Picasso;
 
 import org.mariotaku.restfu.http.RestHttpClient;
 import org.mariotaku.sqliteqb.library.Expression;
@@ -320,6 +321,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
         private static final int VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001;
         private static final int VIEW_SUBTYPE_MESSAGE_LOCATION = 0x0002;
+        private static final int VIEW_SUBTYPE_MESSAGE_IMAGE = 0x0003;
         private final LayoutInflater mInflater;
         private List<Message> mData;
 
@@ -340,13 +342,19 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             final int subType = viewType & ~FLAG_MESSAGE_OUTGOING;
             switch (subType) {
                 case VIEW_SUBTYPE_MESSAGE_TEXT: {
-                    return new MessageViewHolder(baseView);
+                    return new MessageViewHolder(baseView, isOutgoing);
                 }
                 case VIEW_SUBTYPE_MESSAGE_LOCATION: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_location, attachmentContainer);
-                    return new LocationChatViewHolder(baseView);
+                    return new LocationChatViewHolder(baseView, isOutgoing);
+                }
+                case VIEW_SUBTYPE_MESSAGE_IMAGE: {
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    attachmentContainer.setVisibility(View.VISIBLE);
+                    View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
+                    return new ImageChatViewHolder(baseView, isOutgoing);
                 }
             }
             throw new UnsupportedOperationException();
@@ -367,6 +375,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         private int getItemViewSubType(final String mediaType) {
             if (Message.MediaType.LOCATION.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_LOCATION;
+            else if (Message.MediaType.IMAGE.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_IMAGE;
             return VIEW_SUBTYPE_MESSAGE_TEXT;
         }
 
@@ -384,23 +393,28 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static class MessageViewHolder extends RecyclerView.ViewHolder {
 
             private final TextView text1;
+            private final TextView state;
 
-            public MessageViewHolder(final View itemView) {
+            public MessageViewHolder(final View itemView, boolean outgoing) {
                 super(itemView);
                 text1 = (TextView) itemView.findViewById(android.R.id.text1);
+                state = (TextView) itemView.findViewById(R.id.state);
             }
 
             public void displayMessage(Message message) {
                 text1.setText(message.getTextContent());
-
+                text1.setVisibility(text1.length() > 0 ? View.VISIBLE : View.GONE);
+                if (state != null) {
+                    state.setText(message.getState());
+                }
             }
         }
 
         private static class LocationChatViewHolder extends MessageViewHolder {
             private final MapView mapView;
 
-            public LocationChatViewHolder(final View itemView) {
-                super(itemView);
+            public LocationChatViewHolder(final View itemView, final boolean outgoing) {
+                super(itemView, outgoing);
                 mapView = (MapView) itemView.findViewById(R.id.map_view);
                 mapView.setTilesScaledToDpi(true);
                 mapView.setOnTouchListener(new View.OnTouchListener() {
@@ -418,6 +432,21 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 final IMapController mc = mapView.getController();
                 mc.setZoom(12);
                 mc.setCenter(gp);
+            }
+        }
+
+        private static class ImageChatViewHolder extends MessageViewHolder {
+            private final ImageView imageView;
+
+            public ImageChatViewHolder(final View itemView, final boolean outgoing) {
+                super(itemView, outgoing);
+                imageView = (ImageView) itemView.findViewById(R.id.image_view);
+            }
+
+            @Override
+            public void displayMessage(Message message) {
+                super.displayMessage(message);
+                Picasso.with(imageView.getContext()).load(message.getAttachments().get(0).getFile().getUrl()).into(imageView);
             }
         }
 

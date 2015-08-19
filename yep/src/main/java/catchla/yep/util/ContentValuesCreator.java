@@ -69,6 +69,7 @@ public class ContentValuesCreator {
         values.put(Messages.LONGITUDE, message.getLongitude());
         values.put(Messages.TEXT_CONTENT, message.getTextContent());
         values.put(Messages.MEDIA_TYPE, message.getMediaType());
+        values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.getAttachments(), Message.Attachment.class));
         return values;
     }
 

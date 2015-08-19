@@ -7,6 +7,7 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
+import java.util.List;
 
 import catchla.yep.model.util.NaNDoubleConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
@@ -24,27 +25,39 @@ public class Message {
     @JsonField(name = "longitude", typeConverter = NaNDoubleConverter.class)
     double longitude = Double.NaN;
     @JsonField(name = "id")
-    private String id;
+    String id;
     @JsonField(name = "recipient_id")
-    private String recipientId;
+    String recipientId;
     @JsonField(name = "parent_id")
-    private String parentId;
+    String parentId;
     @JsonField(name = "text_content")
-    private String textContent;
+    String textContent;
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
-    private Date createdAt;
+    Date createdAt;
     @JsonField(name = "sender")
-    private User sender;
+    User sender;
     @JsonField(name = "recipient_type")
-    private String recipientType;
+    String recipientType;
     @JsonField(name = "media_type")
-    private String mediaType;
+    String mediaType;
     @JsonField(name = "circle")
-    private Circle circle;
+    Circle circle;
     @JsonField(name = "conversation_id")
-    private String conversationId;
+    String conversationId;
     @JsonField(name = "outgoing")
-    private boolean outgoing;
+    boolean outgoing;
+    @JsonField(name = "state")
+    String state;
+    @JsonField(name = "attachments")
+    List<Attachment> attachments;
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(final List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
 
     public double getLongitude() {
         return longitude;
@@ -150,6 +163,14 @@ public class Message {
         this.outgoing = outgoing;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(final String state) {
+        this.state = state;
+    }
+
     public interface RecipientType {
         String USER = "User";
         String CIRCLE = "Circle";
@@ -158,11 +179,57 @@ public class Message {
     public interface MediaType {
         String TEXT = "text";
         String LOCATION = "location";
+        String IMAGE = "image";
+    }
+
+    @JsonObject
+    public static class Attachment {
+        @JsonField(name = "kind")
+        String kind;
+        @JsonField(name = "metadata")
+        String metadata;
+        @JsonField(name = "file")
+        File file;
+
+        public File getFile() {
+            return file;
+        }
+
+        public String getKind() {
+            return kind;
+        }
+
+        public String getMetadata() {
+            return metadata;
+        }
+
+        @JsonObject
+        public static class File {
+            @JsonField(name = "storage")
+            String storage;
+            @JsonField(name = "expires_in")
+            String expiresIn;
+            @JsonField(name = "url")
+            String url;
+
+            public String getStorage() {
+                return storage;
+            }
+
+            public String getExpiresIn() {
+                return expiresIn;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+        }
     }
 
     public static class Indices extends ObjectCursor.CursorIndices<Message> {
         private final int message_id, created_at, text_content, outgoing, latitude, longitude,
-                sender, circle, recipient_id, recipient_type, media_type;
+                sender, circle, recipient_id, recipient_type, media_type, state, attachments,
+                conversation_id;
 
         public Indices(@NonNull final Cursor cursor) {
             super(cursor);
@@ -177,6 +244,9 @@ public class Message {
             recipient_id = cursor.getColumnIndex(Messages.RECIPIENT_ID);
             recipient_type = cursor.getColumnIndex(Messages.RECIPIENT_TYPE);
             media_type = cursor.getColumnIndex(Messages.MEDIA_TYPE);
+            state = cursor.getColumnIndex(Messages.STATE);
+            attachments = cursor.getColumnIndex(Messages.ATTACHMENTS);
+            conversation_id = cursor.getColumnIndex(Messages.CONVERSATION_ID);
         }
 
         @Override
@@ -193,6 +263,9 @@ public class Message {
             message.setRecipientId(cursor.getString(recipient_id));
             message.setRecipientType(cursor.getString(recipient_type));
             message.setMediaType(cursor.getString(media_type));
+            message.setState(cursor.getString(state));
+            message.setAttachments(JsonSerializer.parseList(cursor.getString(attachments), Attachment.class));
+            message.setConversationId(cursor.getString(conversation_id));
             return message;
         }
     }

@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:orientation="horizontal">
+
+
+    <TextView
+        android:id="@+id/state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/element_spacing_normal"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
         android:layout_width="wrap_content"
@@ -15,24 +25,6 @@
         app:caretWidth="4dp"
         app:cornerRadius="4dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@android:id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="@dimen/element_spacing_normal"/>
-
-
-            <FrameLayout
-                android:id="@+id/attachment_container"
-                android:layout_width="180dp"
-                android:layout_height="96dp"
-                android:visibility="gone"/>
-        </LinearLayout>
+        <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>
-</FrameLayout>
+</LinearLayout>

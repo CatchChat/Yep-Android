@@ -30,6 +30,7 @@ public interface YepDataStore {
         String LATITUDE = "latitude";
         String LONGITUDE = "longitude";
         String MEDIA_TYPE = "media_type";
+        String ATTACHMENTS = "attachments";
 
         String CONTENT_PATH = "messages";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
@@ -37,10 +38,11 @@ public interface YepDataStore {
         String TABLE_NAME = "messages";
 
         String[] COLUMNS = {_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
-                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING, LATITUDE, LONGITUDE, MEDIA_TYPE};
+                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING, LATITUDE, LONGITUDE, MEDIA_TYPE,
+                ATTACHMENTS};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL, DataType.TEXT};
+                DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL, DataType.TEXT, DataType.TEXT};
 
         interface MessageState {
             String SENT = "sent";
