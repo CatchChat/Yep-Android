@@ -9,18 +9,21 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.FixedLinearLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -33,6 +36,7 @@ import com.desmond.asyncmanager.TaskRunnable;
 
 import org.mariotaku.sqliteqb.library.Expression;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -42,6 +46,7 @@ import catchla.yep.loader.MessagesLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
+import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -60,6 +65,8 @@ import catchla.yep.view.TintedStatusFrameLayout;
  */
 public class ChatActivity extends SwipeBackContentActivity implements Constants, LoaderManager.LoaderCallbacks<List<Message>> {
 
+    private static final int REQUEST_PICK_IMAGE = 101;
+    private static final int REQUEST_TAKE_PHOTO = 102;
     private RecyclerView mRecyclerView;
     private TintedStatusFrameLayout mMainContent;
     private ImageView mAttachSendButton;
@@ -67,6 +74,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private ChatAdapter mAdapter;
     private EditText mEditText;
     private Conversation mConversation;
+    private PopupMenu mAttachPopupMenu;
+    private Uri mImageUri;
 
     @Override
     public void onContentChanged() {
@@ -75,6 +84,17 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mAttachSendButton = (ImageView) findViewById(R.id.attachment_send);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_PICK_IMAGE:
+            case REQUEST_TAKE_PHOTO: {
+                if (resultCode != RESULT_OK) return;
+                mImageUri = data.getData();
+            }
+        }
     }
 
     @Override
@@ -135,11 +155,29 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             finish();
             return;
         }
+        mAttachPopupMenu = new PopupMenu(mAttachSendButton.getContext(), mAttachSendButton);
+        mAttachPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.gallery: {
+                        startActivityForResult(ThemedImagePickerActivity.withThemed(ChatActivity.this).pickImage().build(), REQUEST_PICK_IMAGE);
+                        return true;
+                    }
+                    case R.id.camera: {
+                        startActivityForResult(ThemedImagePickerActivity.withThemed(ChatActivity.this).takePhoto().build(), REQUEST_TAKE_PHOTO);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+        mAttachPopupMenu.inflate(R.menu.action_attach_send);
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
     private void openAttachmentMenu() {
-
+        mAttachPopupMenu.show();
     }
 
     private void sendMessage() {
@@ -166,6 +204,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 values.clear();
                 TaskResponse<Message> response;
                 try {
+                    if (mImageUri != null) {
+                        final S3UploadToken token = yep.getS3UploadToken();
+                        final File file = new File(mImageUri.getPath());
+                        Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, file);
+                        newMessage.attachment(new NewMessage.ImageAttachment(token));
+                    }
                     final Message message = yep.createMessage(newMessage);
                     values.put(Messages.MESSAGE_ID, message.getId());
                     values.put(Messages.STATE, Messages.MessageState.SENT);
@@ -177,6 +221,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     cr.insert(Conversations.CONTENT_URI, conversationValues);
                     response = TaskResponse.getInstance(message);
                 } catch (YepException e) {
+                    values.put(Messages.STATE, Messages.MessageState.FAILED);
+                    Log.w(LOGTAG, e);
+                    response = TaskResponse.getInstance(e);
+                } catch (IOException e) {
                     values.put(Messages.STATE, Messages.MessageState.FAILED);
                     Log.w(LOGTAG, e);
                     response = TaskResponse.getInstance(e);

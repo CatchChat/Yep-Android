@@ -1,7 +1,11 @@
 package catchla.yep.model;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+
 import org.mariotaku.restfu.http.SimpleValueMap;
 
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 
 /**
@@ -89,4 +93,43 @@ public class NewMessage extends SimpleValueMap {
     public String textContent() {
         return ParseUtils.parseString(get("text_content"), null);
     }
+
+    public <T extends Attachment> void attachment(final T attachment) {
+        if (attachment == null) return;
+        //noinspection unchecked
+        put("attachments", JsonSerializer.serialize(attachment, (Class<T>) attachment.getClass()));
+    }
+
+    public interface Attachment {
+
+        @JsonObject
+        public static class File {
+            @JsonField(name = "file")
+            String file;
+
+            public File() {
+            }
+
+            public File(final String file) {
+                this.file = file;
+            }
+        }
+    }
+
+    @JsonObject
+    public static class ImageAttachment implements Attachment {
+
+        @JsonField(name = "image")
+        File image;
+
+        public ImageAttachment() {
+
+        }
+
+        public ImageAttachment(S3UploadToken token) {
+            image = new File(token.getOptions().getKey());
+        }
+
+    }
+
 }

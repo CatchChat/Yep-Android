@@ -132,6 +132,9 @@ public interface YepAPI {
     void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
 
     @GET("/v1/attachments/s3_upload_public_form_fields")
+    S3UploadToken getS3PublicUploadToken() throws YepException;
+
+    @GET("/v1/attachments/s3_upload_form_fields")
     S3UploadToken getS3UploadToken() throws YepException;
 
     @POST("/v1/contacts/upload")

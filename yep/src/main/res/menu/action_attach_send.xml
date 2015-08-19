@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/gallery"
+        android:title="@string/pnc__source_gallery"/>
+    <item
+        android:id="@+id/camera"
+        android:title="@string/pnc__source_camera"/>
+    <item
+        android:id="@+id/location"
+        android:title="@string/location"/>
+</menu>
