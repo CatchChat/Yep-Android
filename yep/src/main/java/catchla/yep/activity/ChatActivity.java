@@ -93,6 +93,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             case REQUEST_TAKE_PHOTO: {
                 if (resultCode != RESULT_OK) return;
                 mImageUri = data.getData();
+                sendMessage();
+                return;
             }
         }
     }
@@ -231,6 +233,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 }
                 cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, rowId).getSQL(),
                         null);
+                mImageUri = null;
                 return response;
             }
         };
@@ -324,11 +327,17 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         private static abstract class MessageViewHolder extends RecyclerView.ViewHolder {
 
+            private final TextView text1;
+
             public MessageViewHolder(final View itemView) {
                 super(itemView);
+                text1 = (TextView) itemView.findViewById(android.R.id.text1);
             }
 
-            public abstract void displayMessage(Message message);
+            public void displayMessage(Message message) {
+                text1.setText(message.getTextContent());
+
+            }
         }
 
         private static class IncomingChatViewHolder extends MessageViewHolder {
@@ -338,8 +347,6 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
             @Override
             public void displayMessage(Message message) {
-                final TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
-                text1.setText(message.getTextContent());
             }
         }
 
@@ -350,8 +357,6 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
             @Override
             public void displayMessage(Message message) {
-                final TextView text1 = (TextView) itemView.findViewById(android.R.id.text1);
-                text1.setText(message.getTextContent());
             }
         }
     }

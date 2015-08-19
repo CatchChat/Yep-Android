@@ -27,6 +27,8 @@ public interface YepDataStore {
         String CONVERSATION_ID = "conversation_id";
         String STATE = "state";
         String OUTGOING = "outgoing";
+        String LATITUDE = "latitude";
+        String LONGITUDE = "longitude";
 
         String CONTENT_PATH = "messages";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
@@ -34,10 +36,10 @@ public interface YepDataStore {
         String TABLE_NAME = "messages";
 
         String[] COLUMNS = {_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
-                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING};
+                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING, LATITUDE, LONGITUDE};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.INTEGER};
+                DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL};
 
         interface MessageState {
             String SENT = "sent";
@@ -57,10 +59,12 @@ public interface YepDataStore {
         String CIRCLE = "circle";
         String UPDATED_AT = "updated_at";
         String RECIPIENT_TYPE = "recipient_type";
+        String MEDIA_TYPE = "media_type";
 
-        String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE, UPDATED_AT};
+        String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE,
+                UPDATED_AT, MEDIA_TYPE};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.INTEGER};
+                DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT};
     }
 
     interface Friendships extends Users {

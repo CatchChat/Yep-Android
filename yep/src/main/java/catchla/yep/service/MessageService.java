@@ -163,6 +163,7 @@ public class MessageService extends Service implements Constants {
                                     || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
                                 conversation.put(Conversations.UPDATED_AT, createdAt);
                                 conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                                conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
                             }
                             cr.delete(Messages.CONTENT_URI,
                                     Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(ids.size())).getSQL(),

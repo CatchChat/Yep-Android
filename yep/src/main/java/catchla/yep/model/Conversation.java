@@ -55,6 +55,16 @@ public class Conversation {
 
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     private Date updatedAt;
+    @JsonField(name = "media_type")
+    String mediaType;
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(final String mediaType) {
+        this.mediaType = mediaType;
+    }
 
     public User getUser() {
         return user;
@@ -137,7 +147,8 @@ public class Conversation {
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
 
-        private final int conversation_id, circle, user, text_content, recipient_type, updated_at;
+        private final int conversation_id, circle, user, text_content, recipient_type, updated_at,
+                media_type;
 
         public Indices(final Cursor cursor) {
             super(cursor);
@@ -147,6 +158,7 @@ public class Conversation {
             text_content = cursor.getColumnIndex(Conversations.TEXT_CONTENT);
             recipient_type = cursor.getColumnIndex(Conversations.RECIPIENT_TYPE);
             updated_at = cursor.getColumnIndex(Conversations.UPDATED_AT);
+            media_type = cursor.getColumnIndex(Conversations.MEDIA_TYPE);
         }
 
         @Override
@@ -158,6 +170,7 @@ public class Conversation {
             conversation.setUser(JsonSerializer.parse(cursor.getString(user), User.class));
             conversation.setRecipientType(cursor.getString(recipient_type));
             conversation.setUpdatedAt(new Date(cursor.getLong(updated_at)));
+            conversation.setMediaType(cursor.getString(media_type));
             return conversation;
         }
     }

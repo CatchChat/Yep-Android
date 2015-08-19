@@ -65,6 +65,8 @@ public class ContentValuesCreator {
         values.put(Messages.RECIPIENT_TYPE, message.getRecipientType());
         values.put(Messages.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
         values.put(Messages.SENDER, JsonSerializer.serialize(message.getSender(), User.class));
+        values.put(Messages.LATITUDE, message.getLatitude());
+        values.put(Messages.LONGITUDE, message.getLongitude());
         values.put(Messages.TEXT_CONTENT, message.getTextContent());
         return values;
     }
@@ -90,6 +92,7 @@ public class ContentValuesCreator {
         values.put(Conversations.USER, JsonSerializer.serialize(conversation.getUser(), User.class));
         values.put(Conversations.CIRCLE, JsonSerializer.serialize(conversation.getCircle(), Circle.class));
         values.put(Conversations.TEXT_CONTENT, conversation.getTextContent());
+        values.put(Conversations.MEDIA_TYPE, conversation.getMediaType());
         return values;
     }
 }
