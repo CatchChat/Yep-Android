@@ -21,8 +21,8 @@ import catchla.yep.view.holder.FriendViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class DiscoverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
-    private static final int ITEM_VIEW_TYPE_DISCOVER_ITEM = 1;
+public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
+    private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
     private final LayoutInflater mInflater;
 
     public void setClickListener(final ItemClickListener listener) {
@@ -33,7 +33,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<User> mData;
 
-    public DiscoverAdapter(Context context) {
+    public UsersAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
 
     }
@@ -46,13 +46,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        return ITEM_VIEW_TYPE_DISCOVER_ITEM;
+        return ITEM_VIEW_TYPE_USER_ITEM;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
-            case ITEM_VIEW_TYPE_DISCOVER_ITEM: {
+            case ITEM_VIEW_TYPE_USER_ITEM: {
                 final FriendViewHolder chatEntryViewHolder = (FriendViewHolder) holder;
                 chatEntryViewHolder.displayUser(mData.get(position));
                 break;

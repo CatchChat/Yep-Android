@@ -41,7 +41,7 @@ public class FindFriendActivity extends SwipeBackContentActivity {
         mAdapter = new MergeAdapter();
         mAdapter.addView(getLayoutInflater().inflate(R.layout.list_header_add_friend_search, mListView, false), false);
         final ArrayAdapter<String> actionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-        actionsAdapter.add("Search friends");
+        actionsAdapter.add(getString(R.string.contact_friends));
         mAdapter.addAdapter(actionsAdapter);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

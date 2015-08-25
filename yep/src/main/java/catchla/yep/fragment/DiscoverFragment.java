@@ -25,7 +25,7 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.activity.UserActivity;
-import catchla.yep.adapter.DiscoverAdapter;
+import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.DiscoverLoader;
@@ -37,7 +37,7 @@ import catchla.yep.util.Utils;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAdapter>
+public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
 
     @Override
@@ -101,8 +101,8 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<DiscoverAda
 
     @NonNull
     @Override
-    protected DiscoverAdapter onCreateAdapter(Context context) {
-        return new DiscoverAdapter(context);
+    protected UsersAdapter onCreateAdapter(Context context) {
+        return new UsersAdapter(context);
     }
 
     @Override

@@ -72,4 +72,5 @@
     <string name="location">Location</string>
     <string name="image">Image</string>
     <string name="audio">Audio</string>
+    <string name="contact_friends">Contact friends</string>
 </resources>
