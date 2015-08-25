@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/time"
+            android:layout_toLeftOf="@+id/update_time"
             android:singleLine="true"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="?android:textColorPrimary" />
@@ -55,7 +55,7 @@
             android:maxLines="2" />
 
         <TextView
-            android:id="@+id/time"
+            android:id="@+id/update_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/name"

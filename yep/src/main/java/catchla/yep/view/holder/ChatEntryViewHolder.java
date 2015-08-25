@@ -32,7 +32,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
-        timeView = (ShortTimeView) itemView.findViewById(R.id.time);
+        timeView = (ShortTimeView) itemView.findViewById(R.id.update_time);
         messageView = (TextView) itemView.findViewById(R.id.message);
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +58,8 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
             messageView.setText(R.string.location);
         } else if (Message.MediaType.IMAGE.equalsIgnoreCase(conversation.getMediaType())) {
             messageView.setText(R.string.image);
+        } else if (Message.MediaType.AUDIO.equalsIgnoreCase(conversation.getMediaType())) {
+            messageView.setText(R.string.audio);
         } else {
             messageView.setText(conversation.getTextContent());
         }

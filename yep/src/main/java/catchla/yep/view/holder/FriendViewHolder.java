@@ -27,7 +27,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
-        timeView = (TextView) itemView.findViewById(R.id.time);
+        timeView = (TextView) itemView.findViewById(R.id.update_time);
         descriptionView = (TextView) itemView.findViewById(R.id.description);
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

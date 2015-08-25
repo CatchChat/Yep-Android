@@ -52,6 +52,7 @@ import catchla.yep.R;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
+import catchla.yep.model.Message.Attachment.AudioMetadata;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
@@ -59,12 +60,14 @@ import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.EditTextEnterHandler;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
+import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.TintedStatusFrameLayout;
 
 /**
@@ -322,6 +325,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static final int VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001;
         private static final int VIEW_SUBTYPE_MESSAGE_LOCATION = 0x0002;
         private static final int VIEW_SUBTYPE_MESSAGE_IMAGE = 0x0003;
+        private static final int VIEW_SUBTYPE_MESSAGE_AUDIO = 0x0004;
         private final LayoutInflater mInflater;
         private List<Message> mData;
 
@@ -356,6 +360,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
                     return new ImageChatViewHolder(baseView, isOutgoing);
                 }
+                case VIEW_SUBTYPE_MESSAGE_AUDIO: {
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    attachmentContainer.setVisibility(View.VISIBLE);
+                    View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_audio, attachmentContainer);
+                    return new AudioChatViewHolder(baseView, isOutgoing);
+                }
             }
             throw new UnsupportedOperationException();
         }
@@ -376,6 +386,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private int getItemViewSubType(final String mediaType) {
             if (Message.MediaType.LOCATION.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_LOCATION;
             else if (Message.MediaType.IMAGE.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_IMAGE;
+            else if (Message.MediaType.AUDIO.equals(mediaType)) return VIEW_SUBTYPE_MESSAGE_AUDIO;
             return VIEW_SUBTYPE_MESSAGE_TEXT;
         }
 
@@ -449,6 +460,30 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 Picasso.with(imageView.getContext()).load(message.getAttachments().get(0).getFile().getUrl()).into(imageView);
             }
         }
+
+        private static class AudioChatViewHolder extends MessageViewHolder {
+
+            private final TextView playPauseView;
+            private final TextView audioLengthView;
+            private final AudioSampleView sampleView;
+
+            public AudioChatViewHolder(final View itemView, final boolean outgoing) {
+                super(itemView, outgoing);
+                playPauseView = (TextView) itemView.findViewById(R.id.play_pause);
+                audioLengthView = (TextView) itemView.findViewById(R.id.audio_length);
+                sampleView = (AudioSampleView) itemView.findViewById(R.id.audio_sample);
+            }
+
+            @Override
+            public void displayMessage(Message message) {
+                super.displayMessage(message);
+                AudioMetadata metadata = JsonSerializer.parse(message.getAttachments().get(0).getMetadata(),
+                        AudioMetadata.class);
+                audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
+                sampleView.setSamples(metadata.getSamples());
+            }
+        }
+
 
     }
 }

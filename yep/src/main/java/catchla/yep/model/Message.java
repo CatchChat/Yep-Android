@@ -180,6 +180,7 @@ public class Message {
         String TEXT = "text";
         String LOCATION = "location";
         String IMAGE = "image";
+        String AUDIO = "audio";
     }
 
     @JsonObject
@@ -222,6 +223,22 @@ public class Message {
 
             public String getUrl() {
                 return url;
+            }
+        }
+
+        @JsonObject
+        public static class AudioMetadata {
+            @JsonField(name = "audio_samples")
+            float[] samples;
+            @JsonField(name = "audio_duration")
+            float duration;
+
+            public float getDuration() {
+                return duration;
+            }
+
+            public float[] getSamples() {
+                return samples;
             }
         }
     }
