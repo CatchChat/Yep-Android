@@ -138,14 +138,14 @@ public class NewMessage extends SimpleValueMap {
     public static class ImageAttachment implements Attachment {
 
         @JsonField(name = "image")
-        File image;
+        File[] image;
 
         public ImageAttachment() {
 
         }
 
         public ImageAttachment(S3UploadToken token) {
-            image = new File(token.getOptions().getKey());
+            image = new File[]{new File(token.getOptions().getKey())};
         }
 
     }

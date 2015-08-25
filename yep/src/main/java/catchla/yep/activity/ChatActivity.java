@@ -471,7 +471,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         }
 
-        private static class AudioChatViewHolder extends MessageViewHolder {
+        private static class AudioChatViewHolder extends MessageViewHolder implements View.OnClickListener {
 
             private final TextView playPauseView;
             private final TextView audioLengthView;
@@ -482,6 +482,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 playPauseView = (TextView) itemView.findViewById(R.id.play_pause);
                 audioLengthView = (TextView) itemView.findViewById(R.id.audio_length);
                 sampleView = (AudioSampleView) itemView.findViewById(R.id.audio_sample);
+
+                playPauseView.setOnClickListener(this);
             }
 
             @Override
@@ -491,6 +493,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                         AudioMetadata.class);
                 audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                 sampleView.setSamples(metadata.getSamples());
+            }
+
+            @Override
+            public void onClick(final View v) {
             }
         }
 

@@ -142,6 +142,6 @@ public interface YepAPI {
     ArrayList<User> uploadContact(@Form ContactUpload contactUpload) throws YepException;
 
     @GET("/v1/users/search")
-    PagedUsers searchUsers(@Query("q") String query) throws YepException;
+    PagedUsers searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
 }
 

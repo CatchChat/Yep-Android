@@ -87,6 +87,7 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setData(final List<Conversation> data) {
         mData = data;
+        notifyDataSetChanged();
     }
 
     public Conversation getConversation(final int position) {
