@@ -410,4 +410,10 @@ public class Utils implements Constants {
         if (date == null) return 0;
         return date.getTime();
     }
+
+    public static String getDisplayName(final User user) {
+        if (!TextUtils.isEmpty(user.getNickname())) return user.getNickname();
+        else if (!TextUtils.isEmpty(user.getContactName())) return user.getContactName();
+        else return user.getUsername();
+    }
 }

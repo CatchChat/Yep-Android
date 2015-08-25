@@ -1,7 +1,14 @@
 package catchla.yep.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.commonsware.cwac.merge.MergeAdapter;
 
 import catchla.yep.R;
 import catchla.yep.util.ThemeUtils;
@@ -13,6 +20,8 @@ import catchla.yep.view.TintedStatusFrameLayout;
 public class FindFriendActivity extends SwipeBackContentActivity {
 
     private TintedStatusFrameLayout mMainContent;
+    private ListView mListView;
+    private MergeAdapter mAdapter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -28,11 +37,28 @@ public class FindFriendActivity extends SwipeBackContentActivity {
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
+
+        mAdapter = new MergeAdapter();
+        mAdapter.addView(getLayoutInflater().inflate(R.layout.list_header_add_friend_search, mListView, false), false);
+        final ArrayAdapter<String> actionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        actionsAdapter.add("Search friends");
+        mAdapter.addAdapter(actionsAdapter);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+                if (position == 1) {
+                    startActivity(new Intent(FindFriendActivity.this, ContactFriendsActivity.class));
+                }
+            }
+        });
     }
 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
+        mListView = (ListView) findViewById(R.id.list_view);
     }
+
 }

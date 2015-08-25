@@ -49,10 +49,12 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.graphic.ImageMetadataHolderDrawable;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.Message.Attachment.AudioMetadata;
+import catchla.yep.model.Message.Attachment.ImageMetadata;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
@@ -311,6 +313,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     @Override
     public void onLoadFinished(final Loader<List<Message>> loader, final List<Message> data) {
+        final Conversation conversation = mConversation;
+        if (conversation != null) {
+            setTitle(Utils.getDisplayName(conversation.getUser()));
+        }
         mAdapter.setData(data);
     }
 
@@ -457,7 +463,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                Picasso.with(imageView.getContext()).load(message.getAttachments().get(0).getFile().getUrl()).into(imageView);
+                final Message.Attachment attachment = message.getAttachments().get(0);
+                final String url = attachment.getFile().getUrl();
+                final ImageMetadata metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
+                Picasso.with(imageView.getContext()).load(url).placeholder(new ImageMetadataHolderDrawable(imageView.getResources(),
+                        metadata)).into(imageView);
             }
         }
 

@@ -241,6 +241,28 @@ public class Message {
                 return samples;
             }
         }
+
+        @JsonObject
+        public static class ImageMetadata {
+            @JsonField(name = "image_width")
+            int width;
+            @JsonField(name = "image_height")
+            int height;
+            @JsonField(name = "blurred_thumbnail_string")
+            String blurredThumbnail;
+
+            public int getWidth() {
+                return width;
+            }
+
+            public int getHeight() {
+                return height;
+            }
+
+            public String getBlurredThumbnail() {
+                return blurredThumbnail;
+            }
+        }
     }
 
     public static class Indices extends ObjectCursor.CursorIndices<Message> {
