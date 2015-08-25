@@ -64,6 +64,7 @@ dependencies {
     compile 'com.github.mariotaku:PickNCrop:a7abe5316c'
     compile 'com.github.mariotaku:SQLiteQB:b37bee32fe'
     compile 'com.saulpower.fayeclient:library:1.0'
+    compile 'com.googlecode.libphonenumber:libphonenumber:7.0.9'
     compile 'org.osmdroid:osmdroid-android:4.3'
     compile 'org.slf4j:slf4j-simple:1.7.12'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
