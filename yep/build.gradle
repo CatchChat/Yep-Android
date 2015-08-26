@@ -47,7 +47,7 @@ dependencies {
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.mariotaku:MessageBubbleView:1.2'
-    compile 'com.github.mariotaku:RestFu:0.9'
+    compile 'com.github.mariotaku:RestFu:1d14fd7b155797897ab052f3be79a72f01e236f8'
     compile 'org.apmem.tools:layouts:1.9@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'

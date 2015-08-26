@@ -6,6 +6,7 @@ import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
 import org.mariotaku.restfu.annotation.param.Body;
+import org.mariotaku.restfu.annotation.param.File;
 import org.mariotaku.restfu.annotation.param.Form;
 import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
@@ -103,8 +104,8 @@ public interface YepAPI {
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
     @POST("/v1/messages")
-    @Body(BodyType.FORM)
-    Message createMessage(@Form NewMessage message) throws YepException;
+    @Body(BodyType.FILE)
+    Message createMessage(@File NewMessage.JsonBody message) throws YepException;
 
     @DELETE("/v1/learning_skills/{id}")
     void removeLearningSkill(@Path("id") String id) throws YepException;

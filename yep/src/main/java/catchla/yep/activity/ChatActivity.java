@@ -114,6 +114,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                         } catch (IOException e) {
                             throw new YepException(e);
                         }
+                        message.mediaType(Message.MediaType.IMAGE);
                         message.attachment(new NewMessage.ImageAttachment(token));
                     }
                 });
@@ -260,7 +261,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 try {
                     sendMessageHandler.beforeSend(yep, newMessage);
                     values = ContentValuesCreator.fromNewMessage(newMessage);
-                    final Message message = yep.createMessage(newMessage);
+                    final Message message = yep.createMessage(newMessage.toJson());
                     values.put(Messages.MESSAGE_ID, message.getId());
                     values.put(Messages.STATE, Messages.MessageState.SENT);
                     final long createdAt = Utils.getTime(message.getCreatedAt());
