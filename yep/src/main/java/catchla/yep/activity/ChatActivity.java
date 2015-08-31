@@ -76,6 +76,7 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 import catchla.yep.view.AudioSampleView;
+import catchla.yep.view.MediaSizeImageView;
 import catchla.yep.view.TintedStatusFrameLayout;
 
 /**
@@ -483,11 +484,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         }
 
         private static class ImageChatViewHolder extends MessageViewHolder {
-            private final ImageView imageView;
+            private final MediaSizeImageView imageView;
 
             public ImageChatViewHolder(final View itemView, final boolean outgoing) {
                 super(itemView, outgoing);
-                imageView = (ImageView) itemView.findViewById(R.id.image_view);
+                imageView = (MediaSizeImageView) itemView.findViewById(R.id.image_view);
             }
 
             @Override
@@ -498,6 +499,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 final Message.Attachment attachment = attachments.get(0);
                 final String url = attachment.getFile().getUrl();
                 final ImageMetadata metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
+                imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
                 final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
                 Picasso.with(imageView.getContext())
                         .load(url)
