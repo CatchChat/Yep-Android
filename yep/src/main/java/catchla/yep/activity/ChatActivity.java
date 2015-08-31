@@ -9,6 +9,9 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +24,8 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,13 +48,14 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.graphic.ImageMetadataHolderDrawable;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
@@ -107,15 +113,38 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 sendMessage(new SendMessageHandler() {
                     @Override
                     public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                        final String path = imageUri.getPath();
+                        final BitmapFactory.Options o = new BitmapFactory.Options();
+                        o.inJustDecodeBounds = true;
+                        BitmapFactory.decodeFile(path, o);
                         final S3UploadToken token = yep.getS3UploadToken();
                         final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
                         try {
-                            Utils.uploadToS3(client, token, new File(imageUri.getPath()));
+                            Utils.uploadToS3(client, token, new File(path));
                         } catch (IOException e) {
                             throw new YepException(e);
                         }
                         message.mediaType(Message.MediaType.IMAGE);
-                        message.attachment(new NewMessage.ImageAttachment(token));
+                        final NewMessage.ImageAttachment attachment = new NewMessage.ImageAttachment(token);
+                        final ImageMetadata metadata = new ImageMetadata();
+                        metadata.setWidth(o.outWidth);
+                        metadata.setHeight(o.outHeight);
+                        o.inJustDecodeBounds = false;
+                        o.inSampleSize = Math.min(1, Math.max(o.outWidth, o.outHeight) / 100);
+                        final Bitmap downScaledBitmap = BitmapFactory.decodeFile(path, o);
+                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
+                        downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 85, os);
+                        try {
+                            metadata.setBlurredThumbnail(baos.toString("ASCII"));
+                        } catch (UnsupportedEncodingException e) {
+                            Log.w(LOGTAG, e);
+                        } finally {
+                            downScaledBitmap.recycle();
+                            Utils.closeSilently(os);
+                        }
+                        attachment.setMetadata(new ImageMetadata[]{metadata});
+                        message.attachment(attachment);
                     }
                 });
                 return;
@@ -464,11 +493,16 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                final Message.Attachment attachment = message.getAttachments().get(0);
+                final List<Message.Attachment> attachments = message.getAttachments();
+                if (attachments == null || attachments.isEmpty()) return;
+                final Message.Attachment attachment = attachments.get(0);
                 final String url = attachment.getFile().getUrl();
                 final ImageMetadata metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
-                Picasso.with(imageView.getContext()).load(url).placeholder(new ImageMetadataHolderDrawable(imageView.getResources(),
-                        metadata)).into(imageView);
+                final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
+                Picasso.with(imageView.getContext())
+                        .load(url)
+                        .placeholder(placeholder)
+                        .into(imageView);
             }
         }
 
@@ -490,7 +524,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                AudioMetadata metadata = JsonSerializer.parse(message.getAttachments().get(0).getMetadata(),
+                final List<Message.Attachment> attachments = message.getAttachments();
+                if (attachments == null || attachments.isEmpty()) return;
+                AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
                         AudioMetadata.class);
                 audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                 sampleView.setSamples(metadata.getSamples());

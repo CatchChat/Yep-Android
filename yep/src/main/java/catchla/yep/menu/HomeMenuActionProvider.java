@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
+import catchla.yep.adapter.LayoutAdapter;
 import catchla.yep.util.ThemeUtils;
 
 /**
@@ -56,7 +57,7 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
     };
     private OnActionListener mOnActionListener;
     private Account account;
-    private View mProfileView;
+    private HeadersAdapter mHeadersAdapter;
 
     /**
      * Creates a new instance.
@@ -119,12 +120,13 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         final Context popupContext = ThemeUtils.getActionBarPopupThemedContext(getContext());
 
         mAdapter = new MergeAdapter();
-        //noinspection Annotator
-        mProfileView = LayoutInflater.from(popupContext).inflate(R.layout.header_home_menu_profile, null);
-        mAdapter.addView(mProfileView, true);
-        mAdapter.addView(LayoutInflater.from(popupContext).inflate(R.layout.layout_divider_vertical, null), false);
+
+        mAdapter.addAdapter(mHeadersAdapter = new HeadersAdapter(popupContext));
         mAdapter.addAdapter(mActionsAdapter = new HomeMenuActionsAdapter(popupContext));
 
+        mHeadersAdapter.clear();
+        mHeadersAdapter.add(R.layout.header_home_menu_profile, "profile", true);
+        mHeadersAdapter.add(R.layout.layout_divider_vertical, "divider", false);
 
         mActionsAdapter.clear();
         mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
@@ -150,7 +152,8 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         mOverflowPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mActionView = view;
 
-        updateProfileView();
+        updateHeader();
+
         return view;
     }
 
@@ -181,16 +184,12 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
 
     public void setAccount(final Account account) {
         this.account = account;
-        updateProfileView();
+        updateHeader();
     }
 
-    private void updateProfileView() {
-        if (account == null || mProfileView == null) return;
-        final ImageView view = (ImageView) mProfileView.findViewById(R.id.home_menu_profile_image);
-        final TextView name = (TextView) mProfileView.findViewById(R.id.home_menu_name);
-        final AccountManager am = AccountManager.get(getContext());
-        name.setText(am.getUserData(account, USER_DATA_NICKNAME));
-        Picasso.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).placeholder(R.drawable.ic_profile_image_default).into(view);
+    private void updateHeader() {
+        if (mHeadersAdapter == null) return;
+        mHeadersAdapter.setAccount(account);
     }
 
     public static final class Action {
@@ -200,6 +199,32 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         public Action(String title, int id) {
             this.title = title;
             this.id = id;
+        }
+    }
+
+    private static class HeadersAdapter extends LayoutAdapter {
+
+        private Account mAccount;
+
+        public HeadersAdapter(final Context context) {
+            super(context);
+        }
+
+        public void setAccount(Account account) {
+            mAccount = account;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        protected void bindView(final View view, final int position, final String tag) {
+            if (!"profile".equals(tag)) return;
+            final Account account = mAccount;
+            if (account == null) return;
+            final ImageView profileImageView = (ImageView) view.findViewById(R.id.home_menu_profile_image);
+            final TextView nameView = (TextView) view.findViewById(R.id.home_menu_name);
+            final AccountManager am = AccountManager.get(this.getContext());
+            nameView.setText(am.getUserData(account, USER_DATA_NICKNAME));
+            Picasso.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).placeholder(R.drawable.ic_profile_image_default).into(profileImageView);
         }
     }
 

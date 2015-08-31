@@ -11,7 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -25,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+import android.util.Base64;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -57,6 +61,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
+import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
@@ -409,6 +414,13 @@ public class Utils implements Constants {
     public static long getTime(final Date date) {
         if (date == null) return 0;
         return date.getTime();
+    }
+
+    public static BitmapDrawable getMetadataBitmap(final Resources res, final Message.Attachment.ImageMetadata metadata) {
+        final byte[] bytes = Base64.decode(metadata.getBlurredThumbnail(), Base64.DEFAULT);
+        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        if (bitmap == null) return null;
+        return new BitmapDrawable(res, bitmap);
     }
 
     public static String getDisplayName(final User user) {

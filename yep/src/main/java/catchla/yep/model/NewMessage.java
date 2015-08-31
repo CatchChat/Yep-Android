@@ -205,6 +205,13 @@ public class NewMessage extends SimpleValueMap {
         @JsonField(name = "image")
         File[] image;
 
+        public void setMetadata(final Message.Attachment.ImageMetadata[] metadata) {
+            this.metadata = metadata;
+        }
+
+        @JsonField(name = "metadata")
+        Message.Attachment.ImageMetadata[] metadata;
+
         public ImageAttachment() {
 
         }

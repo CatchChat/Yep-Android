@@ -255,12 +255,24 @@ public class Message {
                 return width;
             }
 
+            public void setWidth(final int width) {
+                this.width = width;
+            }
+
             public int getHeight() {
                 return height;
             }
 
+            public void setHeight(final int height) {
+                this.height = height;
+            }
+
             public String getBlurredThumbnail() {
                 return blurredThumbnail;
+            }
+
+            public void setBlurredThumbnail(final String blurredThumbnail) {
+                this.blurredThumbnail = blurredThumbnail;
             }
         }
     }

@@ -48,7 +48,10 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
             final User sender = conversation.getUser();
             nameView.setText(sender.getNickname());
-            Picasso.with(profileImageView.getContext()).load(sender.getAvatarUrl()).into(profileImageView);
+            Picasso.with(profileImageView.getContext())
+                    .load(sender.getAvatarUrl())
+                    .placeholder(R.drawable.ic_profile_image_default)
+                    .into(profileImageView);
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             nameView.setText(conversation.getCircle().getName());
         } else {
