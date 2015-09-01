@@ -161,8 +161,8 @@ public class NewMessage extends SimpleValueMap {
         }
 
         @Override
-        public void writeTo(@NonNull final OutputStream os) throws IOException {
-            delegated.writeTo(os);
+        public long writeTo(@NonNull final OutputStream os) throws IOException {
+            return delegated.writeTo(os);
         }
 
         @Override

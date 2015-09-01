@@ -383,25 +383,25 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             final int subType = viewType & ~FLAG_MESSAGE_OUTGOING;
             switch (subType) {
                 case VIEW_SUBTYPE_MESSAGE_TEXT: {
-                    return new MessageViewHolder(baseView, isOutgoing);
+                    return new MessageViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_LOCATION: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_location, attachmentContainer);
-                    return new LocationChatViewHolder(baseView, isOutgoing);
+                    return new LocationChatViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_IMAGE: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
-                    return new ImageChatViewHolder(baseView, isOutgoing);
+                    return new ImageChatViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_AUDIO: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_audio, attachmentContainer);
-                    return new AudioChatViewHolder(baseView, isOutgoing);
+                    return new AudioChatViewHolder(baseView, isOutgoing, this);
                 }
             }
             throw new UnsupportedOperationException();
@@ -440,11 +440,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         private static class MessageViewHolder extends RecyclerView.ViewHolder {
 
+            protected final ChatAdapter adapter;
+
             private final TextView text1;
             private final TextView state;
 
-            public MessageViewHolder(final View itemView, boolean outgoing) {
+            public MessageViewHolder(final View itemView, boolean outgoing, ChatAdapter adapter) {
                 super(itemView);
+                this.adapter = adapter;
                 text1 = (TextView) itemView.findViewById(android.R.id.text1);
                 state = (TextView) itemView.findViewById(R.id.state);
             }
@@ -461,8 +464,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static class LocationChatViewHolder extends MessageViewHolder {
             private final MapView mapView;
 
-            public LocationChatViewHolder(final View itemView, final boolean outgoing) {
-                super(itemView, outgoing);
+            public LocationChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
+                super(itemView, outgoing, adapter);
                 mapView = (MapView) itemView.findViewById(R.id.map_view);
                 mapView.setTilesScaledToDpi(true);
                 mapView.setOnTouchListener(new View.OnTouchListener() {
@@ -486,8 +489,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static class ImageChatViewHolder extends MessageViewHolder {
             private final MediaSizeImageView imageView;
 
-            public ImageChatViewHolder(final View itemView, final boolean outgoing) {
-                super(itemView, outgoing);
+            public ImageChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
+                super(itemView, outgoing, adapter);
                 imageView = (MediaSizeImageView) itemView.findViewById(R.id.image_view);
             }
 
@@ -514,8 +517,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             private final TextView audioLengthView;
             private final AudioSampleView sampleView;
 
-            public AudioChatViewHolder(final View itemView, final boolean outgoing) {
-                super(itemView, outgoing);
+            public AudioChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
+                super(itemView, outgoing, adapter);
                 playPauseView = (TextView) itemView.findViewById(R.id.play_pause);
                 audioLengthView = (TextView) itemView.findViewById(R.id.audio_length);
                 sampleView = (AudioSampleView) itemView.findViewById(R.id.audio_sample);
@@ -528,7 +531,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 super.displayMessage(message);
                 final List<Message.Attachment> attachments = message.getAttachments();
                 if (attachments == null || attachments.isEmpty()) return;
-                AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
+                final AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
                         AudioMetadata.class);
                 audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                 sampleView.setSamples(metadata.getSamples());
@@ -536,7 +539,17 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
             @Override
             public void onClick(final View v) {
+                final Message message = adapter.getMessage(getLayoutPosition());
+                final List<Message.Attachment> attachments = message.getAttachments();
+                if (attachments == null || attachments.isEmpty()) return;
+                final AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
+                        AudioMetadata.class);
             }
+        }
+
+        public Message getMessage(final int position) {
+            if (mData == null) return null;
+            return mData.get(position);
         }
 
 

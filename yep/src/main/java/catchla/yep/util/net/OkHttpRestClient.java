@@ -35,7 +35,6 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 
-import org.mariotaku.restfu.Utils;
 import org.mariotaku.restfu.http.ContentType;
 import org.mariotaku.restfu.http.RestHttpCallback;
 import org.mariotaku.restfu.http.RestHttpClient;
@@ -52,6 +51,7 @@ import java.util.List;
 
 import catchla.yep.util.DebugModeUtils;
 import okio.BufferedSink;
+import okio.Okio;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -217,8 +217,11 @@ public class OkHttpRestClient implements RestHttpClient {
         }
 
         @Override
-        public void writeTo(@NonNull OutputStream os) throws IOException {
-            Utils.copyStream(stream(), os);
+        public long writeTo(@NonNull OutputStream os) throws IOException {
+            final BufferedSink sink = Okio.buffer(Okio.sink(os));
+            final long result = sink.writeAll(body.source());
+            sink.flush();
+            return result;
         }
 
         @NonNull
