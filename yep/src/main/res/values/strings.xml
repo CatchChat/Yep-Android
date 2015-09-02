@@ -73,4 +73,5 @@
     <string name="image">Image</string>
     <string name="audio">Audio</string>
     <string name="contact_friends">Contact friends</string>
+    <string name="search">Search</string>
 </resources>

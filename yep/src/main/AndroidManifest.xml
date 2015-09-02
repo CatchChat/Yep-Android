@@ -106,6 +106,14 @@
                 android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/search"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"
             android:windowSoftInputMode="adjustResize|stateVisible"/>

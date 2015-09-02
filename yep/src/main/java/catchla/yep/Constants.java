@@ -43,6 +43,7 @@ public interface Constants {
     String EXTRA_MASTER = "master";
     String EXTRA_PROVIDER_NAME = "provider_name";
     String EXTRA_SKILLS = "skills";
+    String EXTRA_QUERY = "query";
 
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;

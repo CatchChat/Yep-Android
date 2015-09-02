@@ -10,7 +10,7 @@ import android.support.v4.content.Loader;
 import java.util.List;
 
 import catchla.yep.adapter.UsersAdapter;
-import catchla.yep.loader.ContactFriendsLoader;
+import catchla.yep.loader.SearchUsersLoader;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
@@ -24,13 +24,15 @@ public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAda
     @Override
     public void onRefresh() {
         super.onRefresh();
-        getLoaderManager().restartLoader(0, null, this);
+        final Bundle loaderArgs = getArguments();
+        getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        final Bundle loaderArgs = getArguments();
+        getLoaderManager().initLoader(0, loaderArgs, this);
     }
 
     @Override
@@ -46,7 +48,8 @@ public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAda
 
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
-        return new ContactFriendsLoader(getActivity(), Utils.getCurrentAccount(getActivity()));
+        final String query = args.getString(EXTRA_QUERY);
+        return new SearchUsersLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query);
     }
 
     @Override

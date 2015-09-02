@@ -2,7 +2,9 @@ package catchla.yep.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,6 +13,7 @@ import android.widget.ListView;
 
 import com.commonsware.cwac.merge.MergeAdapter;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.view.TintedStatusFrameLayout;
@@ -18,7 +21,7 @@ import catchla.yep.view.TintedStatusFrameLayout;
 /**
  * Created by mariotaku on 15/6/30.
  */
-public class FindFriendActivity extends SwipeBackContentActivity {
+public class FindFriendActivity extends SwipeBackContentActivity implements Constants {
 
     private TintedStatusFrameLayout mMainContent;
     private ListView mListView;
@@ -40,7 +43,6 @@ public class FindFriendActivity extends SwipeBackContentActivity {
         mMainContent.setColor(primaryColor);
 
         mAdapter = new MergeAdapter();
-        mAdapter.addView(getLayoutInflater().inflate(R.layout.list_header_add_friend_search, mListView, false), false);
         final ArrayAdapter<String> actionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         actionsAdapter.add(getString(R.string.contact_friends));
         mAdapter.addAdapter(actionsAdapter);
@@ -58,6 +60,21 @@ public class FindFriendActivity extends SwipeBackContentActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_find_friend, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(final String query) {
+                final Intent intent = new Intent(FindFriendActivity.this, SearchActivity.class);
+                intent.putExtra(EXTRA_QUERY, query);
+                startActivity(intent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
