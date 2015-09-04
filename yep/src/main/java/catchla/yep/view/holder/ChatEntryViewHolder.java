@@ -51,6 +51,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
             Picasso.with(profileImageView.getContext())
                     .load(sender.getAvatarUrl())
                     .placeholder(R.drawable.ic_profile_image_default)
+                    .fit()
                     .into(profileImageView);
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             nameView.setText(conversation.getCircle().getName());

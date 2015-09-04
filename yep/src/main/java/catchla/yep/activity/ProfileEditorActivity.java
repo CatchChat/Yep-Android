@@ -2,6 +2,8 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -102,7 +105,11 @@ public class ProfileEditorActivity extends ContentActivity {
     private void displayUser(final User user) {
         mCurrentUser = user;
         final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
-        Picasso.with(this).load(url).placeholder(R.drawable.ic_profile_image_default).into(mProfileImageView);
+        Picasso.with(this)
+                .load(url)
+                .placeholder(R.drawable.ic_profile_image_default)
+                .fit()
+                .into(mProfileImageView);
         mCountryCodeView.setText(user.getPhoneCode());
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());
@@ -120,7 +127,12 @@ public class ProfileEditorActivity extends ContentActivity {
                 public void onClick(final DialogInterface dialog, final int which) {
                     final AccountManager am = AccountManager.get(getActivity());
                     final Account account = Utils.getCurrentAccount(getActivity());
-                    am.removeAccountExplicitly(account);
+                    am.removeAccount(account, new AccountManagerCallback<Boolean>() {
+                        @Override
+                        public void run(final AccountManagerFuture<Boolean> future) {
+
+                        }
+                    }, new Handler());
                     final Intent intent = new Intent(getActivity(), WelcomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

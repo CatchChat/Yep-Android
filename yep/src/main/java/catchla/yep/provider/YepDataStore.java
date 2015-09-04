@@ -46,6 +46,7 @@ public interface YepDataStore {
 
         interface MessageState {
             String SENT = "sent";
+            String UNREAD = "unread";
             String SENDING = "sending";
             String FAILED = "failed";
         }

@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import catchla.yep.model.util.ValueMapJsonMapper;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 
 /**
@@ -140,9 +141,30 @@ public class NewMessage extends SimpleValueMap {
         }
     }
 
+    public interface Attachment {
+
+        @JsonObject
+        class File {
+            @JsonField(name = "file")
+            String file;
+
+            public File() {
+            }
+
+            public File(final String file) {
+                this.file = file;
+            }
+        }
+    }
+
     public static final class JsonBody implements TypedData {
 
         private final StringTypedData delegated;
+
+        private JsonBody(String json) {
+            delegated = new StringTypedData(json,
+                    ContentType.parse("application/json").charset(Charset.defaultCharset()));
+        }
 
         @Override
         @Nullable
@@ -176,48 +198,45 @@ public class NewMessage extends SimpleValueMap {
             delegated.close();
         }
 
-        private JsonBody(String json) {
-            delegated = new StringTypedData(json,
-                    ContentType.parse("application/json").charset(Charset.defaultCharset()));
-        }
-
-    }
-
-    public interface Attachment {
-
-        @JsonObject
-        class File {
-            @JsonField(name = "file")
-            String file;
-
-            public File() {
-            }
-
-            public File(final String file) {
-                this.file = file;
-            }
-        }
     }
 
     @JsonObject
     public static class ImageAttachment implements Attachment {
 
         @JsonField(name = "image")
-        File[] image;
-
-        public void setMetadata(final Message.Attachment.ImageMetadata[] metadata) {
-            this.metadata = metadata;
-        }
-
-        @JsonField(name = "metadata")
-        Message.Attachment.ImageMetadata[] metadata;
+        ImageFile[] image;
 
         public ImageAttachment() {
 
         }
 
-        public ImageAttachment(S3UploadToken token) {
-            image = new File[]{new File(token.getOptions().getKey())};
+        public ImageAttachment(S3UploadToken token, Message.Attachment.ImageMetadata metadata) {
+            image = new ImageFile[]{new ImageFile(token.getOptions().getKey(), metadata)};
+        }
+
+
+        @JsonObject
+        public static class ImageFile {
+            @JsonField(name = "file")
+            String file;
+            @JsonField(name = "metadata")
+            String metadata;
+
+            public ImageFile() {
+            }
+
+            public ImageFile(final String file, final Message.Attachment.ImageMetadata metadata) {
+                setFile(file);
+                setMetadata(metadata);
+            }
+
+            public void setFile(final String file) {
+                this.file = file;
+            }
+
+            public void setMetadata(final Message.Attachment.ImageMetadata metadata) {
+                this.metadata = JsonSerializer.serialize(metadata, Message.Attachment.ImageMetadata.class);
+            }
         }
 
     }

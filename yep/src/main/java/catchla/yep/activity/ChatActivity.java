@@ -126,16 +126,15 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                             throw new YepException(e);
                         }
                         message.mediaType(Message.MediaType.IMAGE);
-                        final NewMessage.ImageAttachment attachment = new NewMessage.ImageAttachment(token);
                         final ImageMetadata metadata = new ImageMetadata();
                         metadata.setWidth(o.outWidth);
                         metadata.setHeight(o.outHeight);
                         o.inJustDecodeBounds = false;
-                        o.inSampleSize = Math.min(1, Math.max(o.outWidth, o.outHeight) / 100);
+                        o.inSampleSize = Math.max(1, Math.max(o.outWidth, o.outHeight) / 100);
                         final Bitmap downScaledBitmap = BitmapFactory.decodeFile(path, o);
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
-                        downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 85, os);
+                        downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
                         try {
                             metadata.setBlurredThumbnail(baos.toString("ASCII"));
                         } catch (UnsupportedEncodingException e) {
@@ -144,8 +143,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                             downScaledBitmap.recycle();
                             Utils.closeSilently(os);
                         }
-                        attachment.setMetadata(new ImageMetadata[]{metadata});
-                        message.attachment(attachment);
+                        message.attachment(new NewMessage.ImageAttachment(token, metadata));
                     }
                 });
                 return;
@@ -290,12 +288,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 TaskResponse<Message> response;
                 try {
                     sendMessageHandler.beforeSend(yep, newMessage);
-                    values = ContentValuesCreator.fromNewMessage(newMessage);
                     final Message message = yep.createMessage(newMessage.toJson());
-                    values.put(Messages.MESSAGE_ID, message.getId());
+                    values = ContentValuesCreator.fromMessage(message);
                     values.put(Messages.STATE, Messages.MessageState.SENT);
+                    values.put(Messages.CONVERSATION_ID, conversation.getId());
+                    values.put(Messages.OUTGOING, true);
                     final long createdAt = Utils.getTime(message.getCreatedAt());
-                    values.put(Messages.CREATED_AT, createdAt);
                     final ContentValues conversationValues = ContentValuesCreator.fromConversation(conversation);
                     conversationValues.put(Conversations.TEXT_CONTENT, message.getTextContent());
                     conversationValues.put(Conversations.UPDATED_AT, createdAt);
@@ -507,6 +505,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 Picasso.with(imageView.getContext())
                         .load(url)
                         .placeholder(placeholder)
+                        .fit()
                         .into(imageView);
             }
         }

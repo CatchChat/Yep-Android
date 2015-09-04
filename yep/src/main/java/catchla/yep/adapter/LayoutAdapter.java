@@ -55,8 +55,13 @@ public class LayoutAdapter extends BaseAdapter {
     }
 
     @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
     public int getItemViewType(final int position) {
-        return System.identityHashCode(getItem(position));
+        return position + 1;
     }
 
     @Override

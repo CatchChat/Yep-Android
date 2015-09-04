@@ -37,7 +37,7 @@ public class GithubUserHeaderViewHolder extends RecyclerView.ViewHolder {
         if (TextUtils.isEmpty(avatarUrl)) {
             Picasso.with(itemView.getContext()).cancelRequest(profileImageView);
         } else {
-            Picasso.with(itemView.getContext()).load(avatarUrl).into(profileImageView);
+            Picasso.with(itemView.getContext()).load(avatarUrl).fit().into(profileImageView);
         }
         followingCount.setText(String.valueOf(user.getFollowing()));
         followersCount.setText(String.valueOf(user.getFollowers()));

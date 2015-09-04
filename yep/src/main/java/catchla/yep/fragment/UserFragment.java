@@ -225,7 +225,7 @@ public class UserFragment extends Fragment implements Constants,
             Picasso.with(getActivity()).cancelRequest(mProfileImageView);
             mProfileImageView.setImageResource(R.drawable.ic_profile_image_default);
         } else {
-            Picasso.with(getActivity()).load(avatarUrl).into(mProfileImageView);
+            Picasso.with(getActivity()).load(avatarUrl).fit().into(mProfileImageView);
         }
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {

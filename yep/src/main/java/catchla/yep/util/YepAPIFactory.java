@@ -3,6 +3,7 @@ package catchla.yep.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 import android.util.Pair;
 
@@ -47,10 +48,11 @@ public class YepAPIFactory implements Constants {
 
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
-        factory.setEndpoint(new Endpoint("http://park-staging.catchchatchina.com/api/"));
+        factory.setEndpoint(new Endpoint("https://park.catchchatchina.com/api/"));
         final OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         client.setReadTimeout(10, TimeUnit.SECONDS);
+        client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
         factory.setClient(new OkHttpRestClient(context, client));
         factory.setConverter(new LoganSquareConverter());
         factory.setAuthorization(new TokenAuthorization(accessToken));

@@ -111,7 +111,7 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
     private void displaySkill(final Skill skill) {
         final String coverUrl = skill.getCoverUrl();
         if (!TextUtils.isEmpty(coverUrl)) {
-            Picasso.with(this).load(coverUrl).into(mBannerImageView);
+            Picasso.with(this).load(coverUrl).fit().into(mBannerImageView);
         } else {
             Picasso.with(this).cancelRequest(mBannerImageView);
         }

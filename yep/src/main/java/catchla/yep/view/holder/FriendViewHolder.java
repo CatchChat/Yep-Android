@@ -49,6 +49,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
         Picasso.with(profileImageView.getContext())
                 .load(user.getAvatarUrl())
                 .placeholder(R.drawable.ic_profile_image_default)
+                .fit()
                 .into(profileImageView);
         nameView.setText(user.getNickname());
 //        timeView.setText();
