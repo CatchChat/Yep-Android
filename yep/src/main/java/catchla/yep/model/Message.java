@@ -233,6 +233,14 @@ public class Message {
             @JsonField(name = "audio_duration")
             float duration;
 
+            public void setSamples(final float[] samples) {
+                this.samples = samples;
+            }
+
+            public void setDuration(final float duration) {
+                this.duration = duration;
+            }
+
             public float getDuration() {
                 return duration;
             }

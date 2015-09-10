@@ -13,8 +13,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -27,12 +29,14 @@ import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,6 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -68,6 +73,7 @@ import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.EditTextEnterHandler;
+import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
@@ -78,6 +84,7 @@ import catchla.yep.util.YepException;
 import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.MediaSizeImageView;
 import catchla.yep.view.TintedStatusFrameLayout;
+import catchla.yep.view.VoiceWaveView;
 
 /**
  * Created by mariotaku on 15/4/30.
@@ -94,14 +101,22 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private EditText mEditText;
     private Conversation mConversation;
     private PopupMenu mAttachPopupMenu;
+    private View mVoiceToggle;
+    private View mEditTextContainer;
+    private Button mVoiceRecordButton;
+    private VoiceWaveView mVoiceWaveView;
 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
         mEditText = (EditText) findViewById(R.id.edit_text);
+        mEditTextContainer = findViewById(R.id.edit_text_container);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mAttachSendButton = (ImageView) findViewById(R.id.attachment_send);
+        mVoiceToggle = findViewById(R.id.voice_toggle);
+        mVoiceRecordButton = (Button) findViewById(R.id.voice_record);
+        mVoiceWaveView = (VoiceWaveView) findViewById(R.id.voice_wave_view);
     }
 
     @Override
@@ -230,8 +245,101 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 return false;
             }
         });
+        mVoiceToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final boolean newState = mVoiceRecordButton.getVisibility() != View.VISIBLE;
+                mVoiceRecordButton.setVisibility(newState ? View.VISIBLE : View.GONE);
+                mEditTextContainer.setVisibility(newState ? View.GONE : View.VISIBLE);
+                mAttachSendButton.setVisibility(newState ? View.GONE : View.VISIBLE);
+            }
+        });
+        final GestureViewHelper helper = new GestureViewHelper(this);
+        helper.setOnGestureListener(new VoicePressListener());
+        mVoiceRecordButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(final View v, final MotionEvent event) {
+                helper.onTouchEvent(event);
+                return false;
+            }
+        });
         mAttachPopupMenu.inflate(R.menu.action_attach_send);
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
+    }
+
+    private class VoicePressListener extends GestureDetector.SimpleOnGestureListener
+            implements GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
+        private MediaRecorder mRecorder;
+        private RecordMetersTimer mTimer;
+
+        @Override
+        public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public boolean onDown(final MotionEvent e) {
+            final MediaRecorder recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            recorder.setOutputFile("/dev/null");
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            try {
+                recorder.prepare();
+            } catch (IOException ioe) {
+                return false;
+            }
+            recorder.start();
+            recorder.getMaxAmplitude();
+            RecordMetersTimer timer = new RecordMetersTimer();
+            timer.start();
+            mTimer = timer;
+            mRecorder = recorder;
+            mVoiceWaveView.setVisibility(View.VISIBLE);
+            return true;
+        }
+
+        @Override
+        public void onUp(final MotionEvent event) {
+            stopRecording(false);
+        }
+
+        @Override
+        public void onCancel(final MotionEvent event) {
+            stopRecording(true);
+        }
+
+        private void stopRecording(final boolean cancel) {
+            mVoiceWaveView.setVisibility(View.GONE);
+            final MediaRecorder recorder = mRecorder;
+            if (recorder == null) return;
+            recorder.stop();
+            recorder.release();
+            mRecorder = null;
+            mTimer = null;
+            if (cancel) return;
+        }
+
+        private class RecordMetersTimer extends CountDownTimer {
+
+            public RecordMetersTimer() {
+                super(TimeUnit.SECONDS.toMillis(30), 100);
+            }
+
+            @Override
+            public void onTick(final long millisUntilFinished) {
+                final MediaRecorder recorder = mRecorder;
+                if (recorder == null) return;
+                final int maxAmplitude = recorder.getMaxAmplitude();
+                Log.d(LOGTAG, String.format("maxAmplitude: %d", maxAmplitude));
+                mVoiceWaveView.setMaxAmplitude(maxAmplitude);
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }
     }
 
     private void sendLocation() {

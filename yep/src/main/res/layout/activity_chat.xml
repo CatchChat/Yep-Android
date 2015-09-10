@@ -30,6 +30,13 @@
 
         </FrameLayout>
 
+        <catchla.yep.view.VoiceWaveView
+            android:id="@+id/voice_wave_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/list_container"
+            android:layout_alignTop="@id/list_container"/>
+
         <View
             android:id="@+id/input_panel_shadow_compat"
             android:layout_width="match_parent"
@@ -51,7 +58,7 @@
             tools:ignore="UnusedAttribute">
 
             <catchla.yep.view.ActionIconView
-                android:id="@+id/add_image"
+                android:id="@+id/voice_toggle"
                 android:layout_width="@dimen/element_size_normal"
                 android:layout_height="@dimen/element_size_normal"
                 android:layout_alignParentLeft="true"
@@ -61,6 +68,16 @@
                 android:color="?android:textColorSecondary"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_action_mic"/>
+
+            <Button
+                android:id="@+id/voice_record"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/element_size_normal"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_toEndOf="@id/voice_toggle"
+                android:layout_toRightOf="@id/voice_toggle"
+                android:visibility="gone"/>
 
             <catchla.yep.view.ActionIconView
                 android:id="@+id/attachment_send"
@@ -81,9 +98,9 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="-8dp"
                 android:layout_marginRight="-8dp"
-                android:layout_toEndOf="@+id/add_image"
+                android:layout_toEndOf="@+id/voice_toggle"
                 android:layout_toLeftOf="@+id/attachment_send"
-                android:layout_toRightOf="@+id/add_image"
+                android:layout_toRightOf="@+id/voice_toggle"
                 android:layout_toStartOf="@+id/attachment_send"
                 app:bubbleColor="#fff"
                 app:caretHeight="8dp"
