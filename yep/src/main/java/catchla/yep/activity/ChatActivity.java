@@ -323,7 +323,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private class RecordMetersTimer extends CountDownTimer {
 
             public RecordMetersTimer() {
-                super(TimeUnit.SECONDS.toMillis(30), 100);
+                super(TimeUnit.SECONDS.toMillis(30), 16);
             }
 
             @Override
@@ -332,7 +332,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 if (recorder == null) return;
                 final int maxAmplitude = recorder.getMaxAmplitude();
                 Log.d(LOGTAG, String.format("maxAmplitude: %d", maxAmplitude));
-                mVoiceWaveView.setMaxAmplitude(maxAmplitude);
+                mVoiceWaveView.setAmplitude(maxAmplitude);
             }
 
             @Override

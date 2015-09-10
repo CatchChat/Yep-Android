@@ -16,20 +16,20 @@ import catchla.yep.R;
  */
 public class VoiceWaveView extends View {
 
-    public float amplitude = 1.0f;
+    public float mAmplitude = 1.0f;
     private Path mPath;
     private float mDimension;
     private float mDimension1;
     private int numberOfWaves = 5;
-    private float frequency = 1.2f;
+    private float mFrequency = 1.2f;
     private float density = 1.f;
-    private float mPhase = 0.f;
+    private double mPhase = 0.f;
     private float mPhaseShift = 0.25f;
     private float mMaxAmplitude = 0;
     private boolean drawlock = false;
     private Paint paintsArray;
-    private int ViewWidth = 0;
-    private int ViewHeight = 0;
+    private int mViewWidth = 0;
+    private int mViewHeight = 0;
     private float ViewMid = 0;
 
     public VoiceWaveView(final Context context, final AttributeSet attrs) {
@@ -42,16 +42,20 @@ public class VoiceWaveView extends View {
         init();
     }
 
-    public void setMaxAmplitude(final int maxAmplitude) {
-//        mPhase += mPhaseShift;
-        mMaxAmplitude = (mMaxAmplitude + Math.max(maxAmplitude / 32768f, 0.01f)) / 2;
+    public void setAmplitude(final int amplitude) {
+        if (amplitude > 0) {
+            mAmplitude = (mAmplitude + Math.max(amplitude / 65536f, 0)) / 2;
+        } else if (amplitude < 0) {
+            mAmplitude = 0;
+        }
+        phaseNext();
         invalidate();
     }
 
     private void init() {
         Resources res = getResources();
         paintsArray = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintsArray.setColor(Color.WHITE);
+        paintsArray.setColor(Color.BLUE);
         paintsArray.setStyle(Paint.Style.STROKE);
 
         mDimension = res.getDimension(R.dimen.waver_width);
@@ -64,10 +68,10 @@ public class VoiceWaveView extends View {
     @Override
     protected void onSizeChanged(int xNew, int yNew, int xOld, int yOld) {
         super.onSizeChanged(xNew, yNew, xOld, yOld);
-        ViewWidth = xNew;
-        ViewHeight = yNew;
-        ViewMid = ViewWidth / 2.0f;
-        mMaxAmplitude = ViewHeight / 2.f - 4.0f;
+        mViewWidth = xNew;
+        mViewHeight = yNew;
+        ViewMid = mViewWidth / 2.0f;
+        mMaxAmplitude = mViewHeight / 2.f - 4.0f;
     }
 
     @Override
@@ -81,17 +85,18 @@ public class VoiceWaveView extends View {
         for (int i = 0; i < numberOfWaves; i++) {
 
             float progress = 1.f - (i / (float) numberOfWaves);
-            float normedAmplitude = (1.5f * progress - 0.5f) * amplitude;
+            float normedAmplitude = (1.5f * progress - 0.5f) * mAmplitude;
 
             mPath.reset();
 
-            for (float x = 0.f; x < ViewWidth + density; x += density) {
+            for (float x = 0.f; x < mViewWidth + density; x += density) {
 
                 //Thanks to https://github.com/stefanceriu/SCSiriWaveformView
                 // We use a parable to scale the sinus wave, that has its peak in the middle of the view.
                 double scaling = -Math.pow(x / ViewMid - 1.f, 2.f) + 1.f; // make center bigger
 
-                double y = scaling * mMaxAmplitude * normedAmplitude * Math.sin(2 * 3.141 * (x / ViewWidth) * frequency + mPhase) + ViewHeight / 2.0;
+                double y = scaling * mMaxAmplitude * normedAmplitude * Math.sin(2 * Math.PI * (x / mViewWidth)
+                        * mFrequency + mPhase) + mViewHeight / 2.0;
 
                 if (x == 0.f) {
                     mPath.moveTo(x, (float) y);
@@ -119,6 +124,14 @@ public class VoiceWaveView extends View {
 
         drawlock = false;
 
+    }
+
+    private double phaseNext() {
+        mPhase += mPhaseShift;
+        if (mPhase > 2 * Math.PI) {
+            mPhase = mPhase - 2 * Math.PI;
+        }
+        return mPhase;
     }
 
 
