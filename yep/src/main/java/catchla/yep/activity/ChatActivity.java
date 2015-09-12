@@ -16,7 +16,6 @@ import android.location.Location;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -57,7 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -270,7 +269,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private class VoicePressListener extends GestureDetector.SimpleOnGestureListener
             implements GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
         private MediaRecorder mRecorder;
-        private RecordMetersTimer mTimer;
+        private RecordMetersThread mTimerTask;
 
         @Override
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
@@ -291,9 +290,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
             recorder.start();
             recorder.getMaxAmplitude();
-            RecordMetersTimer timer = new RecordMetersTimer();
-            timer.start();
-            mTimer = timer;
+            RecordMetersThread task = new RecordMetersThread();
+            mTimerTask = task;
+            task.start();
             mRecorder = recorder;
             mVoiceWaveView.setVisibility(View.VISIBLE);
             return true;
@@ -316,29 +315,56 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             recorder.stop();
             recorder.release();
             mRecorder = null;
-            mTimer = null;
+            final RecordMetersThread task = mTimerTask;
+            if (task != null) {
+                task.cancel();
+            }
+            mTimerTask = null;
             if (cancel) return;
         }
 
-        private class RecordMetersTimer extends CountDownTimer {
+        private class RecordMetersThread extends Thread {
 
-            public RecordMetersTimer() {
-                super(TimeUnit.SECONDS.toMillis(30), 16);
+            public static final long INTERVAL = 16L;
+            private AtomicBoolean cancelled = new AtomicBoolean();
+
+            public void cancel() {
+                cancelled.set(true);
             }
 
             @Override
-            public void onTick(final long millisUntilFinished) {
+            public void run() {
+                while (!cancelled.get()) {
+                    try {
+                        updateView();
+                        Thread.sleep(Math.max(0, INTERVAL));
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+
+            private long updateView() {
+                final long callStart = System.currentTimeMillis();
+                if (cancelled.get()) return System.currentTimeMillis() - callStart;
                 final MediaRecorder recorder = mRecorder;
-                if (recorder == null) return;
+                if (recorder == null) {
+                    cancel();
+                    return System.currentTimeMillis() - callStart;
+                }
                 final int maxAmplitude = recorder.getMaxAmplitude();
-                Log.d(LOGTAG, String.format("maxAmplitude: %d", maxAmplitude));
-                mVoiceWaveView.setAmplitude(maxAmplitude);
+                mVoiceWaveView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (maxAmplitude == 0) {
+                            mVoiceWaveView.setAmplitude(mVoiceWaveView.getAmplitude());
+                        } else {
+                            mVoiceWaveView.setAmplitude(maxAmplitude);
+                        }
+                    }
+                });
+                return System.currentTimeMillis() - callStart;
             }
 
-            @Override
-            public void onFinish() {
-
-            }
         }
     }
 
@@ -398,7 +424,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     sendMessageHandler.beforeSend(yep, newMessage);
                     final Message message = yep.createMessage(newMessage.toJson());
                     values = ContentValuesCreator.fromMessage(message);
-                    values.put(Messages.STATE, Messages.MessageState.SENT);
+                    values.put(Messages.STATE, Messages.MessageState.UNREAD);
                     values.put(Messages.CONVERSATION_ID, conversation.getId());
                     values.put(Messages.OUTGOING, true);
                     final long createdAt = Utils.getTime(message.getCreatedAt());

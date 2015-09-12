@@ -16,7 +16,7 @@ import catchla.yep.R;
  */
 public class VoiceWaveView extends View {
 
-    public float mAmplitude = 1.0f;
+    public int mAmplitude;
     private Path mPath;
     private float mDimension;
     private float mDimension1;
@@ -42,12 +42,12 @@ public class VoiceWaveView extends View {
         init();
     }
 
+    public int getAmplitude() {
+        return mAmplitude;
+    }
+
     public void setAmplitude(final int amplitude) {
-        if (amplitude > 0) {
-            mAmplitude = (mAmplitude + Math.max(amplitude / 65536f, 0)) / 2;
-        } else if (amplitude < 0) {
-            mAmplitude = 0;
-        }
+        mAmplitude = (mAmplitude + amplitude) / 2;
         phaseNext();
         invalidate();
     }
@@ -55,13 +55,15 @@ public class VoiceWaveView extends View {
     private void init() {
         Resources res = getResources();
         paintsArray = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintsArray.setColor(Color.BLUE);
+        paintsArray.setColor(0x2040ee);
         paintsArray.setStyle(Paint.Style.STROKE);
 
         mDimension = res.getDimension(R.dimen.waver_width);
         mDimension1 = res.getDimension(R.dimen.waver_width_min);
 
         mPath = new Path();
+
+        setAmplitude(0);
     }
 
 
@@ -85,7 +87,7 @@ public class VoiceWaveView extends View {
         for (int i = 0; i < numberOfWaves; i++) {
 
             float progress = 1.f - (i / (float) numberOfWaves);
-            float normedAmplitude = (1.5f * progress - 0.5f) * mAmplitude;
+            float normedAmplitude = (1.5f * progress - 0.5f) * mAmplitude / 65536f;
 
             mPath.reset();
 
@@ -104,12 +106,7 @@ public class VoiceWaveView extends View {
                     mPath.lineTo(x, (float) y);
                 }
             }
-//            final int width = canvas.getWidth();
-//            final int centerY = canvas.getHeight() / 2;
-//            mPath.moveTo(0, normedAmplitude);
-//            mPath.lineTo(width, normedAmplitude);
             float multiplier = Math.min(1.0f, (progress / 3.0f * 2.0f) + (1.0f / 3.0f));
-
 
             if (i == 0) {
                 paintsArray.setAlpha(255);

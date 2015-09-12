@@ -35,7 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/list_container"
-            android:layout_alignTop="@id/list_container"/>
+            android:layout_alignTop="@id/list_container"
+            android:visibility="gone"/>
 
         <View
             android:id="@+id/input_panel_shadow_compat"

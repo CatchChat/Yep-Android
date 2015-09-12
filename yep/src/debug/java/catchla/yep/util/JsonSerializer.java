@@ -4,7 +4,10 @@ import com.bluelinelabs.logansquare.LoganSquare;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
+
+import catchla.yep.model.Message;
 
 /**
  * Created by mariotaku on 15/8/6.
@@ -23,6 +26,15 @@ public class JsonSerializer {
         if (object == null) return null;
         try {
             return LoganSquare.mapperFor(cls).serialize(object);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static <T> String serializeArray(final T[] object, final Class<T> cls) {
+        if (object == null) return null;
+        try {
+            return LoganSquare.mapperFor(cls).serialize(Arrays.asList(object));
         } catch (IOException e) {
             return null;
         }

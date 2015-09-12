@@ -1,5 +1,6 @@
 package catchla.yep.model;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -17,6 +18,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import catchla.yep.model.util.ValueMapJsonMapper;
+import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 
@@ -31,6 +33,7 @@ public class NewMessage extends SimpleValueMap {
     private long createdAt;
     private Circle circle;
     private User sender;
+    private LocalMetadata[] localMetadata;
 
     public NewMessage recipientId(String recipientId) {
         put("recipient_id", recipientId);
@@ -56,7 +59,6 @@ public class NewMessage extends SimpleValueMap {
         this.conversationId = conversationId;
         return this;
     }
-
 
     public NewMessage createdAt(final long createdAt) {
         this.createdAt = createdAt;
@@ -141,6 +143,30 @@ public class NewMessage extends SimpleValueMap {
         }
     }
 
+    public NewMessage localMetadata(final LocalMetadata[] localMetadata) {
+        this.localMetadata = localMetadata;
+        return this;
+    }
+
+    public ContentValues toDraftValues() {
+        final ContentValues values = new ContentValues();
+        values.put(Messages.RECIPIENT_ID, recipientId());
+        values.put(Messages.TEXT_CONTENT, textContent());
+        values.put(Messages.CREATED_AT, createdAt);
+        values.put(Messages.SENDER, JsonSerializer.serialize(sender, User.class));
+        values.put(Messages.RECIPIENT_TYPE, recipientType());
+        values.put(Messages.CIRCLE, JsonSerializer.serialize(circle, Circle.class));
+        values.put(Messages.PARENT_ID, parentId());
+        values.put(Messages.CONVERSATION_ID, conversationId);
+        values.put(Messages.STATE, Messages.MessageState.SENDING);
+        values.put(Messages.OUTGOING, true);
+        values.put(Messages.LATITUDE, latitude());
+        values.put(Messages.LONGITUDE, longitude());
+        values.put(Messages.MEDIA_TYPE, mediaType());
+        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata, LocalMetadata.class));
+        return values;
+    }
+
     public interface Attachment {
 
         @JsonObject
@@ -154,6 +180,20 @@ public class NewMessage extends SimpleValueMap {
             public File(final String file) {
                 this.file = file;
             }
+        }
+    }
+
+    @JsonObject
+    public static class LocalMetadata {
+        String name;
+        String value;
+
+        public LocalMetadata() {
+        }
+
+        public LocalMetadata(final String name, final String value) {
+            this.name = name;
+            this.value = value;
         }
     }
 
@@ -240,5 +280,5 @@ public class NewMessage extends SimpleValueMap {
         }
 
     }
-
 }
+
