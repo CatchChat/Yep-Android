@@ -7,8 +7,6 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
-import catchla.yep.model.Message;
-
 /**
  * Created by mariotaku on 15/8/6.
  */
@@ -67,5 +65,11 @@ public class JsonSerializer {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    public static <T> String serialize(final T obj) {
+        if (obj == null) return null;
+        //noinspection unchecked
+        return serialize(obj, (Class<T>) obj.getClass());
     }
 }

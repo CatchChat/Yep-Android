@@ -173,12 +173,23 @@ public class NewMessage extends SimpleValueMap {
         class File {
             @JsonField(name = "file")
             String file;
+            @JsonField(name = "metadata")
+            String metadata;
 
             public File() {
             }
 
-            public File(final String file) {
+            public File(final String file, final Object metadata) {
+                setFile(file);
+                setMetadata(metadata);
+            }
+
+            public void setFile(final String file) {
                 this.file = file;
+            }
+
+            public void setMetadata(final Object metadata) {
+                this.metadata = JsonSerializer.serialize(metadata);
             }
         }
     }
@@ -244,39 +255,28 @@ public class NewMessage extends SimpleValueMap {
     public static class ImageAttachment implements Attachment {
 
         @JsonField(name = "image")
-        ImageFile[] image;
+        File[] image;
 
         public ImageAttachment() {
 
         }
 
         public ImageAttachment(S3UploadToken token, Message.Attachment.ImageMetadata metadata) {
-            image = new ImageFile[]{new ImageFile(token.getOptions().getKey(), metadata)};
+            image = new File[]{new File(token.getOptions().getKey(), metadata)};
         }
 
+    }@JsonObject
+    public static class AudioAttachment implements Attachment {
 
-        @JsonObject
-        public static class ImageFile {
-            @JsonField(name = "file")
-            String file;
-            @JsonField(name = "metadata")
-            String metadata;
+        @JsonField(name = "image")
+        File[] image;
 
-            public ImageFile() {
-            }
+        public AudioAttachment() {
 
-            public ImageFile(final String file, final Message.Attachment.ImageMetadata metadata) {
-                setFile(file);
-                setMetadata(metadata);
-            }
+        }
 
-            public void setFile(final String file) {
-                this.file = file;
-            }
-
-            public void setMetadata(final Message.Attachment.ImageMetadata metadata) {
-                this.metadata = JsonSerializer.serialize(metadata, Message.Attachment.ImageMetadata.class);
-            }
+        public AudioAttachment(S3UploadToken token, Message.Attachment.AudioMetadata metadata) {
+            image = new File[]{new File(token.getOptions().getKey(), metadata)};
         }
 
     }

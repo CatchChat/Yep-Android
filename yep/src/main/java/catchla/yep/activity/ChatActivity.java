@@ -5,8 +5,6 @@
 package catchla.yep.activity;
 
 import android.accounts.Account;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -46,7 +44,6 @@ import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.picasso.Picasso;
 
 import org.mariotaku.restfu.http.RestHttpClient;
-import org.mariotaku.sqliteqb.library.Expression;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -68,18 +65,15 @@ import catchla.yep.model.Message.Attachment.ImageMetadata;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
-import catchla.yep.provider.YepDataStore.Conversations;
-import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
+import catchla.yep.util.task.SendMessageTask;
 import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.MediaSizeImageView;
 import catchla.yep.view.TintedStatusFrameLayout;
@@ -125,44 +119,49 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             case REQUEST_TAKE_PHOTO: {
                 if (resultCode != RESULT_OK) return;
                 final Uri imageUri = data.getData();
-                sendMessage(new SendMessageHandler() {
-                    @Override
-                    public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
-                        final String path = imageUri.getPath();
-                        final BitmapFactory.Options o = new BitmapFactory.Options();
-                        o.inJustDecodeBounds = true;
-                        BitmapFactory.decodeFile(path, o);
-                        final S3UploadToken token = yep.getS3UploadToken();
-                        final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
-                        try {
-                            Utils.uploadToS3(client, token, new File(path));
-                        } catch (IOException e) {
-                            throw new YepException(e);
-                        }
-                        message.mediaType(Message.MediaType.IMAGE);
-                        final ImageMetadata metadata = new ImageMetadata();
-                        metadata.setWidth(o.outWidth);
-                        metadata.setHeight(o.outHeight);
-                        o.inJustDecodeBounds = false;
-                        o.inSampleSize = Math.max(1, Math.max(o.outWidth, o.outHeight) / 100);
-                        final Bitmap downScaledBitmap = BitmapFactory.decodeFile(path, o);
-                        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
-                        downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
-                        try {
-                            metadata.setBlurredThumbnail(baos.toString("ASCII"));
-                        } catch (UnsupportedEncodingException e) {
-                            Log.w(LOGTAG, e);
-                        } finally {
-                            downScaledBitmap.recycle();
-                            Utils.closeSilently(os);
-                        }
-                        message.attachment(new NewMessage.ImageAttachment(token, metadata));
-                    }
-                });
+                sendImage(imageUri);
                 return;
             }
         }
+    }
+
+    private void sendImage(final Uri imageUri) {
+        sendMessage(new SendMessageHandler() {
+            @Override
+            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                final String path = imageUri.getPath();
+                final BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(path, o);
+                final S3UploadToken token = yep.getS3UploadToken();
+                final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                try {
+                    Utils.uploadToS3(client, token, new File(path));
+                } catch (IOException e) {
+                    throw new YepException(e);
+                }
+                final ImageMetadata metadata = new ImageMetadata();
+                metadata.setWidth(o.outWidth);
+                metadata.setHeight(o.outHeight);
+                o.inJustDecodeBounds = false;
+                o.inSampleSize = Math.max(1, Math.max(o.outWidth, o.outHeight) / 100);
+                final Bitmap downScaledBitmap = BitmapFactory.decodeFile(path, o);
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
+                downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
+                try {
+                    metadata.setBlurredThumbnail(baos.toString("ASCII"));
+                } catch (UnsupportedEncodingException e) {
+                    Log.w(LOGTAG, e);
+                } finally {
+                    downScaledBitmap.recycle();
+                    Utils.closeSilently(os);
+                }
+                message.mediaType(Message.MediaType.IMAGE);
+                message.attachment(new NewMessage.ImageAttachment(token, metadata));
+                return true;
+            }
+        });
     }
 
     @Override
@@ -270,6 +269,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             implements GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
         private MediaRecorder mRecorder;
         private RecordMetersThread mTimerTask;
+        private String mCurrentRecordPath;
 
         @Override
         public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
@@ -278,10 +278,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         @Override
         public boolean onDown(final MotionEvent e) {
+            return startRecording();
+        }
+
+        private boolean startRecording() {
             final MediaRecorder recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            recorder.setOutputFile("/dev/null");
+            recorder.setOutputFile(mCurrentRecordPath = getRecordFilePath());
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             try {
                 recorder.prepare();
@@ -296,6 +300,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             mRecorder = recorder;
             mVoiceWaveView.setVisibility(View.VISIBLE);
             return true;
+        }
+
+        private String getRecordFilePath() {
+            return new File(getCacheDir(), "record_" + System.currentTimeMillis()).getAbsolutePath();
         }
 
         @Override
@@ -320,7 +328,31 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 task.cancel();
             }
             mTimerTask = null;
-            if (cancel) return;
+            final String recordPath = mCurrentRecordPath;
+            if (cancel) {
+                if (recordPath != null) {
+                    final File file = new File(recordPath);
+                    file.delete();
+                }
+                return;
+            }
+            sendMessage(new SendMessageHandler() {
+                @Override
+                public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                    final S3UploadToken token = yep.getS3UploadToken();
+                    final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                    try {
+                        Utils.uploadToS3(client, token, new File(recordPath));
+                    } catch (IOException e) {
+                        throw new YepException(e);
+                    }
+                    final AudioMetadata metadata = new AudioMetadata();
+                    message.mediaType(Message.MediaType.AUDIO);
+                    message.attachment(new NewMessage.AudioAttachment(token, metadata));
+                    return true;
+                }
+            });
+
         }
 
         private class RecordMetersThread extends Thread {
@@ -371,12 +403,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private void sendLocation() {
         sendMessage(new SendMessageHandler() {
             @Override
-            public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
-                Location location = Utils.getCachedLocation(ChatActivity.this);
-                if (location != null) {
-                    message.location(location.getLatitude(), location.getLongitude());
-                    message.mediaType(Message.MediaType.LOCATION);
-                }
+            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+                final Location location = Utils.getCachedLocation(ChatActivity.this);
+                if (location == null) return false;
+                message.location(location.getLatitude(), location.getLongitude());
+                message.mediaType(Message.MediaType.LOCATION);
+                return true;
             }
         });
     }
@@ -384,8 +416,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private void sendTextMessage() {
         sendMessage(new SendMessageHandler() {
             @Override
-            public void beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
                 message.mediaType(Message.MediaType.TEXT);
+                return true;
             }
         });
     }
@@ -395,14 +428,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     interface SendMessageHandler {
-        void beforeSend(YepAPI yep, NewMessage message) throws YepException;
+        boolean beforeSend(YepAPI yep, NewMessage message) throws YepException;
     }
 
     private void sendMessage(final SendMessageHandler sendMessageHandler) {
         final Account account = Utils.getCurrentAccount(ChatActivity.this);
         final Conversation conversation = mConversation;
         if (account == null || conversation == null) return;
-        final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity>() {
+        final TaskRunnable<NewMessage, TaskResponse<Message>, ChatActivity> task = new SendMessageTask<ChatActivity>(this, account) {
             @Override
             public void callback(final ChatActivity handler, final TaskResponse<Message> result) {
                 if (result.hasData()) {
@@ -412,35 +445,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
 
             @Override
-            public TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
-                YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, account);
-                final ContentResolver cr = getContentResolver();
-                ContentValues values = ContentValuesCreator.fromNewMessage(newMessage);
-                values.put(Messages.STATE, Messages.MessageState.SENDING);
-                values.put(Messages.OUTGOING, true);
-                final long rowId = ParseUtils.parseLong(cr.insert(Messages.CONTENT_URI, values).getLastPathSegment());
-                TaskResponse<Message> response;
-                try {
-                    sendMessageHandler.beforeSend(yep, newMessage);
-                    final Message message = yep.createMessage(newMessage.toJson());
-                    values = ContentValuesCreator.fromMessage(message);
-                    values.put(Messages.STATE, Messages.MessageState.UNREAD);
-                    values.put(Messages.CONVERSATION_ID, conversation.getId());
-                    values.put(Messages.OUTGOING, true);
-                    final long createdAt = Utils.getTime(message.getCreatedAt());
-                    final ContentValues conversationValues = ContentValuesCreator.fromConversation(conversation);
-                    conversationValues.put(Conversations.TEXT_CONTENT, message.getTextContent());
-                    conversationValues.put(Conversations.UPDATED_AT, createdAt);
-                    cr.insert(Conversations.CONTENT_URI, conversationValues);
-                    response = TaskResponse.getInstance(message);
-                } catch (YepException e) {
-                    values.put(Messages.STATE, Messages.MessageState.FAILED);
-                    Log.w(LOGTAG, e);
-                    response = TaskResponse.getInstance(e);
-                }
-                cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, rowId).getSQL(),
-                        null);
-                return response;
+            protected boolean prepareNewMessage(final YepAPI yep, final NewMessage newMessage) throws YepException {
+                return sendMessageHandler.beforeSend(yep, newMessage);
             }
         };
         final NewMessage newMessage = new NewMessage();
