@@ -325,6 +325,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         newMessage.recipientType(conversation.getRecipientType());
         newMessage.circle(conversation.getCircle());
         newMessage.sender(conversation.getSender());
+        newMessage.createdAt(System.currentTimeMillis());
         task.setParams(newMessage);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);

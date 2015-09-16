@@ -69,6 +69,29 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         final Resources res = context.getResources();
         mPopupMaxWidth = Math.max(res.getDisplayMetrics().widthPixels / 2,
                 res.getDimensionPixelSize(android.support.v7.appcompat.R.dimen.abc_panel_menu_list_width));
+
+
+        final Context popupContext = ThemeUtils.getActionBarPopupThemedContext(getContext());
+
+        mAdapter = new MergeAdapter();
+
+        mAdapter.addAdapter(mHeadersAdapter = new HeadersAdapter(popupContext));
+        mAdapter.addAdapter(mActionsAdapter = new HomeMenuActionsAdapter(popupContext));
+
+        mHeadersAdapter.add(R.layout.header_home_menu_profile, "profile", true);
+        mHeadersAdapter.add(R.layout.layout_divider_vertical, "divider", false);
+
+        mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
+        mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
+
+        mOverflowPopup = new ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0);
+        mOverflowPopup.setModal(true);
+        mOverflowPopup.setAdapter(mAdapter);
+        mOverflowPopup.setDropDownGravity(GravityCompat.END);
+        mOverflowPopup.setHorizontalOffset(-popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_normal));
+        mOverflowPopup.setVerticalOffset(popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_small));
+        mOverflowPopup.setOnItemClickListener(mOnItemClickListener);
+        mOverflowPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
     }
 
     @Override
@@ -117,29 +140,6 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
             }
         });
 
-        final Context popupContext = ThemeUtils.getActionBarPopupThemedContext(getContext());
-
-        mAdapter = new MergeAdapter();
-
-        mAdapter.addAdapter(mHeadersAdapter = new HeadersAdapter(popupContext));
-        mAdapter.addAdapter(mActionsAdapter = new HomeMenuActionsAdapter(popupContext));
-
-        mHeadersAdapter.clear();
-        mHeadersAdapter.add(R.layout.header_home_menu_profile, "profile", true);
-        mHeadersAdapter.add(R.layout.layout_divider_vertical, "divider", false);
-
-        mActionsAdapter.clear();
-        mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
-        mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
-
-        mOverflowPopup = new ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0);
-        mOverflowPopup.setModal(true);
-        mOverflowPopup.setAdapter(mAdapter);
-        mOverflowPopup.setAnchorView(view);
-        mOverflowPopup.setDropDownGravity(GravityCompat.END);
-        mOverflowPopup.setHorizontalOffset(-popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_normal));
-        mOverflowPopup.setVerticalOffset(popupContext.getResources().getDimensionPixelOffset(R.dimen.element_spacing_small));
-        mOverflowPopup.setOnItemClickListener(mOnItemClickListener);
 
 
         if (!mHasContentWidth) {
@@ -148,8 +148,8 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         }
 
 
+        mOverflowPopup.setAnchorView(view);
         mOverflowPopup.setContentWidth(mContentWidth);
-        mOverflowPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mActionView = view;
 
         updateHeader();
