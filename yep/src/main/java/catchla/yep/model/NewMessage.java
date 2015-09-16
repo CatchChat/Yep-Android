@@ -33,7 +33,7 @@ public class NewMessage extends SimpleValueMap {
     private long createdAt;
     private Circle circle;
     private User sender;
-    private LocalMetadata[] localMetadata;
+    private Message.LocalMetadata[] localMetadata;
 
     public NewMessage recipientId(String recipientId) {
         put("recipient_id", recipientId);
@@ -143,7 +143,7 @@ public class NewMessage extends SimpleValueMap {
         }
     }
 
-    public NewMessage localMetadata(final LocalMetadata[] localMetadata) {
+    public NewMessage localMetadata(final Message.LocalMetadata[] localMetadata) {
         this.localMetadata = localMetadata;
         return this;
     }
@@ -163,8 +163,12 @@ public class NewMessage extends SimpleValueMap {
         values.put(Messages.LATITUDE, latitude());
         values.put(Messages.LONGITUDE, longitude());
         values.put(Messages.MEDIA_TYPE, mediaType());
-        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata, LocalMetadata.class));
+        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata, Message.LocalMetadata.class));
         return values;
+    }
+
+    public Message.LocalMetadata[] localMetadata() {
+        return localMetadata;
     }
 
     public interface Attachment {
@@ -179,7 +183,12 @@ public class NewMessage extends SimpleValueMap {
             public File() {
             }
 
-            public File(final String file, final Object metadata) {
+            public File(final String file, final Message.Attachment.Metadata metadata) {
+                setFile(file);
+                setMetadata(metadata);
+            }
+
+            public File(final String file, final String metadata) {
                 setFile(file);
                 setMetadata(metadata);
             }
@@ -188,23 +197,13 @@ public class NewMessage extends SimpleValueMap {
                 this.file = file;
             }
 
-            public void setMetadata(final Object metadata) {
-                this.metadata = JsonSerializer.serialize(metadata);
+            public void setMetadata(final Message.Attachment.Metadata metadata) {
+                setMetadata(JsonSerializer.serialize(metadata));
             }
-        }
-    }
 
-    @JsonObject
-    public static class LocalMetadata {
-        String name;
-        String value;
-
-        public LocalMetadata() {
-        }
-
-        public LocalMetadata(final String name, final String value) {
-            this.name = name;
-            this.value = value;
+            public void setMetadata(final String metadata) {
+                this.metadata = metadata;
+            }
         }
     }
 
@@ -265,7 +264,13 @@ public class NewMessage extends SimpleValueMap {
             image = new File[]{new File(token.getOptions().getKey(), metadata)};
         }
 
-    }@JsonObject
+        public ImageAttachment(S3UploadToken token, String metadata) {
+            image = new File[]{new File(token.getOptions().getKey(), metadata)};
+        }
+
+    }
+
+    @JsonObject
     public static class AudioAttachment implements Attachment {
 
         @JsonField(name = "image")

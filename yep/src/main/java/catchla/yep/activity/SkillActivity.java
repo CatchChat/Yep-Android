@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 
@@ -111,9 +111,9 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
     private void displaySkill(final Skill skill) {
         final String coverUrl = skill.getCoverUrl();
         if (!TextUtils.isEmpty(coverUrl)) {
-            Picasso.with(this).load(coverUrl).fit().into(mBannerImageView);
+            Glide.with(this).load(coverUrl).into(mBannerImageView);
         } else {
-            Picasso.with(this).cancelRequest(mBannerImageView);
+            Glide.clear(mBannerImageView);
         }
         setTitle(skill.getNameString());
     }

@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.mariotaku.restfu.http.RestHttpResponse;
 
@@ -105,10 +105,9 @@ public class ProfileEditorActivity extends ContentActivity {
     private void displayUser(final User user) {
         mCurrentUser = user;
         final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
-        Picasso.with(this)
+        Glide.with(this)
                 .load(url)
                 .placeholder(R.drawable.ic_profile_image_default)
-                .fit()
                 .into(mProfileImageView);
         mCountryCodeView.setText(user.getPhoneCode());
         mPhoneNumberView.setText(user.getMobile());

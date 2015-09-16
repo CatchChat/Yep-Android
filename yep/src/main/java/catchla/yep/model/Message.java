@@ -1,18 +1,28 @@
 package catchla.yep.model;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.support.annotation.NonNull;
+import android.util.Base64;
+import android.util.Base64OutputStream;
+import android.util.Log;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import catchla.yep.Constants;
 import catchla.yep.model.util.NaNDoubleConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
+import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/5/12.
@@ -50,6 +60,16 @@ public class Message {
     String state;
     @JsonField(name = "attachments")
     List<Attachment> attachments;
+    @JsonField(name = "local_metadata")
+    List<LocalMetadata> localMetadata;
+
+    public List<LocalMetadata> getLocalMetadata() {
+        return localMetadata;
+    }
+
+    public void setLocalMetadata(final List<LocalMetadata> localMetadata) {
+        this.localMetadata = localMetadata;
+    }
 
     public List<Attachment> getAttachments() {
         return attachments;
@@ -183,6 +203,7 @@ public class Message {
         String AUDIO = "audio";
     }
 
+
     @JsonObject
     public static class Attachment {
         @JsonField(name = "kind")
@@ -202,6 +223,10 @@ public class Message {
 
         public String getMetadata() {
             return metadata;
+        }
+
+        public interface Metadata {
+
         }
 
         @JsonObject
@@ -227,31 +252,31 @@ public class Message {
         }
 
         @JsonObject
-        public static class AudioMetadata {
+        public static class AudioMetadata implements Metadata {
             @JsonField(name = "audio_samples")
             float[] samples;
             @JsonField(name = "audio_duration")
             float duration;
 
-            public void setSamples(final float[] samples) {
-                this.samples = samples;
+            public float getDuration() {
+                return duration;
             }
 
             public void setDuration(final float duration) {
                 this.duration = duration;
             }
 
-            public float getDuration() {
-                return duration;
-            }
-
             public float[] getSamples() {
                 return samples;
+            }
+
+            public void setSamples(final float[] samples) {
+                this.samples = samples;
             }
         }
 
         @JsonObject
-        public static class ImageMetadata {
+        public static class ImageMetadata implements Metadata {
             @JsonField(name = "image_width")
             int width;
             @JsonField(name = "image_height")
@@ -282,13 +307,46 @@ public class Message {
             public void setBlurredThumbnail(final String blurredThumbnail) {
                 this.blurredThumbnail = blurredThumbnail;
             }
+
+            public static ImageMetadata getImageMetadata(final String imagePath) {
+                final BitmapFactory.Options o = new BitmapFactory.Options();
+                o.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(imagePath, o);
+                final ImageMetadata metadata = new ImageMetadata();
+                boolean swapWH = false;
+                try {
+                    ExifInterface exif = new ExifInterface(imagePath);
+                    final int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                    swapWH = orientation == ExifInterface.ORIENTATION_ROTATE_270 || orientation == ExifInterface.ORIENTATION_ROTATE_90;
+                } catch (IOException ignore) {
+
+                }
+                metadata.setWidth(swapWH ? o.outHeight : o.outWidth);
+                metadata.setHeight(swapWH ? o.outWidth : o.outHeight);
+                o.inJustDecodeBounds = false;
+                o.inSampleSize = Math.max(1, Math.max(o.outWidth, o.outHeight) / 100);
+                final Bitmap downScaledBitmap = BitmapFactory.decodeFile(imagePath, o);
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
+                try {
+                    downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
+                    os.flush();
+                    metadata.setBlurredThumbnail(baos.toString("ASCII"));
+                } catch (IOException e) {
+                    Log.w(Constants.LOGTAG, e);
+                } finally {
+                    downScaledBitmap.recycle();
+                    Utils.closeSilently(os);
+                }
+                return metadata;
+            }
         }
     }
 
     public static class Indices extends ObjectCursor.CursorIndices<Message> {
         private final int message_id, created_at, text_content, outgoing, latitude, longitude,
                 sender, circle, recipient_id, recipient_type, media_type, state, attachments,
-                conversation_id;
+                conversation_id, local_metadata;
 
         public Indices(@NonNull final Cursor cursor) {
             super(cursor);
@@ -306,6 +364,7 @@ public class Message {
             state = cursor.getColumnIndex(Messages.STATE);
             attachments = cursor.getColumnIndex(Messages.ATTACHMENTS);
             conversation_id = cursor.getColumnIndex(Messages.CONVERSATION_ID);
+            local_metadata = cursor.getColumnIndex(Messages.LOCAL_METADATA);
         }
 
         @Override
@@ -324,9 +383,45 @@ public class Message {
             message.setMediaType(cursor.getString(media_type));
             message.setState(cursor.getString(state));
             message.setAttachments(JsonSerializer.parseList(cursor.getString(attachments), Attachment.class));
+            message.setLocalMetadata(JsonSerializer.parseList(cursor.getString(local_metadata), LocalMetadata.class));
             message.setConversationId(cursor.getString(conversation_id));
             return message;
         }
     }
 
+    @JsonObject
+    public static class LocalMetadata {
+        @JsonField(name = "name")
+        String name;
+        @JsonField(name = "value")
+        String value;
+
+        public LocalMetadata() {
+        }
+
+        public LocalMetadata(final String name, final String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static String get(final NewMessage message, final String key) {
+            return get(message.localMetadata(), key);
+        }
+
+        public static String get(final LocalMetadata[] metadata, final String key) {
+            if (metadata == null) return null;
+            for (LocalMetadata item : metadata) {
+                if (item.name.equals(key)) return item.value;
+            }
+            return null;
+        }
+
+        public static String get(final List<LocalMetadata> metadata, final String key) {
+            if (metadata == null) return null;
+            for (LocalMetadata item : metadata) {
+                if (item.name.equals(key)) return item.value;
+            }
+            return null;
+        }
+    }
 }

@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import catchla.yep.R;
 import catchla.yep.model.GithubRepo;
@@ -35,9 +35,9 @@ public class GithubUserHeaderViewHolder extends RecyclerView.ViewHolder {
         final GithubUser user = userInfo.getUser();
         final String avatarUrl = user.getAvatarUrl();
         if (TextUtils.isEmpty(avatarUrl)) {
-            Picasso.with(itemView.getContext()).cancelRequest(profileImageView);
+            Glide.clear(profileImageView);
         } else {
-            Picasso.with(itemView.getContext()).load(avatarUrl).fit().into(profileImageView);
+            Glide.with(itemView.getContext()).load(avatarUrl).into(profileImageView);
         }
         followingCount.setText(String.valueOf(user.getFollowing()));
         followersCount.setText(String.valueOf(user.getFollowers()));

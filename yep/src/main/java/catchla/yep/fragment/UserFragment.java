@@ -36,9 +36,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
-import com.squareup.picasso.Picasso;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
@@ -222,10 +222,10 @@ public class UserFragment extends Fragment implements Constants,
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
         if (TextUtils.isEmpty(avatarUrl)) {
-            Picasso.with(getActivity()).cancelRequest(mProfileImageView);
+            Glide.clear(mProfileImageView);
             mProfileImageView.setImageResource(R.drawable.ic_profile_image_default);
         } else {
-            Picasso.with(getActivity()).load(avatarUrl).fit().into(mProfileImageView);
+            Glide.with(getActivity()).load(avatarUrl).into(mProfileImageView);
         }
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {

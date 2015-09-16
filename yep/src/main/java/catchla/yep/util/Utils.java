@@ -417,7 +417,12 @@ public class Utils implements Constants {
     }
 
     public static BitmapDrawable getMetadataBitmap(final Resources res, final Message.Attachment.ImageMetadata metadata) {
-        final byte[] bytes = Base64.decode(metadata.getBlurredThumbnail(), Base64.DEFAULT);
+        final byte[] bytes;
+        try {
+            bytes = Base64.decode(metadata.getBlurredThumbnail(), Base64.DEFAULT);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
         final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         if (bitmap == null) return null;
         return new BitmapDrawable(res, bitmap);

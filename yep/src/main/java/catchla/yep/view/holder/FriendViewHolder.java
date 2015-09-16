@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ItemClickListener;
@@ -46,10 +46,9 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayUser(final User user) {
-        Picasso.with(profileImageView.getContext())
+        Glide.with(profileImageView.getContext())
                 .load(user.getAvatarUrl())
                 .placeholder(R.drawable.ic_profile_image_default)
-                .fit()
                 .into(profileImageView);
         nameView.setText(user.getNickname());
 //        timeView.setText();

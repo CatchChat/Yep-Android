@@ -7,13 +7,13 @@ package catchla.yep.activity;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -23,9 +23,6 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Base64OutputStream;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,19 +36,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
-import com.squareup.picasso.Picasso;
 
 import org.mariotaku.restfu.http.RestHttpClient;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -118,8 +113,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             case REQUEST_PICK_IMAGE:
             case REQUEST_TAKE_PHOTO: {
                 if (resultCode != RESULT_OK) return;
-                final Uri imageUri = data.getData();
-                sendImage(imageUri);
+                sendImage(data.getData());
                 return;
             }
         }
@@ -128,11 +122,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private void sendImage(final Uri imageUri) {
         sendMessage(new SendMessageHandler() {
             @Override
-            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+            public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
-                final BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(path, o);
+
                 final S3UploadToken token = yep.getS3UploadToken();
                 final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
                 try {
@@ -140,27 +132,26 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 } catch (IOException e) {
                     throw new YepException(e);
                 }
-                final ImageMetadata metadata = new ImageMetadata();
-                metadata.setWidth(o.outWidth);
-                metadata.setHeight(o.outHeight);
-                o.inJustDecodeBounds = false;
-                o.inSampleSize = Math.max(1, Math.max(o.outWidth, o.outHeight) / 100);
-                final Bitmap downScaledBitmap = BitmapFactory.decodeFile(path, o);
-                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                final Base64OutputStream os = new Base64OutputStream(baos, Base64.URL_SAFE);
-                downScaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, os);
-                try {
-                    metadata.setBlurredThumbnail(baos.toString("ASCII"));
-                } catch (UnsupportedEncodingException e) {
-                    Log.w(LOGTAG, e);
-                } finally {
-                    downScaledBitmap.recycle();
-                    Utils.closeSilently(os);
-                }
-                message.mediaType(Message.MediaType.IMAGE);
-                message.attachment(new NewMessage.ImageAttachment(token, metadata));
-                return true;
+                return new NewMessage.ImageAttachment(token, Message.LocalMetadata.get(message, "metadata"));
             }
+
+            @Nullable
+            @Override
+            Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
+                Message.LocalMetadata[] metadata = new Message.LocalMetadata[2];
+                final String path = imageUri.getPath();
+                final String imageMetadata = JsonSerializer.serialize(ImageMetadata.getImageMetadata(path), ImageMetadata.class);
+                metadata[0] = new Message.LocalMetadata("image", imageUri.toString());
+                metadata[1] = new Message.LocalMetadata("metadata", imageMetadata);
+                return metadata;
+            }
+
+            @Override
+            String getMediaType() {
+                return Message.MediaType.IMAGE;
+            }
+
+
         });
     }
 
@@ -265,170 +256,37 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
-    private class VoicePressListener extends GestureDetector.SimpleOnGestureListener
-            implements GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
-        private MediaRecorder mRecorder;
-        private RecordMetersThread mTimerTask;
-        private String mCurrentRecordPath;
-
-        @Override
-        public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
-            return super.onScroll(e1, e2, distanceX, distanceY);
-        }
-
-        @Override
-        public boolean onDown(final MotionEvent e) {
-            return startRecording();
-        }
-
-        private boolean startRecording() {
-            final MediaRecorder recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            recorder.setOutputFile(mCurrentRecordPath = getRecordFilePath());
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            try {
-                recorder.prepare();
-            } catch (IOException ioe) {
-                return false;
-            }
-            recorder.start();
-            recorder.getMaxAmplitude();
-            RecordMetersThread task = new RecordMetersThread();
-            mTimerTask = task;
-            task.start();
-            mRecorder = recorder;
-            mVoiceWaveView.setVisibility(View.VISIBLE);
-            return true;
-        }
-
-        private String getRecordFilePath() {
-            return new File(getCacheDir(), "record_" + System.currentTimeMillis()).getAbsolutePath();
-        }
-
-        @Override
-        public void onUp(final MotionEvent event) {
-            stopRecording(false);
-        }
-
-        @Override
-        public void onCancel(final MotionEvent event) {
-            stopRecording(true);
-        }
-
-        private void stopRecording(final boolean cancel) {
-            mVoiceWaveView.setVisibility(View.GONE);
-            final MediaRecorder recorder = mRecorder;
-            if (recorder == null) return;
-            recorder.stop();
-            recorder.release();
-            mRecorder = null;
-            final RecordMetersThread task = mTimerTask;
-            if (task != null) {
-                task.cancel();
-            }
-            mTimerTask = null;
-            final String recordPath = mCurrentRecordPath;
-            if (cancel) {
-                if (recordPath != null) {
-                    final File file = new File(recordPath);
-                    file.delete();
-                }
-                return;
-            }
-            sendMessage(new SendMessageHandler() {
-                @Override
-                public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
-                    final S3UploadToken token = yep.getS3UploadToken();
-                    final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
-                    try {
-                        Utils.uploadToS3(client, token, new File(recordPath));
-                    } catch (IOException e) {
-                        throw new YepException(e);
-                    }
-                    final AudioMetadata metadata = new AudioMetadata();
-                    message.mediaType(Message.MediaType.AUDIO);
-                    message.attachment(new NewMessage.AudioAttachment(token, metadata));
-                    return true;
-                }
-            });
-
-        }
-
-        private class RecordMetersThread extends Thread {
-
-            public static final long INTERVAL = 16L;
-            private AtomicBoolean cancelled = new AtomicBoolean();
-
-            public void cancel() {
-                cancelled.set(true);
-            }
-
-            @Override
-            public void run() {
-                while (!cancelled.get()) {
-                    try {
-                        updateView();
-                        Thread.sleep(Math.max(0, INTERVAL));
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-
-            private long updateView() {
-                final long callStart = System.currentTimeMillis();
-                if (cancelled.get()) return System.currentTimeMillis() - callStart;
-                final MediaRecorder recorder = mRecorder;
-                if (recorder == null) {
-                    cancel();
-                    return System.currentTimeMillis() - callStart;
-                }
-                final int maxAmplitude = recorder.getMaxAmplitude();
-                mVoiceWaveView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (maxAmplitude == 0) {
-                            mVoiceWaveView.setAmplitude(mVoiceWaveView.getAmplitude());
-                        } else {
-                            mVoiceWaveView.setAmplitude(maxAmplitude);
-                        }
-                    }
-                });
-                return System.currentTimeMillis() - callStart;
-            }
-
-        }
-    }
-
     private void sendLocation() {
         sendMessage(new SendMessageHandler() {
             @Override
-            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
+            public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final Location location = Utils.getCachedLocation(ChatActivity.this);
-                if (location == null) return false;
+                if (location == null) return null;
                 message.location(location.getLatitude(), location.getLongitude());
-                message.mediaType(Message.MediaType.LOCATION);
-                return true;
+                return null;
             }
+
+            @Override
+            String getMediaType() {
+                return Message.MediaType.TEXT;
+            }
+
         });
     }
 
     private void sendTextMessage() {
         sendMessage(new SendMessageHandler() {
+
             @Override
-            public boolean beforeSend(final YepAPI yep, final NewMessage message) throws YepException {
-                message.mediaType(Message.MediaType.TEXT);
-                return true;
+            String getMediaType() {
+                return Message.MediaType.TEXT;
             }
+
         });
     }
 
     private void openAttachmentMenu() {
         mAttachPopupMenu.show();
-    }
-
-    interface SendMessageHandler {
-        boolean beforeSend(YepAPI yep, NewMessage message) throws YepException;
     }
 
     private void sendMessage(final SendMessageHandler sendMessageHandler) {
@@ -445,8 +303,19 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
 
             @Override
-            protected boolean prepareNewMessage(final YepAPI yep, final NewMessage newMessage) throws YepException {
-                return sendMessageHandler.beforeSend(yep, newMessage);
+            protected NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+                return sendMessageHandler.uploadAttachment(yep, newMessage);
+            }
+
+            @NonNull
+            @Override
+            protected String getMediaType() {
+                return sendMessageHandler.getMediaType();
+            }
+
+            @Override
+            protected Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
+                return sendMessageHandler.getLocalMetadata(newMessage);
             }
         };
         final NewMessage newMessage = new NewMessage();
@@ -576,6 +445,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             notifyDataSetChanged();
         }
 
+        public Message getMessage(final int position) {
+            if (mData == null) return null;
+            return mData.get(position);
+        }
+
         private static class MessageViewHolder extends RecyclerView.ViewHolder {
 
             protected final ChatAdapter adapter;
@@ -635,17 +509,25 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
+                final String url;
+                final ImageMetadata metadata;
+                final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 final List<Message.Attachment> attachments = message.getAttachments();
-                if (attachments == null || attachments.isEmpty()) return;
-                final Message.Attachment attachment = attachments.get(0);
-                final String url = attachment.getFile().getUrl();
-                final ImageMetadata metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
+                if (localMetadata != null && !localMetadata.isEmpty()) {
+                    url = Message.LocalMetadata.get(localMetadata, "image");
+                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), ImageMetadata.class);
+                } else if (attachments != null && !attachments.isEmpty()) {
+                    final Message.Attachment attachment = attachments.get(0);
+                    url = attachment.getFile().getUrl();
+                    metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
+                } else {
+                    return;
+                }
                 imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
                 final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
-                Picasso.with(imageView.getContext())
+                Glide.with(imageView.getContext())
                         .load(url)
                         .placeholder(placeholder)
-                        .fit()
                         .into(imageView);
             }
         }
@@ -686,11 +568,158 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         }
 
-        public Message getMessage(final int position) {
-            if (mData == null) return null;
-            return mData.get(position);
+
+    }
+
+    private class VoicePressListener extends GestureDetector.SimpleOnGestureListener
+            implements GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
+        private MediaRecorder mRecorder;
+        private RecordMetersThread mTimerTask;
+        private String mCurrentRecordPath;
+
+        @Override
+        public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX, final float distanceY) {
+            return super.onScroll(e1, e2, distanceX, distanceY);
         }
 
+        @Override
+        public boolean onDown(final MotionEvent e) {
+            return startRecording();
+        }
 
+        private boolean startRecording() {
+            final MediaRecorder recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            recorder.setOutputFile(mCurrentRecordPath = getRecordFilePath());
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            try {
+                recorder.prepare();
+            } catch (IOException ioe) {
+                return false;
+            }
+            recorder.start();
+            recorder.getMaxAmplitude();
+            RecordMetersThread task = new RecordMetersThread();
+            mTimerTask = task;
+            task.start();
+            mRecorder = recorder;
+            mVoiceWaveView.setVisibility(View.VISIBLE);
+            return true;
+        }
+
+        private String getRecordFilePath() {
+            return new File(getCacheDir(), "record_" + System.currentTimeMillis()).getAbsolutePath();
+        }
+
+        @Override
+        public void onUp(final MotionEvent event) {
+            stopRecording(false);
+        }
+
+        @Override
+        public void onCancel(final MotionEvent event) {
+            stopRecording(true);
+        }
+
+        private void stopRecording(final boolean cancel) {
+            mVoiceWaveView.setVisibility(View.GONE);
+            final MediaRecorder recorder = mRecorder;
+            if (recorder == null) return;
+            recorder.stop();
+            recorder.release();
+            mRecorder = null;
+            final RecordMetersThread task = mTimerTask;
+            if (task != null) {
+                task.cancel();
+            }
+            mTimerTask = null;
+            final String recordPath = mCurrentRecordPath;
+            if (cancel) {
+                if (recordPath != null) {
+                    final File file = new File(recordPath);
+                    file.delete();
+                }
+                return;
+            }
+            sendMessage(new SendMessageHandler() {
+                @Override
+                public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+                    final S3UploadToken token = yep.getS3UploadToken();
+                    final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                    try {
+                        Utils.uploadToS3(client, token, new File(recordPath));
+                    } catch (IOException e) {
+                        throw new YepException(e);
+                    }
+                    final AudioMetadata metadata = new AudioMetadata();
+                    return new NewMessage.AudioAttachment(token, metadata);
+                }
+
+                @Override
+                String getMediaType() {
+                    return Message.MediaType.AUDIO;
+                }
+            });
+
+        }
+
+        private class RecordMetersThread extends Thread {
+
+            public static final long INTERVAL = 16L;
+            private AtomicBoolean cancelled = new AtomicBoolean();
+
+            public void cancel() {
+                cancelled.set(true);
+            }
+
+            @Override
+            public void run() {
+                while (!cancelled.get()) {
+                    try {
+                        updateView();
+                        Thread.sleep(Math.max(0, INTERVAL));
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+
+            private long updateView() {
+                final long callStart = System.currentTimeMillis();
+                if (cancelled.get()) return System.currentTimeMillis() - callStart;
+                final MediaRecorder recorder = mRecorder;
+                if (recorder == null) {
+                    cancel();
+                    return System.currentTimeMillis() - callStart;
+                }
+                final int maxAmplitude = recorder.getMaxAmplitude();
+                mVoiceWaveView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (maxAmplitude == 0) {
+                            mVoiceWaveView.setAmplitude(mVoiceWaveView.getAmplitude());
+                        } else {
+                            mVoiceWaveView.setAmplitude(maxAmplitude);
+                        }
+                    }
+                });
+                return System.currentTimeMillis() - callStart;
+            }
+
+        }
+    }
+
+    abstract class SendMessageHandler {
+        @Nullable
+        NewMessage.Attachment uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
+            return null;
+        }
+
+        abstract String getMediaType();
+
+        @Nullable
+        Message.LocalMetadata[] getLocalMetadata(NewMessage newMessage) {
+            return null;
+        }
     }
 }

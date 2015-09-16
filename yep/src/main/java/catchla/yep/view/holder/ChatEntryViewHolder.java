@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ItemClickListener;
@@ -48,10 +48,9 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
             final User sender = conversation.getUser();
             nameView.setText(sender.getNickname());
-            Picasso.with(profileImageView.getContext())
+            Glide.with(profileImageView.getContext())
                     .load(sender.getAvatarUrl())
                     .placeholder(R.drawable.ic_profile_image_default)
-                    .fit()
                     .into(profileImageView);
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             nameView.setText(conversation.getCircle().getName());
