@@ -81,6 +81,8 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         mHeadersAdapter.add(R.layout.header_home_menu_profile, "profile", true);
         mHeadersAdapter.add(R.layout.layout_divider_vertical, "divider", false);
 
+        mHeadersAdapter.makeFinal();
+
         mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
         mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
 
@@ -139,7 +141,6 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
                 return true;
             }
         });
-
 
 
         if (!mHasContentWidth) {

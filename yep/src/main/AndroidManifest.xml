@@ -141,6 +141,7 @@
             android:exported="false"/>
 
         <service android:name=".service.MessageService"/>
+        <service android:name=".service.FayeService"/>
         <service
             android:name=".service.AccountService"
             android:exported="false">

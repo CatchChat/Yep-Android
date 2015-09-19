@@ -1,5 +1,6 @@
 package catchla.yep.service;
 
+import android.accounts.Account;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
@@ -7,11 +8,20 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.saulpower.fayeclient.FayeClient;
+import com.saulpower.fayeclient.WebSocketClient;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import catchla.yep.model.User;
+import catchla.yep.util.Utils;
+import catchla.yep.util.YepAPIFactory;
 
 public class FayeService extends IntentService implements FayeClient.FayeListener {
 
@@ -21,29 +31,41 @@ public class FayeService extends IntentService implements FayeClient.FayeListene
     private Handler mHandler;
 
     public FayeService() {
-        super("WebSocketService");
+        super("FayeService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
 
         Log.i(TAG, "Starting Web Socket");
+        final Account account = Utils.getCurrentAccount(this);
+        final User accountUser = Utils.getAccountUser(this, account);
+        if (account == null || accountUser == null) return;
 
-        try {
+        final URI uri = URI.create("wss://faye.catchchatchina.com/faye");
+        final String channel = String.format("/v1/users/%s/messages", accountUser.getId());
 
-            URI uri = URI.create("ws://faye-staging.catchchatchina.com/faye");
-            String channel = String.format("/%s/**", "");
 
-            JSONObject ext = new JSONObject();
-            ext.put("version", "v1");
-            ext.put("auth_token", "");
+        WebSocketClient.setTrustManagers(new TrustManager[]{new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
 
-            mClient = new FayeClient(mHandler, uri, channel);
-            mClient.setFayeListener(this);
-            mClient.connectToServer(ext);
+            }
 
-        } catch (JSONException ex) {
-        }
+            @Override
+            public void checkServerTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
+
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }});
+        mClient = new FayeClient(mHandler, uri, channel);
+        mClient.setFayeListener(this);
+        mClient.connectToServer(YepAPIFactory.getFayeAuthExtension(this, account));
+
     }
 
     @Override

@@ -10,6 +10,8 @@ import android.util.Pair;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.okhttp.OkHttpClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mariotaku.restfu.ExceptionFactory;
 import org.mariotaku.restfu.RequestInfoFactory;
 import org.mariotaku.restfu.RestAPIFactory;
@@ -120,5 +122,16 @@ public class YepAPIFactory implements Constants {
         final InvocationHandler handler = Proxy.getInvocationHandler(o);
         final RestClient client = (RestClient) handler;
         return client.getRestClient();
+    }
+
+    public static JSONObject getFayeAuthExtension(final Context context, final Account account) {
+        try {
+            final JSONObject ext = new JSONObject();
+            ext.put("version", "v1");
+            ext.put("access_token", getAuthToken(context, account));
+            return ext;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

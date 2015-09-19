@@ -18,6 +18,7 @@ public class LayoutAdapter extends BaseAdapter {
 
     private final LayoutInflater mInflater;
     private final Context mContext;
+    private boolean mFinal;
 
     public LayoutAdapter(Context context) {
         mContext = context;
@@ -25,13 +26,23 @@ public class LayoutAdapter extends BaseAdapter {
     }
 
     public void clear() {
+        checkFinal();
         mItems.clear();
-        notifyDataSetChanged();
     }
 
     public void add(int layoutRes, String tag, boolean enabled) {
+        checkFinal();
         mItems.add(new LayoutItem(layoutRes, tag, enabled));
+    }
+
+    public void makeFinal() {
+        checkFinal();
+        mFinal = true;
         notifyDataSetChanged();
+    }
+
+    private void checkFinal() {
+        if (mFinal) throw new IllegalStateException("Layouts are final");
     }
 
     @Override
@@ -56,12 +67,17 @@ public class LayoutAdapter extends BaseAdapter {
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return getCount();
     }
 
     @Override
     public int getItemViewType(final int position) {
-        return position + 1;
+        return position;
     }
 
     @Override

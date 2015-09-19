@@ -11,6 +11,7 @@
         <!-- Customize your theme here. -->
         <item name="windowActionBarOverlay">true</item>
         <item name="actionBarPopupTheme">@style/Theme.Base</item>
+        <item name="actionBarWidgetTheme">@style/ThemeOverlay.Yep.ActionBar</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowTranslucentStatus" tools:ignore="NewApi">true</item>
     </style>
