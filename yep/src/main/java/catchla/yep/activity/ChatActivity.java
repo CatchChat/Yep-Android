@@ -268,7 +268,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
             @Override
             String getMediaType() {
-                return Message.MediaType.TEXT;
+                return Message.MediaType.LOCATION;
             }
 
         });
