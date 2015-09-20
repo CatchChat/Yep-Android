@@ -1,6 +1,7 @@
 package catchla.yep.adapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,14 @@ public class GithubUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private static final int VIEW_TYPE_HEADER = 1;
     private static final int VIEW_TYPE_ITEM = 2;
+
+    private final Fragment mFragment;
     private final LayoutInflater mInflater;
+
     private GithubUserInfo mData;
 
-    public GithubUserAdapter(Context context) {
+    public GithubUserAdapter(Fragment fragment, Context context) {
+        mFragment = fragment;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -33,7 +38,7 @@ public class GithubUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             return new GithubUserHeaderViewHolder(view);
         }
         final View view = mInflater.inflate(R.layout.list_item_github_repo, parent, false);
-        return new GithubRepoItemViewHolder(view, this);
+        return new GithubRepoItemViewHolder(mFragment, view, this);
     }
 
     @Override

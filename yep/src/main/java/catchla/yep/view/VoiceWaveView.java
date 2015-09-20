@@ -3,11 +3,14 @@ package catchla.yep.view;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.ArrayList;
 
 import catchla.yep.R;
 
@@ -31,6 +34,8 @@ public class VoiceWaveView extends View {
     private int mViewWidth = 0;
     private int mViewHeight = 0;
     private float ViewMid = 0;
+    private boolean mRecordingStarted;
+    private ArrayList<Float> mSamplesList = new ArrayList<>();
 
     public VoiceWaveView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
@@ -48,6 +53,7 @@ public class VoiceWaveView extends View {
 
     public void setAmplitude(final int amplitude) {
         mAmplitude = (mAmplitude + amplitude) / 2;
+        mSamplesList.add(amplitude / (float) Short.MAX_VALUE);
         phaseNext();
         invalidate();
     }
@@ -132,4 +138,14 @@ public class VoiceWaveView extends View {
     }
 
 
+    public float[] stopRecording() {
+        mRecordingStarted = false;
+        final int size = mSamplesList.size();
+        return ArrayUtils.toPrimitive(mSamplesList.toArray(new Float[size]));
+    }
+
+    public void startRecording() {
+        mRecordingStarted = true;
+        mSamplesList.clear();
+    }
 }

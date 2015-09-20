@@ -43,7 +43,7 @@ public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAda
     @NonNull
     @Override
     protected UsersAdapter onCreateAdapter(Context context) {
-        return new UsersAdapter(context);
+        return new UsersAdapter(this, context);
     }
 
     @Override

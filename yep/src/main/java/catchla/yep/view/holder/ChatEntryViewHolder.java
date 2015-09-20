@@ -4,6 +4,7 @@
 
 package catchla.yep.view.holder;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,13 +24,17 @@ import catchla.yep.view.ShortTimeView;
  * Created by mariotaku on 15/4/29.
  */
 public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
+
+    private final Fragment fragment;
+
     private final ImageView profileImageView;
     private final TextView nameView;
     private final ShortTimeView timeView;
     private final TextView messageView;
 
-    public ChatEntryViewHolder(final ItemClickListener listener, View itemView) {
+    public ChatEntryViewHolder(final Fragment fragment, final ItemClickListener listener, View itemView) {
         super(itemView);
+        this.fragment = fragment;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
         timeView = (ShortTimeView) itemView.findViewById(R.id.update_time);
@@ -48,7 +53,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
             final User sender = conversation.getUser();
             nameView.setText(sender.getNickname());
-            Glide.with(profileImageView.getContext())
+            Glide.with(fragment)
                     .load(sender.getAvatarUrl())
                     .placeholder(R.drawable.ic_profile_image_default)
                     .into(profileImageView);

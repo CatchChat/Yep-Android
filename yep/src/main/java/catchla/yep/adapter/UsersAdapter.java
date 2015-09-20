@@ -5,6 +5,7 @@
 package catchla.yep.adapter;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,8 @@ import catchla.yep.view.holder.FriendViewHolder;
  */
 public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
+
+    private final Fragment mFragment;
     private final LayoutInflater mInflater;
 
     public void setClickListener(final ItemClickListener listener) {
@@ -33,7 +36,8 @@ public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private List<User> mData;
 
-    public UsersAdapter(Context context) {
+    public UsersAdapter(Fragment fragment, Context context) {
+        mFragment = fragment;
         mInflater = LayoutInflater.from(context);
 
     }
@@ -41,7 +45,7 @@ public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(mClickListener, view);
+        return new FriendViewHolder(mFragment, mClickListener, view);
     }
 
     @Override

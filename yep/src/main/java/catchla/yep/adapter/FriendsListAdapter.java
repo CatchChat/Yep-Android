@@ -15,6 +15,7 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.model.Friendship;
 import catchla.yep.view.holder.FriendViewHolder;
 
@@ -22,6 +23,9 @@ import catchla.yep.view.holder.FriendViewHolder;
  * Created by mariotaku on 15/4/29.
  */
 public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
+
+    private final FriendsListFragment mFragment;
+
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
 
@@ -36,14 +40,15 @@ public class FriendsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     };
 
-    public FriendsListAdapter(Context context) {
+    public FriendsListAdapter(final FriendsListFragment fragment, Context context) {
+        mFragment = fragment;
         mInflater = LayoutInflater.from(context);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(mInternalItemClickListener, view);
+        return new FriendViewHolder(mFragment, mInternalItemClickListener, view);
     }
 
     @Override

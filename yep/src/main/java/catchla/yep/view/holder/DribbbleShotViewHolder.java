@@ -1,5 +1,6 @@
 package catchla.yep.view.holder;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,11 +20,15 @@ import catchla.yep.model.DribbbleShotImage;
  * Created by mariotaku on 15/6/3.
  */
 public class DribbbleShotViewHolder extends RecyclerView.ViewHolder implements RequestListener<String, GlideDrawable> {
+
+    private final Fragment fragment;
+
     private final ImageView imageView;
     private final View imageProgress;
 
-    public DribbbleShotViewHolder(final View itemView) {
+    public DribbbleShotViewHolder(final Fragment fragment, final View itemView) {
         super(itemView);
+        this.fragment = fragment;
         imageView = (ImageView) itemView.findViewById(R.id.image_view);
         imageProgress = itemView.findViewById(R.id.image_progress);
     }
@@ -32,7 +37,7 @@ public class DribbbleShotViewHolder extends RecyclerView.ViewHolder implements R
         final DribbbleShotImage image = getBestImage(shot.getImages());
         if (image != null) {
             imageProgress.setVisibility(View.VISIBLE);
-            Glide.with(itemView.getContext()).load(image.getUrl()).listener(this).into(imageView);
+            Glide.with(fragment).load(image.getUrl()).listener(this).into(imageView);
         } else {
             imageProgress.setVisibility(View.GONE);
             Glide.clear(imageView);

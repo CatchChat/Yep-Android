@@ -4,6 +4,7 @@
 
 package catchla.yep.view.holder;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,23 +20,29 @@ import catchla.yep.model.User;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class FriendViewHolder extends RecyclerView.ViewHolder {
+public class FriendViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+    private final Fragment fragment;
+    private final ItemClickListener listener;
+
     private final ImageView profileImageView;
     private final TextView nameView, timeView, descriptionView;
 
-    public FriendViewHolder(final ItemClickListener listener, View itemView) {
+    public FriendViewHolder(final Fragment fragment, final ItemClickListener listener, View itemView) {
         super(itemView);
+        this.fragment = fragment;
+        this.listener = listener;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
         timeView = (TextView) itemView.findViewById(R.id.update_time);
         descriptionView = (TextView) itemView.findViewById(R.id.description);
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener == null) return;
-                listener.onItemClick(getAdapterPosition(), FriendViewHolder.this);
-            }
-        });
+        itemView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (listener == null) return;
+        listener.onItemClick(getAdapterPosition(), FriendViewHolder.this);
     }
 
     public void displaySample(int profileImage, String name, String time, String message) {
@@ -46,7 +53,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayUser(final User user) {
-        Glide.with(profileImageView.getContext())
+        Glide.with(fragment)
                 .load(user.getAvatarUrl())
                 .placeholder(R.drawable.ic_profile_image_default)
                 .into(profileImageView);

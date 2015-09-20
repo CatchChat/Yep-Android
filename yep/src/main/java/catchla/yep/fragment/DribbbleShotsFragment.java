@@ -52,7 +52,7 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new DribbbleShotsAdapter(getActivity());
+        mAdapter = new DribbbleShotsAdapter(this, getActivity());
         final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

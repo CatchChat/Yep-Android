@@ -15,6 +15,7 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.model.Conversation;
 import catchla.yep.view.holder.ChatEntryViewHolder;
 
@@ -24,6 +25,7 @@ import catchla.yep.view.holder.ChatEntryViewHolder;
 public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
+    private final ChatsListFragment mFragment;
 
     private List<Conversation> mData;
 
@@ -33,14 +35,15 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private ItemClickListener mItemClickListener;
 
-    public ChatsListAdapter(Context context) {
+    public ChatsListAdapter(final ChatsListFragment fragment, Context context) {
+        mFragment = fragment;
         mInflater = LayoutInflater.from(context);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_chat_entry, parent, false);
-        return new ChatEntryViewHolder(mItemClickListener, view);
+        return new ChatEntryViewHolder(mFragment, mItemClickListener, view);
     }
 
     @Override

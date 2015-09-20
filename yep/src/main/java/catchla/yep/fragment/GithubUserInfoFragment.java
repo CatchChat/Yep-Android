@@ -54,7 +54,7 @@ public class GithubUserInfoFragment extends Fragment implements Constants,
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new GithubUserAdapter(getActivity());
+        mAdapter = new GithubUserAdapter(this, getActivity());
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

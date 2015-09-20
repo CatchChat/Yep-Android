@@ -5,15 +5,16 @@
 package catchla.yep.activity;
 
 import android.accounts.Account;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -93,6 +94,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private View mEditTextContainer;
     private Button mVoiceRecordButton;
     private VoiceWaveView mVoiceWaveView;
+    private View mVoiceWaveContainer;
 
     @Override
     public void onContentChanged() {
@@ -104,6 +106,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mAttachSendButton = (ImageView) findViewById(R.id.attachment_send);
         mVoiceToggle = findViewById(R.id.voice_toggle);
         mVoiceRecordButton = (Button) findViewById(R.id.voice_record);
+        mVoiceWaveContainer = findViewById(R.id.voice_wave_container);
         mVoiceWaveView = (VoiceWaveView) findViewById(R.id.voice_wave_view);
     }
 
@@ -371,11 +374,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private static final int VIEW_SUBTYPE_MESSAGE_LOCATION = 0x0002;
         private static final int VIEW_SUBTYPE_MESSAGE_IMAGE = 0x0003;
         private static final int VIEW_SUBTYPE_MESSAGE_AUDIO = 0x0004;
+
+        private final ChatActivity mActivity;
         private final LayoutInflater mInflater;
         private List<Message> mData;
 
-        ChatAdapter(Context context) {
-            mInflater = LayoutInflater.from(context);
+        ChatAdapter(ChatActivity activity) {
+            mActivity = activity;
+            mInflater = LayoutInflater.from(activity);
         }
 
 
@@ -403,7 +409,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
-                    return new ImageChatViewHolder(baseView, isOutgoing, this);
+                    return new ImageChatViewHolder(mActivity, baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_AUDIO: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
@@ -501,9 +507,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         private static class ImageChatViewHolder extends MessageViewHolder {
             private final MediaSizeImageView imageView;
+            private final FragmentActivity activity;
 
-            public ImageChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
+            public ImageChatViewHolder(final FragmentActivity activity, final View itemView,
+                                       final boolean outgoing, final ChatAdapter adapter) {
                 super(itemView, outgoing, adapter);
+                this.activity = activity;
                 imageView = (MediaSizeImageView) itemView.findViewById(R.id.image_view);
             }
 
@@ -526,7 +535,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 }
                 imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
                 final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
-                Glide.with(imageView.getContext())
+                Glide.with(activity)
                         .load(url)
                         .placeholder(placeholder)
                         .into(imageView);
@@ -605,7 +614,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             mTimerTask = task;
             task.start();
             mRecorder = recorder;
-            mVoiceWaveView.setVisibility(View.VISIBLE);
+            mVoiceWaveContainer.setVisibility(View.VISIBLE);
+            mVoiceWaveView.startRecording();
             return true;
         }
 
@@ -624,7 +634,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         }
 
         private void stopRecording(final boolean cancel) {
-            mVoiceWaveView.setVisibility(View.GONE);
+            mVoiceWaveContainer.setVisibility(View.GONE);
+            final float[] samples = mVoiceWaveView.stopRecording();
             final MediaRecorder recorder = mRecorder;
             if (recorder == null) return;
             recorder.stop();
@@ -653,7 +664,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     } catch (IOException e) {
                         throw new YepException(e);
                     }
+                    MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(recordPath));
                     final AudioMetadata metadata = new AudioMetadata();
+                    metadata.setDuration(player.getDuration() / 1000f);
+                    player.release();
+                    metadata.setSamples(samples);
                     return new NewMessage.AudioAttachment(token, metadata);
                 }
 
