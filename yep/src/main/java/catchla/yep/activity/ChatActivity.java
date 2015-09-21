@@ -64,12 +64,10 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepArrayUtils;
 import catchla.yep.util.YepException;
 import catchla.yep.util.task.SendMessageTask;
 import catchla.yep.view.AudioSampleView;
@@ -137,7 +135,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 } catch (IOException e) {
                     throw new YepException(e);
                 }
-                return new NewMessage.ImageAttachment(token, Message.LocalMetadata.get(message, "metadata"));
+                return new NewMessage.ImageAttachment(token, message.getMetadataValue("metadata", null));
             }
 
             @Nullable
@@ -535,12 +533,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 } else {
                     return;
                 }
-                imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
-                final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
-                Glide.with(activity)
-                        .load(url)
-                        .placeholder(placeholder)
-                        .into(imageView);
+                if (metadata != null) {
+                    imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
+                    final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
+                    Glide.with(activity).load(url).placeholder(placeholder).into(imageView);
+                }
             }
         }
 
@@ -563,11 +560,20 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public void displayMessage(Message message) {
                 super.displayMessage(message);
                 final List<Message.Attachment> attachments = message.getAttachments();
-                if (attachments == null || attachments.isEmpty()) return;
-                final AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
-                        AudioMetadata.class);
-                audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
-                sampleView.setSamples(metadata.getSamples());
+                final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
+                final AudioMetadata metadata;
+                if (localMetadata != null && !localMetadata.isEmpty()) {
+                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), AudioMetadata.class);
+                } else if (attachments != null && !attachments.isEmpty()) {
+                    final Message.Attachment attachment = attachments.get(0);
+                    metadata = JsonSerializer.parse(attachment.getMetadata(), AudioMetadata.class);
+                } else {
+                    return;
+                }
+                if (metadata != null) {
+                    audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
+                    sampleView.setSamples(metadata.getSamples());
+                }
             }
 
             @Override
@@ -660,10 +666,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 @Nullable
                 @Override
                 Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
-                    final Message.LocalMetadata[] metadata = new Message.LocalMetadata[2];
-                    MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(recordPath));
-                    metadata[0] = new Message.LocalMetadata("duration", String.valueOf(player.getDuration() / 1000f));
-                    metadata[1] = new Message.LocalMetadata("samples", YepArrayUtils.toString(samples, ',', false));
+                    final Message.LocalMetadata[] metadata = new Message.LocalMetadata[1];
+                    final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(recordPath));
+                    final AudioMetadata metadataItem = new AudioMetadata();
+                    metadataItem.setDuration(player.getDuration() / 1000f);
+                    metadataItem.setSamples(samples);
+                    metadata[0] = new Message.LocalMetadata("metadata", JsonSerializer.serialize(metadataItem, AudioMetadata.class));
                     player.release();
                     return metadata;
                 }
@@ -677,10 +685,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     } catch (IOException e) {
                         throw new YepException(e);
                     }
-                    final AudioMetadata metadata = new AudioMetadata();
-                    metadata.setDuration(ParseUtils.parseFloat(message.getMetadataValue("duration", null)));
-                    metadata.setSamples(YepArrayUtils.parseFloatArray(message.getMetadataValue("samples", null), ','));
-                    return new NewMessage.AudioAttachment(token, metadata);
+                    return new NewMessage.AudioAttachment(token, message.getMetadataValue("metadata", null));
                 }
 
                 @Override

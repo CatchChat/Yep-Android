@@ -54,15 +54,22 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
     @Override
     public final TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
         final YepAPI yep = YepAPIFactory.getInstance(context, account);
+        long draftId = -1;
         try {
             newMessage.mediaType(getMediaType());
-            final long draftId = saveUnsentMessage(newMessage);
+            draftId = saveUnsentMessage(newMessage);
             newMessage.attachment(uploadAttachment(yep, newMessage));
             final NewMessage.JsonBody messageBody = newMessage.toJson();
             final Message message = yep.createMessage(messageBody);
             updateSentMessage(draftId, message);
             return TaskResponse.getInstance(message);
         } catch (YepException e) {
+            if (draftId != -1) {
+                final ContentResolver cr = context.getContentResolver();
+                final ContentValues values = new ContentValues();
+                values.put(Messages.STATE, Messages.MessageState.FAILED);
+                cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, draftId).getSQL(), null);
+            }
             return TaskResponse.getInstance(e);
         }
     }

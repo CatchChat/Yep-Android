@@ -405,15 +405,15 @@ public class Message {
         }
 
         public static String get(final NewMessage message, final String key) {
-            return get(message.localMetadata(), key);
+            return get(message.localMetadata(), key, null);
         }
 
-        public static String get(final LocalMetadata[] metadata, final String key) {
-            if (metadata == null) return null;
+        public static String get(final LocalMetadata[] metadata, final String key, final String def) {
+            if (metadata == null) return def;
             for (LocalMetadata item : metadata) {
                 if (item.name.equals(key)) return item.value;
             }
-            return null;
+            return def;
         }
 
         public static String get(final List<LocalMetadata> metadata, final String key) {

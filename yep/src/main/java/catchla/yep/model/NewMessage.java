@@ -173,10 +173,7 @@ public class NewMessage extends SimpleValueMap {
 
     public String getMetadataValue(@NonNull final String key, final String def) {
         if (localMetadata == null) return def;
-        for (Message.LocalMetadata item : localMetadata) {
-            if (key.equals(item.name)) return item.value;
-        }
-        return def;
+        return Message.LocalMetadata.get(localMetadata, key, def);
     }
 
     public interface Attachment {
@@ -281,15 +278,18 @@ public class NewMessage extends SimpleValueMap {
     @JsonObject
     public static class AudioAttachment implements Attachment {
 
-        @JsonField(name = "image")
-        File[] image;
+        @JsonField(name = "audio")
+        File[] audio;
 
         public AudioAttachment() {
 
         }
+        public AudioAttachment(S3UploadToken token, String metadata) {
+            audio = new File[]{new File(token.getOptions().getKey(), metadata)};
+        }
 
         public AudioAttachment(S3UploadToken token, Message.Attachment.AudioMetadata metadata) {
-            image = new File[]{new File(token.getOptions().getKey(), metadata)};
+            audio = new File[]{new File(token.getOptions().getKey(), metadata)};
         }
 
     }
