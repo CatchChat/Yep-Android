@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/list_container"
             android:layout_alignTop="@id/list_container"
-            android:background="#aaffffff"
+            android:background="#e5ffffff"
             android:visibility="gone">
 
 

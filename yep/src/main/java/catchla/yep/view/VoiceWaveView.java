@@ -61,7 +61,7 @@ public class VoiceWaveView extends View {
     private void init() {
         Resources res = getResources();
         paintsArray = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintsArray.setColor(0x2040ee);
+        paintsArray.setColor(0x32a7ff);
         paintsArray.setStyle(Paint.Style.STROKE);
 
         mDimension = res.getDimension(R.dimen.waver_width);

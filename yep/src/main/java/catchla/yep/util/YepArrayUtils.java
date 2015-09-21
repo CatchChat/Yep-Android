@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,13 +124,43 @@ public final class YepArrayUtils {
     @NonNull
     public static long[] parseLongArray(final String string, final char token) {
         if (TextUtils.isEmpty(string)) return new long[0];
-        final String[] itemsStringArray = string.split(String.valueOf(token));
+        final String[] itemsStringArray = StringUtils.split(string, token);
         final long[] array = new long[itemsStringArray.length];
         for (int i = 0, j = itemsStringArray.length; i < j; i++) {
             try {
                 array[i] = Long.parseLong(itemsStringArray[i]);
             } catch (final NumberFormatException e) {
                 return new long[0];
+            }
+        }
+        return array;
+    }
+
+    @NonNull
+    public static double[] parseDoubleArray(final String string, final char token) {
+        if (TextUtils.isEmpty(string)) return new double[0];
+        final String[] itemsStringArray = StringUtils.split(string, token);
+        final double[] array = new double[itemsStringArray.length];
+        for (int i = 0, j = itemsStringArray.length; i < j; i++) {
+            try {
+                array[i] = Double.parseDouble(itemsStringArray[i]);
+            } catch (final NumberFormatException e) {
+                return new double[0];
+            }
+        }
+        return array;
+    }
+
+    @NonNull
+    public static float[] parseFloatArray(final String string, final char token) {
+        if (TextUtils.isEmpty(string)) return new float[0];
+        final String[] itemsStringArray = StringUtils.split(string, token);
+        final float[] array = new float[itemsStringArray.length];
+        for (int i = 0, j = itemsStringArray.length; i < j; i++) {
+            try {
+                array[i] = Float.parseFloat(itemsStringArray[i]);
+            } catch (final NumberFormatException e) {
+                return new float[0];
             }
         }
         return array;
@@ -175,30 +206,62 @@ public final class YepArrayUtils {
         return result;
     }
 
-    public static String toString(final long[] array, final char token, final boolean include_space) {
+    public static String toString(final long[] array, final char token, final boolean includeSpace) {
         final StringBuilder builder = new StringBuilder();
         final int length = array.length;
         for (int i = 0; i < length; i++) {
-            final String idString = String.valueOf(array[i]);
             if (i > 0) {
-                builder.append(include_space ? token + " " : token);
+                builder.append(token);
+                if (includeSpace) {
+                    builder.append(' ');
+                }
             }
-            builder.append(idString);
+            builder.append(array[i]);
         }
         return builder.toString();
     }
 
-    public static String toString(final Object[] array, final char token, final boolean include_space) {
+    public static String toString(final float[] array, final char token, final boolean includeSpace) {
         final StringBuilder builder = new StringBuilder();
         final int length = array.length;
         for (int i = 0; i < length; i++) {
-            final String id_string = String.valueOf(array[i]);
-            if (id_string != null) {
-                if (i > 0) {
-                    builder.append(include_space ? token + " " : token);
+            if (i > 0) {
+                builder.append(token);
+                if (includeSpace) {
+                    builder.append(' ');
                 }
-                builder.append(id_string);
             }
+            builder.append(array[i]);
+        }
+        return builder.toString();
+    }
+
+    public static String toString(final double[] array, final char token, final boolean includeSpace) {
+        final StringBuilder builder = new StringBuilder();
+        final int length = array.length;
+        for (int i = 0; i < length; i++) {
+            if (i > 0) {
+                builder.append(token);
+                if (includeSpace) {
+                    builder.append(' ');
+                }
+            }
+            builder.append(array[i]);
+        }
+        return builder.toString();
+    }
+
+    public static String toString(final Object[] array, final char token, final boolean includeSpace) {
+        final StringBuilder builder = new StringBuilder();
+        final int length = array.length;
+        for (int i = 0; i < length; i++) {
+            if (i > 0) {
+                builder.append(token);
+                if (includeSpace) {
+                    builder.append(' ');
+                }
+            }
+            builder.append(array[i]);
         }
         return builder.toString();
     }
@@ -211,11 +274,6 @@ public final class YepArrayUtils {
             string_array[i] = ParseUtils.parseString(array[i]);
         }
         return string_array;
-    }
-
-    public static String[] toStringArray(final String s) {
-        if (s == null) return null;
-        return s.split("(?!^)");
     }
 
     public static String toStringForSQL(final String[] array) {

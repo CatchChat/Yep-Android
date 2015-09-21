@@ -171,6 +171,14 @@ public class NewMessage extends SimpleValueMap {
         return localMetadata;
     }
 
+    public String getMetadataValue(@NonNull final String key, final String def) {
+        if (localMetadata == null) return def;
+        for (Message.LocalMetadata item : localMetadata) {
+            if (key.equals(item.name)) return item.value;
+        }
+        return def;
+    }
+
     public interface Attachment {
 
         @JsonObject

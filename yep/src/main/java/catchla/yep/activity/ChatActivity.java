@@ -64,10 +64,12 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
+import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.YepArrayUtils;
 import catchla.yep.util.YepException;
 import catchla.yep.util.task.SendMessageTask;
 import catchla.yep.view.AudioSampleView;
@@ -655,6 +657,17 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 return;
             }
             sendMessage(new SendMessageHandler() {
+                @Nullable
+                @Override
+                Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
+                    final Message.LocalMetadata[] metadata = new Message.LocalMetadata[2];
+                    MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(recordPath));
+                    metadata[0] = new Message.LocalMetadata("duration", String.valueOf(player.getDuration() / 1000f));
+                    metadata[1] = new Message.LocalMetadata("samples", YepArrayUtils.toString(samples, ',', false));
+                    player.release();
+                    return metadata;
+                }
+
                 @Override
                 public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     final S3UploadToken token = yep.getS3UploadToken();
@@ -664,11 +677,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     } catch (IOException e) {
                         throw new YepException(e);
                     }
-                    MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(recordPath));
                     final AudioMetadata metadata = new AudioMetadata();
-                    metadata.setDuration(player.getDuration() / 1000f);
-                    player.release();
-                    metadata.setSamples(samples);
+                    metadata.setDuration(ParseUtils.parseFloat(message.getMetadataValue("duration", null)));
+                    metadata.setSamples(YepArrayUtils.parseFloatArray(message.getMetadataValue("samples", null), ','));
                     return new NewMessage.AudioAttachment(token, metadata);
                 }
 
