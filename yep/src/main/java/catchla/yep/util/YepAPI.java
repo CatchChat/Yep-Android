@@ -22,6 +22,7 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.InstagramMediaList;
+import catchla.yep.model.MarkAsReadResult;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.PagedFriendships;
@@ -144,5 +145,10 @@ public interface YepAPI {
 
     @GET("/v1/users/search")
     PagedUsers searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
+
+    @PATCH("/v1/messages/batch_mark_as_read")
+    @Body(BodyType.FORM)
+    MarkAsReadResult batchMarkAsRead(@Form("recipient_id") String recipientId, @Form("recipient_type") String recipientType,
+                                     @Form("last_read_at") float lastReadAt) throws YepException;
 }
 

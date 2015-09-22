@@ -24,6 +24,7 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -256,7 +257,23 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         });
         mAttachPopupMenu.inflate(R.menu.action_attach_send);
+        markAsRead(JsonSerializer.parse(intent.getStringExtra(EXTRA_CONVERSATION), Conversation.class));
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
+    }
+
+    private void markAsRead(final Conversation conversation) {
+        AsyncManager.runBackgroundTask(new TaskRunnable() {
+            @Override
+            public Object doLongOperation(final Object o) throws InterruptedException {
+                final YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
+                try {
+                    yep.batchMarkAsRead(conversation.getRecipientId(), conversation.getRecipientType(), System.currentTimeMillis() / 100f);
+                } catch (YepException e) {
+                    Log.w(LOGTAG, e);
+                }
+                return null;
+            }
+        });
     }
 
     private void sendLocation() {
