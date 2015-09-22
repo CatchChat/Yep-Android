@@ -31,10 +31,18 @@ public class MathUtils {
     }
 
     // Returns the previous power of two.
-	// Returns the input if it is already power of 2.
-	// Throws IllegalArgumentException if the input is <= 0
-	public static int prevPowerOf2(final int n) {
-		if (n <= 0) throw new IllegalArgumentException();
-		return Integer.highestOneBit(n);
-	}
+    // Returns the input if it is already power of 2.
+    // Throws IllegalArgumentException if the input is <= 0
+    public static int prevPowerOf2(final int n) {
+        if (n <= 0) throw new IllegalArgumentException();
+        return Integer.highestOneBit(n);
+    }
+
+    public static float avg(final float[] array, final int start, final int end) {
+        float avg = array[start];
+        for (int i = start + 1; i < end; i++) {
+            avg = (avg + array[i]) / 2;
+        }
+        return avg;
+    }
 }

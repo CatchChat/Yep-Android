@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.ArrayList;
 
 import catchla.yep.R;
+import catchla.yep.util.MathUtils;
 
 /**
  * Created by kevin on 14/12/23.
@@ -141,7 +142,17 @@ public class VoiceWaveView extends View {
     public float[] stopRecording() {
         mRecordingStarted = false;
         final int size = mSamplesList.size();
-        return ArrayUtils.toPrimitive(mSamplesList.toArray(new Float[size]));
+        final float[] rawSamplesArray = ArrayUtils.toPrimitive(mSamplesList.toArray(new Float[size]));
+        final int idealSampleSize = 20;
+        if (size < idealSampleSize) {
+            return rawSamplesArray;
+        }
+        final int gap = size / idealSampleSize;
+        final float[] result = new float[idealSampleSize];
+        for (int i = 0; i < idealSampleSize; i++) {
+            result[i] = MathUtils.avg(rawSamplesArray, i * gap, (i + 1) * gap - 1);
+        }
+        return result;
     }
 
     public void startRecording() {
