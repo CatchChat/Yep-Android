@@ -25,6 +25,7 @@ public class Conversation {
      */
     @JsonField(name = "user")
     private User user;
+    @JsonField(name = "account_id")
     private String accountId;
     @JsonField(name = "sender")
     private User sender;
@@ -45,8 +46,9 @@ public class Conversation {
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     private Date updatedAt;
 
-    public static Conversation fromUser(User user) {
+    public static Conversation fromUser(User user, String accountId) {
         final Conversation conversation = new Conversation();
+        conversation.setAccountId(accountId);
         conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
         conversation.setRecipientType(Message.RecipientType.USER);
         conversation.setUser(user);

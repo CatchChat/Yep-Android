@@ -103,20 +103,17 @@ public class UserFragment extends Fragment implements Constants,
         final Account currentAccount = Utils.getCurrentAccount(getActivity());
 
         mHeaderDrawerLayout.setDrawerCallback(this);
-
+        final String accountId = Utils.getAccountId(getContext(), currentAccount);
 
         final Bundle args = getArguments();
-        final User user;
         if (args != null && args.containsKey(EXTRA_USER)) {
             try {
-                user = LoganSquare.parse(args.getString(EXTRA_USER), User.class);
-                displayUser(user);
+                displayUser(LoganSquare.parse(args.getString(EXTRA_USER), User.class), accountId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            user = null;
-            displayUser(Utils.getAccountUser(getActivity(), currentAccount));
+            displayUser(Utils.getAccountUser(getActivity(), currentAccount), accountId);
         }
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -160,7 +157,7 @@ public class UserFragment extends Fragment implements Constants,
             public void callback(final UserFragment handler, final TaskResponse<User> result) {
                 handler.mSwipeRefreshLayout.setRefreshing(false);
                 if (result.hasData()) {
-                    handler.displayUser(result.getData());
+                    handler.displayUser(result.getData(), Utils.getAccountId(handler.getContext(), currentAccount));
                 } else if (result.hasException()) {
                     if (BuildConfig.DEBUG) {
                         Log.w(LOGTAG, result.getException());
@@ -218,7 +215,7 @@ public class UserFragment extends Fragment implements Constants,
         }
     }
 
-    private void displayUser(final User user) {
+    private void displayUser(final User user, final String accountId) {
         if (user == null) return;
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
@@ -359,7 +356,7 @@ public class UserFragment extends Fragment implements Constants,
             @Override
             public void onClick(final View v) {
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(Conversation.fromUser(user),
+                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(Conversation.fromUser(user, accountId),
                         Conversation.class));
                 startActivity(intent);
             }
@@ -546,13 +543,14 @@ public class UserFragment extends Fragment implements Constants,
 
         @Override
         protected void onPostExecute(final TaskResponse<User> result) {
+            if (mFragment.isDetached() || mFragment.getActivity() == null) return;
             final FragmentManager fm = mFragment.getFragmentManager();
             final Fragment fragment = fm.findFragmentByTag(UPDATE_SKILLS_DIALOG_FRAGMENT_TAG);
             if (fragment instanceof DialogFragment) {
                 ((DialogFragment) fragment).dismiss();
             }
             if (result.hasData()) {
-                mFragment.displayUser(result.getData());
+                mFragment.displayUser(result.getData(), Utils.getAccountId(mFragment.getContext(), mAccount));
             }
             super.onPostExecute(result);
         }

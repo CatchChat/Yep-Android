@@ -34,6 +34,7 @@ public class NewMessage extends SimpleValueMap {
     private Circle circle;
     private User sender;
     private Message.LocalMetadata[] localMetadata;
+    private String accountId;
 
     public NewMessage recipientId(String recipientId) {
         put("recipient_id", recipientId);
@@ -148,8 +149,18 @@ public class NewMessage extends SimpleValueMap {
         return this;
     }
 
+    public String accountId() {
+        return accountId;
+    }
+
+    public NewMessage accountId(String accountId) {
+        this.accountId = accountId;
+        return this;
+    }
+
     public ContentValues toDraftValues() {
         final ContentValues values = new ContentValues();
+        values.put(Messages.ACCOUNT_ID, accountId);
         values.put(Messages.RECIPIENT_ID, recipientId());
         values.put(Messages.TEXT_CONTENT, textContent());
         values.put(Messages.CREATED_AT, createdAt);
@@ -284,6 +295,7 @@ public class NewMessage extends SimpleValueMap {
         public AudioAttachment() {
 
         }
+
         public AudioAttachment(S3UploadToken token, String metadata) {
             audio = new File[]{new File(token.getOptions().getKey(), metadata)};
         }

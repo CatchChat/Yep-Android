@@ -340,6 +340,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         };
         final NewMessage newMessage = new NewMessage();
         newMessage.textContent(String.valueOf(mEditText.getText()));
+        newMessage.accountId(conversation.getAccountId());
         newMessage.conversationId(conversation.getId());
         newMessage.recipientId(conversation.getRecipientId());
         newMessage.recipientType(conversation.getRecipientType());
@@ -612,6 +613,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     private void playAudio(final Message.Attachment attachment) {
+        if (!"audio".equals(attachment.getKind())) return;
         System.identityHashCode(attachment);
     }
 
