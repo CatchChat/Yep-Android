@@ -104,9 +104,10 @@ public interface YepAPI {
     @GET("/v1/users/{id}/instagram")
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
-    @POST("/v1/messages")
+    @POST("/v1/{recipient_type}/{recipient_id}/messages")
     @Body(BodyType.FILE)
-    Message createMessage(@File NewMessage.JsonBody message) throws YepException;
+    Message createMessage(@Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
+                          @File NewMessage.JsonBody message) throws YepException;
 
     @DELETE("/v1/learning_skills/{id}")
     void removeLearningSkill(@Path("id") String id) throws YepException;
@@ -146,9 +147,9 @@ public interface YepAPI {
     @GET("/v1/users/search")
     PagedUsers searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
 
-    @PATCH("/v1/messages/batch_mark_as_read")
+    @PATCH("/v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
     @Body(BodyType.FORM)
-    MarkAsReadResult batchMarkAsRead(@Form("recipient_id") String recipientId, @Form("recipient_type") String recipientType,
+    MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @Path("recipient_type") String recipientType,
                                      @Form("last_read_at") float lastReadAt) throws YepException;
 }
 

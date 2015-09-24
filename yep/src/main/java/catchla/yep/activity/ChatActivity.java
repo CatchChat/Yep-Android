@@ -361,7 +361,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new MessagesLoader(this, Utils.getCurrentAccount(this), conversation);
+        return new MessagesLoader(this, conversation);
     }
 
     @Override
@@ -576,20 +576,23 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                final List<Message.Attachment> attachments = message.getAttachments();
-                final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
-                final AudioMetadata metadata;
-                if (localMetadata != null && !localMetadata.isEmpty()) {
-                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), AudioMetadata.class);
-                } else if (attachments != null && !attachments.isEmpty()) {
-                    final Message.Attachment attachment = attachments.get(0);
-                    metadata = JsonSerializer.parse(attachment.getMetadata(), AudioMetadata.class);
-                } else {
-                    return;
-                }
+                final AudioMetadata metadata = getAudioMetadata(message);
                 if (metadata != null) {
                     audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                     sampleView.setSamples(metadata.getSamples());
+                }
+            }
+
+            private AudioMetadata getAudioMetadata(Message message) {
+                final List<Message.Attachment> attachments = message.getAttachments();
+                final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
+                if (localMetadata != null && !localMetadata.isEmpty()) {
+                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), AudioMetadata.class);
+                } else if (attachments != null && !attachments.isEmpty()) {
+                    final Message.Attachment attachment = attachments.get(0);
+                    return JsonSerializer.parse(attachment.getMetadata(), AudioMetadata.class);
+                } else {
+                    return null;
                 }
             }
 
@@ -597,13 +600,19 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public void onClick(final View v) {
                 final Message message = adapter.getMessage(getLayoutPosition());
                 final List<Message.Attachment> attachments = message.getAttachments();
-                if (attachments == null || attachments.isEmpty()) return;
-                final AudioMetadata metadata = JsonSerializer.parse(attachments.get(0).getMetadata(),
-                        AudioMetadata.class);
+                adapter.playAudio(attachments.get(0));
             }
         }
 
+        private void playAudio(final Message.Attachment attachment) {
+            mActivity.playAudio(attachment);
+        }
 
+
+    }
+
+    private void playAudio(final Message.Attachment attachment) {
+        System.identityHashCode(attachment);
     }
 
     private class VoicePressListener extends GestureDetector.SimpleOnGestureListener

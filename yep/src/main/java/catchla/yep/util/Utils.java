@@ -433,4 +433,10 @@ public class Utils implements Constants {
         else if (!TextUtils.isEmpty(user.getContactName())) return user.getContactName();
         else return user.getUsername();
     }
+
+    public static String getAccountId(final Context context, final Account account) {
+        if (account == null) return null;
+        final AccountManager am = AccountManager.get(context);
+        return am.getUserData(account, USER_DATA_ID);
+    }
 }

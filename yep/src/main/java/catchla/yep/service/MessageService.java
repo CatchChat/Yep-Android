@@ -91,9 +91,10 @@ public class MessageService extends Service implements Constants {
                     int page = 1;
                     final Paging paging = new Paging();
                     final ArrayList<ContentValues> values = new ArrayList<>();
+                    final String accountId = Utils.getAccountId(getApplication(), account);
                     while ((friendships = yep.getFriendships(paging)).size() > 0) {
                         for (Friendship friendship : friendships) {
-                            values.add(ContentValuesCreator.fromFriendship(friendship));
+                            values.add(ContentValuesCreator.fromFriendship(friendship, accountId));
                         }
                         paging.page(++page);
                         if (friendships.getCount() < friendships.getPerPage()) break;
@@ -129,6 +130,7 @@ public class MessageService extends Service implements Constants {
     private void refreshMessages() {
         final Account account = Utils.getCurrentAccount(this);
         if (account == null) return;
+        final User accountUser = Utils.getAccountUser(this, account);
         final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
                 task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
@@ -174,7 +176,7 @@ public class MessageService extends Service implements Constants {
                     }
                     final ArrayList<ContentValues> messagesValues = new ArrayList<>();
                     for (Message message : messages) {
-                        messagesValues.add(ContentValuesCreator.fromMessage(message));
+                        messagesValues.add(ContentValuesCreator.fromMessage(message, accountUser.getId()));
                     }
                     ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
                     ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());

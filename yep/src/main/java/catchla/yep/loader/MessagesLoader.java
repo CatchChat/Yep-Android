@@ -1,6 +1,5 @@
 package catchla.yep.loader;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import org.mariotaku.sqliteqb.library.Expression;
@@ -16,11 +15,12 @@ import catchla.yep.provider.YepDataStore.Messages;
 public class MessagesLoader extends ObjectCursorLoader<Message> {
     private final Conversation mConversation;
 
-    public MessagesLoader(final Context context, final Account account, final Conversation conversation) {
+    public MessagesLoader(final Context context, final Conversation conversation) {
         super(context, Message.Indices.class, Messages.CONTENT_URI, Messages.COLUMNS, null, null, null);
         mConversation = conversation;
-        setSelection(Expression.equalsArgs(Messages.CONVERSATION_ID).getSQL());
-        setSelectionArgs(new String[]{conversation.getId()});
+        setSelection(Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
+                Expression.equalsArgs(Messages.CONVERSATION_ID)).getSQL());
+        setSelectionArgs(new String[]{conversation.getAccountId(), conversation.getId()});
         setSortOrder(new OrderBy(Messages.CREATED_AT, false).getSQL());
     }
 

@@ -16,6 +16,7 @@ public interface YepDataStore {
             .authority(AUTHORITY).build();
 
     interface Messages extends BaseColumns {
+        String ACCOUNT_ID = "account_id";
         String MESSAGE_ID = "message_id";
         String RECIPIENT_ID = "recipient_id";
         String TEXT_CONTENT = "text_content";
@@ -38,10 +39,10 @@ public interface YepDataStore {
 
         String TABLE_NAME = "messages";
 
-        String[] COLUMNS = {_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
+        String[] COLUMNS = {_ID, ACCOUNT_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
                 CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING, LATITUDE, LONGITUDE, MEDIA_TYPE,
                 ATTACHMENTS, LOCAL_METADATA};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT};
@@ -59,6 +60,7 @@ public interface YepDataStore {
         String CONTENT_PATH = "conversations";
         String TABLE_NAME = "conversations";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
+        String ACCOUNT_ID = "account_id";
         String CONVERSATION_ID = "conversation_id";
         String TEXT_CONTENT = "text_content";
         String USER = "user";
@@ -67,9 +69,9 @@ public interface YepDataStore {
         String RECIPIENT_TYPE = "recipient_type";
         String MEDIA_TYPE = "media_type";
 
-        String[] COLUMNS = {_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE,
+        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE,
                 UPDATED_AT, MEDIA_TYPE};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT};
     }
 
@@ -82,6 +84,7 @@ public interface YepDataStore {
     }
 
     interface Users extends BaseColumns {
+        String ACCOUNT_ID = "account_id";
         String USER_ID = "user_id";
         String FRIEND_ID = "friend_id";
         String USERNAME = "username";
@@ -95,9 +98,9 @@ public interface YepDataStore {
         String MASTER_SKILLS = "master_skills";
         String PROVIDERS = "providers";
 
-        String[] COLUMNS = {_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
+        String[] COLUMNS = {_ID, ACCOUNT_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
                 PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT,DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
 

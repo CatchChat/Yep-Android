@@ -18,11 +18,54 @@ import catchla.yep.util.JsonSerializer;
 @JsonObject
 public class Conversation {
 
+    @JsonField(name = "media_type")
+    String mediaType;
     /**
      * Corresponding to {@link Message#getSender()}
      */
     @JsonField(name = "user")
     private User user;
+    private String accountId;
+    @JsonField(name = "sender")
+    private User sender;
+    @JsonField(name = "circle")
+    private Circle circle;
+    /**
+     * Corresponding to {@link Message#getRecipientType()}
+     */
+    @JsonField(name = "recipient_type")
+    private String recipientType;
+    /**
+     * Corresponding to {@link Message#getTextContent()}
+     */
+    @JsonField(name = "text_content")
+    private String textContent;
+    @JsonField(name = "id")
+    private String id;
+    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
+    private Date updatedAt;
+
+    public static Conversation fromUser(User user) {
+        final Conversation conversation = new Conversation();
+        conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
+        conversation.setRecipientType(Message.RecipientType.USER);
+        conversation.setUser(user);
+        return conversation;
+    }
+
+    public static String generateId(Message message) {
+        final String recipientType = message.getRecipientType();
+        if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
+            return generateId(recipientType, message.getCircle().getId());
+        } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
+            return generateId(recipientType, message.getSender().getId());
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    private static String generateId(final String recipientType, final String id) {
+        return recipientType.toLowerCase(Locale.US) + ":" + id;
+    }
 
     public User getSender() {
         return sender;
@@ -31,32 +74,6 @@ public class Conversation {
     public void setSender(final User sender) {
         this.sender = sender;
     }
-
-    @JsonField(name = "sender")
-    private User sender;
-
-    @JsonField(name = "circle")
-    private Circle circle;
-
-    /**
-     * Corresponding to {@link Message#getRecipientType()}
-     */
-    @JsonField(name = "recipient_type")
-    private String recipientType;
-
-    /**
-     * Corresponding to {@link Message#getTextContent()}
-     */
-    @JsonField(name = "text_content")
-    private String textContent;
-
-    @JsonField(name = "id")
-    private String id;
-
-    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
-    private Date updatedAt;
-    @JsonField(name = "media_type")
-    String mediaType;
 
     public String getMediaType() {
         return mediaType;
@@ -86,6 +103,10 @@ public class Conversation {
         return textContent;
     }
 
+    public void setTextContent(final String textContent) {
+        this.textContent = textContent;
+    }
+
     public Circle getCircle() {
         return circle;
     }
@@ -98,6 +119,10 @@ public class Conversation {
         return id;
     }
 
+    public void setId(final String id) {
+        this.id = id;
+    }
+
     public String getRecipientId() {
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             return circle.getId();
@@ -107,51 +132,30 @@ public class Conversation {
         throw new UnsupportedOperationException();
     }
 
-    public void setId(final String id) {
-        this.id = id;
-    }
-
-    public void setTextContent(final String textContent) {
-        this.textContent = textContent;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setUpdatedAt(final Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public String getAccountId() {
+        return accountId;
     }
 
-    public static Conversation fromUser(User user) {
-        final Conversation conversation = new Conversation();
-        conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
-        conversation.setRecipientType(Message.RecipientType.USER);
-        conversation.setUser(user);
-        return conversation;
-    }
-
-    public static String generateId(Message message) {
-        final String recipientType = message.getRecipientType();
-        if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-            return generateId(recipientType, message.getCircle().getId());
-        } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-            return generateId(recipientType, message.getSender().getId());
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    private static String generateId(final String recipientType, final String id) {
-        return recipientType.toLowerCase(Locale.US) + ":" + id;
+    public void setAccountId(final String accountId) {
+        this.accountId = accountId;
     }
 
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
 
-        private final int conversation_id, circle, user, text_content, recipient_type, updated_at,
+        private final int account_id, conversation_id, circle, user, text_content, recipient_type, updated_at,
                 media_type;
 
         public Indices(final Cursor cursor) {
             super(cursor);
+            account_id = cursor.getColumnIndex(Conversations.ACCOUNT_ID);
             conversation_id = cursor.getColumnIndex(Conversations.CONVERSATION_ID);
             circle = cursor.getColumnIndex(Conversations.CIRCLE);
             user = cursor.getColumnIndex(Conversations.USER);
@@ -165,6 +169,7 @@ public class Conversation {
         public Conversation newObject(final Cursor cursor) {
             final Conversation conversation = new Conversation();
             conversation.setId(cursor.getString(conversation_id));
+            conversation.setAccountId(cursor.getString(account_id));
             conversation.setTextContent(cursor.getString(text_content));
             conversation.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
             conversation.setUser(JsonSerializer.parse(cursor.getString(user), User.class));

@@ -20,8 +20,9 @@ import catchla.yep.provider.YepDataStore.Users;
  */
 public class ContentValuesCreator {
 
-    public static ContentValues fromUser(final User user) {
+    public static ContentValues fromUser(final User user, final String accountId) {
         final ContentValues values = new ContentValues();
+        values.put(Users.ACCOUNT_ID, accountId);
         values.put(Users.FRIEND_ID, user.getId());
         values.put(Users.CONTACT_NAME, user.getContactName());
         values.put(Users.NICKNAME, user.getNickname());
@@ -36,11 +37,11 @@ public class ContentValuesCreator {
         return values;
     }
 
-    public static ContentValues fromFriendship(final Friendship friendship) {
+    public static ContentValues fromFriendship(final Friendship friendship, final String accountId) {
         final ContentValues values = new ContentValues();
         final User friend = friendship.getFriend();
+        values.put(Friendships.ACCOUNT_ID, accountId);
         values.put(Friendships.USER_ID, friendship.getUserId());
-
         values.put(Friendships.FRIEND_ID, friend.getId());
         values.put(Friendships.CONTACT_NAME, friend.getContactName());
         values.put(Friendships.NICKNAME, friend.getNickname());
@@ -55,8 +56,9 @@ public class ContentValuesCreator {
         return values;
     }
 
-    public static ContentValues fromMessage(final Message message) {
+    public static ContentValues fromMessage(final Message message, final String accountId) {
         final ContentValues values = new ContentValues();
+        values.put(Messages.ACCOUNT_ID, accountId);
         values.put(Messages.MESSAGE_ID, message.getId());
         values.put(Messages.CONVERSATION_ID, message.getConversationId());
         values.put(Messages.CREATED_AT, Utils.getTime(message.getCreatedAt()));
@@ -73,8 +75,9 @@ public class ContentValuesCreator {
         return values;
     }
 
-    public static ContentValues fromNewMessage(final NewMessage newMessage) {
+    public static ContentValues fromNewMessage(final NewMessage newMessage, final String accountId) {
         final ContentValues values = new ContentValues();
+        values.put(Messages.ACCOUNT_ID, accountId);
         values.put(Messages.CONVERSATION_ID, newMessage.conversationId());
         values.put(Messages.CREATED_AT, newMessage.createdAt());
         values.put(Messages.PARENT_ID, newMessage.parentId());
@@ -89,8 +92,9 @@ public class ContentValuesCreator {
         return values;
     }
 
-    public static ContentValues fromConversation(final Conversation conversation) {
+    public static ContentValues fromConversation(final Conversation conversation, final String accountId) {
         final ContentValues values = new ContentValues();
+        values.put(Conversations.ACCOUNT_ID, accountId);
         values.put(Conversations.CONVERSATION_ID, conversation.getId());
         values.put(Conversations.UPDATED_AT, Utils.getTime(conversation.getUpdatedAt()));
         values.put(Conversations.RECIPIENT_TYPE, conversation.getRecipientType());

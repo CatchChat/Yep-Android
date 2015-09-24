@@ -158,7 +158,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
                     final YepException exception = (YepException) result.getException();
                     final String error = exception.getError();
                     if (TextUtils.isEmpty(error)) {
-                        Toast.makeText(handler, R.string.unable_to_register, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(handler, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(handler, error, Toast.LENGTH_SHORT).show();
                     }

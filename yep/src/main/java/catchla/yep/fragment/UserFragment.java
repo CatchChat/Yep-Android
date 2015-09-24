@@ -136,6 +136,7 @@ public class UserFragment extends Fragment implements Constants,
                 final Context context = param.getLeft();
                 final Account account = param.getMiddle();
                 final YepAPI yep = YepAPIFactory.getInstance(context, account);
+                final String accountId = Utils.getAccountId(context, account);
                 try {
                     final User user;
                     if (param.getRight() != null) {
@@ -143,7 +144,7 @@ public class UserFragment extends Fragment implements Constants,
                     } else {
                         user = yep.getUser();
                     }
-                    final ContentValues values = ContentValuesCreator.fromUser(user);
+                    final ContentValues values = ContentValuesCreator.fromUser(user, accountId);
                     final String where = Expression.equalsArgs(Friendships.FRIEND_ID).getSQL();
                     final String[] whereArgs = {user.getId()};
                     context.getContentResolver().update(Friendships.CONTENT_URI, values, where,

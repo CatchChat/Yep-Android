@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
 import catchla.yep.Constants;
 import catchla.yep.model.TokenAuthorization;
 import catchla.yep.util.net.OkHttpRestClient;
@@ -43,6 +46,8 @@ import catchla.yep.util.net.OkHttpRestClient;
  */
 public class YepAPIFactory implements Constants {
 
+    public static final String API_DOMAIN = "park-staging.catchchatchina.com";
+
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
         return getInstanceWithToken(context, getAuthToken(context, account));
@@ -50,11 +55,17 @@ public class YepAPIFactory implements Constants {
 
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
-        factory.setEndpoint(new Endpoint("https://park.catchchatchina.com/api/"));
+        factory.setEndpoint(new Endpoint("https://" + API_DOMAIN + "/api/"));
         final OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         client.setReadTimeout(10, TimeUnit.SECONDS);
         client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+        client.setHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(final String hostname, final SSLSession session) {
+                return true;
+            }
+        });
         factory.setClient(new OkHttpRestClient(context, client));
         factory.setConverter(new LoganSquareConverter());
         factory.setAuthorization(new TokenAuthorization(accessToken));
@@ -97,7 +108,7 @@ public class YepAPIFactory implements Constants {
     }
 
     public static String getProviderOAuthUrl(final String providerName) {
-        return "https://park-staging.catchchatchina.com/users/auth/" + providerName;
+        return "https://" + API_DOMAIN + "/users/auth/" + providerName;
     }
 
     public static String getAuthToken(final Context context, final Account account) {
@@ -107,15 +118,15 @@ public class YepAPIFactory implements Constants {
     }
 
     public static boolean isAPIUrl(final Uri uri) {
-        return "park-staging.catchchatchina.com".equalsIgnoreCase(uri.getHost());
+        return API_DOMAIN.equalsIgnoreCase(uri.getHost());
     }
 
     public static boolean isAuthSuccessUrl(final String url) {
-        return "https://park.catchchatchina.com/auth/success".equals(url);
+        return ("https://" + API_DOMAIN + "/auth/success").equals(url);
     }
 
     public static boolean isAuthFailureUrl(final String url) {
-        return "https://park.catchchatchina.com/auth/failure".equals(url);
+        return ("https://" + API_DOMAIN + "/auth/failure").equals(url);
     }
 
     public static RestHttpClient getHttpClient(final Object o) {

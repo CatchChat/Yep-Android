@@ -16,11 +16,13 @@ import org.mariotaku.sqliteqb.library.Expression;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
@@ -32,10 +34,12 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
 
     private final Context context;
     private final Account account;
+    private final User accountUser;
 
     public SendMessageTask(Context context, Account account) {
         this.context = context;
         this.account = account;
+        this.accountUser = Utils.getAccountUser(context, account);
     }
 
     public Context getContext() {
@@ -60,7 +64,8 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
             draftId = saveUnsentMessage(newMessage);
             newMessage.attachment(uploadAttachment(yep, newMessage));
             final NewMessage.JsonBody messageBody = newMessage.toJson();
-            final Message message = yep.createMessage(messageBody);
+            final Message message = yep.createMessage(newMessage.recipientType(), newMessage.recipientId(),
+                    messageBody);
             updateSentMessage(draftId, message);
             return TaskResponse.getInstance(message);
         } catch (YepException e) {
@@ -97,17 +102,19 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
         final Cursor cursor = cr.query(Conversations.CONTENT_URI, Conversations.COLUMNS,
                 Expression.equalsArgs(Conversations.CONVERSATION_ID).getSQL(),
                 new String[]{newMessage.conversationId()}, null);
+        final String accountId = accountUser.getId();
         if (cursor.moveToFirst()) {
             // Conversation entry already exists, so just update latest info
             final ContentValues entryValues = new ContentValues();
             entryValues.put(Conversations.MEDIA_TYPE, newMessage.mediaType());
             entryValues.put(Conversations.UPDATED_AT, newMessage.createdAt());
             entryValues.put(Conversations.TEXT_CONTENT, newMessage.textContent());
-            cr.update(Conversations.CONTENT_URI, entryValues, Expression.equalsArgs(Conversations.CONVERSATION_ID).getSQL(),
-                    new String[]{newMessage.conversationId()});
+            cr.update(Conversations.CONTENT_URI, entryValues, Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                            Expression.equalsArgs(Conversations.CONVERSATION_ID)).getSQL(),
+                    new String[]{accountId, newMessage.conversationId()});
         } else {
             // Insert new conversation entry
-            cr.insert(Conversations.CONTENT_URI, ContentValuesCreator.fromNewMessage(newMessage));
+            cr.insert(Conversations.CONTENT_URI, ContentValuesCreator.fromNewMessage(newMessage, accountId));
         }
         cursor.close();
         return ParseUtils.parseLong(inserted.getLastPathSegment(), -1);
