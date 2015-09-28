@@ -420,7 +420,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 File tempFile = null;
                 try {
                     tempFile = File.createTempFile("voice_dl" + System.currentTimeMillis(), "m4a");
-                    if (tempFile.exists()) {
+                    if (tempFile.length() > 0) {
                         mMediaPlayer.setDataSource(tempFile.getAbsolutePath());
                     } else {
                         OkHttpClient client = new OkHttpClient();
