@@ -131,6 +131,7 @@ public class MessageService extends Service implements Constants {
         final Account account = Utils.getCurrentAccount(this);
         if (account == null) return;
         final User accountUser = Utils.getAccountUser(this, account);
+        if (accountUser == null) return;
         final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
                 task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
@@ -154,6 +155,7 @@ public class MessageService extends Service implements Constants {
                             ContentValues conversation = conversations.get(conversationId);
                             if (conversation == null) {
                                 conversation = new ContentValues();
+                                conversation.put(Conversations.ACCOUNT_ID, accountUser.getId());
                                 conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
                                 conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
                                 conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
@@ -167,9 +169,13 @@ public class MessageService extends Service implements Constants {
                                 conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
                                 conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
                             }
-                            cr.delete(Messages.CONTENT_URI,
-                                    Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(ids.size())).getSQL(),
-                                    ids.toArray(new String[ids.size()]));
+                            final int idsSize = ids.size();
+                            final String[] selectionArgs = new String[idsSize + 1];
+                            selectionArgs[0] = accountUser.getId();
+                            System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
+                            cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
+                                            Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
+                                    selectionArgs);
                         }
                         paging.page(++page);
                         if (messages.getCount() < messages.getPerPage()) break;

@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -41,6 +42,9 @@ import com.bluelinelabs.logansquare.LoganSquare;
 import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.mariotaku.restfu.http.RestHttpClient;
 import org.osmdroid.api.IMapController;
@@ -75,6 +79,8 @@ import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.MediaSizeImageView;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.VoiceWaveView;
+import okio.BufferedSink;
+import okio.Okio;
 
 /**
  * Created by mariotaku on 15/4/30.
@@ -402,12 +408,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         if (!"audio".equals(attachment.getKind())) return;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(final MediaPlayer mp) {
-                    mp.start();
-                }
-            });
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         }
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
@@ -415,11 +416,28 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         AsyncManager.runBackgroundTask(new TaskRunnable() {
             @Override
             public Object doLongOperation(final Object o) throws InterruptedException {
+                BufferedSink sink = null;
+                File tempFile = null;
                 try {
-                    mMediaPlayer.setDataSource(ChatActivity.this, Uri.parse(attachment.getFile().getUrl()));
+                    tempFile = File.createTempFile("voice_dl" + System.currentTimeMillis(), "m4a");
+                    if (tempFile.exists()) {
+                        mMediaPlayer.setDataSource(tempFile.getAbsolutePath());
+                    } else {
+                        OkHttpClient client = new OkHttpClient();
+                        final Response response = client.newCall(new Request.Builder().url(attachment.getFile().getUrl()).build()).execute();
+                        sink = Okio.buffer(Okio.sink(tempFile));
+                        sink.writeAll(response.body().source());
+                        sink.flush();
+                        mMediaPlayer.setDataSource(ChatActivity.this, Uri.parse(attachment.getFile().getUrl()));
+                    }
                     mMediaPlayer.prepare();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.w(LOGTAG, e);
+                    if (tempFile != null) {
+                        tempFile.delete();
+                    }
+                } finally {
+                    Utils.closeSilently(sink);
                 }
                 return null;
             }
@@ -652,6 +670,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public void onClick(final View v) {
                 final Message message = adapter.getMessage(getLayoutPosition());
                 final List<Message.Attachment> attachments = message.getAttachments();
+                if (attachments == null || attachments.isEmpty()) return;
                 adapter.playAudio(attachments.get(0));
             }
         }
