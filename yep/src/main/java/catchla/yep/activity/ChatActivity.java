@@ -96,6 +96,19 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private Button mVoiceRecordButton;
     private VoiceWaveView mVoiceWaveView;
     private View mVoiceWaveContainer;
+    private MediaPlayer mMediaPlayer;
+
+    @Override
+    protected void onStop() {
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+        super.onStop();
+    }
 
     @Override
     public void onContentChanged() {
@@ -385,6 +398,40 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mAdapter.setData(null);
     }
 
+    private void playAudio(final Message.Attachment attachment) {
+        if (!"audio".equals(attachment.getKind())) return;
+        if (mMediaPlayer == null) {
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(final MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+        }
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+        }
+        AsyncManager.runBackgroundTask(new TaskRunnable() {
+            @Override
+            public Object doLongOperation(final Object o) throws InterruptedException {
+                try {
+                    mMediaPlayer.setDataSource(ChatActivity.this, Uri.parse(attachment.getFile().getUrl()));
+                    mMediaPlayer.prepare();
+                } catch (IOException e) {
+                    Log.w(LOGTAG, e);
+                }
+                return null;
+            }
+
+            @Override
+            public void callback(final Object o) {
+                if (mMediaPlayer == null) return;
+                mMediaPlayer.start();
+            }
+        });
+    }
+
     private static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
@@ -473,6 +520,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         public Message getMessage(final int position) {
             if (mData == null) return null;
             return mData.get(position);
+        }
+
+        private void playAudio(final Message.Attachment attachment) {
+            mActivity.playAudio(attachment);
         }
 
         private static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -605,16 +656,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         }
 
-        private void playAudio(final Message.Attachment attachment) {
-            mActivity.playAudio(attachment);
-        }
 
-
-    }
-
-    private void playAudio(final Message.Attachment attachment) {
-        if (!"audio".equals(attachment.getKind())) return;
-        System.identityHashCode(attachment);
     }
 
     private class VoicePressListener extends GestureDetector.SimpleOnGestureListener
