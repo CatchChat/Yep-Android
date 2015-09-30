@@ -202,7 +202,7 @@ public class ProfileEditorActivity extends ContentActivity {
             final ProfileUpdate profileUpdate = new ProfileUpdate();
             if (mProfileImageUri != null) {
                 try {
-                    final S3UploadToken token = yep.getS3PublicUploadToken();
+                    final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.AVATAR);
                     final RestHttpResponse response = Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, new File(mProfileImageUri.getPath()));
                     if (response.isSuccessful()) {
                         profileUpdate.setAvatarUrl(response.getHeader("Location"));

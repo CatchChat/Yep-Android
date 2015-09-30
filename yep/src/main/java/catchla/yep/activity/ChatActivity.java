@@ -148,7 +148,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
 
-                final S3UploadToken token = yep.getS3UploadToken();
+                final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
                 final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
                 try {
                     Utils.uploadToS3(client, token, new File(path));
@@ -767,7 +767,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
                 @Override
                 public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
-                    final S3UploadToken token = yep.getS3UploadToken();
+                    final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
                     final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
                     try {
                         Utils.uploadToS3(client, token, new File(recordPath));

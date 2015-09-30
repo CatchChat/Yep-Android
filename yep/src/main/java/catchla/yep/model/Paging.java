@@ -17,4 +17,14 @@ public class Paging extends SimpleValueMap {
         return this;
     }
 
+    public Paging minId(String minId) {
+        put("min_id", minId);
+        return this;
+    }
+
+    public Paging maxId(String maxId) {
+        put("max_id", maxId);
+        return this;
+    }
+
 }

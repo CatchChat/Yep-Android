@@ -138,47 +138,41 @@ public class MessageService extends Service implements Constants {
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
-                    PagedMessages messages;
-                    int page = 1;
-                    final Paging paging = new Paging();
+                    PagedMessages messages = yep.getUnreadMessages();
                     HashMap<String, ContentValues> conversations = new HashMap<>();
                     final ContentResolver cr = getContentResolver();
-                    while ((messages = yep.getUnreadMessages(paging)).size() > 0) {
-                        final Set<String> ids = new HashSet<>();
-                        for (Message message : messages) {
-                            ids.add(message.getId());
-                            final String recipientType = message.getRecipientType();
-                            final String conversationId = Conversation.generateId(message);
-                            message.setConversationId(conversationId);
-                            message.setOutgoing(false);
+                    final Set<String> ids = new HashSet<>();
+                    for (Message message : messages) {
+                        ids.add(message.getId());
+                        final String recipientType = message.getRecipientType();
+                        final String conversationId = Conversation.generateId(message);
+                        message.setConversationId(conversationId);
+                        message.setOutgoing(false);
 
-                            ContentValues conversation = conversations.get(conversationId);
-                            if (conversation == null) {
-                                conversation = new ContentValues();
-                                conversation.put(Conversations.ACCOUNT_ID, accountUser.getId());
-                                conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
-                                conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
-                                conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
-                                conversation.put(Conversations.CONVERSATION_ID, conversationId);
-                                conversations.put(conversationId, conversation);
-                            }
-                            final long createdAt = Utils.getTime(message.getCreatedAt());
-                            if (!conversation.containsKey(Conversations.UPDATED_AT)
-                                    || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
-                                conversation.put(Conversations.UPDATED_AT, createdAt);
-                                conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
-                                conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
-                            }
-                            final int idsSize = ids.size();
-                            final String[] selectionArgs = new String[idsSize + 1];
-                            selectionArgs[0] = accountUser.getId();
-                            System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
-                            cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
-                                            Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
-                                    selectionArgs);
+                        ContentValues conversation = conversations.get(conversationId);
+                        if (conversation == null) {
+                            conversation = new ContentValues();
+                            conversation.put(Conversations.ACCOUNT_ID, accountUser.getId());
+                            conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
+                            conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
+                            conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
+                            conversation.put(Conversations.CONVERSATION_ID, conversationId);
+                            conversations.put(conversationId, conversation);
                         }
-                        paging.page(++page);
-                        if (messages.getCount() < messages.getPerPage()) break;
+                        final long createdAt = Utils.getTime(message.getCreatedAt());
+                        if (!conversation.containsKey(Conversations.UPDATED_AT)
+                                || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
+                            conversation.put(Conversations.UPDATED_AT, createdAt);
+                            conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                            conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
+                        }
+                        final int idsSize = ids.size();
+                        final String[] selectionArgs = new String[idsSize + 1];
+                        selectionArgs[0] = accountUser.getId();
+                        System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
+                        cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
+                                        Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
+                                selectionArgs);
                     }
                     final ArrayList<ContentValues> messagesValues = new ArrayList<>();
                     for (Message message : messages) {

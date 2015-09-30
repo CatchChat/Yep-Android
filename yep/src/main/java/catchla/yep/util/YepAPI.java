@@ -90,7 +90,11 @@ public interface YepAPI {
     PagedFriendships getFriendships(@Query Paging paging) throws YepException;
 
     @GET("/v1/messages/unread")
-    PagedMessages getUnreadMessages(@Query Paging paging) throws YepException;
+    PagedMessages getUnreadMessages() throws YepException;
+
+    @GET("/v1/{recipient_type}/{recipient_id}/messages")
+    PagedMessages getHistoricalMessages(@Path("recipient_type") String recipientType, @Path("recipient_id")
+    String recipientId, @Query Paging paging) throws YepException;
 
     @GET("/v1/messages/sent_unread")
     PagedMessages getSentUnreadMessages(@Query Paging paging) throws YepException;
@@ -134,11 +138,8 @@ public interface YepAPI {
     @DELETE("/v1/do_not_disturb_users/{user_id}")
     void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
 
-    @GET("/v1/attachments/s3_upload_public_form_fields")
-    S3UploadToken getS3PublicUploadToken() throws YepException;
-
-    @GET("/v1/attachments/s3_upload_form_fields")
-    S3UploadToken getS3UploadToken() throws YepException;
+    @GET("/v1/attachments/{kind}/s3_upload_form_fields")
+    S3UploadToken getS3UploadToken(String kind) throws YepException;
 
     @POST("/v1/contacts/upload")
     @Body(BodyType.FORM)
@@ -151,5 +152,12 @@ public interface YepAPI {
     @Body(BodyType.FORM)
     MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @Path("recipient_type") String recipientType,
                                      @Form("last_read_at") float lastReadAt) throws YepException;
+
+
+    interface AttachmentKind {
+        String MESSAGE = "message";
+        String TOPIC = "topic";
+        String AVATAR = "avatar";
+    }
 }
 
