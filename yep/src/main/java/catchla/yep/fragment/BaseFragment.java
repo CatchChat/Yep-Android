@@ -13,11 +13,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import catchla.yep.Constants;
 import catchla.yep.fragment.iface.IBaseFragment;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 
 
 public class BaseFragment extends Fragment implements IBaseFragment, Constants {
+
+    @Inject
+    protected Bus mBus;
 
     @Override
     public final void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -36,6 +45,12 @@ public class BaseFragment extends Fragment implements IBaseFragment, Constants {
         activity.supportInvalidateOptionsMenu();
     }
 
+
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+    }
 
     @Override
     public void requestFitSystemWindows() {

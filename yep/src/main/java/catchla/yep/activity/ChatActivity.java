@@ -59,6 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.loader.MessagesLoader;
+import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.Message.Attachment.AudioMetadata;
@@ -289,6 +290,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     yep.batchMarkAsRead(conversation.getRecipientId(), conversation.getRecipientType(), System.currentTimeMillis() / 100f);
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
+                } catch (Throwable t) {
+                    Log.wtf(LOGTAG, t);
                 }
                 return null;
             }
@@ -409,9 +412,16 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(final MediaPlayer mp) {
+                    mBus.post(AudioPlayEvent.end(attachment));
+                }
+            });
         }
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
+            mBus.post(AudioPlayEvent.end(attachment));
         }
         AsyncManager.runBackgroundTask(new TaskRunnable() {
             @Override
@@ -436,6 +446,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     if (tempFile != null) {
                         tempFile.delete();
                     }
+                } catch (Throwable t) {
+                    Log.wtf(LOGTAG, t);
                 } finally {
                     Utils.closeSilently(sink);
                 }
@@ -446,6 +458,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             public void callback(final Object o) {
                 if (mMediaPlayer == null) return;
                 mMediaPlayer.start();
+                mBus.post(AudioPlayEvent.start(attachment));
             }
         });
     }

@@ -4,17 +4,26 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import catchla.yep.R;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.view.TintedStatusFrameLayout;
 
 public class ContentActivity extends AppCompatActivity {
 
     private TintedStatusFrameLayout mMainContent;
+    @Inject
+    protected Bus mBus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
     }
 
     @Override

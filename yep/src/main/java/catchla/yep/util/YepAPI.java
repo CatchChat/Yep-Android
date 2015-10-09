@@ -139,7 +139,7 @@ public interface YepAPI {
     void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
 
     @GET("/v1/attachments/{kind}/s3_upload_form_fields")
-    S3UploadToken getS3UploadToken(String kind) throws YepException;
+    S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
 
     @POST("/v1/contacts/upload")
     @Body(BodyType.FORM)

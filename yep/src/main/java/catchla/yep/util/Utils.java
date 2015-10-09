@@ -220,11 +220,6 @@ public class Utils implements Constants {
         return DateUtils.formatDateTime(context, timestamp, DateUtils.FORMAT_SHOW_DATE);
     }
 
-    public static Bus getMessageBus() {
-        if (sMessageBus != null) return sMessageBus;
-        return sMessageBus = new Bus();
-    }
-
     public static void writeUserToUserData(final User user, final Bundle userData) {
         userData.putString(USER_DATA_ID, user.getId());
         userData.putString(USER_DATA_AVATAR, user.getAvatarUrl());

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.message.FriendshipsRefreshedEvent;
@@ -45,6 +47,8 @@ import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -55,9 +59,18 @@ public class MessageService extends Service implements Constants {
     public static final String ACTION_REFRESH_MESSAGES = ACTION_PREFIX + "REFRESH_MESSAGES";
     public static final String ACTION_REFRESH_FRIENDSHIPS = ACTION_PREFIX + "REFRESH_FRIENDSHIPS";
 
+    @Inject
+    Bus mBus;
+
     @Override
     public IBinder onBind(final Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
     }
 
     @Override
@@ -113,8 +126,7 @@ public class MessageService extends Service implements Constants {
 
             @Override
             public void callback(final TaskResponse<Boolean> response) {
-                final Bus bus = Utils.getMessageBus();
-                bus.post(new FriendshipsRefreshedEvent());
+                mBus.post(new FriendshipsRefreshedEvent());
             }
 
             @Override
@@ -190,8 +202,7 @@ public class MessageService extends Service implements Constants {
 
             @Override
             public void callback(final TaskResponse<Boolean> response) {
-                final Bus bus = Utils.getMessageBus();
-                bus.post(new MessageRefreshedEvent());
+                mBus.post(new MessageRefreshedEvent());
             }
 
             @Override

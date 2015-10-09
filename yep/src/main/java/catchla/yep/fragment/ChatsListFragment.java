@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -73,14 +72,12 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
     @Override
     public void onStart() {
         super.onStart();
-        Bus bus = Utils.getMessageBus();
-        bus.register(this);
+        mBus.register(this);
     }
 
     @Override
     public void onStop() {
-        Bus bus = Utils.getMessageBus();
-        bus.unregister(this);
+        mBus.unregister(this);
         super.onStop();
     }
 

@@ -8,11 +8,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.desmond.asyncmanager.TaskRunnable;
 
 import org.mariotaku.sqliteqb.library.Expression;
 
+import catchla.yep.Constants;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
@@ -30,7 +32,7 @@ import catchla.yep.util.YepException;
 /**
  * Created by mariotaku on 15/9/12.
  */
-public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskResponse<Message>, H> {
+public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskResponse<Message>, H> implements Constants {
 
     private final Context context;
     private final Account account;
@@ -76,6 +78,9 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
                 cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, draftId).getSQL(), null);
             }
             return TaskResponse.getInstance(e);
+        } catch (Throwable t) {
+            Log.wtf(LOGTAG, t);
+            throw new RuntimeException(t);
         }
     }
 

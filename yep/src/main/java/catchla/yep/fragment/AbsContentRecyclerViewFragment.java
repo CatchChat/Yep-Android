@@ -32,6 +32,8 @@ import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.util.ContentListScrollListener;
 import catchla.yep.util.SimpleDrawerCallback;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.view.HeaderDrawerLayout;
 
 
@@ -159,10 +161,10 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof IControlBarActivity) {
-            ((IControlBarActivity) activity).registerControlBarOffsetListener(this);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof IControlBarActivity) {
+            ((IControlBarActivity) context).registerControlBarOffsetListener(this);
         }
     }
 
