@@ -1,5 +1,6 @@
 package catchla.yep.fragment;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,6 @@ import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.loader.SearchUsersLoader;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
-import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/8/25.
@@ -35,6 +35,10 @@ public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAda
         getLoaderManager().initLoader(0, loaderArgs, this);
     }
 
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
     @Override
     public boolean isRefreshing() {
         return false;
@@ -49,7 +53,7 @@ public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAda
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
         final String query = args.getString(EXTRA_QUERY);
-        return new SearchUsersLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query);
+        return new SearchUsersLoader(getActivity(), getAccount(), query);
     }
 
     @Override

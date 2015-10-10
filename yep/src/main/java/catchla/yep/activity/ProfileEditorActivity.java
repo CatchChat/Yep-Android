@@ -30,6 +30,7 @@ import org.mariotaku.restfu.http.RestHttpResponse;
 import java.io.File;
 import java.io.IOException;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.ProfileUpdate;
@@ -41,7 +42,7 @@ import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
 
-public class ProfileEditorActivity extends ContentActivity {
+public class ProfileEditorActivity extends ContentActivity implements Constants {
 
     private static final int REQUEST_PICK_IMAGE = 101;
 
@@ -95,7 +96,7 @@ public class ProfileEditorActivity extends ContentActivity {
     }
 
     private void loadUser() {
-        final Account account = Utils.getCurrentAccount(this);
+        final Account account = getAccount();
         final User user = Utils.getAccountUser(this, account);
         if (user != null) {
             displayUser(user);
@@ -125,7 +126,7 @@ public class ProfileEditorActivity extends ContentActivity {
                 @Override
                 public void onClick(final DialogInterface dialog, final int which) {
                     final AccountManager am = AccountManager.get(getActivity());
-                    final Account account = Utils.getCurrentAccount(getActivity());
+                    final Account account = ((ProfileEditorActivity) getActivity()).getAccount();
                     am.removeAccount(account, new AccountManagerCallback<Boolean>() {
                         @Override
                         public void run(final AccountManagerFuture<Boolean> future) {

@@ -1,5 +1,6 @@
 package catchla.yep.fragment;
 
+import android.accounts.Account;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,10 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-
-import java.io.IOException;
-
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.DribbbleShotsAdapter;
@@ -22,7 +19,6 @@ import catchla.yep.loader.DribbbleShotsLoader;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
-import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/6/3.
@@ -36,17 +32,16 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
 
     @Override
     public Loader<TaskResponse<DribbbleShots>> onCreateLoader(final int id, final Bundle args) {
-        final String userId;
-        try {
-            final Bundle fragmentArgs = getArguments();
-            final User user = LoganSquare.parse(fragmentArgs.getString(EXTRA_USER), User.class);
-            userId = user.getId();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return new DribbbleShotsLoader(getActivity(), Utils.getCurrentAccount(getActivity()), userId,
-                false, false);
+        final Bundle fragmentArgs = getArguments();
+        final User user = fragmentArgs.getParcelable(EXTRA_USER);
+        final String userId = user.getId();
+        return new DribbbleShotsLoader(getActivity(), getAccount(), userId, false, false);
     }
+
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
 
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {

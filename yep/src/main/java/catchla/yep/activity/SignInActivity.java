@@ -33,11 +33,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
-
-import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -47,6 +44,7 @@ import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.VerificationMethod;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -370,11 +368,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
     private void finishAddAddAccount(final AccessToken token) {
         final Intent data = new Intent();
-        try {
-            data.putExtra(EXTRA_TOKEN, LoganSquare.serialize(token));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        data.putExtra(EXTRA_TOKEN, JsonSerializer.serialize(token, AccessToken.class));
         setResult(RESULT_OK, data);
         finish();
     }

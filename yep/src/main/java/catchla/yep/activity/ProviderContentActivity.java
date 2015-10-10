@@ -36,7 +36,8 @@ public class ProviderContentActivity extends SwipeBackContentActivity implements
             return;
         }
         final Bundle args = new Bundle();
-        args.putString(EXTRA_USER, intent.getStringExtra(EXTRA_USER));
+        args.putParcelable(EXTRA_ACCOUNT, intent.getParcelableExtra(EXTRA_ACCOUNT));
+        args.putParcelable(EXTRA_USER, intent.getParcelableExtra(EXTRA_USER));
         fragment.setArguments(args);
         final FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();

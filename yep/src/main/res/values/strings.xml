@@ -74,4 +74,6 @@
     <string name="audio">Audio</string>
     <string name="contact_friends">Contact friends</string>
     <string name="search">Search</string>
+    <string name="notifications_and_privacy">Notifications and privacy</string>
+    <string name="blocked_users">Blocked users</string>
 </resources>

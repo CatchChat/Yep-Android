@@ -1,5 +1,6 @@
 package catchla.yep.activity;
 
+import android.accounts.Account;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
@@ -30,6 +32,10 @@ public class ContentActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setupTintStatusBar();
+    }
+
+    public Account getAccount() {
+        return getIntent().getParcelableExtra(Constants.EXTRA_ACCOUNT);
     }
 
     @Override

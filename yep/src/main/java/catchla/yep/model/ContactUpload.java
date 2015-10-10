@@ -1,13 +1,13 @@
 package catchla.yep.model;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import org.mariotaku.restfu.http.ValueMap;
 
-import java.io.IOException;
 import java.util.ArrayList;
+
+import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/7/2.
@@ -28,11 +28,7 @@ public class ContactUpload implements ValueMap {
     @Override
     public String get(final String s) {
         if (!"contacts".equals(s)) return null;
-        try {
-            return LoganSquare.serialize(items, ContactItem.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return JsonSerializer.serialize(items, ContactItem.class);
     }
 
     @Override

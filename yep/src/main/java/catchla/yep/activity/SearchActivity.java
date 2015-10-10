@@ -14,7 +14,7 @@ public class SearchActivity extends SwipeBackContentActivity implements Constant
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_fragment_content);
 
         final FragmentManager fm = getSupportFragmentManager();
         final SearchUsersFragment f = new SearchUsersFragment();

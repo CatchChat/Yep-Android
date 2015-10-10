@@ -1,8 +1,13 @@
 package catchla.yep.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import java.util.List;
 
@@ -12,37 +17,71 @@ import catchla.yep.model.util.SkillListTypeConverter;
 /**
  * Created by mariotaku on 15/5/8.
  */
+@ParcelablePlease
 @JsonObject
-public class User {
+public class User implements Parcelable {
 
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    @ParcelableThisPlease
     @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
-    private List<Skill> masterSkills;
+    List<Skill> masterSkills;
+    @ParcelableThisPlease
     @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
-    private List<Skill> learningSkills;
+    List<Skill> learningSkills;
+    @ParcelableThisPlease
     @JsonField(name = "id")
-    private String id;
+    String id;
+    @ParcelableThisPlease
     @JsonField(name = "username")
-    private String username;
+    String username;
+    @ParcelableThisPlease
     @JsonField(name = "nickname")
-    private String nickname;
+    String nickname;
+    @ParcelableThisPlease
     @JsonField(name = "introduction")
-    private String introduction;
+    String introduction;
+    @ParcelableThisPlease
     @JsonField(name = "avatar_url")
-    private String avatarUrl;
+    String avatarUrl;
+    @ParcelableThisPlease
     @JsonField(name = "mobile")
-    private String mobile;
+    String mobile;
+    @ParcelableThisPlease
     @JsonField(name = "phone_code")
-    private String phoneCode;
+    String phoneCode;
+    @ParcelableThisPlease
     @JsonField(name = "contact_name")
-    private String contactName;
+    String contactName;
+    @ParcelableThisPlease
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
-    private List<Provider> providers;
+    List<Provider> providers;
+    @ParcelableThisPlease
     @JsonField(name = "latitude")
     double latitude = Double.NaN;
+    @ParcelableThisPlease
     @JsonField(name = "longitude")
     double longitude = Double.NaN;
+    @ParcelableThisPlease
+    LatLng location;
 
-    private LatLng location;
+    public User() {
+
+    }
+
+    public User(final Parcel src) {
+        UserParcelablePlease.readFromParcel(this, src);
+    }
 
     public LatLng getLocation() {
         return location;
@@ -147,5 +186,15 @@ public class User {
         } else {
             location = new LatLng(latitude, longitude);
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        UserParcelablePlease.writeToParcel(this, dest, flags);
     }
 }

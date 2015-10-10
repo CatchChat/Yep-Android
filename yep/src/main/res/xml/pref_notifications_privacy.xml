@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:title="@string/notifications_and_privacy">
+    <CheckBoxPreference android:title="@string/do_not_disturb"/>
+    <Preference android:title="@string/blocked_users">
+        <intent
+            android:targetClass="catchla.yep.activity.BlockedUsersActivity"
+            android:targetPackage="catchla.yep"/>
+    </Preference>
+</PreferenceScreen>

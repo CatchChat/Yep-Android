@@ -128,6 +128,11 @@
             android:label="@string/sign_up"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
+            android:name=".activity.BlockedUsersActivity"
+            android:label="@string/blocked_users"
+            android:theme="@style/Theme.Yep.Content"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
             android:name=".activity.ThemedImagePickerActivity"
             android:theme="@style/Theme.Yep.NoDisplay"
             android:windowSoftInputMode="stateAlwaysHidden"/>

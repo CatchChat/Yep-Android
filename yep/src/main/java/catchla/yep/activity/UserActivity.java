@@ -4,6 +4,7 @@
 
 package catchla.yep.activity;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -12,10 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
-
-import com.bluelinelabs.logansquare.LoganSquare;
-
-import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -47,17 +44,14 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
         final User currentUser;
         final Intent intent = getIntent();
+        final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
+
         final Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putParcelable(EXTRA_ACCOUNT, account);
         if (intent.hasExtra(EXTRA_USER)) {
-            final String value = intent.getStringExtra(EXTRA_USER);
-            fragmentArgs.putString(EXTRA_USER, value);
-            try {
-                currentUser = LoganSquare.parse(value, User.class);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            currentUser = intent.getParcelableExtra(EXTRA_USER);
         } else {
-            currentUser = Utils.getCurrentAccountUser(this);
+            currentUser = Utils.getAccountUser(this, account);
         }
 
         if (currentUser == null) {

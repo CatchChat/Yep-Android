@@ -4,6 +4,7 @@
 
 package catchla.yep.fragment;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -34,7 +35,6 @@ import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.service.MessageService;
 import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -61,6 +61,7 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
                 final Conversation conversation = getAdapter().getConversation(position);
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
                 intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(conversation, Conversation.class));
                 startActivity(intent);
             }
@@ -110,7 +111,7 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
 
     @Override
     public Loader<List<Conversation>> onCreateLoader(final int id, final Bundle args) {
-        return new ConversationsLoader(getActivity(), Utils.getCurrentAccount(getActivity()));
+        return new ConversationsLoader(getActivity(), getAccount());
     }
 
     @Override
@@ -130,6 +131,11 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
         final FragmentActivity activity = getActivity();
         final Intent intent = new Intent(activity, MessageService.class);
         intent.setAction(MessageService.ACTION_REFRESH_MESSAGES);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
         activity.startService(intent);
+    }
+
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
     }
 }

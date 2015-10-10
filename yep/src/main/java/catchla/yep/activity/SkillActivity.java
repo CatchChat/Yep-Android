@@ -10,10 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.bumptech.glide.Glide;
-
-import java.io.IOException;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -91,19 +88,16 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
         mMainContent.setColor(primaryColor);
 
         final Intent intent = getIntent();
-        try {
-            final Skill skill = LoganSquare.parse(intent.getStringExtra(EXTRA_SKILL), Skill.class);
-            displaySkill(skill);
-            final Bundle masterArgs = new Bundle();
-            masterArgs.putStringArray(EXTRA_MASTER, new String[]{skill.getId()});
-            final Bundle learningArgs = new Bundle();
-            learningArgs.putStringArray(EXTRA_LEARNING, new String[]{skill.getId()});
-            mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.master), 0, masterArgs);
-            mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.learning), 0, learningArgs);
-        } catch (IOException e) {
-            finish();
-            return;
-        }
+        final Skill skill = intent.getParcelableExtra(EXTRA_SKILL);
+        displaySkill(skill);
+        final Bundle masterArgs = new Bundle();
+        masterArgs.putParcelable(EXTRA_ACCOUNT, getAccount());
+        masterArgs.putStringArray(EXTRA_MASTER, new String[]{skill.getId()});
+        final Bundle learningArgs = new Bundle();
+        learningArgs.putParcelable(EXTRA_ACCOUNT, getAccount());
+        learningArgs.putStringArray(EXTRA_LEARNING, new String[]{skill.getId()});
+        mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.master), 0, masterArgs);
+        mPagerAdapter.addTab(DiscoverFragment.class, getString(R.string.learning), 0, learningArgs);
 
         topChanged(0);
     }

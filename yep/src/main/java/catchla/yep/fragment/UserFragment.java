@@ -35,7 +35,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
@@ -45,7 +44,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apmem.tools.layouts.FlowLayout;
 import org.mariotaku.sqliteqb.library.Expression;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,18 +98,15 @@ public class UserFragment extends Fragment implements Constants,
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        final Account currentAccount = Utils.getCurrentAccount(getActivity());
+        final Bundle args = getArguments();
+        final Account currentAccount = getAccount();
 
         mHeaderDrawerLayout.setDrawerCallback(this);
         final String accountId = Utils.getAccountId(getContext(), currentAccount);
 
-        final Bundle args = getArguments();
-        if (args != null && args.containsKey(EXTRA_USER)) {
-            try {
-                displayUser(LoganSquare.parse(args.getString(EXTRA_USER), User.class), accountId);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        if (args.containsKey(EXTRA_USER)) {
+            final User user = args.getParcelable(EXTRA_USER);
+            displayUser(user, accountId);
         } else {
             displayUser(Utils.getAccountUser(getActivity(), currentAccount), accountId);
         }
@@ -123,8 +118,12 @@ public class UserFragment extends Fragment implements Constants,
         });
     }
 
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
     private void refreshUser(final Account currentAccount) {
-        final User user = mCurrentUser;
+        final User user = getCurrentUser();
         TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment> task
                 = new TaskRunnable<Triple<Context, Account, User>, TaskResponse<User>, UserFragment>() {
             @Override
@@ -182,25 +181,15 @@ public class UserFragment extends Fragment implements Constants,
             case REQUEST_SELECT_LEARNING_SKILLS: {
                 if (resultCode != Activity.RESULT_OK) return;
                 if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
-                final List<Skill> skills;
-                try {
-                    skills = LoganSquare.parseList(data.getStringExtra(EXTRA_SKILLS), Skill.class);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                mTask = new UpdateSkillsTask(this, Utils.getCurrentAccount(getActivity()), mCurrentUser, skills, true);
+                final List<Skill> skills = data.getParcelableArrayListExtra(EXTRA_SKILLS);
+                mTask = new UpdateSkillsTask(this, getAccount(), getCurrentUser(), skills, true);
                 return;
             }
             case REQUEST_SELECT_MASTER_SKILLS: {
                 if (resultCode != Activity.RESULT_OK) return;
                 if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
-                final List<Skill> skills;
-                try {
-                    skills = LoganSquare.parseList(data.getStringExtra(EXTRA_SKILLS), Skill.class);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                mTask = new UpdateSkillsTask(this, Utils.getCurrentAccount(getActivity()), mCurrentUser, skills, false);
+                final List<Skill> skills = data.getParcelableArrayListExtra(EXTRA_SKILLS);
+                mTask = new UpdateSkillsTask(this, getAccount(), getCurrentUser(), skills, false);
                 return;
             }
         }
@@ -237,20 +226,17 @@ public class UserFragment extends Fragment implements Constants,
             public void onClick(final View v) {
                 final Skill skill = (Skill) v.getTag();
                 final Intent intent = new Intent(getActivity(), SkillActivity.class);
-                try {
-                    intent.putExtra(EXTRA_SKILL, LoganSquare.mapperFor(Skill.class).serialize(skill));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                intent.putExtra(EXTRA_SKILL, skill);
                 startActivity(intent);
             }
         };
 
-        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), user);
+        final boolean isMySelf = Utils.isMySelf(getActivity(), getAccount(), user);
 
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        final List<Skill> learningSkills = user.getLearningSkills();
+        final ArrayList<Skill> learningSkills = Utils.arrayListFrom(user.getLearningSkills());
         mLearningSkills.removeAllViews();
         if (learningSkills != null) {
             for (Skill skill : learningSkills) {
@@ -268,17 +254,13 @@ public class UserFragment extends Fragment implements Constants,
                 @Override
                 public void onClick(final View v) {
                     final Intent intent = new Intent(getActivity(), SkillSelectorActivity.class);
-                    try {
-                        intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(learningSkills, Skill.class));
-                    } catch (IOException e) {
-                        Log.e(LOGTAG, "Error serializing", e);
-                    }
+                    intent.putParcelableArrayListExtra(EXTRA_SKILLS, learningSkills);
                     startActivityForResult(intent, REQUEST_SELECT_LEARNING_SKILLS);
                 }
             });
             mLearningSkills.addView(view);
         }
-        final List<Skill> masterSkills = user.getMasterSkills();
+        final ArrayList<Skill> masterSkills = Utils.arrayListFrom(user.getMasterSkills());
         mMasterSkills.removeAllViews();
         if (masterSkills != null) {
             for (Skill skill : masterSkills) {
@@ -296,11 +278,7 @@ public class UserFragment extends Fragment implements Constants,
                 @Override
                 public void onClick(final View v) {
                     final Intent intent = new Intent(getActivity(), SkillSelectorActivity.class);
-                    try {
-                        intent.putExtra(EXTRA_SKILLS, LoganSquare.serialize(masterSkills, Skill.class));
-                    } catch (IOException e) {
-                        Log.e(LOGTAG, "Error serializing", e);
-                    }
+                    intent.putParcelableArrayListExtra(EXTRA_SKILLS, masterSkills);
                     startActivityForResult(intent, REQUEST_SELECT_MASTER_SKILLS);
                 }
             });
@@ -323,11 +301,7 @@ public class UserFragment extends Fragment implements Constants,
                     }
                 }
                 intent.putExtra(EXTRA_PROVIDER_NAME, provider.getName());
-                try {
-                    intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(user));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                intent.putExtra(EXTRA_USER, user);
                 startActivity(intent);
             }
         };
@@ -452,7 +426,7 @@ public class UserFragment extends Fragment implements Constants,
 
     @Override
     public void onPrepareOptionsMenu(final Menu menu) {
-        final boolean isMySelf = Utils.isMySelf(getActivity(), Utils.getCurrentAccount(getActivity()), mCurrentUser);
+        final boolean isMySelf = Utils.isMySelf(getActivity(), getAccount(), getCurrentUser());
         MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_friend, !isMySelf);
         MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_myself, isMySelf);
         super.onPrepareOptionsMenu(menu);
@@ -465,8 +439,29 @@ public class UserFragment extends Fragment implements Constants,
                 Utils.openSettings(getActivity());
                 return true;
             }
+            case R.id.block_user: {
+                AsyncManager.runBackgroundTask(new TaskRunnable() {
+                    @Override
+                    public Object doLongOperation(final Object o) throws InterruptedException {
+                        final Account currentAccount = getAccount();
+                        final YepAPI yep = YepAPIFactory.getInstance(getContext(), currentAccount);
+                        assert yep != null;
+                        try {
+                            yep.blockUser(getCurrentUser().getId());
+                        } catch (YepException e) {
+                            Log.w(LOGTAG, e);
+                        }
+                        return null;
+                    }
+                });
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private User getCurrentUser() {
+        return mCurrentUser;
     }
 
     private static class UpdateSkillsTask extends AsyncTask<Object, Object, TaskResponse<User>> {

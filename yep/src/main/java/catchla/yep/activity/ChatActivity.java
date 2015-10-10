@@ -38,7 +38,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
@@ -378,12 +377,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     @Override
     public Loader<List<Message>> onCreateLoader(final int id, final Bundle args) {
         final Conversation conversation;
-        try {
-            conversation = LoganSquare.parse(args.getString(EXTRA_CONVERSATION), Conversation.class);
-            mConversation = conversation;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        conversation = JsonSerializer.parse(args.getString(EXTRA_CONVERSATION), Conversation.class);
+        mConversation = conversation;
         return new MessagesLoader(this, conversation);
     }
 

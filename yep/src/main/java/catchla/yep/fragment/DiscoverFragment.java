@@ -4,6 +4,7 @@
 
 package catchla.yep.fragment;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,9 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-
-import java.io.IOException;
 import java.util.List;
 
 import catchla.yep.R;
@@ -32,7 +30,6 @@ import catchla.yep.loader.DiscoverLoader;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
-import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -84,7 +81,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
                 writeCache = false;
             }
         }
-        return new DiscoverLoader(getActivity(), Utils.getCurrentAccount(getActivity()), query, readCache, writeCache);
+        return new DiscoverLoader(getActivity(), getAccount(), query, readCache, writeCache);
     }
 
     @Override
@@ -132,11 +129,12 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
         final User user = getAdapter().getUser(position);
         final Intent intent = new Intent(getActivity(), UserActivity.class);
-        try {
-            intent.putExtra(EXTRA_USER, LoganSquare.mapperFor(User.class).serialize(user));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
+        intent.putExtra(EXTRA_USER, user);
         startActivity(intent);
+    }
+
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
     }
 }

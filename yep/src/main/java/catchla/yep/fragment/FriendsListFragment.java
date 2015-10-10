@@ -4,6 +4,7 @@
 
 package catchla.yep.fragment;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -33,10 +34,7 @@ import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.FriendshipsLoader;
 import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.model.Friendship;
-import catchla.yep.model.User;
 import catchla.yep.service.MessageService;
-import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -65,10 +63,15 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
                 final Friendship friendship = getAdapter().getFriendship(position);
                 final Intent intent = new Intent(getActivity(), UserActivity.class);
-                intent.putExtra(EXTRA_USER, JsonSerializer.serialize(friendship.getFriend(), User.class));
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                intent.putExtra(EXTRA_USER, friendship.getFriend());
                 startActivity(intent);
             }
         });
+    }
+
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
     }
 
     @NonNull
@@ -86,7 +89,9 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_friend: {
-                startActivity(new Intent(getActivity(), FindFriendActivity.class));
+                final Intent intent = new Intent(getActivity(), FindFriendActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                startActivity(intent);
                 return true;
             }
         }
@@ -106,7 +111,7 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
 
     @Override
     public Loader<List<Friendship>> onCreateLoader(final int id, final Bundle args) {
-        return new FriendshipsLoader(getActivity(), Utils.getCurrentAccount(getActivity()), null);
+        return new FriendshipsLoader(getActivity(), getAccount(), null);
     }
 
     @Override
@@ -137,6 +142,7 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
         final FragmentActivity activity = getActivity();
         final Intent intent = new Intent(activity, MessageService.class);
         intent.setAction(MessageService.ACTION_REFRESH_FRIENDSHIPS);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
         activity.startService(intent);
         return true;
     }

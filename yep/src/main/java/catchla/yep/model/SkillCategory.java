@@ -1,7 +1,12 @@
 package catchla.yep.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import java.util.List;
 
@@ -11,16 +16,39 @@ import catchla.yep.model.util.SkillListTypeConverter;
  * Created by mariotaku on 15/5/29.
  */
 @JsonObject
-public class SkillCategory {
+@ParcelablePlease
+public class SkillCategory implements Parcelable {
 
+    public static final Creator<SkillCategory> CREATOR = new Creator<SkillCategory>() {
+        @Override
+        public SkillCategory createFromParcel(Parcel in) {
+            return new SkillCategory(in);
+        }
+
+        @Override
+        public SkillCategory[] newArray(int size) {
+            return new SkillCategory[size];
+        }
+    };
+    @ParcelableThisPlease
     @JsonField(name = "id")
-    private String id;
+    String id;
+    @ParcelableThisPlease
     @JsonField(name = "name")
-    private String name;
+    String name;
+    @ParcelableThisPlease
     @JsonField(name = "name_string")
-    private String nameString;
+    String nameString;
+    @ParcelableThisPlease
     @JsonField(name = "skills", typeConverter = SkillListTypeConverter.class)
-    private List<Skill> skills;
+    List<Skill> skills;
+
+    public SkillCategory(Parcel src) {
+        SkillCategoryParcelablePlease.readFromParcel(this, src);
+    }
+
+    public SkillCategory() {
+    }
 
     public String getId() {
         return id;
@@ -52,5 +80,15 @@ public class SkillCategory {
 
     public void setSkills(final List<Skill> skills) {
         this.skills = skills;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        SkillCategoryParcelablePlease.writeToParcel(this, dest, flags);
     }
 }

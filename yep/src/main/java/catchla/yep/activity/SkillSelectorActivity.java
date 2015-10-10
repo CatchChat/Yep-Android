@@ -13,9 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,18 +34,14 @@ public class SkillSelectorActivity extends ContentActivity implements Constants 
     private TabsAdapter mAdapter;
     private SkillCategory mSelectedCategory;
 
-    private List<Skill> mSelectedSkills;
+    private ArrayList<Skill> mSelectedSkills;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_skill);
 
-        try {
-            mSelectedSkills = LoganSquare.parseList(getIntent().getStringExtra(EXTRA_SKILLS), Skill.class);
-        } catch (IOException e) {
-            mSelectedSkills = new ArrayList<>();
-        }
+        mSelectedSkills = getIntent().getParcelableArrayListExtra(EXTRA_SKILLS);
 
         mAdapter = new TabsAdapter(this, getSupportFragmentManager());
         mViewPager.setEnabled(false);
@@ -81,11 +74,7 @@ public class SkillSelectorActivity extends ContentActivity implements Constants 
             return;
         }
         final Intent data = new Intent();
-        try {
-            data.putExtra(EXTRA_SKILLS, LoganSquare.serialize(mSelectedSkills, Skill.class));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        data.putParcelableArrayListExtra(EXTRA_SKILLS, mSelectedSkills);
         setResult(RESULT_OK, data);
         super.onBackPressed();
     }

@@ -1,5 +1,6 @@
 package catchla.yep.activity;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -65,6 +66,7 @@ public class FindFriendActivity extends SwipeBackContentActivity implements Cons
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 final Intent intent = new Intent(FindFriendActivity.this, SearchActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
                 intent.putExtra(EXTRA_QUERY, query);
                 startActivity(intent);
                 return true;

@@ -15,16 +15,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-
-import java.io.IOException;
-
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.UserSuggestionsFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.User;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -55,12 +52,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
         switch (requestCode) {
             case REQUEST_ADD_ACCOUNT: {
                 if (resultCode != RESULT_OK) return;
-                final AccessToken token;
-                try {
-                    token = LoganSquare.parse(data.getStringExtra(EXTRA_TOKEN), AccessToken.class);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                final AccessToken token = JsonSerializer.parse(data.getStringExtra(EXTRA_TOKEN), AccessToken.class);
                 final User user = token.getUser();
                 final Account account = new Account(user.getMobile(), ACCOUNT_TYPE);
                 final Bundle userData = new Bundle();

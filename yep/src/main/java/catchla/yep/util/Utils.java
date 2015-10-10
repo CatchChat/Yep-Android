@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.otto.Bus;
 
 import org.mariotaku.restfu.annotation.method.POST;
@@ -52,6 +51,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -168,26 +168,11 @@ public class Utils implements Constants {
         user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
         user.setIntroduction(am.getUserData(account, USER_DATA_INTRODUCTION));
         final String learningJson = am.getUserData(account, USER_DATA_LEARNING_SKILLS);
-        if (learningJson != null) {
-            try {
-                user.setLearningSkills(LoganSquare.parseList(learningJson, Skill.class));
-            } catch (IOException ignore) {
-            }
-        }
+        user.setLearningSkills(JsonSerializer.parseList(learningJson, Skill.class));
         final String masterJson = am.getUserData(account, USER_DATA_MASTER_SKILLS);
-        if (masterJson != null) {
-            try {
-                user.setMasterSkills(LoganSquare.parseList(masterJson, Skill.class));
-            } catch (IOException ignore) {
-            }
-        }
+        user.setMasterSkills(JsonSerializer.parseList(masterJson, Skill.class));
         final String providersJson = am.getUserData(account, USER_DATA_PROVIDERS);
-        if (providersJson != null) {
-            try {
-                user.setProviders(LoganSquare.parseList(providersJson, Provider.class));
-            } catch (IOException ignore) {
-            }
-        }
+        user.setProviders(JsonSerializer.parseList(providersJson, Provider.class));
         return user;
     }
 
@@ -228,27 +213,9 @@ public class Utils implements Constants {
         userData.putString(USER_DATA_PHONE_NUMBER, user.getMobile());
         userData.putString(USER_DATA_COUNTRY_CODE, user.getPhoneCode());
         userData.putString(USER_DATA_INTRODUCTION, user.getIntroduction());
-        if (user.getLearningSkills() != null) {
-            try {
-                userData.putString(USER_DATA_LEARNING_SKILLS,
-                        LoganSquare.serialize(user.getLearningSkills(), Skill.class));
-            } catch (IOException ignore) {
-            }
-        }
-        if (user.getMasterSkills() != null) {
-            try {
-                userData.putString(USER_DATA_MASTER_SKILLS,
-                        LoganSquare.serialize(user.getMasterSkills(), Skill.class));
-            } catch (IOException ignore) {
-            }
-        }
-        if (user.getProviders() != null) {
-            try {
-                userData.putString(USER_DATA_PROVIDERS,
-                        LoganSquare.serialize(user.getProviders(), Provider.class));
-            } catch (IOException ignore) {
-            }
-        }
+        userData.putString(USER_DATA_LEARNING_SKILLS, JsonSerializer.serialize(user.getLearningSkills(), Skill.class));
+        userData.putString(USER_DATA_MASTER_SKILLS, JsonSerializer.serialize(user.getMasterSkills(), Skill.class));
+        userData.putString(USER_DATA_PROVIDERS, JsonSerializer.serialize(user.getProviders(), Provider.class));
     }
 
     public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
@@ -344,13 +311,13 @@ public class Utils implements Constants {
             final LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             try {
                 location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            } catch (Exception ignore) {
+            } catch (SecurityException ignore) {
 
             }
             if (location != null) return location;
             try {
                 location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            } catch (Exception ignore) {
+            } catch (SecurityException ignore) {
 
             }
         } catch (Exception ignore) {
@@ -433,5 +400,11 @@ public class Utils implements Constants {
         if (account == null) return null;
         final AccountManager am = AccountManager.get(context);
         return am.getUserData(account, USER_DATA_ID);
+    }
+
+    @Nullable
+    public static <T> ArrayList<T> arrayListFrom(@Nullable final List<T> list) {
+        if (list == null) return null;
+        return new ArrayList<>(list);
     }
 }

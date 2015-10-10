@@ -1,6 +1,5 @@
 package catchla.yep.fragment;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,26 +10,29 @@ import android.support.v4.content.Loader;
 import java.util.List;
 
 import catchla.yep.adapter.UsersAdapter;
-import catchla.yep.loader.ContactFriendsLoader;
+import catchla.yep.loader.BlockedUsersLoader;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.util.Utils;
 
 /**
- * Created by mariotaku on 15/8/25.
+ * Created by mariotaku on 15/10/10.
  */
-public class ContactFriendsFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
+public class BlockedUsersFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>> {
 
     @Override
     public void onRefresh() {
         super.onRefresh();
-        getLoaderManager().restartLoader(0, null, this);
+        final Bundle loaderArgs = getArguments();
+        getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        final Bundle loaderArgs = getArguments();
+        getLoaderManager().initLoader(0, loaderArgs, this);
     }
 
     @Override
@@ -46,11 +48,7 @@ public class ContactFriendsFragment extends AbsContentRecyclerViewFragment<Users
 
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
-        return new ContactFriendsLoader(getActivity(), getAccount());
-    }
-
-    private Account getAccount() {
-        return getArguments().getParcelable(EXTRA_ACCOUNT);
+        return new BlockedUsersLoader(getActivity(), Utils.getCurrentAccount(getActivity()));
     }
 
     @Override

@@ -33,6 +33,7 @@ import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.User;
+import catchla.yep.model.UserSettings;
 import catchla.yep.model.VerificationMethod;
 
 /**
@@ -153,6 +154,17 @@ public interface YepAPI {
     MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @Path("recipient_type") String recipientType,
                                      @Form("last_read_at") float lastReadAt) throws YepException;
 
+    @GET("/v1/blocked_users")
+    PagedUsers getBlockedUsers(@Query Paging paging) throws YepException;
+
+    @POST("/v1/blocked_users")
+    void blockUser(@Form("user_id") String id) throws YepException;
+
+    @DELETE("/v1/blocked_users/{id}")
+    void unblockUser(@Path("id") String id) throws YepException;
+
+    @GET("/v1/users/{id}/settings_with_current_user")
+    UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
     interface AttachmentKind {
         String MESSAGE = "message";

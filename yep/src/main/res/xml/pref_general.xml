@@ -5,13 +5,19 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/profile">
-        <catchla.yep.preference.AccountInfoPreference />
+        <catchla.yep.preference.AccountInfoPreference/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/settings">
-        <Preference android:title="@string/notifications" />
-        <Preference android:title="@string/feedback" />
-        <Preference android:title="@string/about" />
+        <Preference
+            android:fragment="catchla.yep.fragment.SettingsDetailsFragment"
+            android:title="@string/notifications_and_privacy">
+            <extra
+                android:name="resid"
+                android:value="@xml/pref_notifications_privacy"/>
+        </Preference>
+        <Preference android:title="@string/feedback"/>
+        <Preference android:title="@string/about"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

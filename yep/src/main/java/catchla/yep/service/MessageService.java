@@ -80,7 +80,8 @@ public class MessageService extends Service implements Constants {
         if (action == null) return START_NOT_STICKY;
         switch (action) {
             case ACTION_REFRESH_FRIENDSHIPS: {
-                refreshFriendships();
+                final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
+                refreshFriendships(account);
                 break;
             }
             case ACTION_REFRESH_MESSAGES: {
@@ -91,8 +92,7 @@ public class MessageService extends Service implements Constants {
         return START_STICKY;
     }
 
-    private void refreshFriendships() {
-        final Account account = Utils.getCurrentAccount(this);
+    private void refreshFriendships(final Account account) {
         if (account == null) return;
         final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
                 task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {

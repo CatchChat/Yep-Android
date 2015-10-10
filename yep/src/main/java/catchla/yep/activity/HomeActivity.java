@@ -4,6 +4,7 @@
 
 package catchla.yep.activity;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -20,7 +21,6 @@ import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
-import catchla.yep.service.FayeService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -48,11 +48,14 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         final ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         final HomeMenuActionProvider provider = new HomeMenuActionProvider(actionBar.getThemedContext());
-        provider.setAccount(Utils.getCurrentAccount(this));
+        final Account account = Utils.getCurrentAccount(this);
+        provider.setAccount(account);
         provider.setOnActionListener(new HomeMenuActionProvider.OnActionListener() {
             @Override
             public void onProfileClick() {
-                startActivity(new Intent(HomeActivity.this, UserActivity.class));
+                final Intent intent = new Intent(HomeActivity.this, UserActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, account);
+                startActivity(intent);
             }
 
             @Override
@@ -94,14 +97,22 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
-        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, null);
-        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, null);
-        mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, null);
+
+        final Bundle args = new Bundle();
+        args.putParcelable(EXTRA_ACCOUNT, getAccount());
+
+        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);
+        mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args);
+        mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
 
 //        startService(new Intent(this, FayeService.class));
 
+    }
+
+    private Account getAccount() {
+        return Utils.getCurrentAccount(this);
     }
 
 }

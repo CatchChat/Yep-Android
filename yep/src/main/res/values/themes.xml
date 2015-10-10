@@ -6,7 +6,13 @@
         <item name="colorAccent">@color/branding_color</item>
         <item name="colorPrimary">@color/branding_color</item>
     </style>
-    <!-- Base application theme. -->
+
+    <style name="Theme.Base.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/branding_color</item>
+        <item name="colorPrimary">@color/branding_color</item>
+    </style>
+
     <style name="Theme.Yep" parent="Theme.Base">
         <!-- Customize your theme here. -->
         <item name="windowActionBarOverlay">true</item>
@@ -25,12 +31,13 @@
         <item name="colorPrimary">@android:color/white</item>
     </style>
 
-    <style name="Theme.Yep.NoDisplay" parent="Theme.Yep">
-        <item name="android:windowBackground">@null</item>
+    <style name="Theme.Yep.NoDisplay" parent="Theme.Base.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--<item name="android:backgroundDimEnabled">false</item>-->
+        <item name="android:windowFrame">@null</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowNoDisplay">true</item>
     </style>
 </resources>
