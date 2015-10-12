@@ -25,13 +25,16 @@ import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.MarkAsReadResult;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
+import catchla.yep.model.NewTopic;
 import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.PagedSkillCategories;
+import catchla.yep.model.PagedTopics;
 import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.S3UploadToken;
+import catchla.yep.model.Topic;
 import catchla.yep.model.User;
 import catchla.yep.model.UserSettings;
 import catchla.yep.model.VerificationMethod;
@@ -165,6 +168,23 @@ public interface YepAPI {
 
     @GET("/v1/users/{id}/settings_with_current_user")
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
+
+    @GET("/v1/topics/discover")
+    PagedTopics getDiscoverTopics(@Query("sort") String sortOrder, @Query Paging paging) throws YepException;
+
+    @GET("/v1/topics")
+    PagedTopics getTopics(@Query Paging paging) throws YepException;
+
+    @POST("/v1/toipcs")
+    @Body(BodyType.FORM)
+    Topic postTopic(@File NewTopic.JsonBody topic) throws YepException;
+
+    @PUT("/v1/topics/{id}")
+    @Body(BodyType.FORM)
+    void updateTopic(@Path("id") String id, @Form("allow_comment") boolean allowComment);
+
+    @DELETE("/v1/topics/{id}")
+    void deleteTopic(@Path("id") String id);
 
     interface AttachmentKind {
         String MESSAGE = "message";

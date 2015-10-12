@@ -76,4 +76,6 @@
     <string name="search">Search</string>
     <string name="notifications_and_privacy">Notifications and privacy</string>
     <string name="blocked_users">Blocked users</string>
+    <string name="feeds">Feeds</string>
+    <string name="topics">Topics</string>
 </resources>

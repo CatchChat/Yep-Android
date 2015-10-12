@@ -4,6 +4,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Base64OutputStream;
@@ -11,6 +13,8 @@ import android.util.Log;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -204,14 +208,37 @@ public class Message {
     }
 
 
+    @ParcelablePlease
     @JsonObject
-    public static class Attachment {
+    public static class Attachment implements Parcelable {
+        public static final Creator<Attachment> CREATOR = new Creator<Attachment>() {
+            @Override
+            public Attachment createFromParcel(Parcel in) {
+                return new Attachment(in);
+            }
+
+            @Override
+            public Attachment[] newArray(int size) {
+                return new Attachment[size];
+            }
+        };
+        @ParcelableThisPlease
         @JsonField(name = "kind")
         String kind;
+        @ParcelableThisPlease
         @JsonField(name = "metadata")
         String metadata;
+        @ParcelableThisPlease
         @JsonField(name = "file")
         File file;
+
+        protected Attachment(Parcel in) {
+            catchla.yep.model.AttachmentParcelablePlease.readFromParcel(this, in);
+        }
+
+        public Attachment() {
+
+        }
 
         public File getFile() {
             return file;
@@ -225,18 +252,60 @@ public class Message {
             return metadata;
         }
 
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(final Parcel dest, final int flags) {
+            catchla.yep.model.AttachmentParcelablePlease.writeToParcel(this, dest, flags);
+        }
+
+        @Override
+        public String toString() {
+            return "Attachment{" +
+                    "kind='" + kind + '\'' +
+                    ", metadata='" + metadata + '\'' +
+                    ", file=" + file +
+                    '}';
+        }
+
         public interface Metadata {
 
         }
 
+        @ParcelablePlease
         @JsonObject
-        public static class File {
+        public static class File implements Parcelable {
+            public static final Creator<File> CREATOR = new Creator<File>() {
+                @Override
+                public File createFromParcel(Parcel in) {
+                    return new File(in);
+                }
+
+                @Override
+                public File[] newArray(int size) {
+                    return new File[size];
+                }
+            };
+            @ParcelableThisPlease
             @JsonField(name = "storage")
             String storage;
+            @ParcelableThisPlease
             @JsonField(name = "expires_in")
             String expiresIn;
+            @ParcelableThisPlease
             @JsonField(name = "url")
             String url;
+
+            public File() {
+
+            }
+
+            protected File(Parcel in) {
+                catchla.yep.model.FileParcelablePlease.readFromParcel(this, in);
+            }
 
             public String getStorage() {
                 return storage;
@@ -248,6 +317,25 @@ public class Message {
 
             public String getUrl() {
                 return url;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(final Parcel dest, final int flags) {
+                catchla.yep.model.FileParcelablePlease.writeToParcel(this, dest, flags);
+            }
+
+            @Override
+            public String toString() {
+                return "File{" +
+                        "storage='" + storage + '\'' +
+                        ", expiresIn='" + expiresIn + '\'' +
+                        ", url='" + url + '\'' +
+                        '}';
             }
         }
 
@@ -284,30 +372,6 @@ public class Message {
             @JsonField(name = "blurred_thumbnail_string")
             String blurredThumbnail;
 
-            public int getWidth() {
-                return width;
-            }
-
-            public void setWidth(final int width) {
-                this.width = width;
-            }
-
-            public int getHeight() {
-                return height;
-            }
-
-            public void setHeight(final int height) {
-                this.height = height;
-            }
-
-            public String getBlurredThumbnail() {
-                return blurredThumbnail;
-            }
-
-            public void setBlurredThumbnail(final String blurredThumbnail) {
-                this.blurredThumbnail = blurredThumbnail;
-            }
-
             public static ImageMetadata getImageMetadata(final String imagePath) {
                 final BitmapFactory.Options o = new BitmapFactory.Options();
                 o.inJustDecodeBounds = true;
@@ -339,6 +403,30 @@ public class Message {
                     Utils.closeSilently(os);
                 }
                 return metadata;
+            }
+
+            public int getWidth() {
+                return width;
+            }
+
+            public void setWidth(final int width) {
+                this.width = width;
+            }
+
+            public int getHeight() {
+                return height;
+            }
+
+            public void setHeight(final int height) {
+                this.height = height;
+            }
+
+            public String getBlurredThumbnail() {
+                return blurredThumbnail;
+            }
+
+            public void setBlurredThumbnail(final String blurredThumbnail) {
+                this.blurredThumbnail = blurredThumbnail;
             }
         }
     }

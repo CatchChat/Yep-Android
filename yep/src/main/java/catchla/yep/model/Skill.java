@@ -100,4 +100,15 @@ public class Skill implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         SkillParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    @Override
+    public String toString() {
+        return "Skill{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", nameString='" + nameString + '\'' +
+                ", coverUrl='" + coverUrl + '\'' +
+                ", category=" + category +
+                '}';
+    }
 }

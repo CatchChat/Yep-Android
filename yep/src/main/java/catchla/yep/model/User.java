@@ -197,4 +197,24 @@ public class User implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         UserParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "masterSkills=" + masterSkills +
+                ", learningSkills=" + learningSkills +
+                ", id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", phoneCode='" + phoneCode + '\'' +
+                ", contactName='" + contactName + '\'' +
+                ", providers=" + providers +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", location=" + location +
+                '}';
+    }
 }
