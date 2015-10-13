@@ -35,7 +35,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
@@ -76,7 +75,7 @@ import catchla.yep.view.iface.IExtendedView;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class UserFragment extends Fragment implements Constants,
+public class UserFragment extends BaseFragment implements Constants,
         HeaderDrawerLayout.DrawerCallback, IExtendedView.OnFitSystemWindowsListener {
 
     private static final int REQUEST_SELECT_MASTER_SKILLS = 111;
@@ -208,12 +207,7 @@ public class UserFragment extends Fragment implements Constants,
         if (user == null) return;
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
-        if (TextUtils.isEmpty(avatarUrl)) {
-            Glide.clear(mProfileImageView);
-            mProfileImageView.setImageResource(R.drawable.ic_profile_image_default);
-        } else {
-            Glide.with(getActivity()).load(avatarUrl).into(mProfileImageView);
-        }
+        mImageLoader.displayProfileImage(avatarUrl, mProfileImageView);
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {
             mIntroductionView.setText(R.string.no_introduction_yet);
@@ -338,8 +332,8 @@ public class UserFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onBaseViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onBaseViewCreated(view, savedInstanceState);
         mHeaderDrawerLayout = (HeaderDrawerLayout) view.findViewById(R.id.header_drawer);
         mScrollView = (ScrollView) view.findViewById(R.id.scroll_view);
         mProfileImageView = (ImageView) view.findViewById(R.id.profile_image);

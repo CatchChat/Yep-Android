@@ -23,8 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import org.mariotaku.restfu.http.RestHttpResponse;
 
 import java.io.File;
@@ -106,10 +104,7 @@ public class ProfileEditorActivity extends ContentActivity implements Constants 
     private void displayUser(final User user) {
         mCurrentUser = user;
         final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
-        Glide.with(this)
-                .load(url)
-                .placeholder(R.drawable.ic_profile_image_default)
-                .into(mProfileImageView);
+        mImageLoader.displayProfileImage(url, mProfileImageView);
         mCountryCodeView.setText(user.getPhoneCode());
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());

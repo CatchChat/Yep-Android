@@ -4,33 +4,32 @@
 
 package catchla.yep.view.holder;
 
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.R;
+import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.User;
+import catchla.yep.util.ImageLoaderWrapper;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 public class FriendViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private final Fragment fragment;
+    private final BaseRecyclerViewAdapter adapter;
     private final ItemClickListener listener;
 
     private final ImageView profileImageView;
     private final TextView nameView, timeView, descriptionView;
 
-    public FriendViewHolder(final Fragment fragment, final ItemClickListener listener, View itemView) {
+    public FriendViewHolder(View itemView, final BaseRecyclerViewAdapter adapter, final ItemClickListener listener) {
         super(itemView);
-        this.fragment = fragment;
+        this.adapter = adapter;
         this.listener = listener;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
@@ -53,10 +52,8 @@ public class FriendViewHolder extends RecyclerView.ViewHolder implements View.On
     }
 
     public void displayUser(final User user) {
-        Glide.with(fragment)
-                .load(user.getAvatarUrl())
-                .placeholder(R.drawable.ic_profile_image_default)
-                .into(profileImageView);
+        final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
+        imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
         nameView.setText(user.getNickname());
 //        timeView.setText();
         descriptionView.setText(user.getIntroduction());

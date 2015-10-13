@@ -21,14 +21,18 @@ import android.widget.ListAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.commonsware.cwac.merge.MergeAdapter;
+
+import javax.inject.Inject;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.LayoutAdapter;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 
 /**
  * Created by mariotaku on 15/5/4.
@@ -203,12 +207,16 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         }
     }
 
-    private static class HeadersAdapter extends LayoutAdapter {
+    public static class HeadersAdapter extends LayoutAdapter {
+
+        @Inject
+        ImageLoaderWrapper mImageLoader;
 
         private Account mAccount;
 
         public HeadersAdapter(final Context context) {
             super(context);
+            DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
         }
 
         public void setAccount(Account account) {
@@ -225,7 +233,7 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
             final TextView nameView = (TextView) view.findViewById(R.id.home_menu_name);
             final AccountManager am = AccountManager.get(this.getContext());
             nameView.setText(am.getUserData(account, USER_DATA_NICKNAME));
-            Glide.with(getContext()).load(am.getUserData(account, USER_DATA_AVATAR)).placeholder(R.drawable.ic_profile_image_default).into(profileImageView);
+            mImageLoader.displayProfileImage(am.getUserData(account, USER_DATA_AVATAR), profileImageView);
         }
     }
 

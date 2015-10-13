@@ -89,7 +89,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
     @NonNull
     @Override
     protected TopicsAdapter onCreateAdapter(Context context) {
-        return new TopicsAdapter(this, context);
+        return new TopicsAdapter(context);
     }
 
     @Override

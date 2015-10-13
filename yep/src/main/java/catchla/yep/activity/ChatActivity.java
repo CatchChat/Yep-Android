@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -38,7 +37,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.okhttp.OkHttpClient;
@@ -57,6 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Conversation;
@@ -68,6 +67,7 @@ import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
@@ -458,7 +458,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         });
     }
 
-    private static class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static class ChatAdapter extends BaseRecyclerViewAdapter {
 
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
         private static final int VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001;
@@ -471,6 +471,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         private List<Message> mData;
 
         ChatAdapter(ChatActivity activity) {
+            super(activity);
             mActivity = activity;
             mInflater = LayoutInflater.from(activity);
         }
@@ -500,7 +501,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
-                    return new ImageChatViewHolder(mActivity, baseView, isOutgoing, this);
+                    return new ImageChatViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_AUDIO: {
                     final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
@@ -602,12 +603,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         private static class ImageChatViewHolder extends MessageViewHolder {
             private final MediaSizeImageView imageView;
-            private final FragmentActivity activity;
 
-            public ImageChatViewHolder(final FragmentActivity activity, final View itemView,
+            public ImageChatViewHolder(final View itemView,
                                        final boolean outgoing, final ChatAdapter adapter) {
                 super(itemView, outgoing, adapter);
-                this.activity = activity;
                 imageView = (MediaSizeImageView) itemView.findViewById(R.id.image_view);
             }
 
@@ -631,7 +630,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 if (metadata != null) {
                     imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
                     final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
-                    Glide.with(activity).load(url).placeholder(placeholder).into(imageView);
+                    final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
+                    imageLoader.displayProfileImage(url, imageView);
                 }
             }
         }

@@ -10,8 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
@@ -105,9 +103,9 @@ public class SkillActivity extends SwipeBackContentActivity implements Constants
     private void displaySkill(final Skill skill) {
         final String coverUrl = skill.getCoverUrl();
         if (!TextUtils.isEmpty(coverUrl)) {
-            Glide.with(this).load(coverUrl).into(mBannerImageView);
+            mImageLoader.displaySkillBannerImage(coverUrl, mBannerImageView);
         } else {
-            Glide.clear(mBannerImageView);
+            mImageLoader.cancelDisplayTask(mBannerImageView);
         }
         setTitle(skill.getNameString());
     }

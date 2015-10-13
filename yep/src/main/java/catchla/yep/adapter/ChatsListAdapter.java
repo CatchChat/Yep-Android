@@ -15,35 +15,32 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
-import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.model.Conversation;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.view.holder.ChatEntryViewHolder;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ILoadMoreSupportAdapter {
+public class ChatsListAdapter extends BaseRecyclerViewAdapter implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
-    private final ChatsListFragment mFragment;
-
     private List<Conversation> mData;
+    private ItemClickListener mItemClickListener;
+
+    public ChatsListAdapter(Context context) {
+        super(context);
+        mInflater = LayoutInflater.from(context);
+    }
 
     public void setItemClickListener(final ItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
     }
 
-    private ItemClickListener mItemClickListener;
-
-    public ChatsListAdapter(final ChatsListFragment fragment, Context context) {
-        mFragment = fragment;
-        mInflater = LayoutInflater.from(context);
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_chat_entry, parent, false);
-        return new ChatEntryViewHolder(mFragment, mItemClickListener, view);
+        return new ChatEntryViewHolder(view, this, mItemClickListener);
     }
 
     @Override
@@ -95,5 +92,9 @@ public class ChatsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public Conversation getConversation(final int position) {
         return mData.get(position);
+    }
+
+    public ImageLoaderWrapper getImageLoader() {
+        return mImageLoader;
     }
 }

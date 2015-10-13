@@ -1,19 +1,18 @@
 package catchla.yep.view.holder;
 
 import android.location.Location;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.R;
+import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.LatLng;
 import catchla.yep.model.Topic;
 import catchla.yep.model.User;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.Utils;
 import catchla.yep.view.ShortTimeView;
 
@@ -23,7 +22,7 @@ import catchla.yep.view.ShortTimeView;
 public class TopicViewHolder extends RecyclerView.ViewHolder {
 
     private final ImageView profileImageView;
-    private final Fragment fragment;
+    private final TopicsAdapter adapter;
     private final TextView nameView;
     private final TextView textView;
     private final ShortTimeView timeView;
@@ -31,22 +30,23 @@ public class TopicViewHolder extends RecyclerView.ViewHolder {
     private final TextView messagesCountView;
     private final Location currentLocation, tempLocation;
 
-    public TopicViewHolder(final Fragment fragment, final ItemClickListener listener, final View itemView) {
+    public TopicViewHolder(final View itemView, final TopicsAdapter adapter, final ItemClickListener listener) {
         super(itemView);
-        this.fragment = fragment;
+        this.adapter = adapter;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
         textView = (TextView) itemView.findViewById(R.id.text);
         timeView = (ShortTimeView) itemView.findViewById(R.id.time);
         distanceView = (TextView) itemView.findViewById(R.id.distance);
         messagesCountView = (TextView) itemView.findViewById(R.id.messages_count);
-        currentLocation = Utils.getCachedLocation(fragment.getContext());
+        currentLocation = Utils.getCachedLocation(adapter.getContext());
         tempLocation = new Location("");
     }
 
     public void displayTopic(final Topic topic) {
         final User user = topic.getUser();
-        Glide.with(fragment).load(user.getAvatarUrl()).placeholder(R.drawable.ic_profile_image_default).into(profileImageView);
+        final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
+        imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
         nameView.setText(Utils.getDisplayName(user));
         textView.setText(topic.getBody());
         timeView.setTime(topic.getCreatedAt().getTime());

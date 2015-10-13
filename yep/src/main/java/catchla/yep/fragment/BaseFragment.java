@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import catchla.yep.Constants;
 import catchla.yep.fragment.iface.IBaseFragment;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
 
@@ -27,6 +28,8 @@ public class BaseFragment extends Fragment implements IBaseFragment, Constants {
 
     @Inject
     protected Bus mBus;
+    @Inject
+    protected ImageLoaderWrapper mImageLoader;
 
     @Override
     public final void onViewCreated(View view, @Nullable Bundle savedInstanceState) {

@@ -92,7 +92,7 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
     @NonNull
     @Override
     protected ChatsListAdapter onCreateAdapter(Context context) {
-        return new ChatsListAdapter(this, context);
+        return new ChatsListAdapter(context);
     }
 
     @Override

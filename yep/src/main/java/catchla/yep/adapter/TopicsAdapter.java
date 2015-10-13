@@ -5,7 +5,6 @@
 package catchla.yep.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +21,10 @@ import catchla.yep.view.holder.TopicViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class TopicsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class TopicsAdapter extends BaseRecyclerViewAdapter
         implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
 
-    private final Fragment mFragment;
     private final LayoutInflater mInflater;
 
     public void setClickListener(final ItemClickListener listener) {
@@ -37,8 +35,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private List<Topic> mData;
 
-    public TopicsAdapter(Fragment fragment, Context context) {
-        mFragment = fragment;
+    public TopicsAdapter(Context context) {
+        super(context);
         mInflater = LayoutInflater.from(context);
 
     }
@@ -46,7 +44,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
-        return new TopicViewHolder(mFragment, mClickListener, view);
+        return new TopicViewHolder(view, this, mClickListener);
     }
 
     @Override

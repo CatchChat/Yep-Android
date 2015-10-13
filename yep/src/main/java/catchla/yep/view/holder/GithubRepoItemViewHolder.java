@@ -3,7 +3,6 @@ package catchla.yep.view.holder;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,16 +17,14 @@ import catchla.yep.model.GithubRepo;
  */
 public class GithubRepoItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private final Fragment fragment;
     private final GithubUserAdapter adapter;
 
     private final TextView repoNameView;
     private final TextView starCountView;
     private final TextView descriptionView;
 
-    public GithubRepoItemViewHolder(final Fragment fragment, final View itemView, final GithubUserAdapter adapter) {
+    public GithubRepoItemViewHolder(final View itemView, final GithubUserAdapter adapter) {
         super(itemView);
-        this.fragment = fragment;
         this.adapter = adapter;
         itemView.setOnClickListener(this);
 

@@ -3,6 +3,7 @@ package catchla.yep.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -14,17 +15,19 @@ import catchla.yep.view.holder.InstagramMediaViewHolder;
 /**
  * Created by mariotaku on 15/6/4.
  */
-public class InstagramMediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class InstagramMediaAdapter extends BaseRecyclerViewAdapter {
     private final LayoutInflater mLayoutInflater;
     private List<InstagramMedia> mShots;
 
     public InstagramMediaAdapter(final Context context) {
+        super(context);
         mLayoutInflater = LayoutInflater.from(context);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        return new InstagramMediaViewHolder(mLayoutInflater.inflate(R.layout.grid_item_gallery_provider_type, parent, false));
+        final View view = mLayoutInflater.inflate(R.layout.grid_item_gallery_provider_type, parent, false);
+        return new InstagramMediaViewHolder(view, this);
     }
 
     @Override

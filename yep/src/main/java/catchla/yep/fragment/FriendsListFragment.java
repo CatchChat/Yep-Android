@@ -78,7 +78,7 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     @NonNull
     @Override
     protected FriendsListAdapter onCreateAdapter(Context context) {
-        return new FriendsListAdapter(this, context);
+        return new FriendsListAdapter(context);
     }
 
     @Override

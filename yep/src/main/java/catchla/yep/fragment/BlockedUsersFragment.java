@@ -43,7 +43,7 @@ public class BlockedUsersFragment extends AbsContentRecyclerViewFragment<UsersAd
     @NonNull
     @Override
     protected UsersAdapter onCreateAdapter(Context context) {
-        return new UsersAdapter(this, context);
+        return new UsersAdapter(context);
     }
 
     @Override

@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
@@ -21,6 +22,8 @@ public class ContentActivity extends AppCompatActivity {
     private TintedStatusFrameLayout mMainContent;
     @Inject
     protected Bus mBus;
+    @Inject
+    protected ImageLoaderWrapper mImageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

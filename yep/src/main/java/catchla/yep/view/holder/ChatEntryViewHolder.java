@@ -4,19 +4,18 @@
 
 package catchla.yep.view.holder;
 
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.R;
+import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.User;
+import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.Utils;
 import catchla.yep.view.ShortTimeView;
 
@@ -25,16 +24,16 @@ import catchla.yep.view.ShortTimeView;
  */
 public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
 
-    private final Fragment fragment;
+    private final ChatsListAdapter adapter;
 
     private final ImageView profileImageView;
     private final TextView nameView;
     private final ShortTimeView timeView;
     private final TextView messageView;
 
-    public ChatEntryViewHolder(final Fragment fragment, final ItemClickListener listener, View itemView) {
+    public ChatEntryViewHolder(View itemView, final ChatsListAdapter adapter, final ItemClickListener listener) {
         super(itemView);
-        this.fragment = fragment;
+        this.adapter = adapter;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
         timeView = (ShortTimeView) itemView.findViewById(R.id.update_time);
@@ -53,10 +52,8 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
             final User sender = conversation.getUser();
             nameView.setText(sender.getNickname());
-            Glide.with(fragment)
-                    .load(sender.getAvatarUrl())
-                    .placeholder(R.drawable.ic_profile_image_default)
-                    .into(profileImageView);
+            final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
+            imageLoader.displayProfileImage(sender.getAvatarUrl(), profileImageView);
         } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             nameView.setText(conversation.getCircle().getName());
         } else {

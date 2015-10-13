@@ -17,8 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
@@ -159,11 +157,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, ViewPa
 
     @Override
     public void onPageScrollStateChanged(final int state) {
-        if (state == ViewPager.SCROLL_STATE_IDLE) {
-            Glide.with(this).resumeRequestsRecursive();
-        } else {
-            Glide.with(this).pauseRequestsRecursive();
-        }
+
     }
 
     @Override
