@@ -30,6 +30,7 @@ import catchla.yep.activity.ChatActivity;
 import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.ConversationsLoader;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
@@ -40,7 +41,7 @@ import catchla.yep.util.JsonSerializer;
  * Created by mariotaku on 15/4/29.
  */
 public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListAdapter> implements Constants,
-        LoaderManager.LoaderCallbacks<List<Conversation>> {
+        LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -137,5 +138,15 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
 
     private Account getAccount() {
         return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
+    @Override
+    public int getActionIcon() {
+        return R.drawable.ic_action_search;
+    }
+
+    @Override
+    public void onActionPerformed() {
+
     }
 }

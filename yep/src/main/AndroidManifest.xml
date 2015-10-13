@@ -131,7 +131,38 @@
             android:name=".activity.BlockedUsersActivity"
             android:label="@string/blocked_users"
             android:theme="@style/Theme.Yep.Content"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.NewTopicActivity"
+            android:label="@string/new_topic"
+            android:theme="@style/Theme.Yep.Content"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.FeedbackActivity"
+            android:label="@string/feedback"
+            android:theme="@style/Theme.Yep.Content"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="@string/about"
+            android:theme="@style/Theme.Yep.Content"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
         <activity
             android:name=".activity.ThemedImagePickerActivity"
             android:theme="@style/Theme.Yep.NoDisplay"

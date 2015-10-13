@@ -46,7 +46,7 @@ import catchla.yep.util.net.OkHttpRestClient;
  */
 public class YepAPIFactory implements Constants {
 
-    public static final String API_DOMAIN = "park-staging.catchchatchina.com";
+    public static final String API_DOMAIN = "park.catchchatchina.com";
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;

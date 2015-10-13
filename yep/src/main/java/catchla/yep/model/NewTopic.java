@@ -1,9 +1,38 @@
 package catchla.yep.model;
 
+import org.mariotaku.restfu.http.SimpleValueMap;
+
+import java.io.IOException;
+
+import catchla.yep.model.util.ValueMapJsonMapper;
+
 /**
  * Created by mariotaku on 15/10/12.
  */
-public class NewTopic {
-    public class JsonBody {
+public class NewTopic extends SimpleValueMap {
+
+    private static final ValueMapJsonMapper<NewTopic> sMapper = new ValueMapJsonMapper<>();
+
+    public JsonBody toJson() {
+        try {
+            final String json = sMapper.serialize(this);
+            return new JsonBody(json);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public NewTopic body(String body) {
+        put("body", body);
+        return this;
+    }
+
+
+    public static final class JsonBody extends AbsJsonBody {
+
+        private JsonBody(String json) {
+            super(json);
+        }
+
     }
 }

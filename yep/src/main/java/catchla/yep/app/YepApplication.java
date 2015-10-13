@@ -2,8 +2,6 @@ package catchla.yep.app;
 
 import android.app.Application;
 
-import com.bumptech.glide.Glide;
-
 import catchla.yep.util.DebugModeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
 

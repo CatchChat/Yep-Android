@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="HeaderDrawerLayout">
-        <attr name="headerLayout" format="reference"/>
-        <attr name="contentLayout" format="reference"/>
+        <attr name="hdl_headerLayout" format="reference"/>
+        <attr name="hdl_contentLayout" format="reference"/>
     </declare-styleable>
     <declare-styleable name="TabPagerIndicator">
         <attr name="tabStripColor" format="color"/>

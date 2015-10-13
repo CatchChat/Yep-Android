@@ -18,6 +18,7 @@ import android.widget.Button;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TabsAdapter;
+import catchla.yep.fragment.UserRankFragment;
 import catchla.yep.fragment.UserSuggestionsFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.User;

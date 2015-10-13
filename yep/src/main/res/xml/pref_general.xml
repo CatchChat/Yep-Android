@@ -16,8 +16,16 @@
                 android:name="resid"
                 android:value="@xml/pref_notifications_privacy"/>
         </Preference>
-        <Preference android:title="@string/feedback"/>
-        <Preference android:title="@string/about"/>
+        <Preference android:title="@string/feedback">
+            <intent
+                android:targetClass="catchla.yep.activity.FeedbackActivity"
+                android:targetPackage="catchla.yep"/>
+        </Preference>
+        <Preference android:title="@string/about">
+            <intent
+                android:targetClass="catchla.yep.activity.AboutActivity"
+                android:targetPackage="catchla.yep"/>
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>

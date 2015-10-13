@@ -8,8 +8,8 @@
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/profile_image"
-        android:layout_width="@dimen/icon_size_topic_list_avatar"
-        android:layout_height="@dimen/icon_size_topic_list_avatar"/>
+        android:layout_width="@dimen/icon_size_topic_item_profile_image"
+        android:layout_height="@dimen/icon_size_topic_item_profile_image"/>
 
     <TextView
         android:id="@+id/name"
@@ -32,5 +32,32 @@
         android:layout_alignStart="@+id/name"
         android:layout_below="@+id/profile_image"
         tools:text="Blah blah blah"/>
+
+    <catchla.yep.view.ShortTimeView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/text"
+        android:layout_alignStart="@+id/text"
+        android:layout_below="@+id/text"/>
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/time"
+        android:layout_marginLeft="@dimen/element_spacing_small"
+        android:layout_marginStart="@dimen/element_spacing_small"
+        android:layout_toEndOf="@+id/time"
+        android:layout_toRightOf="@+id/time"/>
+
+    <TextView
+        android:id="@+id/messages_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/distance"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textColor="?colorPrimary"/>
 
 </RelativeLayout>

@@ -78,4 +78,6 @@
     <string name="blocked_users">Blocked users</string>
     <string name="feeds">Feeds</string>
     <string name="topics">Topics</string>
+    <string name="send">Send</string>
+    <string name="new_topic">New topic</string>
 </resources>

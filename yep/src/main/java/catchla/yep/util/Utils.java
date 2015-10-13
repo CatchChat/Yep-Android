@@ -407,4 +407,11 @@ public class Utils implements Constants {
         if (list == null) return null;
         return new ArrayList<>(list);
     }
+
+    public static String getDistanceString(final float distanceMeters) {
+        if (distanceMeters < 1000) {
+            return String.format("%.0f m", distanceMeters);
+        }
+        return String.format("%.1f km", distanceMeters / 1000f);
+    }
 }

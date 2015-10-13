@@ -18,10 +18,12 @@ import android.view.View;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.NewTopicActivity;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
@@ -30,7 +32,7 @@ import catchla.yep.model.Topic;
  * Created by mariotaku on 15/10/12.
  */
 public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAdapter>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, ItemClickListener {
+        implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, ItemClickListener, IActionButtonSupportFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
         final DividerItemDecoration itemDecoration = new DividerItemDecoration(viewContext, layoutManager.getOrientation());
         final Resources res = viewContext.getResources();
         final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
-                + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
+                + res.getDimensionPixelSize(R.dimen.icon_size_topic_item_profile_image);
         itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
         recyclerView.addItemDecoration(itemDecoration);
         final Bundle fragmentArgs = getArguments();
@@ -124,5 +126,17 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
 
     private Account getAccount() {
         return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
+    @Override
+    public int getActionIcon() {
+        return R.drawable.ic_action_edit;
+    }
+
+    @Override
+    public void onActionPerformed() {
+        final Intent intent = new Intent(getContext(), NewTopicActivity.class);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
+        startActivity(intent);
     }
 }

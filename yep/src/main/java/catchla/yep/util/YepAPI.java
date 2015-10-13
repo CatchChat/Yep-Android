@@ -176,7 +176,7 @@ public interface YepAPI {
     PagedTopics getTopics(@Query Paging paging) throws YepException;
 
     @POST("/v1/toipcs")
-    @Body(BodyType.FORM)
+    @Body(BodyType.FILE)
     Topic postTopic(@File NewTopic.JsonBody topic) throws YepException;
 
     @PUT("/v1/topics/{id}")

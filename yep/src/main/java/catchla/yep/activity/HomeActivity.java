@@ -7,12 +7,17 @@ package catchla.yep.activity;
 import android.accounts.Account;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.View;
+
+import com.bumptech.glide.Glide;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -21,6 +26,7 @@ import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.TopicsListFragment;
+import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
@@ -30,9 +36,10 @@ import catchla.yep.view.TintedStatusFrameLayout;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class HomeActivity extends AppCompatActivity implements Constants {
+public class HomeActivity extends AppCompatActivity implements Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
+    private FloatingActionButton mActionButton;
     private TabPagerIndicator mPagerIndicator;
     private TintedStatusFrameLayout mMainContent;
 
@@ -41,6 +48,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         super.onContentChanged();
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mActionButton = (FloatingActionButton) findViewById(R.id.action_button);
     }
 
     @Override
@@ -66,6 +74,10 @@ public class HomeActivity extends AppCompatActivity implements Constants {
                         Utils.openSettings(HomeActivity.this);
                         break;
                     }
+                    case R.id.about: {
+                        startActivity(new Intent(HomeActivity.this, AboutActivity.class));
+                        break;
+                    }
                 }
             }
         });
@@ -76,6 +88,7 @@ public class HomeActivity extends AppCompatActivity implements Constants {
     @Override
     protected void onDestroy() {
 //        stopService(new Intent(this, FayeService.class));
+        mViewPager.removeOnPageChangeListener(this);
         super.onDestroy();
     }
 
@@ -95,26 +108,74 @@ public class HomeActivity extends AppCompatActivity implements Constants {
         mAdapter = new TabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
+        mViewPager.addOnPageChangeListener(this);
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
+        mActionButton.setOnClickListener(this);
 
         final Bundle args = new Bundle();
         args.putParcelable(EXTRA_ACCOUNT, getAccount());
 
         mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);
         mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args);
-        mAdapter.addTab(TopicsListFragment.class, getString(R.string.topics), R.drawable.ic_action_search, args);
+        mAdapter.addTab(TopicsListFragment.class, getString(R.string.topics), R.drawable.ic_action_feeds, args);
         mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
 
 //        startService(new Intent(this, FayeService.class));
 
+        updateActionButton();
     }
 
     private Account getAccount() {
         return Utils.getCurrentAccount(this);
     }
 
+    @Override
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+        updateActionButton();
+    }
+
+    private void updateActionButton() {
+        final Fragment currentFragment = getCurrentFragment();
+        if (currentFragment instanceof IActionButtonSupportFragment) {
+            mActionButton.setImageResource(((IActionButtonSupportFragment) currentFragment).getActionIcon());
+            mActionButton.show();
+        } else {
+            mActionButton.hide();
+        }
+    }
+
+    private Fragment getCurrentFragment() {
+        return (Fragment) mAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem());
+    }
+
+    @Override
+    public void onPageScrollStateChanged(final int state) {
+        if (state == ViewPager.SCROLL_STATE_IDLE) {
+            Glide.with(this).resumeRequestsRecursive();
+        } else {
+            Glide.with(this).pauseRequestsRecursive();
+        }
+    }
+
+    @Override
+    public void onClick(final View v) {
+        switch (v.getId()) {
+            case R.id.action_button: {
+                final Fragment fragment = getCurrentFragment();
+                if (fragment instanceof IActionButtonSupportFragment) {
+                    ((IActionButtonSupportFragment) fragment).onActionPerformed();
+                }
+                break;
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package catchla.yep.activity;
+package catchla.yep.fragment;
 
 import android.support.v4.app.Fragment;
 

@@ -59,6 +59,9 @@ public class AccountInfoPreference extends Preference implements Constants {
 
     @Override
     protected void onClick() {
-        getContext().startActivity(new Intent(getContext(), ProfileEditorActivity.class));
+        final Context context = getContext();
+        final Intent intent = new Intent(context, ProfileEditorActivity.class);
+        intent.putExtra(EXTRA_ACCOUNT, mAccount);
+        context.startActivity(intent);
     }
 }

@@ -31,6 +31,7 @@ import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.FriendsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.FriendshipsLoader;
 import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.model.Friendship;
@@ -40,7 +41,7 @@ import catchla.yep.service.MessageService;
  * Created by mariotaku on 15/4/29.
  */
 public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsListAdapter>
-        implements LoaderManager.LoaderCallbacks<List<Friendship>> {
+        implements LoaderManager.LoaderCallbacks<List<Friendship>>, IActionButtonSupportFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -88,12 +89,6 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_friend: {
-                final Intent intent = new Intent(getActivity(), FindFriendActivity.class);
-                intent.putExtra(EXTRA_ACCOUNT, getAccount());
-                startActivity(intent);
-                return true;
-            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,5 +145,17 @@ public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsL
     @Override
     public void onLoaderReset(final Loader<List<Friendship>> loader) {
         getAdapter().setData(null);
+    }
+
+    @Override
+    public int getActionIcon() {
+        return R.drawable.ic_action_add;
+    }
+
+    @Override
+    public void onActionPerformed() {
+        final Intent intent = new Intent(getActivity(), FindFriendActivity.class);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
+        startActivity(intent);
     }
 }
