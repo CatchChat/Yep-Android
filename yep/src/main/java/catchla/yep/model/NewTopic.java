@@ -27,6 +27,12 @@ public class NewTopic extends SimpleValueMap {
         return this;
     }
 
+    public NewTopic location(double latitude, double longitude) {
+        put("latitude", latitude);
+        put("longitude", longitude);
+        return this;
+    }
+
 
     public static final class JsonBody extends AbsJsonBody {
 

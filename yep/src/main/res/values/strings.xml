@@ -80,4 +80,5 @@
     <string name="topics">Topics</string>
     <string name="send">Send</string>
     <string name="new_topic">New topic</string>
+    <string name="topic_posted">Topic posted</string>
 </resources>
