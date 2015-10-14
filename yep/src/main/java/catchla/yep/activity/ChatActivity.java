@@ -58,10 +58,14 @@ import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
+import catchla.yep.model.Attachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
-import catchla.yep.model.Message.Attachment.AudioMetadata;
-import catchla.yep.model.Message.Attachment.ImageMetadata;
+import catchla.yep.model.Attachment.AudioMetadata;
+import catchla.yep.model.Attachment.ImageMetadata;
+import catchla.yep.model.NewAttachment;
+import catchla.yep.model.NewAudioAttachment;
+import catchla.yep.model.NewImageAttachment;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
@@ -145,7 +149,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private void sendImage(final Uri imageUri) {
         sendMessage(new SendMessageHandler() {
             @Override
-            public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
 
                 final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
@@ -155,7 +159,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 } catch (IOException e) {
                     throw new YepException(e);
                 }
-                return new NewMessage.ImageAttachment(token, message.getMetadataValue("metadata", null));
+                return new NewImageAttachment(token, message.getMetadataValue("metadata", null));
             }
 
             @Nullable
@@ -300,7 +304,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     private void sendLocation() {
         sendMessage(new SendMessageHandler() {
             @Override
-            public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final Location location = Utils.getCachedLocation(ChatActivity.this);
                 if (location == null) return null;
                 message.location(location.getLatitude(), location.getLongitude());
@@ -344,7 +348,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
 
             @Override
-            protected NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+            protected NewAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
                 return sendMessageHandler.uploadAttachment(yep, newMessage);
             }
 
@@ -402,7 +406,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         mAdapter.setData(null);
     }
 
-    private void playAudio(final Message.Attachment attachment) {
+    private void playAudio(final Attachment attachment) {
         if (!"audio".equals(attachment.getKind())) return;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
@@ -549,7 +553,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             return mData.get(position);
         }
 
-        private void playAudio(final Message.Attachment attachment) {
+        private void playAudio(final Attachment attachment) {
             mActivity.playAudio(attachment);
         }
 
@@ -616,12 +620,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 final String url;
                 final ImageMetadata metadata;
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
-                final List<Message.Attachment> attachments = message.getAttachments();
+                final List<Attachment> attachments = message.getAttachments();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
                     url = Message.LocalMetadata.get(localMetadata, "image");
                     metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), ImageMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final Message.Attachment attachment = attachments.get(0);
+                    final Attachment attachment = attachments.get(0);
                     url = attachment.getFile().getUrl();
                     metadata = JsonSerializer.parse(attachment.getMetadata(), ImageMetadata.class);
                 } else {
@@ -662,12 +666,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
 
             private AudioMetadata getAudioMetadata(Message message) {
-                final List<Message.Attachment> attachments = message.getAttachments();
+                final List<Attachment> attachments = message.getAttachments();
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
                     return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), AudioMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final Message.Attachment attachment = attachments.get(0);
+                    final Attachment attachment = attachments.get(0);
                     return JsonSerializer.parse(attachment.getMetadata(), AudioMetadata.class);
                 } else {
                     return null;
@@ -677,7 +681,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void onClick(final View v) {
                 final Message message = adapter.getMessage(getLayoutPosition());
-                final List<Message.Attachment> attachments = message.getAttachments();
+                final List<Attachment> attachments = message.getAttachments();
                 if (attachments == null || attachments.isEmpty()) return;
                 adapter.playAudio(attachments.get(0));
             }
@@ -774,7 +778,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 }
 
                 @Override
-                public NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+                public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
                     final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
                     try {
@@ -782,7 +786,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     } catch (IOException e) {
                         throw new YepException(e);
                     }
-                    return new NewMessage.AudioAttachment(token, message.getMetadataValue("metadata", null));
+                    return new NewAudioAttachment(token, message.getMetadataValue("metadata", null));
                 }
 
                 @Override
@@ -840,7 +844,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     abstract class SendMessageHandler {
         @Nullable
-        NewMessage.Attachment uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
+        NewAttachment uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
             return null;
         }
 

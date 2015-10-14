@@ -15,7 +15,9 @@ import com.desmond.asyncmanager.TaskRunnable;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import catchla.yep.Constants;
+import catchla.yep.model.Attachment;
 import catchla.yep.model.Message;
+import catchla.yep.model.NewAttachment;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
@@ -53,7 +55,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
     }
 
     @Nullable
-    protected NewMessage.Attachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+    protected NewAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
         return null;
     }
 
@@ -91,7 +93,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
         final ContentResolver cr = context.getContentResolver();
         final ContentValues values = new ContentValues();
         values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.getAttachments(),
-                Message.Attachment.class));
+                Attachment.class));
         values.put(Messages.STATE, Messages.MessageState.UNREAD);
         values.put(Messages.MESSAGE_ID, message.getId());
         values.put(Messages.CREATED_AT, message.getCreatedAt().getTime());
@@ -108,6 +110,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
                 Expression.equalsArgs(Conversations.CONVERSATION_ID).getSQL(),
                 new String[]{newMessage.conversationId()}, null);
         final String accountId = accountUser.getId();
+        assert cursor != null;
         if (cursor.moveToFirst()) {
             // Conversation entry already exists, so just update latest info
             final ContentValues entryValues = new ContentValues();
@@ -122,6 +125,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
             cr.insert(Conversations.CONTENT_URI, ContentValuesCreator.fromNewMessage(newMessage, accountId));
         }
         cursor.close();
+        assert inserted != null;
         return ParseUtils.parseLong(inserted.getLastPathSegment(), -1);
     }
 

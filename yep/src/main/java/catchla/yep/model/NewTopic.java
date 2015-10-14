@@ -27,6 +27,12 @@ public class NewTopic extends SimpleValueMap {
         return this;
     }
 
+    public <T extends NewAttachment> void attachment(final T attachment) {
+        if (attachment == null) return;
+        //noinspection unchecked
+        put("attachments", attachment);
+    }
+
     public NewTopic location(double latitude, double longitude) {
         put("latitude", latitude);
         put("longitude", longitude);

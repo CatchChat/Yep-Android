@@ -81,4 +81,9 @@
     <string name="send">Send</string>
     <string name="new_topic">New topic</string>
     <string name="topic_posted">Topic posted</string>
+    <string name="remove_topic_media_confirm">Remove media from this message?</string>
+    <string name="remove">Remove</string>
+    <string name="drafts_saved">Drafts saved</string>
+    <string name="no_content">No content</string>
+    <string name="unable_to_get_location">Unable to get location</string>
 </resources>

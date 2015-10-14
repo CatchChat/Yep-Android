@@ -110,7 +110,7 @@ public class NewMessage extends SimpleValueMap {
         return ParseUtils.parseString(get("text_content"), null);
     }
 
-    public <T extends Attachment> void attachment(final T attachment) {
+    public <T extends NewAttachment> void attachment(final T attachment) {
         if (attachment == null) return;
         //noinspection unchecked
         put("attachments", attachment);
@@ -180,42 +180,6 @@ public class NewMessage extends SimpleValueMap {
         return Message.LocalMetadata.get(localMetadata, key, def);
     }
 
-    public interface Attachment {
-
-        @JsonObject
-        class File {
-            @JsonField(name = "file")
-            String file;
-            @JsonField(name = "metadata")
-            String metadata;
-
-            public File() {
-            }
-
-            public File(final String file, final Message.Attachment.Metadata metadata) {
-                setFile(file);
-                setMetadata(metadata);
-            }
-
-            public File(final String file, final String metadata) {
-                setFile(file);
-                setMetadata(metadata);
-            }
-
-            public void setFile(final String file) {
-                this.file = file;
-            }
-
-            public void setMetadata(final Message.Attachment.Metadata metadata) {
-                setMetadata(JsonSerializer.serialize(metadata));
-            }
-
-            public void setMetadata(final String metadata) {
-                this.metadata = metadata;
-            }
-        }
-    }
-
     public static final class JsonBody extends AbsJsonBody {
 
         private JsonBody(String json) {
@@ -224,44 +188,5 @@ public class NewMessage extends SimpleValueMap {
 
     }
 
-    @JsonObject
-    public static class ImageAttachment implements Attachment {
-
-        @JsonField(name = "image")
-        File[] image;
-
-        public ImageAttachment() {
-
-        }
-
-        public ImageAttachment(S3UploadToken token, Message.Attachment.ImageMetadata metadata) {
-            image = new File[]{new File(token.getOptions().getKey(), metadata)};
-        }
-
-        public ImageAttachment(S3UploadToken token, String metadata) {
-            image = new File[]{new File(token.getOptions().getKey(), metadata)};
-        }
-
-    }
-
-    @JsonObject
-    public static class AudioAttachment implements Attachment {
-
-        @JsonField(name = "audio")
-        File[] audio;
-
-        public AudioAttachment() {
-
-        }
-
-        public AudioAttachment(S3UploadToken token, String metadata) {
-            audio = new File[]{new File(token.getOptions().getKey(), metadata)};
-        }
-
-        public AudioAttachment(S3UploadToken token, Message.Attachment.AudioMetadata metadata) {
-            audio = new File[]{new File(token.getOptions().getKey(), metadata)};
-        }
-
-    }
 }
 

@@ -48,7 +48,7 @@ public class Topic implements Parcelable {
     Circle circle;
     @ParcelableThisPlease
     @JsonField(name = "attachments")
-    List<Message.Attachment> attachments;
+    List<Attachment> attachments;
 
     @Override
     public String toString() {
@@ -158,11 +158,11 @@ public class Topic implements Parcelable {
         this.circle = circle;
     }
 
-    public List<Message.Attachment> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(final List<Message.Attachment> attachments) {
+    public void setAttachments(final List<Attachment> attachments) {
         this.attachments = attachments;
     }
 

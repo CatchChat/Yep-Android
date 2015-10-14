@@ -3,6 +3,7 @@
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:setPadding="true">
@@ -16,11 +17,18 @@
             android:id="@+id/edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:gravity="top"
             android:inputType="textLongMessage"
+            android:minHeight="128dp"
             android:minLines="5"
             android:padding="@dimen/element_spacing_normal"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/topic_media"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            tools:listitem="@layout/adapter_item_topic_media_add"/>
 
     </LinearLayout>
 </catchla.yep.view.TintedStatusFrameLayout>
