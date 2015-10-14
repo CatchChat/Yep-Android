@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
@@ -26,7 +25,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Yep">
-
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -50,7 +48,7 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
-            android:name=".activity.UserActivity"
+            android:name=".activity.UserOldActivity"
             android:label="@string/title_activity_user"
             android:theme="@style/Theme.Yep.Content">
             <meta-data
@@ -161,6 +159,22 @@
                 android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
+            android:name=".activity.TopicChatActivity"
+            android:label="@string/topic"
+            android:theme="@style/Theme.Yep.Content.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.UserActivity"
+            android:label="@string/title_activity_user2"
+            android:theme="@style/Theme.Yep.Content.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
             android:name=".activity.ThemedImagePickerActivity"
             android:theme="@style/Theme.Yep.NoDisplay"
             android:windowSoftInputMode="stateAlwaysHidden"/>
@@ -186,6 +200,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator_yep"/>
         </service>
+
     </application>
 
 </manifest>

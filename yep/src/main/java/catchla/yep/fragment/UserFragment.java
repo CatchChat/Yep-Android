@@ -61,7 +61,6 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
-import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
@@ -324,8 +323,7 @@ public class UserFragment extends BaseFragment implements Constants,
             @Override
             public void onClick(final View v) {
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(Conversation.fromUser(user, accountId),
-                        Conversation.class));
+                intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(user, accountId));
                 startActivity(intent);
             }
         });

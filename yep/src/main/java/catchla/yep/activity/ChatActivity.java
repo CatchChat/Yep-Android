@@ -59,10 +59,10 @@ import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
-import catchla.yep.model.Conversation;
-import catchla.yep.model.Message;
 import catchla.yep.model.Attachment.AudioMetadata;
 import catchla.yep.model.Attachment.ImageMetadata;
+import catchla.yep.model.Conversation;
+import catchla.yep.model.Message;
 import catchla.yep.model.NewAttachment;
 import catchla.yep.model.NewAudioAttachment;
 import catchla.yep.model.NewImageAttachment;
@@ -280,7 +280,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             }
         });
         mAttachPopupMenu.inflate(R.menu.action_attach_send);
-        markAsRead(JsonSerializer.parse(intent.getStringExtra(EXTRA_CONVERSATION), Conversation.class));
+        final Conversation conversation = intent.getParcelableExtra(EXTRA_CONVERSATION);
+        markAsRead(conversation);
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
@@ -381,7 +382,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     @Override
     public Loader<List<Message>> onCreateLoader(final int id, final Bundle args) {
         final Conversation conversation;
-        conversation = JsonSerializer.parse(args.getString(EXTRA_CONVERSATION), Conversation.class);
+        conversation = args.getParcelable(EXTRA_CONVERSATION);
         mConversation = conversation;
         return new MessagesLoader(this, conversation);
     }

@@ -1,66 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2015. Catch Inc,
-  -->
-<ScrollView
-    android:id="@+id/scroll_view"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:colorBackground">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/element_spacing_large"
+    tools:showIn="@layout/layout_content_scrollable_user">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/introduction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/element_spacing_large">
+        android:gravity="center"/>
 
-        <TextView
-            android:id="@+id/introduction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/element_spacing_large"
+        android:layout_marginTop="@dimen/element_spacing_large"
+        android:text="@string/label_master"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="?android:textColorSecondary"
+        android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/element_spacing_large"
-            android:layout_marginTop="@dimen/element_spacing_large"
-            android:text="@string/label_master"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"
-            android:textStyle="bold"/>
+    <org.apmem.tools.layouts.FlowLayout
+        android:id="@+id/master_skills"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-        <org.apmem.tools.layouts.FlowLayout
-            android:id="@+id/master_skills"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/element_spacing_large"
+        android:layout_marginTop="@dimen/element_spacing_large"
+        android:text="@string/label_learning"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="?android:textColorSecondary"
+        android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/element_spacing_large"
-            android:layout_marginTop="@dimen/element_spacing_large"
-            android:text="@string/label_learning"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"
-            android:textStyle="bold"/>
+    <org.apmem.tools.layouts.FlowLayout
+        android:id="@+id/learning_skills"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-        <org.apmem.tools.layouts.FlowLayout
-            android:id="@+id/learning_skills"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/element_spacing_normal"
+        android:background="?dividerVertical"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/element_spacing_normal"
-            android:background="?dividerVertical"/>
+    <LinearLayout
+        android:id="@+id/providers_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
 
-        <LinearLayout
-            android:id="@+id/providers_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

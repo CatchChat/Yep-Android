@@ -31,7 +31,7 @@
             android:id="@+id/header_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:hdl_contentLayout="@layout/layout_content_user"
+            app:hdl_contentLayout="@layout/layout_content_scrollable_user"
             app:hdl_headerLayout="@layout/layout_header_user"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 

@@ -19,7 +19,7 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.activity.NewTopicActivity;
-import catchla.yep.activity.UserActivity;
+import catchla.yep.activity.TopicChatActivity;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
@@ -118,7 +118,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
     @Override
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
         final Topic topic = getAdapter().getTopic(position);
-        final Intent intent = new Intent(getActivity(), UserActivity.class);
+        final Intent intent = new Intent(getActivity(), TopicChatActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_TOPIC, topic);
         startActivity(intent);

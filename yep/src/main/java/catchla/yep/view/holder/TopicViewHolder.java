@@ -19,7 +19,7 @@ import catchla.yep.view.ShortTimeView;
 /**
  * Created by mariotaku on 15/10/12.
  */
-public class TopicViewHolder extends RecyclerView.ViewHolder {
+public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final ImageView profileImageView;
     private final TopicsAdapter adapter;
@@ -29,9 +29,12 @@ public class TopicViewHolder extends RecyclerView.ViewHolder {
     private final TextView distanceView;
     private final TextView messagesCountView;
     private final Location currentLocation, tempLocation;
+    private final ItemClickListener listener;
 
     public TopicViewHolder(final View itemView, final TopicsAdapter adapter, final ItemClickListener listener) {
         super(itemView);
+        this.listener = listener;
+        itemView.setOnClickListener(this);
         this.adapter = adapter;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
@@ -60,5 +63,10 @@ public class TopicViewHolder extends RecyclerView.ViewHolder {
             distanceView.setVisibility(View.GONE);
         }
         messagesCountView.setText(String.valueOf(topic.getMessageCount()));
+    }
+
+    @Override
+    public void onClick(final View v) {
+        listener.onItemClick(getLayoutPosition(), this);
     }
 }

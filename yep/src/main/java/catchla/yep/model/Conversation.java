@@ -1,9 +1,13 @@
 package catchla.yep.model;
 
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import java.util.Date;
 import java.util.Locale;
@@ -15,36 +19,65 @@ import catchla.yep.util.JsonSerializer;
 /**
  * Created by mariotaku on 15/5/29.
  */
+@ParcelablePlease
 @JsonObject
-public class Conversation {
+public class Conversation implements Parcelable {
 
+    public static final Creator<Conversation> CREATOR = new Creator<Conversation>() {
+        @Override
+        public Conversation createFromParcel(Parcel in) {
+            return new Conversation(in);
+        }
+
+        @Override
+        public Conversation[] newArray(int size) {
+            return new Conversation[size];
+        }
+    };
+    @ParcelableThisPlease
     @JsonField(name = "media_type")
     String mediaType;
     /**
      * Corresponding to {@link Message#getSender()}
      */
+    @ParcelableThisPlease
     @JsonField(name = "user")
-    private User user;
+    User user;
+    @ParcelableThisPlease
     @JsonField(name = "account_id")
-    private String accountId;
+    String accountId;
+    @ParcelableThisPlease
     @JsonField(name = "sender")
-    private User sender;
+    User sender;
+    @ParcelableThisPlease
     @JsonField(name = "circle")
-    private Circle circle;
+    Circle circle;
     /**
      * Corresponding to {@link Message#getRecipientType()}
      */
+    @ParcelableThisPlease
     @JsonField(name = "recipient_type")
-    private String recipientType;
+    String recipientType;
     /**
      * Corresponding to {@link Message#getTextContent()}
      */
+    @ParcelableThisPlease
     @JsonField(name = "text_content")
-    private String textContent;
+    String textContent;
+    @ParcelableThisPlease
     @JsonField(name = "id")
-    private String id;
+    String id;
+    @ParcelableThisPlease
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
-    private Date updatedAt;
+    Date updatedAt;
+
+    protected Conversation(Parcel in) {
+        ConversationParcelablePlease.readFromParcel(this, in);
+    }
+
+    public Conversation() {
+
+    }
 
     public static Conversation fromUser(User user, String accountId) {
         final Conversation conversation = new Conversation();
@@ -65,7 +98,7 @@ public class Conversation {
         throw new UnsupportedOperationException();
     }
 
-    private static String generateId(final String recipientType, final String id) {
+    static String generateId(final String recipientType, final String id) {
         return recipientType.toLowerCase(Locale.US) + ":" + id;
     }
 
@@ -150,9 +183,19 @@ public class Conversation {
         this.accountId = accountId;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        ConversationParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
     public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
 
-        private final int account_id, conversation_id, circle, user, text_content, recipient_type, updated_at,
+        final int account_id, conversation_id, circle, user, text_content, recipient_type, updated_at,
                 media_type;
 
         public Indices(final Cursor cursor) {

@@ -26,10 +26,19 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <style name="Theme.Yep.Content.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="ThemeOverlay.Yep.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorAccent">@android:color/white</item>
         <item name="colorPrimary">@android:color/white</item>
     </style>
+
+    <style name="ThemeOverlay.Yep.AppBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="ThemeOverlay.Yep.Popup" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="Theme.Yep.NoDisplay" parent="Theme.Base.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>

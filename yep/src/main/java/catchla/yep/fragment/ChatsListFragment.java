@@ -35,7 +35,6 @@ import catchla.yep.loader.ConversationsLoader;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
 import catchla.yep.service.MessageService;
-import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -63,7 +62,7 @@ public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListA
                 final Conversation conversation = getAdapter().getConversation(position);
                 final Intent intent = new Intent(getActivity(), ChatActivity.class);
                 intent.putExtra(EXTRA_ACCOUNT, getAccount());
-                intent.putExtra(EXTRA_CONVERSATION, JsonSerializer.serialize(conversation, Conversation.class));
+                intent.putExtra(EXTRA_CONVERSATION, conversation);
                 startActivity(intent);
             }
         });

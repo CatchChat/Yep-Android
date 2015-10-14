@@ -50,6 +50,7 @@ import org.mariotaku.restfu.http.mime.StringTypedData;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
@@ -413,5 +414,26 @@ public class Utils implements Constants {
             return String.format("%.0f m", distanceMeters);
         }
         return String.format("%.1f km", distanceMeters / 1000f);
+    }
+
+    public static <T> Object findFieldOfTypes(T obj, Class<? extends T> cls, Class<?>... checkTypes) {
+        labelField:
+        for (Field field : cls.getDeclaredFields()) {
+            field.setAccessible(true);
+            final Object fieldObj;
+            try {
+                fieldObj = field.get(obj);
+            } catch (Exception ignore) {
+                continue;
+            }
+            if (fieldObj != null) {
+                final Class<?> type = fieldObj.getClass();
+                for (Class<?> checkType : checkTypes) {
+                    if (!checkType.isAssignableFrom(type)) continue labelField;
+                }
+                return fieldObj;
+            }
+        }
+        return null;
     }
 }
