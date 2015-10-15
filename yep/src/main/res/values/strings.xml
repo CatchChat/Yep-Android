@@ -178,4 +178,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="user">User</string>
+    <string name="new_topic_hint">Share something to us :)</string>
 </resources>

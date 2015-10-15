@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:gravity="top"
+            android:hint="@string/new_topic_hint"
             android:inputType="textLongMessage"
             android:minHeight="128dp"
             android:minLines="5"

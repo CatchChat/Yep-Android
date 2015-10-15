@@ -36,6 +36,7 @@ import catchla.yep.model.PagedFriendships;
 import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.Topic;
 import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
@@ -162,21 +163,24 @@ public class MessageService extends Service implements Constants {
                         message.setOutgoing(false);
 
                         ContentValues conversation = conversations.get(conversationId);
+                        final boolean newConversation = conversation == null;
                         if (conversation == null) {
                             conversation = new ContentValues();
                             conversation.put(Conversations.ACCOUNT_ID, accountUser.getId());
-                            conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
-                            conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
-                            conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
                             conversation.put(Conversations.CONVERSATION_ID, conversationId);
-                            conversations.put(conversationId, conversation);
                         }
                         final long createdAt = Utils.getTime(message.getCreatedAt());
-                        if (!conversation.containsKey(Conversations.UPDATED_AT)
-                                || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
-                            conversation.put(Conversations.UPDATED_AT, createdAt);
+                        if (newConversation || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
                             conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                            conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
+                            conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
+                            conversation.put(Conversations.TOPIC, JsonSerializer.serialize(message.getTopic(), Topic.class));
+                            conversation.put(Conversations.UPDATED_AT, createdAt);
+                            conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
                             conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
+                        }
+                        if (newConversation) {
+                            conversations.put(conversationId, conversation);
                         }
                         final int idsSize = ids.size();
                         final String[] selectionArgs = new String[idsSize + 1];

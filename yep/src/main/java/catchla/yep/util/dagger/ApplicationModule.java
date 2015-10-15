@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import catchla.yep.BuildConfig;
 import catchla.yep.app.YepApplication;
 import catchla.yep.util.ImageLoaderWrapper;
+import catchla.yep.util.YepImageDownloader;
 import dagger.Module;
 import dagger.Provides;
 
@@ -55,6 +57,10 @@ public class ApplicationModule {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        final DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
+        builder.resetViewBeforeLoading(true);
+        cb.defaultDisplayImageOptions(builder.build());
+        cb.imageDownloader(new YepImageDownloader(application));
         cb.denyCacheImageMultipleSizesInMemory();
         cb.tasksProcessingOrder(QueueProcessingType.LIFO);
         L.writeDebugLogs(BuildConfig.DEBUG);

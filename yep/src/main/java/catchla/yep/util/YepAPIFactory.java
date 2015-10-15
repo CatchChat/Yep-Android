@@ -56,17 +56,7 @@ public class YepAPIFactory implements Constants {
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
         factory.setEndpoint(new Endpoint("https://" + API_DOMAIN + "/api/"));
-        final OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(10, TimeUnit.SECONDS);
-        client.setReadTimeout(10, TimeUnit.SECONDS);
-        client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
-        client.setHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(final String hostname, final SSLSession session) {
-                return true;
-            }
-        });
-        factory.setClient(new OkHttpRestClient(context, client));
+        factory.setClient(getHttpRestClient(context));
         factory.setConverter(new LoganSquareConverter());
         factory.setAuthorization(new TokenAuthorization(accessToken));
         factory.setRequestInfoFactory(new RequestInfoFactory() {
@@ -105,6 +95,20 @@ public class YepAPIFactory implements Constants {
             }
         });
         return factory.build(YepAPI.class);
+    }
+
+    public static OkHttpRestClient getHttpRestClient(final Context context) {
+        final OkHttpClient client = new OkHttpClient();
+        client.setConnectTimeout(10, TimeUnit.SECONDS);
+        client.setReadTimeout(10, TimeUnit.SECONDS);
+        client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+        client.setHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(final String hostname, final SSLSession session) {
+                return true;
+            }
+        });
+        return new OkHttpRestClient(context, client);
     }
 
     public static String getProviderOAuthUrl(final String providerName) {

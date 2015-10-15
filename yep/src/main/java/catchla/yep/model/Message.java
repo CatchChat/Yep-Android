@@ -42,6 +42,8 @@ public class Message {
     String mediaType;
     @JsonField(name = "circle")
     Circle circle;
+    @JsonField(name = "topic")
+    Topic topic;
     @JsonField(name = "conversation_id")
     String conversationId;
     @JsonField(name = "outgoing")
@@ -67,6 +69,14 @@ public class Message {
 
     public void setAttachments(final List<Attachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(final Topic topic) {
+        this.topic = topic;
     }
 
     public double getLongitude() {

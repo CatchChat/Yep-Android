@@ -47,6 +47,10 @@ public class ContentActivity extends AppCompatActivity {
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
     }
 
+    protected TintedStatusFrameLayout getMainContent() {
+        return mMainContent;
+    }
+
     protected boolean isTintBarEnabled() {
         return true;
     }

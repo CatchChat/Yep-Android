@@ -48,14 +48,6 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
-            android:name=".activity.UserOldActivity"
-            android:label="@string/title_activity_user"
-            android:theme="@style/Theme.Yep.Content">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="catchla.yep.activity.MainActivity"/>
-        </activity>
-        <activity
             android:name=".activity.SkillActivity"
             android:label="@string/skill"
             android:theme="@style/Theme.Yep.Content">
@@ -161,15 +153,15 @@
         <activity
             android:name=".activity.TopicChatActivity"
             android:label="@string/topic"
-            android:theme="@style/Theme.Yep.Content.NoActionBar">
+            android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
             android:name=".activity.UserActivity"
-            android:label="@string/title_activity_user2"
-            android:theme="@style/Theme.Yep.Content.NoActionBar">
+            android:label="@string/user"
+            android:theme="@style/Theme.Yep.Content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity"/>

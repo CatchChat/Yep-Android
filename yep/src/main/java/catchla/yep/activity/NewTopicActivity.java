@@ -121,14 +121,18 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
 
     private boolean saveDrafts() {
         if (mShouldSkipSaveDrafts) return false;
+        final String text = ParseUtils.parseString(mEditText.getText());
+        final Set<String> media = mTopicMediaAdapter.getMediaStringSet();
+        if (TextUtils.isEmpty(text) && media.isEmpty()) {
+            clearDrafts();
+            return false;
+        }
         boolean draftsChanged = false;
         final SharedPreferences.Editor editor = mPreferences.edit();
-        final String text = ParseUtils.parseString(mEditText.getText());
         if (!text.equals(mPreferences.getString(KEY_TOPIC_DRAFTS_TEXT, null))) {
             editor.putString(KEY_TOPIC_DRAFTS_TEXT, text);
             draftsChanged = true;
         }
-        final Set<String> media = mTopicMediaAdapter.getMediaStringSet();
         if (!media.equals(mPreferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null))) {
             editor.putStringSet(KEY_TOPIC_DRAFTS_MEDIA, media);
             draftsChanged = true;

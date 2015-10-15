@@ -10,7 +10,8 @@
     <com.pkmmte.view.CircularImageView
         android:id="@+id/profile_image"
         android:layout_width="@dimen/icon_size_topic_item_profile_image"
-        android:layout_height="@dimen/icon_size_topic_item_profile_image"/>
+        android:layout_height="@dimen/icon_size_topic_item_profile_image"
+        tools:src="@drawable/ic_profile_image_default"/>
 
     <TextView
         android:id="@+id/name"
@@ -18,11 +19,14 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/profile_image"
         android:layout_alignTop="@+id/profile_image"
+        android:layout_marginBottom="@dimen/element_spacing_normal"
         android:layout_marginLeft="@dimen/element_spacing_normal"
-        android:layout_marginStart="@dimen/element_spacing_normal"
+        android:layout_marginRight="@dimen/element_spacing_normal"
         android:layout_toEndOf="@+id/profile_image"
         android:layout_toRightOf="@+id/profile_image"
         android:gravity="center_vertical"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="?android:textColorLink"
         tools:text="Name"/>
 
     <TextView
@@ -32,33 +36,55 @@
         android:layout_alignLeft="@+id/name"
         android:layout_alignStart="@+id/name"
         android:layout_below="@+id/profile_image"
+        android:layout_marginBottom="@dimen/element_spacing_normal"
+        android:textAppearance="?android:textAppearanceSmall"
         tools:text="Blah blah blah"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/media_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:layout_below="@+id/text"/>
 
     <catchla.yep.view.ShortTimeView
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/messages_count"
         android:layout_alignLeft="@+id/text"
         android:layout_alignStart="@+id/text"
-        android:layout_below="@+id/text"/>
+        android:layout_alignTop="@+id/messages_count"
+        android:gravity="center_vertical"
+        tools:text="1 hour ago"/>
 
     <TextView
         android:id="@+id/distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/time"
+        android:layout_alignBottom="@+id/messages_count"
+        android:layout_alignTop="@+id/messages_count"
         android:layout_marginLeft="@dimen/element_spacing_small"
         android:layout_marginStart="@dimen/element_spacing_small"
         android:layout_toEndOf="@+id/time"
-        android:layout_toRightOf="@+id/time"/>
+        android:layout_toRightOf="@+id/time"
+        android:gravity="center_vertical"
+        tools:text="10km"/>
 
     <TextView
         android:id="@+id/messages_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/distance"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:textColor="?colorPrimary"/>
+        android:layout_below="@+id/media_gallery"
+        android:layout_marginTop="@dimen/element_spacing_normal"
+        android:drawableEnd="@drawable/ic_btn_topic_bubble"
+        android:drawablePadding="@dimen/element_spacing_normal"
+        android:drawableRight="@drawable/ic_btn_topic_bubble"
+        android:gravity="center_vertical"
+        android:textColor="?android:textColorLink"
+        tools:text="10"/>
+
 
 </RelativeLayout>

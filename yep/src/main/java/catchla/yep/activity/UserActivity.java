@@ -1,36 +1,60 @@
 package catchla.yep.activity;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.desmond.asyncmanager.AsyncManager;
+import com.desmond.asyncmanager.TaskRunnable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apmem.tools.layouts.FlowLayout;
+import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.graphic.ActionBarDrawable;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Friendships;
+import catchla.yep.util.ContentValuesCreator;
+import catchla.yep.util.MenuUtils;
+import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
+import catchla.yep.util.YepAPI;
+import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.YepException;
+import catchla.yep.view.TintedStatusFrameLayout;
+import catchla.yep.view.iface.IExtendedView;
 
-public class UserActivity extends SwipeBackContentActivity implements Constants, View.OnClickListener, LoaderManager.LoaderCallbacks<TaskResponse<User>> {
+public class UserActivity extends SwipeBackContentActivity implements Constants, View.OnClickListener,
+        LoaderManager.LoaderCallbacks<TaskResponse<User>>, AppBarLayout.OnOffsetChangedListener {
 
     private static final int REQUEST_SELECT_MASTER_SKILLS = 111;
     private static final int REQUEST_SELECT_LEARNING_SKILLS = 112;
@@ -41,6 +65,11 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private FlowLayout mMasterSkills, mLearningSkills;
     private LinearLayout mProvidersContainer;
     private User mCurrentUser;
+    private View mUserScrollContent;
+    private View mUserScrollView;
+    private ActionBarDrawable mActionBarBackground;
+    private AppBarLayout mAppBarLayout;
+    private Rect mSystemWindowsInsets = new Rect();
 
     @Override
     public void onContentChanged() {
@@ -51,18 +80,17 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mMasterSkills = (FlowLayout) findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) findViewById(R.id.learning_skills);
         mProvidersContainer = (LinearLayout) findViewById(R.id.providers_container);
+        mUserScrollContent = findViewById(R.id.user_scroll_content);
+        mUserScrollView = findViewById(R.id.user_scroll_view);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        setupSystemBars();
 
         final User currentUser;
         final Intent intent = getIntent();
@@ -78,12 +106,70 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             finish();
             return;
         }
-
+        mAppBarLayout.addOnOffsetChangedListener(this);
         mActionButton.setOnClickListener(this);
+
+        fixScrollView();
+
         setTitle(Utils.getDisplayName(currentUser));
         displayUser(currentUser, Utils.getAccountId(this, account));
 
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mAppBarLayout.removeOnOffsetChangedListener(this);
+        super.onDestroy();
+    }
+
+    private void setupSystemBars() {
+
+        final ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
+
+        final Drawable shadow = ResourcesCompat.getDrawable(getResources(), R.drawable.shadow_user_banner_action_bar, null);
+
+        mActionBarBackground = new ActionBarDrawable(shadow);
+        actionBar.setBackgroundDrawable(mActionBarBackground);
+        final TintedStatusFrameLayout mainContent = getMainContent();
+        mainContent.setDrawShadow(true);
+        mainContent.setDrawColor(true);
+
+        mainContent.setShadowColor(0xA0000000);
+        mActionBarBackground.setColor(primaryColor);
+        mainContent.setColor(primaryColor);
+        mainContent.setOnFitSystemWindowsListener(new IExtendedView.OnFitSystemWindowsListener() {
+            @Override
+            public void onFitSystemWindows(final Rect insets) {
+                mSystemWindowsInsets.set(insets);
+            }
+        });
+
+    }
+
+
+    // Workaround for http://stackoverflow.com/a/32887429/2165810
+    private void fixScrollView() {
+        final TintedStatusFrameLayout mainContent = getMainContent();
+        final Rect insets = new Rect();
+        final Rect scrollContentPadding = new Rect();
+        scrollContentPadding.left = mUserScrollContent.getPaddingLeft();
+        scrollContentPadding.top = mUserScrollContent.getPaddingTop();
+        scrollContentPadding.right = mUserScrollContent.getPaddingRight();
+        scrollContentPadding.bottom = mUserScrollContent.getPaddingBottom();
+        mainContent.setOnSizeChangedListener(new IExtendedView.OnSizeChangedListener() {
+            @Override
+            public void onSizeChanged(final View view, final int w, final int h, final int oldw, final int oldh) {
+                mainContent.getSystemWindowsInsets(insets);
+                final CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mUserScrollView.getLayoutParams();
+//                lp.gravity = Gravity.TOP;
+                lp.height = h - insets.top - insets.bottom;
+                mUserScrollContent.setMinimumHeight(h - insets.top - insets.bottom + 2);
+            }
+        });
+
     }
 
     private void displayUser(final User user, final String accountId) {
@@ -109,7 +195,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             }
         };
 
-        final boolean isMySelf = Utils.isMySelf(UserActivity.this, getAccount(), user);
+        final boolean isMySelf = StringUtils.equals(user.getId(), accountId);
 
         final LayoutInflater inflater = UserActivity.this.getLayoutInflater();
 
@@ -238,12 +324,84 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             displayUser(user, accountId);
             if (StringUtils.equals(user.getId(), accountId)) {
                 Utils.saveUserInfo(UserActivity.this, account, user);
+            } else {
+                AsyncManager.runBackgroundTask(new TaskRunnable() {
+                    @Override
+                    public Object doLongOperation(final Object o) throws InterruptedException {
+                        final ContentValues values = ContentValuesCreator.friendshipFromUser(user, accountId);
+                        final ContentResolver cr = getContentResolver();
+                        final String where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
+                                Expression.equalsArgs(Friendships.FRIEND_ID)).getSQL();
+                        cr.update(Friendships.CONTENT_URI, values, where, new String[]{accountId, user.getId()});
+                        return null;
+                    }
+                });
             }
         }
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_user, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        final boolean isMySelf = Utils.isMySelf(this, getAccount(), getCurrentUser());
+        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_friend, !isMySelf);
+        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_myself, isMySelf);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings: {
+                Utils.openSettings(this);
+                return true;
+            }
+            case R.id.block_user: {
+                AsyncManager.runBackgroundTask(new TaskRunnable() {
+                    @Override
+                    public Object doLongOperation(final Object o) throws InterruptedException {
+                        final Account currentAccount = getAccount();
+                        final YepAPI yep = YepAPIFactory.getInstance(UserActivity.this, currentAccount);
+                        assert yep != null;
+                        try {
+                            yep.blockUser(getCurrentUser().getId());
+                        } catch (YepException e) {
+                            Log.w(LOGTAG, e);
+                        }
+                        return null;
+                    }
+                });
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onLoaderReset(final Loader<TaskResponse<User>> loader) {
 
+    }
+
+    @Override
+    public void onOffsetChanged(final AppBarLayout appBarLayout, final int offset) {
+        final float factor = -offset / (float) (appBarLayout.getHeight() - mSystemWindowsInsets.top);
+        mProfileImageView.setTranslationY(-offset / 2);
+        updateSystemBarFactor(factor);
+    }
+
+    @Override
+    protected boolean isTintBarEnabled() {
+        return false;
+    }
+
+    private void updateSystemBarFactor(final float factor) {
+        final TintedStatusFrameLayout mainContent = getMainContent();
+        mainContent.setFactor(factor);
+        mActionBarBackground.setFactor(factor);
     }
 }

@@ -3,6 +3,7 @@
     <dimen name="icon_size_status_profile_image">60dp</dimen>
     <dimen name="element_spacing_large">16dp</dimen>
     <dimen name="element_spacing_mlarge">12dp</dimen>
+    <dimen name="element_spacing_msmall">6dp</dimen>
     <dimen name="element_spacing_small">4dp</dimen>
     <dimen name="element_size_normal">48dp</dimen>
     <dimen name="action_icon_size">32dp</dimen>

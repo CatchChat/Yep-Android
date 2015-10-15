@@ -57,6 +57,23 @@ public class ContentValuesCreator {
         return values;
     }
 
+    public static ContentValues friendshipFromUser(final User friend, final String accountId) {
+        final ContentValues values = new ContentValues();
+        values.put(Friendships.ACCOUNT_ID, accountId);
+        values.put(Friendships.FRIEND_ID, friend.getId());
+        values.put(Friendships.CONTACT_NAME, friend.getContactName());
+        values.put(Friendships.NICKNAME, friend.getNickname());
+        values.put(Friendships.USERNAME, friend.getUsername());
+        values.put(Friendships.INTRODUCTION, friend.getIntroduction());
+        values.put(Friendships.MOBILE, friend.getMobile());
+        values.put(Friendships.PHONE_CODE, friend.getPhoneCode());
+        values.put(Friendships.AVATAR_URL, friend.getAvatarUrl());
+        values.put(Friendships.LEARNING_SKILLS, JsonSerializer.serialize(friend.getLearningSkills(), Skill.class));
+        values.put(Friendships.MASTER_SKILLS, JsonSerializer.serialize(friend.getMasterSkills(), Skill.class));
+        values.put(Friendships.PROVIDERS, JsonSerializer.serialize(friend.getProviders(), Provider.class));
+        return values;
+    }
+
     public static ContentValues fromMessage(final Message message, final String accountId) {
         final ContentValues values = new ContentValues();
         values.put(Messages.ACCOUNT_ID, accountId);

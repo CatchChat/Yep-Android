@@ -65,14 +65,15 @@ public interface YepDataStore {
         String TEXT_CONTENT = "text_content";
         String USER = "user";
         String CIRCLE = "circle";
+        String TOPIC = "topic";
         String UPDATED_AT = "updated_at";
         String RECIPIENT_TYPE = "recipient_type";
         String MEDIA_TYPE = "media_type";
 
-        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, CIRCLE, USER, RECIPIENT_TYPE,
+        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, USER, CIRCLE, TOPIC, RECIPIENT_TYPE,
                 UPDATED_AT, MEDIA_TYPE};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT};
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT};
     }
 
     interface Friendships extends Users {
@@ -100,7 +101,7 @@ public interface YepDataStore {
 
         String[] COLUMNS = {_ID, ACCOUNT_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
                 PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT,DataType.TEXT, DataType.TEXT, DataType.TEXT,
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
 
