@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+    <title>ios-paperplane-outline</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Group" sketch:type="MSLayerGroup" transform="translate(-70.000000, 0.000000)" fill="#38A6F9">
+            <g id="ios-paperplane-outline" transform="translate(70.000000, 0.000000)" sketch:type="MSShapeGroup">
+                <path d="M3,14.52 L11.745,18.3675 L16.035,27 L27,3 L3,14.52 L3,14.52 Z M12.9075,18.0375 L24.585,5.5725 L15.99,24.24 L12.9075,18.0375 L12.9075,18.0375 Z M24.435,5.4225 L12.06,17.205 L5.85,14.475 L24.435,5.4225 L24.435,5.4225 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

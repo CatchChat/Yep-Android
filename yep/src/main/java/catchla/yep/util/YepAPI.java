@@ -170,7 +170,7 @@ public interface YepAPI {
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
     @GET("/v1/topics/discover")
-    PagedTopics getDiscoverTopics(@Query("sort") String sortOrder, @Query Paging paging) throws YepException;
+    PagedTopics getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @Query Paging paging) throws YepException;
 
     @GET("/v1/topics")
     PagedTopics getTopics(@Query Paging paging) throws YepException;
@@ -191,5 +191,6 @@ public interface YepAPI {
         String TOPIC = "topic";
         String AVATAR = "avatar";
     }
+
 }
 

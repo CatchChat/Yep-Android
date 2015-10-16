@@ -70,8 +70,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
         if (fragmentArgs != null) {
 
         }
-        String sortBy = "distance";
-        return new DiscoverTopicsLoader(getActivity(), getAccount(), sortBy, readCache, writeCache);
+        return new DiscoverTopicsLoader(getActivity(), getAccount(), Topic.SortOrder.TIME, readCache, writeCache);
     }
 
     @Override

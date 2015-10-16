@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/item_content"
     android:background="?selectableItemBackground"
     android:padding="@dimen/element_spacing_normal">
 
@@ -37,6 +38,7 @@
         android:layout_alignStart="@+id/name"
         android:layout_below="@+id/profile_image"
         android:layout_marginBottom="@dimen/element_spacing_normal"
+        android:autoLink="email|map|web"
         android:textAppearance="?android:textAppearanceSmall"
         tools:text="Blah blah blah"/>
 

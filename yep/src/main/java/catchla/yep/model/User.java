@@ -73,6 +73,9 @@ public class User implements Parcelable {
     @JsonField(name = "longitude")
     double longitude = Double.NaN;
     @ParcelableThisPlease
+    @JsonField(name = "badge")
+    String badge;
+    @ParcelableThisPlease
     LatLng location;
 
     public User() {
@@ -81,6 +84,25 @@ public class User implements Parcelable {
 
     public User(final Parcel src) {
         UserParcelablePlease.readFromParcel(this, src);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "avatarUrl='" + avatarUrl + '\'' +
+                ", masterSkills=" + masterSkills +
+                ", learningSkills=" + learningSkills +
+                ", id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", phoneCode='" + phoneCode + '\'' +
+                ", contactName='" + contactName + '\'' +
+                ", providers=" + providers +
+                ", badge='" + badge + '\'' +
+                ", location=" + location +
+                '}';
     }
 
     public LatLng getLocation() {
@@ -198,23 +220,4 @@ public class User implements Parcelable {
         UserParcelablePlease.writeToParcel(this, dest, flags);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "masterSkills=" + masterSkills +
-                ", learningSkills=" + learningSkills +
-                ", id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", introduction='" + introduction + '\'' +
-                ", avatarUrl='" + avatarUrl + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", phoneCode='" + phoneCode + '\'' +
-                ", contactName='" + contactName + '\'' +
-                ", providers=" + providers +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", location=" + location +
-                '}';
-    }
 }

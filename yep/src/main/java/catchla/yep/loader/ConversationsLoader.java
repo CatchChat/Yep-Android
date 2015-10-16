@@ -18,7 +18,7 @@ public class ConversationsLoader extends ObjectCursorLoader<Conversation> {
     public ConversationsLoader(Context context, Account account) {
         super(context, Conversation.Indices.class, Conversations.CONTENT_URI, Conversations.COLUMNS,
                 null, null, new OrderBy(Conversations.UPDATED_AT, false).getSQL());
-        setSelection(Expression.equalsArgs(Conversations.ACCOUNT_ID).getSQL());
+        setSelection(Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID)).getSQL());
         setSelectionArgs(new String[]{Utils.getAccountId(context, account)});
     }
 

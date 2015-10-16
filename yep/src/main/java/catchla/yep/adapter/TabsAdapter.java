@@ -18,9 +18,10 @@ import catchla.yep.view.iface.PagerIndicator;
 /**
  * Created by mariotaku on 15/5/21.
  */
-public class TabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider {
+public class TabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider, PagerIndicator.TabListener {
     private final Context mContext;
     private Fragment mPrimaryItem;
+    private PagerIndicator.TabListener mTabListener;
 
     public TabsAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -64,7 +65,29 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements PagerIndic
         mPrimaryItem = (Fragment) object;
     }
 
+    public void setTabListener(PagerIndicator.TabListener listener) {
+        mTabListener = listener;
+    }
+
     public Fragment getPrimaryItem() {
         return mPrimaryItem;
+    }
+
+    @Override
+    public void onPageReselected(final int position) {
+        if (mTabListener == null) return;
+        mTabListener.onPageReselected(position);
+    }
+
+    @Override
+    public boolean onTabLongClick(final int position) {
+        if (mTabListener == null) return false;
+        return mTabListener.onTabLongClick(position);
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+        if (mTabListener == null) return;
+        mTabListener.onPageSelected(position);
     }
 }

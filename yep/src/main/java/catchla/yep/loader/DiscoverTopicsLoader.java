@@ -19,9 +19,11 @@ import catchla.yep.util.YepException;
  */
 public class DiscoverTopicsLoader extends CachedYepListLoader<Topic> implements Constants {
 
+    @Topic.SortOrder
     private final String mSortBy;
 
-    public DiscoverTopicsLoader(Context context, Account account, String sortBy, boolean readCache, boolean writeCache) {
+    public DiscoverTopicsLoader(Context context, Account account, @Topic.SortOrder String sortBy,
+                                boolean readCache, boolean writeCache) {
         super(context, account, Topic.class, readCache, writeCache);
         mSortBy = sortBy;
     }

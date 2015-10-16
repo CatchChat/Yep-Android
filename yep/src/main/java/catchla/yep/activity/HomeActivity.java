@@ -25,16 +25,18 @@ import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
+import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
+import catchla.yep.view.iface.PagerIndicator;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class HomeActivity extends AppCompatActivity implements Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
+public class HomeActivity extends AppCompatActivity implements Constants, ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener {
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
     private FloatingActionButton mActionButton;
@@ -104,6 +106,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, ViewPa
         final Toolbar toolbar = (Toolbar) getWindow().findViewById(android.support.v7.appcompat.R.id.action_bar);
         toolbar.setContentInsetsRelative(getResources().getDimensionPixelSize(R.dimen.element_spacing_normal), 0);
         mAdapter = new TabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
+        mAdapter.setTabListener(this);
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.addOnPageChangeListener(this);
@@ -137,8 +140,21 @@ public class HomeActivity extends AppCompatActivity implements Constants, ViewPa
     }
 
     @Override
+    public void onPageReselected(final int position) {
+        final Fragment fragment = getCurrentFragment();
+        if (fragment instanceof RefreshScrollTopInterface) {
+            ((RefreshScrollTopInterface) fragment).scrollToStart();
+        }
+    }
+
+    @Override
     public void onPageSelected(final int position) {
         updateActionButton();
+    }
+
+    @Override
+    public boolean onTabLongClick(final int position) {
+        return false;
     }
 
     private void updateActionButton() {

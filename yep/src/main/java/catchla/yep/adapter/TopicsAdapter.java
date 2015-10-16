@@ -44,7 +44,7 @@ public class TopicsAdapter extends BaseRecyclerViewAdapter
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
         final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
-        return new TopicViewHolder(view, this, mClickListener);
+        return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
     }
 
     @Override

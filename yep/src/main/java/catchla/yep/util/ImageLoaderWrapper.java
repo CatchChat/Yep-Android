@@ -22,6 +22,7 @@ public class ImageLoaderWrapper {
         DisplayImageOptions.Builder piBuilder = new DisplayImageOptions.Builder();
         piBuilder.imageScaleType(ImageScaleType.IN_SAMPLE_INT);
         piBuilder.showImageOnLoading(R.drawable.ic_profile_image_default);
+        piBuilder.resetViewBeforeLoading(true);
         profileImageOption = piBuilder.build();
     }
 

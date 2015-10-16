@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.StringDef;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -174,5 +175,11 @@ public class Topic implements Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         TopicParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
+    @StringDef({SortOrder.DISTANCE, SortOrder.TIME})
+    public @interface SortOrder {
+        String DISTANCE = "distance";
+        String TIME = "time";
     }
 }

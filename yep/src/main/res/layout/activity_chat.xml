@@ -6,7 +6,6 @@
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -56,94 +55,18 @@
 
         <RelativeLayout
             android:id="@+id/input_panel"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="?android:colorBackground"
             android:gravity="bottom"
-            android:orientation="horizontal"
             android:outlineProvider="bounds"
             android:paddingBottom="@dimen/element_spacing_normal"
-            android:paddingTop="@dimen/element_spacing_normal"
-            tools:ignore="UnusedAttribute">
+            android:paddingTop="@dimen/element_spacing_normal">
 
-            <catchla.yep.view.ActionIconView
-                android:id="@+id/voice_toggle"
-                android:layout_width="@dimen/element_size_normal"
-                android:layout_height="@dimen/element_size_normal"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:color="?android:textColorSecondary"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_action_mic"/>
-
-            <Button
-                android:id="@+id/voice_record"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/element_size_normal"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_toEndOf="@id/voice_toggle"
-                android:layout_toRightOf="@id/voice_toggle"
-                android:visibility="gone"/>
-
-            <catchla.yep.view.ActionIconView
-                android:id="@+id/attachment_send"
-                android:layout_width="@dimen/element_size_normal"
-                android:layout_height="@dimen/element_size_normal"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:background="?selectableItemBackground"
-                android:clickable="true"
-                android:color="?android:textColorSecondary"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_action_attachment"/>
-
-            <org.mariotaku.messagebubbleview.library.MessageBubbleView
-                android:id="@+id/edit_text_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="-8dp"
-                android:layout_marginRight="-8dp"
-                android:layout_toEndOf="@+id/voice_toggle"
-                android:layout_toLeftOf="@+id/attachment_send"
-                android:layout_toRightOf="@+id/voice_toggle"
-                android:layout_toStartOf="@+id/attachment_send"
-                app:bubbleColor="#fff"
-                app:caretHeight="8dp"
-                app:caretPosition="topRight"
-                app:caretWidth="8dp"
-                app:cornerRadius="2dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="@dimen/element_size_normal">
-
-                    <EditText
-                        android:id="@+id/edit_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:completionThreshold="1"
-                        android:focusable="true"
-                        android:gravity="start|center_vertical"
-                        android:inputType="textShortMessage|textMultiLine"
-                        android:maxHeight="140dp"
-                        android:padding="@dimen/element_spacing_normal"
-                        android:singleLine="false"
-                        android:textAppearance="?android:textAppearanceMedium"
-                        android:textColor="?android:textColorPrimary">
-
-                        <requestFocus/>
-                    </EditText>
-                </FrameLayout>
-            </org.mariotaku.messagebubbleview.library.MessageBubbleView>
-
+            <include layout="@layout/layout_chat_input_panel"/>
         </RelativeLayout>
     </RelativeLayout>
 

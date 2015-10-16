@@ -3,6 +3,7 @@ package catchla.yep.activity;
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -15,11 +16,13 @@ import android.support.v4.content.Loader;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +47,7 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
+import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
@@ -159,6 +163,9 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         scrollContentPadding.top = mUserScrollContent.getPaddingTop();
         scrollContentPadding.right = mUserScrollContent.getPaddingRight();
         scrollContentPadding.bottom = mUserScrollContent.getPaddingBottom();
+        final ViewGroup.LayoutParams appBarLp = mAppBarLayout.getLayoutParams();
+        final UserAppBarBehavior behavior = new UserAppBarBehavior();
+        ((CoordinatorLayout.LayoutParams) appBarLp).setBehavior(behavior);
         mainContent.setOnSizeChangedListener(new IExtendedView.OnSizeChangedListener() {
             @Override
             public void onSizeChanged(final View view, final int w, final int h, final int oldw, final int oldh) {
@@ -167,6 +174,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 //                lp.gravity = Gravity.TOP;
                 lp.height = h - insets.top - insets.bottom;
                 mUserScrollContent.setMinimumHeight(h - insets.top - insets.bottom + 2);
+                behavior.setSystemWindowsInsets(insets);
             }
         });
 
@@ -403,5 +411,34 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         final TintedStatusFrameLayout mainContent = getMainContent();
         mainContent.setFactor(factor);
         mActionBarBackground.setFactor(factor);
+    }
+
+    public static class UserAppBarBehavior extends AppBarLayout.Behavior {
+        private Rect mRect = new Rect();
+        private int mViewHeight;
+
+        public UserAppBarBehavior(final Context context, final AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public UserAppBarBehavior() {
+
+        }
+
+        @Override
+        public boolean onLayoutChild(final CoordinatorLayout parent, final AppBarLayout abl, final int layoutDirection) {
+            final boolean handled = super.onLayoutChild(parent, abl, layoutDirection);
+            mViewHeight = abl.getMeasuredHeight();
+            return handled;
+        }
+
+        @Override
+        public boolean setTopAndBottomOffset(final int offset) {
+            return super.setTopAndBottomOffset(MathUtils.clamp(offset, 0, -(mViewHeight - mRect.top)));
+        }
+
+        public void setSystemWindowsInsets(final Rect insets) {
+            mRect.set(insets);
+        }
     }
 }

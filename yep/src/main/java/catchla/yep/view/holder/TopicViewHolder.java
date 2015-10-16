@@ -15,7 +15,6 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
-import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.LatLng;
@@ -31,7 +30,8 @@ import catchla.yep.view.ShortTimeView;
 public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final ImageView profileImageView;
-    private final TopicsAdapter adapter;
+    private final Context context;
+    private final ImageLoaderWrapper imageLoader;
     private final TextView nameView;
     private final TextView textView;
     private final ShortTimeView timeView;
@@ -42,25 +42,28 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private final RecyclerView mediaGallery;
     private final TopicAttachmentsAdapter topicMediaAdapter;
 
-    public TopicViewHolder(final View itemView, final TopicsAdapter adapter, final ItemClickListener listener) {
+    public TopicViewHolder(final View itemView, final Context context, final ImageLoaderWrapper imageLoader, final ItemClickListener listener) {
         super(itemView);
+        this.context = context;
+        this.imageLoader = imageLoader;
         this.listener = listener;
-        itemView.setOnClickListener(this);
-        this.adapter = adapter;
+        if (listener != null) {
+            itemView.setOnClickListener(this);
+        }
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
         nameView = (TextView) itemView.findViewById(R.id.name);
         textView = (TextView) itemView.findViewById(R.id.text);
         timeView = (ShortTimeView) itemView.findViewById(R.id.time);
         distanceView = (TextView) itemView.findViewById(R.id.distance);
         messagesCountView = (TextView) itemView.findViewById(R.id.messages_count);
-        currentLocation = Utils.getCachedLocation(adapter.getContext());
+        currentLocation = Utils.getCachedLocation(context);
         tempLocation = new Location("");
         mediaGallery = (RecyclerView) itemView.findViewById(R.id.media_gallery);
-        mediaGallery.setLayoutManager(new LinearLayoutManager(adapter.getContext(), LinearLayoutManager.HORIZONTAL, false));
-        topicMediaAdapter = new TopicAttachmentsAdapter(adapter.getContext());
+        mediaGallery.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        topicMediaAdapter = new TopicAttachmentsAdapter(context);
         mediaGallery.setAdapter(topicMediaAdapter);
 
-        final Resources res = adapter.getContext().getResources();
+        final Resources res = context.getResources();
         final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.icon_size_topic_item_profile_image);
 
         mediaGallery.setPadding(decorPaddingLeft, 0, 0, 0);
@@ -68,7 +71,6 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public void displayTopic(final Topic topic) {
         final User user = topic.getUser();
-        final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
         imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
         nameView.setText(Utils.getDisplayName(user));
         textView.setText(topic.getBody());
@@ -95,6 +97,10 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
     @Override
     public void onClick(final View v) {
         listener.onItemClick(getLayoutPosition(), this);
+    }
+
+    public void setReplyButtonVisible(final boolean visible) {
+        messagesCountView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
     private static class TopicAttachmentsAdapter extends BaseRecyclerViewAdapter {

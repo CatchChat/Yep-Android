@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+    <title>ios-star-outline</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Group" sketch:type="MSLayerGroup" transform="translate(-210.000000, 0.000000)" fill="#F6A623">
+            <g id="ios-star-outline" transform="translate(210.000000, 0.000000)" sketch:type="MSShapeGroup">
+                <path d="M28.8,12.0690647 L18.4700893,12.0690647 L15.3,2.45438849 L12.1299107,12.0690647 L1.8,12.0690647 L10.2495536,17.9853237 L6.95892857,27.6 L15.3,21.6414388 L23.6410714,27.6 L20.3444196,17.9853237 L28.8,12.0690647 L28.8,12.0690647 Z M21.7245536,25.0135252 L15.3,20.4207194 L8.87544643,25.0135252 L11.4428571,17.6106475 L4.93392857,13.0964029 L12.8290179,13.0964029 L15.3,5.64517986 L17.7709821,13.0964029 L25.6660714,13.0964029 L19.1571429,17.6046043 L21.7245536,25.0135252 L21.7245536,25.0135252 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
