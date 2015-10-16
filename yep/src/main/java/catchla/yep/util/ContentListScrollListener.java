@@ -67,7 +67,7 @@ public class ContentListScrollListener extends OnScrollListener {
         }
     }
 
-    public static interface ContentListSupport {
+    public interface ContentListSupport {
 
         Object getAdapter();
 

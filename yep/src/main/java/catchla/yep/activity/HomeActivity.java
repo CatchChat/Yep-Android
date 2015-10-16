@@ -19,6 +19,7 @@ import android.view.View;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ChatsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
@@ -36,7 +37,9 @@ import catchla.yep.view.iface.PagerIndicator;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class HomeActivity extends AppCompatActivity implements Constants, ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener {
+public class HomeActivity extends AppCompatActivity implements Constants,
+        ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener,
+        IControlBarActivity {
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
     private FloatingActionButton mActionButton;
@@ -187,5 +190,44 @@ public class HomeActivity extends AppCompatActivity implements Constants, ViewPa
                 break;
             }
         }
+    }
+
+    @Override
+    public void setControlBarOffset(final float offset) {
+
+    }
+
+    @Override
+    public void setControlBarVisibleAnimate(final boolean visible) {
+        if (visible && getCurrentFragment() instanceof IActionButtonSupportFragment) {
+            mActionButton.show();
+        } else {
+            mActionButton.hide();
+        }
+    }
+
+    @Override
+    public float getControlBarOffset() {
+        return 0;
+    }
+
+    @Override
+    public int getControlBarHeight() {
+        return 0;
+    }
+
+    @Override
+    public void notifyControlBarOffsetChanged() {
+
+    }
+
+    @Override
+    public void registerControlBarOffsetListener(final ControlBarOffsetListener listener) {
+
+    }
+
+    @Override
+    public void unregisterControlBarOffsetListener(final ControlBarOffsetListener listener) {
+
     }
 }
