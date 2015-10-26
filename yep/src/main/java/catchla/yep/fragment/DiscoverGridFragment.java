@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2015. Catch Inc,
+ */
+
 package catchla.yep.fragment;
 
 import android.accounts.Account;
@@ -18,23 +22,20 @@ import android.view.View;
 import java.util.List;
 
 import catchla.yep.R;
-import catchla.yep.activity.NewTopicActivity;
-import catchla.yep.activity.SkillActivity;
-import catchla.yep.activity.TopicChatActivity;
-import catchla.yep.adapter.TopicsAdapter;
+import catchla.yep.activity.UserActivity;
+import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
-import catchla.yep.fragment.iface.IActionButtonSupportFragment;
-import catchla.yep.loader.DiscoverTopicsLoader;
+import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.loader.DiscoverLoader;
+import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.TaskResponse;
-import catchla.yep.model.Topic;
-import catchla.yep.view.holder.TopicViewHolder;
+import catchla.yep.model.User;
 
 /**
- * Created by mariotaku on 15/10/12.
+ * Created by mariotaku on 15/4/29.
  */
-public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAdapter>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
-        IActionButtonSupportFragment {
+public class DiscoverGridFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
+        implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
         final DividerItemDecoration itemDecoration = new DividerItemDecoration(viewContext, layoutManager.getOrientation());
         final Resources res = viewContext.getResources();
         final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
-                + res.getDimensionPixelSize(R.dimen.icon_size_topic_item_profile_image);
+                + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
         itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
         recyclerView.addItemDecoration(itemDecoration);
         final Bundle fragmentArgs = getArguments();
@@ -65,32 +66,40 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
 
 
     @Override
-    public Loader<TaskResponse<List<Topic>>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
+        final DiscoverQuery query = new DiscoverQuery();
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
         boolean writeCache = true;
         if (fragmentArgs != null) {
-
+            if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
+                query.learningSkills(fragmentArgs.getStringArray(EXTRA_LEARNING));
+                writeCache = false;
+            }
+            if (fragmentArgs.containsKey(EXTRA_MASTER)) {
+                query.masterSkills(fragmentArgs.getStringArray(EXTRA_MASTER));
+                writeCache = false;
+            }
         }
-        return new DiscoverTopicsLoader(getActivity(), getAccount(), Topic.SortOrder.TIME, readCache, writeCache);
+        return new DiscoverLoader(getActivity(), getAccount(), query, readCache, writeCache);
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<List<Topic>>> loader, final TaskResponse<List<Topic>> data) {
+    public void onLoadFinished(final Loader<TaskResponse<List<User>>> loader, final TaskResponse<List<User>> data) {
         getAdapter().setData(data.getData());
         showContent();
         setRefreshing(false);
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<List<Topic>>> loader) {
+    public void onLoaderReset(final Loader<TaskResponse<List<User>>> loader) {
 
     }
 
     @NonNull
     @Override
-    protected TopicsAdapter onCreateAdapter(Context context) {
-        return new TopicsAdapter(context);
+    protected UsersAdapter onCreateAdapter(Context context) {
+        return new UsersAdapter(context);
     }
 
     @Override
@@ -118,34 +127,14 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
 
     @Override
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
-        final Topic topic = getAdapter().getTopic(position);
-        final Intent intent = new Intent(getActivity(), TopicChatActivity.class);
+        final User user = getAdapter().getUser(position);
+        final Intent intent = new Intent(getActivity(), UserActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
-        intent.putExtra(EXTRA_TOPIC, topic);
+        intent.putExtra(EXTRA_USER, user);
         startActivity(intent);
     }
 
     private Account getAccount() {
         return getArguments().getParcelable(EXTRA_ACCOUNT);
-    }
-
-    @Override
-    public int getActionIcon() {
-        return R.drawable.ic_action_edit;
-    }
-
-    @Override
-    public void onActionPerformed() {
-        final Intent intent = new Intent(getContext(), NewTopicActivity.class);
-        intent.putExtra(EXTRA_ACCOUNT, getAccount());
-        startActivity(intent);
-    }
-
-    @Override
-    public void onSkillClick(final int position, final TopicViewHolder holder) {
-        final Intent intent = new Intent(getContext(), SkillActivity.class);
-        intent.putExtra(EXTRA_ACCOUNT, getAccount());
-        intent.putExtra(EXTRA_SKILL, getAdapter().getTopic(position).getSkill());
-        startActivity(intent);
     }
 }

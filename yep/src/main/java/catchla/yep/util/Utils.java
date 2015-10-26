@@ -436,4 +436,8 @@ public class Utils implements Constants {
         }
         return null;
     }
+
+    public static String getDisplayName(final Skill skill) {
+        return TextUtils.isEmpty(skill.getNameString()) ? skill.getName() : skill.getNameString();
+    }
 }

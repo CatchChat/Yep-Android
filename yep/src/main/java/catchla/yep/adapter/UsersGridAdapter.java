@@ -15,27 +15,26 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
-import catchla.yep.model.Topic;
-import catchla.yep.view.holder.TopicViewHolder;
+import catchla.yep.model.User;
+import catchla.yep.view.holder.FriendViewHolder;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class TopicsAdapter extends BaseRecyclerViewAdapter
-        implements ILoadMoreSupportAdapter {
+public class UsersGridAdapter extends BaseRecyclerViewAdapter implements ILoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
 
     private final LayoutInflater mInflater;
 
-    public void setClickListener(final TopicClickAdapter listener) {
+    public void setClickListener(final ItemClickListener listener) {
         this.mClickListener = listener;
     }
 
-    private TopicClickAdapter mClickListener;
+    private ItemClickListener mClickListener;
 
-    private List<Topic> mData;
+    private List<User> mData;
 
-    public TopicsAdapter(Context context) {
+    public UsersGridAdapter(Context context) {
         super(context);
         mInflater = LayoutInflater.from(context);
 
@@ -43,8 +42,8 @@ public class TopicsAdapter extends BaseRecyclerViewAdapter
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
-        return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+        final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
+        return new FriendViewHolder(view, this, mClickListener);
     }
 
     @Override
@@ -56,8 +55,8 @@ public class TopicsAdapter extends BaseRecyclerViewAdapter
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case ITEM_VIEW_TYPE_USER_ITEM: {
-                final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
-                topicViewHolder.displayTopic(mData.get(position));
+                final FriendViewHolder chatEntryViewHolder = (FriendViewHolder) holder;
+                chatEntryViewHolder.displayUser(mData.get(position));
                 break;
             }
         }
@@ -89,16 +88,12 @@ public class TopicsAdapter extends BaseRecyclerViewAdapter
 
     }
 
-    public void setData(final List<Topic> data) {
+    public void setData(final List<User> data) {
         mData = data;
         notifyDataSetChanged();
     }
 
-    public Topic getTopic(final int position) {
+    public User getUser(final int position) {
         return mData.get(position);
-    }
-
-    public interface TopicClickAdapter extends ItemClickListener {
-        void onSkillClick(int position, TopicViewHolder holder);
     }
 }

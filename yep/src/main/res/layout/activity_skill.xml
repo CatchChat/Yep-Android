@@ -3,29 +3,38 @@
     android:id="@+id/main_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:setPadding="true">
 
-    <catchla.yep.view.RatioFrameLayout
-        android:id="@+id/banner_container"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/banner_image"
+        <catchla.yep.view.TabPagerIndicator
+            android:id="@+id/view_pager_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:tabDisplayOption="label"
+            app:tabDividerVerticalPadding="@dimen/element_spacing_mlarge"
+            app:tabExpandEnabled="true"
+            app:tabHorizontalPadding="@dimen/element_spacing_large"
+            app:tabLabelColor="?android:textColorPrimaryInverse"
+            app:tabShowDivider="true"
+            app:tabStripColor="?android:textColorPrimaryInverse"/>
+
+        <catchla.yep.view.ExtendedViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription"/>
-    </catchla.yep.view.RatioFrameLayout>
+            android:layout_below="@+id/view_pager_tabs"/>
 
-    <catchla.yep.view.HeaderDrawerLayout
-        android:id="@+id/header_drawer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:hdl_contentLayout="@layout/layout_content_skill"
-        app:hdl_headerLayout="@layout/layout_header_skill"/>
-
+        <View
+            android:id="@+id/pager_window_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/view_pager"
+            android:layout_alignTop="@+id/view_pager"
+            android:background="?android:windowContentOverlay"/>
+    </RelativeLayout>
 </catchla.yep.view.TintedStatusFrameLayout>

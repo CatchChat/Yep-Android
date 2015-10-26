@@ -15,9 +15,10 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
-import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.LatLng;
+import catchla.yep.model.Skill;
 import catchla.yep.model.Topic;
 import catchla.yep.model.User;
 import catchla.yep.util.ImageLoaderWrapper;
@@ -38,11 +39,12 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private final TextView distanceView;
     private final TextView messagesCountView;
     private final Location currentLocation, tempLocation;
-    private final ItemClickListener listener;
+    private final TopicsAdapter.TopicClickAdapter listener;
     private final RecyclerView mediaGallery;
+    private final TextView skillButton;
     private final TopicAttachmentsAdapter topicMediaAdapter;
 
-    public TopicViewHolder(final View itemView, final Context context, final ImageLoaderWrapper imageLoader, final ItemClickListener listener) {
+    public TopicViewHolder(final View itemView, final Context context, final ImageLoaderWrapper imageLoader, final TopicsAdapter.TopicClickAdapter listener) {
         super(itemView);
         this.context = context;
         this.imageLoader = imageLoader;
@@ -56,6 +58,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         timeView = (ShortTimeView) itemView.findViewById(R.id.time);
         distanceView = (TextView) itemView.findViewById(R.id.distance);
         messagesCountView = (TextView) itemView.findViewById(R.id.messages_count);
+        skillButton = (TextView) itemView.findViewById(R.id.skill_button);
         currentLocation = Utils.getCachedLocation(context);
         tempLocation = new Location("");
         mediaGallery = (RecyclerView) itemView.findViewById(R.id.media_gallery);
@@ -67,6 +70,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.icon_size_topic_item_profile_image);
 
         mediaGallery.setPadding(decorPaddingLeft, 0, 0, 0);
+        skillButton.setOnClickListener(this);
     }
 
     public void displayTopic(final Topic topic) {
@@ -92,11 +96,28 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         } else {
             mediaGallery.setVisibility(View.VISIBLE);
         }
+        final Skill skill = topic.getSkill();
+        if (skill != null) {
+            skillButton.setText(Utils.getDisplayName(skill));
+            skillButton.setVisibility(View.VISIBLE);
+        } else {
+            skillButton.setText(null);
+            skillButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onClick(final View v) {
-        listener.onItemClick(getLayoutPosition(), this);
+        switch (v.getId()) {
+            case R.id.item_content: {
+                listener.onItemClick(getLayoutPosition(), this);
+                break;
+            }
+            case R.id.skill_button: {
+                listener.onSkillClick(getLayoutPosition(), this);
+                break;
+            }
+        }
     }
 
     public void setReplyButtonVisible(final boolean visible) {
@@ -151,6 +172,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
             mAttachments = attachments;
             notifyDataSetChanged();
         }
+
 
         private class TopicMediaItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             private final TopicAttachmentsAdapter adapter;

@@ -205,6 +205,8 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
         final boolean isMySelf = StringUtils.equals(user.getId(), accountId);
 
+        mActionButton.setVisibility(isMySelf ? View.GONE : View.VISIBLE);
+
         final LayoutInflater inflater = UserActivity.this.getLayoutInflater();
 
         final ArrayList<Skill> learningSkills = Utils.arrayListFrom(user.getLearningSkills());

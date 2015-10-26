@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/item_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/item_content"
     android:background="?selectableItemBackground"
     android:padding="@dimen/element_spacing_normal">
 
@@ -24,11 +24,25 @@
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginRight="@dimen/element_spacing_normal"
         android:layout_toEndOf="@+id/profile_image"
+        android:layout_toLeftOf="@+id/skill_container"
         android:layout_toRightOf="@+id/profile_image"
+        android:layout_toStartOf="@+id/skill_container"
         android:gravity="center_vertical"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="?android:textColorLink"
         tools:text="Name"/>
+
+    <FrameLayout
+        android:id="@+id/skill_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/name"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/name">
+
+        <include layout="@layout/layout_skill_label_button"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/text"
