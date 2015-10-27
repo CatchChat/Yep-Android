@@ -17,7 +17,7 @@ import catchla.yep.view.TabPagerIndicator;
 /**
  * Created by mariotaku on 15/6/2.
  */
-public class SkillActivity extends SwipeBackContentActivity implements Constants {
+public class SkillUsersActivity extends SwipeBackContentActivity implements Constants {
 
     private ViewPager mViewPager;
     private TabPagerIndicator mPagerTab;

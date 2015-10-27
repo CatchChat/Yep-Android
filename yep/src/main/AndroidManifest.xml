@@ -48,7 +48,15 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
-            android:name=".activity.SkillActivity"
+            android:name=".activity.SkillUsersActivity"
+            android:label="@string/skill"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.MainActivity"/>
+        </activity>
+        <activity
+            android:name=".activity.SkillUpdatesActivity"
             android:label="@string/skill"
             android:theme="@style/Theme.Yep.Content">
             <meta-data

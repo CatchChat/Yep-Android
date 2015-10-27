@@ -19,7 +19,7 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.activity.NewTopicActivity;
-import catchla.yep.activity.SkillActivity;
+import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.TopicChatActivity;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
@@ -143,7 +143,7 @@ public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAda
 
     @Override
     public void onSkillClick(final int position, final TopicViewHolder holder) {
-        final Intent intent = new Intent(getContext(), SkillActivity.class);
+        final Intent intent = new Intent(getContext(), SkillUpdatesActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_SKILL, getAdapter().getTopic(position).getSkill());
         startActivity(intent);

@@ -196,7 +196,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public void onClick(final View v) {
                 final Skill skill = (Skill) v.getTag();
-                final Intent intent = new Intent(UserActivity.this, SkillActivity.class);
+                final Intent intent = new Intent(UserActivity.this, SkillUsersActivity.class);
                 intent.putExtra(EXTRA_ACCOUNT, getAccount());
                 intent.putExtra(EXTRA_SKILL, skill);
                 startActivity(intent);
