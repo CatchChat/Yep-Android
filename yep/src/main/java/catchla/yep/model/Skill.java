@@ -111,4 +111,24 @@ public class Skill implements Parcelable {
                 ", category=" + category +
                 '}';
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Skill skill = (Skill) o;
+
+        return !(id != null ? !id.equals(skill.id) : skill.id != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    public static Skill getDummy() {
+        return new Skill();
+    }
 }

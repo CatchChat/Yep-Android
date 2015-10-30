@@ -24,11 +24,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mariotaku.restfu.http.RestHttpClient;
 
 import java.io.File;
@@ -42,6 +46,7 @@ import java.util.Set;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.Attachment;
@@ -49,8 +54,10 @@ import catchla.yep.model.NewAttachmentFile;
 import catchla.yep.model.NewImageAttachment;
 import catchla.yep.model.NewTopic;
 import catchla.yep.model.S3UploadToken;
+import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
+import catchla.yep.model.User;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
@@ -73,6 +80,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
     private RecyclerView mTopicMediaView;
     private TopicMediaAdapter mTopicMediaAdapter;
     private Runnable mDismissUploadingDialogRunnable;
+    private Spinner mTopicSpinner;
     private SharedPreferences mPreferences;
     private boolean mDraftsSaved;
     private boolean mShouldSkipSaveDrafts;
@@ -90,6 +98,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         super.onContentChanged();
         mEditText = (EditText) findViewById(R.id.edit_text);
         mTopicMediaView = (RecyclerView) findViewById(R.id.topic_media);
+        mTopicSpinner = (Spinner) findViewById(R.id.topics_spinner);
     }
 
     @Override
@@ -110,6 +119,22 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             mEditText.setText(mPreferences.getString(KEY_TOPIC_DRAFTS_TEXT, null));
             mTopicMediaAdapter.addAllMedia(mPreferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null));
             mEditText.setSelection(mEditText.length());
+        }
+        final Intent intent = getIntent();
+        final Skill skill = intent.getParcelableExtra(EXTRA_SKILL);
+        final SkillSpinnerAdapter adapter = new SkillSpinnerAdapter(this);
+        final User accountUser = Utils.getAccountUser(this, getAccount());
+        if (accountUser != null) {
+            adapter.add(Skill.getDummy());
+            if (skill != null) {
+                adapter.add(skill);
+            }
+            adapter.addAll(Utils.emptyIfNull(accountUser.getMasterSkills()));
+            adapter.addAll(Utils.emptyIfNull(accountUser.getLearningSkills()));
+        }
+        mTopicSpinner.setAdapter(adapter);
+        if (skill != null) {
+            mTopicSpinner.setSelection(adapter.findPositionBySkillId(skill.getId()));
         }
     }
 
@@ -194,6 +219,10 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         final String[] media = mTopicMediaAdapter.getMedia();
         final NewTopic newTopic = new NewTopic();
         newTopic.body(body);
+        final Skill skill = (Skill) mTopicSpinner.getSelectedItem();
+        if (skill != null && skill.getId() != null) {
+            newTopic.skillId(skill.getId());
+        }
         newTopic.location(location.getLatitude(), location.getLongitude());
         final TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity> taskRunnable = new TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
             @Override
@@ -469,6 +498,44 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
                     break;
                 }
             }
+        }
+    }
+
+    private static class SkillSpinnerAdapter extends ArrayAdapter<Skill> {
+        public SkillSpinnerAdapter(final NewTopicActivity activity) {
+            super(activity, android.R.layout.simple_expandable_list_item_1);
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        }
+
+        @Override
+        public View getDropDownView(final int position, final View convertView, final ViewGroup parent) {
+            final View view = super.getDropDownView(position, convertView, parent);
+            final TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            if (TextUtils.isEmpty(getItem(position).getId())) {
+                textView.setText(R.string.none);
+            } else {
+                textView.setText(Utils.getDisplayName(getItem(position)));
+            }
+            return view;
+        }
+
+        @Override
+        public View getView(final int position, final View convertView, final ViewGroup parent) {
+            final View view = super.getView(position, convertView, parent);
+            final TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            if (TextUtils.isEmpty(getItem(position).getId())) {
+                textView.setText(R.string.choose_skill);
+            } else {
+                textView.setText(Utils.getDisplayName(getItem(position)));
+            }
+            return view;
+        }
+
+        public int findPositionBySkillId(final String id) {
+            for (int i = 0, j = getCount(); i < j; i++) {
+                if (StringUtils.equals(id, getItem(i).getId())) return i;
+            }
+            return ListView.INVALID_POSITION;
         }
     }
 }

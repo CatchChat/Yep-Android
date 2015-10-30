@@ -27,6 +27,11 @@ public class NewTopic extends SimpleValueMap {
         return this;
     }
 
+    public NewTopic skillId(String skillId) {
+        put("skill_id", skillId);
+        return this;
+    }
+
     public <T extends NewAttachment> void attachment(final T attachment) {
         if (attachment == null) return;
         //noinspection unchecked

@@ -31,5 +31,15 @@
             android:layout_height="128dp"
             tools:listitem="@layout/adapter_item_topic_media_add"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/topic"/>
+
+        <Spinner
+            android:id="@+id/topics_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 </catchla.yep.view.TintedStatusFrameLayout>

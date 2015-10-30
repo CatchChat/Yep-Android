@@ -1,8 +1,9 @@
 package catchla.yep.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import catchla.yep.Constants;
@@ -12,6 +13,7 @@ import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.graphic.EmptyDrawable;
 import catchla.yep.model.Skill;
 import catchla.yep.util.ThemeUtils;
+import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
 
 /**
@@ -34,6 +36,21 @@ public class SkillUsersActivity extends SwipeBackContentActivity implements Cons
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_skill_users, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(final Menu menu) {
+        final MenuItem itemSkill = menu.findItem(R.id.add_skill);
+        final boolean hasSkill = Utils.hasSkill(Utils.getAccountUser(this, getAccount()), getSkill());
+        itemSkill.setVisible(!hasSkill);
+        itemSkill.setEnabled(!hasSkill);
+        return true;
+    }
+
+    @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_skill);
@@ -42,8 +59,7 @@ public class SkillUsersActivity extends SwipeBackContentActivity implements Cons
         mPagerTab.setViewPager(mViewPager);
         mPagerTab.updateAppearance();
 
-        final Intent intent = getIntent();
-        final Skill skill = intent.getParcelableExtra(EXTRA_SKILL);
+        final Skill skill = getSkill();
         displaySkill(skill);
         final Bundle masterArgs = new Bundle();
         masterArgs.putParcelable(EXTRA_ACCOUNT, getAccount());
@@ -58,6 +74,10 @@ public class SkillUsersActivity extends SwipeBackContentActivity implements Cons
         ThemeUtils.initPagerIndicatorAsActionBarTab(this, mPagerTab, mPagerOverlay);
         ThemeUtils.setCompatToolbarOverlay(this, new EmptyDrawable());
         ThemeUtils.setCompatContentViewOverlay(this, new EmptyDrawable());
+    }
+
+    private Skill getSkill() {
+        return getIntent().getParcelableExtra(EXTRA_SKILL);
     }
 
     private void displaySkill(final Skill skill) {

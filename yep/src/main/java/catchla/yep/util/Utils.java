@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -439,5 +440,22 @@ public class Utils implements Constants {
 
     public static String getDisplayName(final Skill skill) {
         return TextUtils.isEmpty(skill.getNameString()) ? skill.getName() : skill.getNameString();
+    }
+
+    public static <T> List<T> emptyIfNull(final List<T> list) {
+        if (list != null) return list;
+        return Collections.emptyList();
+    }
+
+    public static boolean hasSkill(final User user, final Skill skill) {
+        final List<Skill> learning = user.getLearningSkills();
+        final List<Skill> mastered = user.getLearningSkills();
+        if (learning != null && learning.contains(skill)) {
+            return true;
+        }
+        if (mastered != null && mastered.contains(skill)) {
+            return true;
+        }
+        return false;
     }
 }

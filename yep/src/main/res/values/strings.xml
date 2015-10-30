@@ -179,4 +179,8 @@
     </string>
     <string name="user">User</string>
     <string name="new_topic_hint">Share something to us :)</string>
+    <string name="related_users">Related users</string>
+    <string name="choose_skill">Choose skill</string>
+    <string name="none">None</string>
+    <string name="add_to_my_skills">Add to my skills</string>
 </resources>
