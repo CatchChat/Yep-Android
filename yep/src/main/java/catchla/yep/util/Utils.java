@@ -21,6 +21,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
@@ -442,6 +443,14 @@ public class Utils implements Constants {
         return TextUtils.isEmpty(skill.getNameString()) ? skill.getName() : skill.getNameString();
     }
 
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    public static <T extends Parcelable> T[] newParcelableArray(Parcelable[] array, Parcelable.Creator<T> creator) {
+        if (array == null) return null;
+        final T[] result = creator.newArray(array.length);
+        System.arraycopy(array, 0, result, 0, array.length);
+        return result;
+    }
+
     public static <T> List<T> emptyIfNull(final List<T> list) {
         if (list != null) return list;
         return Collections.emptyList();
@@ -449,7 +458,7 @@ public class Utils implements Constants {
 
     public static boolean hasSkill(final User user, final Skill skill) {
         final List<Skill> learning = user.getLearningSkills();
-        final List<Skill> mastered = user.getLearningSkills();
+        final List<Skill> mastered = user.getMasterSkills();
         if (learning != null && learning.contains(skill)) {
             return true;
         }

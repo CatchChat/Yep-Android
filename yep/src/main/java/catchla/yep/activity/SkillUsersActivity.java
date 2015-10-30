@@ -3,7 +3,6 @@ package catchla.yep.activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import catchla.yep.Constants;
@@ -12,6 +11,7 @@ import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.graphic.EmptyDrawable;
 import catchla.yep.model.Skill;
+import catchla.yep.util.MenuUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -43,10 +43,8 @@ public class SkillUsersActivity extends SwipeBackContentActivity implements Cons
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-        final MenuItem itemSkill = menu.findItem(R.id.add_skill);
         final boolean hasSkill = Utils.hasSkill(Utils.getAccountUser(this, getAccount()), getSkill());
-        itemSkill.setVisible(!hasSkill);
-        itemSkill.setEnabled(!hasSkill);
+        MenuUtils.setMenuItemAvailability(menu, R.id.add_skill, !hasSkill);
         return true;
     }
 

@@ -1,6 +1,7 @@
 package catchla.yep.view.holder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +14,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.Attachment;
@@ -124,7 +127,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         messagesCountView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private static class TopicAttachmentsAdapter extends BaseRecyclerViewAdapter {
+    private static class TopicAttachmentsAdapter extends BaseRecyclerViewAdapter implements Constants {
         private static final int VIEW_TYPE_ITEM = 1;
         private final LayoutInflater mInflater;
         private List<Attachment> mAttachments;
@@ -181,6 +184,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
             public TopicMediaItemHolder(final View itemView, final TopicAttachmentsAdapter adapter) {
                 super(itemView);
+                itemView.setOnClickListener(this);
                 this.adapter = adapter;
                 this.mediaPreviewView = (ImageView) itemView.findViewById(R.id.media_preview);
                 this.mediaRemoveView = (ImageView) itemView.findViewById(R.id.media_remove);
@@ -196,8 +200,19 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
             @Override
             public void onClick(final View v) {
                 switch (v.getId()) {
+                    case R.id.item_content: {
+                        adapter.notifyMediaClicked(getLayoutPosition());
+                        break;
+                    }
                 }
             }
+        }
+
+        private void notifyMediaClicked(final int position) {
+            final Intent intent = new Intent(getContext(), MediaViewerActivity.class);
+            intent.putExtra(EXTRA_MEDIA, mAttachments.toArray(new Attachment[mAttachments.size()]));
+            intent.putExtra(EXTRA_CURRENT_MEDIA, mAttachments.get(position));
+            getContext().startActivity(intent);
         }
 
     }

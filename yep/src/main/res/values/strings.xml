@@ -183,4 +183,7 @@
     <string name="choose_skill">Choose skill</string>
     <string name="none">None</string>
     <string name="add_to_my_skills">Add to my skills</string>
+    <string name="refresh">Refresh</string>
+    <string name="unable_to_load_media">Unable to load media</string>
+    <string name="media">Media</string>
 </resources>

@@ -114,6 +114,25 @@ public class Attachment implements Parcelable {
         }
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Attachment that = (Attachment) o;
+
+        if (kind != null ? !kind.equals(that.kind) : that.kind != null) return false;
+        return !(file != null ? !file.equals(that.file) : that.file != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = kind != null ? kind.hashCode() : 0;
+        result = 31 * result + (file != null ? file.hashCode() : 0);
+        return result;
+    }
+
     @JsonObject
     public static class ImageMetadata implements Metadata {
         @JsonField(name = "image_width")

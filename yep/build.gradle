@@ -71,6 +71,10 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.12'
     compile 'com.google.dagger:dagger:2.0.1'
     compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.0'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
+    compile 'com.sprylab.android.texturevideoview:texturevideoview:1.0.1'
+    compile 'com.pnikosis:materialish-progress:1.7'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
     debugCompile 'com.facebook.stetho:stetho-okhttp:1.1.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])

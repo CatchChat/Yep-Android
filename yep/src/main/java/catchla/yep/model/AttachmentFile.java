@@ -39,6 +39,28 @@ public class AttachmentFile implements Parcelable {
 
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final AttachmentFile that = (AttachmentFile) o;
+
+        if (storage != null ? !storage.equals(that.storage) : that.storage != null) return false;
+        if (expiresIn != null ? !expiresIn.equals(that.expiresIn) : that.expiresIn != null)
+            return false;
+        return !(url != null ? !url.equals(that.url) : that.url != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = storage != null ? storage.hashCode() : 0;
+        result = 31 * result + (expiresIn != null ? expiresIn.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        return result;
+    }
+
     protected AttachmentFile(Parcel in) {
         AttachmentFileParcelablePlease.readFromParcel(this, in);
     }
