@@ -27,7 +27,7 @@ public class DribbbleShotsLoader extends CachedYepObjectLoader<DribbbleShots> {
     }
 
     @Override
-    protected DribbbleShots requestData(final YepAPI yep) throws YepException {
+    protected DribbbleShots requestData(final YepAPI yep, DribbbleShots oldData) throws YepException {
         return yep.getDribbbleShots(mYepUserId);
     }
 

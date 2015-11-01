@@ -22,7 +22,7 @@ public class SearchUsersLoader extends CachedYepListLoader<User> implements Cons
     private final String mQuery;
 
     public SearchUsersLoader(Context context, Account account, String query) {
-        super(context, account, User.class, false, false);
+        super(context, account, User.class, null, false, false);
         mQuery = query;
     }
 
@@ -33,7 +33,7 @@ public class SearchUsersLoader extends CachedYepListLoader<User> implements Cons
     }
 
     @Override
-    protected List<User> requestData(final YepAPI yep) throws YepException {
+    protected List<User> requestData(final YepAPI yep, List<User> oldData) throws YepException {
         final Paging paging = new Paging();
         int page = 1;
         final List<User> list = new ArrayList<>();

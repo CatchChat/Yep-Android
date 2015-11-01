@@ -17,13 +17,14 @@ public abstract class CachedYepListLoader<E> extends CachedYepLoader<List<E>> {
 
     private final Class<E> mObjectClass;
 
-    public CachedYepListLoader(Context context, Account account, Class<E> objectClass, boolean readCache, boolean writeCache) {
-        super(context, account, readCache, writeCache);
+    public CachedYepListLoader(Context context, Account account, Class<E> objectClass, List<E> oldData,
+                               boolean readCache, boolean writeCache) {
+        super(context, account, oldData, readCache, writeCache);
         mObjectClass = objectClass;
     }
 
     @Override
-    protected void serlialize(final List<E> data, final FileOutputStream os) throws IOException {
+    protected void serialize(final List<E> data, final FileOutputStream os) throws IOException {
         LoganSquare.serialize(data, os, mObjectClass);
     }
 

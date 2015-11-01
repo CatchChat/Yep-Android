@@ -41,6 +41,7 @@ public interface Constants {
     String EXTRA_CONVERSATION = "conversation";
     String EXTRA_SKILL = "skill";
     String EXTRA_READ_CACHE = "read_cache";
+    String EXTRA_READ_OLD = "read_old";
     String EXTRA_LEARNING = "learning";
     String EXTRA_MASTER = "master";
     String EXTRA_PROVIDER_NAME = "provider_name";
@@ -48,6 +49,7 @@ public interface Constants {
     String EXTRA_QUERY = "query";
     String EXTRA_MEDIA = "media";
     String EXTRA_CURRENT_MEDIA = "current_media";
+    String EXTRA_PAGE = "extra_page";
 
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;

@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import catchla.yep.R;
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Topic;
+import catchla.yep.view.holder.LoadIndicatorViewHolder;
 import catchla.yep.view.holder.TopicViewHolder;
 
 /**
@@ -41,19 +41,32 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
-        return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_VIEW_TYPE_USER_ITEM: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+            }
+            case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
+                final View view = mInflater.inflate(R.layout.card_item_load_indicator, parent, false);
+                return new LoadIndicatorViewHolder(view);
+            }
+        }
+        throw new UnsupportedOperationException("Unknown viewType " + viewType);
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
         return ITEM_VIEW_TYPE_USER_ITEM;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
+            case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
+                break;
+            }
             case ITEM_VIEW_TYPE_USER_ITEM: {
                 final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
                 topicViewHolder.displayTopic(mData.get(position));
@@ -64,6 +77,10 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public int getItemCount() {
+        return (isLoadMoreIndicatorVisible() ? 1 : 0) + getTopicsCount();
+    }
+
+    public int getTopicsCount() {
         if (mData == null) return 0;
         return mData.size();
     }
@@ -76,6 +93,10 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
 
     public Topic getTopic(final int position) {
         return mData.get(position);
+    }
+
+    public List<Topic> getTopics() {
+        return mData;
     }
 
     public interface TopicClickAdapter extends ItemClickListener {

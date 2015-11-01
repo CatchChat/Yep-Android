@@ -25,6 +25,7 @@ import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
+import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
 import catchla.yep.view.holder.TopicViewHolder;
@@ -35,6 +36,8 @@ import catchla.yep.view.holder.TopicViewHolder;
 public class TopicsListFragment extends AbsContentListRecyclerViewFragment<TopicsAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
         IActionButtonSupportFragment {
+
+    private int mPage = 1;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -68,18 +71,33 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     public Loader<TaskResponse<List<Topic>>> onCreateLoader(final int id, final Bundle args) {
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
+        final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache);
         boolean writeCache = true;
         if (fragmentArgs != null) {
 
         }
-        return new DiscoverTopicsLoader(getActivity(), getAccount(), Topic.SortOrder.TIME, readCache, writeCache);
+        final Paging paging = new Paging();
+        paging.page(args.getInt(EXTRA_PAGE, 1));
+        final List<Topic> oldData;
+        if (readOld) {
+            oldData = getAdapter().getTopics();
+        } else {
+            oldData = null;
+        }
+        return new DiscoverTopicsLoader(getActivity(), getAccount(), Topic.SortOrder.TIME,
+                oldData, paging, readCache, writeCache);
     }
 
     @Override
     public void onLoadFinished(final Loader<TaskResponse<List<Topic>>> loader, final TaskResponse<List<Topic>> data) {
-        getAdapter().setData(data.getData());
+        final TopicsAdapter adapter = getAdapter();
+        final List<Topic> list = data.getData();
+        adapter.setData(list);
+        adapter.setLoadMoreSupported(list != null && !list.isEmpty());
         showContent();
         setRefreshing(false);
+        setRefreshEnabled(true);
+        setLoadMoreIndicatorVisible(false);
     }
 
     @Override
@@ -139,6 +157,16 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         final Intent intent = new Intent(getContext(), NewTopicActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         startActivity(intent);
+    }
+
+    @Override
+    public void onLoadMoreContents() {
+        super.onLoadMoreContents();
+        final Bundle loaderArgs = new Bundle();
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
+        loaderArgs.putBoolean(EXTRA_READ_OLD, true);
+        loaderArgs.putInt(EXTRA_PAGE, ++mPage);
+        getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
     @Override

@@ -22,11 +22,13 @@ import catchla.yep.util.YepException;
 public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>> {
 
     private final Account mAccount;
+    private final T mOldData;
     private final boolean mReadCache, mWriteCache;
 
-    public CachedYepLoader(Context context, Account account, boolean readCache, boolean writeCache) {
+    public CachedYepLoader(Context context, Account account, T oldData, boolean readCache, boolean writeCache) {
         super(context);
         mAccount = account;
+        mOldData = oldData;
         mReadCache = readCache;
         mWriteCache = writeCache;
     }
@@ -48,12 +50,12 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>
                     Utils.closeSilently(is);
                 }
             }
-            final T data = requestData(yep);
+            final T data = requestData(yep, mOldData);
             if (mWriteCache) {
                 FileOutputStream os = null;
                 try {
                     os = new FileOutputStream(cacheFile);
-                    serlialize(data, os);
+                    serialize(data, os);
                     os.flush();
                     os.close();
                 } catch (IOException e) {
@@ -73,14 +75,14 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>
         forceLoad();
     }
 
-    protected abstract void serlialize(final T data, final FileOutputStream os) throws IOException;
+    protected abstract void serialize(final T data, final FileOutputStream os) throws IOException;
 
     protected abstract T deserialize(final FileInputStream is) throws IOException;
 
     @NonNull
     protected abstract String getCacheFileName();
 
-    protected abstract T requestData(final YepAPI yep) throws YepException;
+    protected abstract T requestData(final YepAPI yep, final T oldData) throws YepException;
 
     protected final Account getAccount() {
         return mAccount;

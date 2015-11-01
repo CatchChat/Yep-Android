@@ -27,7 +27,7 @@ public class GithubUserInfoLoader extends CachedYepObjectLoader<GithubUserInfo> 
     }
 
     @Override
-    protected GithubUserInfo requestData(final YepAPI yep) throws YepException {
+    protected GithubUserInfo requestData(final YepAPI yep, GithubUserInfo oldData) throws YepException {
         return yep.getGithubUserInfo(mYepUserId);
     }
 

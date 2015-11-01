@@ -20,7 +20,7 @@ import catchla.yep.util.YepException;
 public class BlockedUsersLoader extends CachedYepListLoader<User> implements Constants {
 
     public BlockedUsersLoader(Context context, Account account) {
-        super(context, account, User.class, false, false);
+        super(context, account, User.class, null, false, false);
     }
 
     @NonNull
@@ -30,7 +30,7 @@ public class BlockedUsersLoader extends CachedYepListLoader<User> implements Con
     }
 
     @Override
-    protected List<User> requestData(final YepAPI yep) throws YepException {
+    protected List<User> requestData(final YepAPI yep, List<User> data) throws YepException {
         final Paging paging = new Paging();
         int page = 1;
         final List<User> list = new ArrayList<>();

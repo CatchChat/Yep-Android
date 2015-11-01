@@ -17,12 +17,12 @@ public abstract class CachedYepObjectLoader<T> extends CachedYepLoader<T> {
     private final Class<? extends T> mObjectClass;
 
     public CachedYepObjectLoader(Context context, Account account, Class<? extends T> objectClass, boolean readCache, boolean writeCache) {
-        super(context, account, readCache, writeCache);
+        super(context, account, null, readCache, writeCache);
         mObjectClass = objectClass;
     }
 
     @Override
-    protected void serlialize(final T data, final FileOutputStream os) throws IOException {
+    protected void serialize(final T data, final FileOutputStream os) throws IOException {
         LoganSquare.serialize(data, os);
     }
 

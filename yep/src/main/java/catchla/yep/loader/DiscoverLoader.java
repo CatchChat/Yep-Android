@@ -23,7 +23,7 @@ public class DiscoverLoader extends CachedYepListLoader<User> implements Constan
     private final DiscoverQuery mQuery;
 
     public DiscoverLoader(Context context, Account account, DiscoverQuery query, boolean readCache, boolean writeCache) {
-        super(context, account, User.class, readCache, writeCache);
+        super(context, account, User.class, null, readCache, writeCache);
         mQuery = query;
     }
 
@@ -34,7 +34,7 @@ public class DiscoverLoader extends CachedYepListLoader<User> implements Constan
     }
 
     @Override
-    protected List<User> requestData(final YepAPI yep) throws YepException {
+    protected List<User> requestData(final YepAPI yep, List<User> oldData) throws YepException {
         final Paging paging = new Paging();
         int page = 1;
         final List<User> list = new ArrayList<>();

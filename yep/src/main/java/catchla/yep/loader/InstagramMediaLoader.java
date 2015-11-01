@@ -27,7 +27,7 @@ public class InstagramMediaLoader extends CachedYepObjectLoader<InstagramMediaLi
     }
 
     @Override
-    protected InstagramMediaList requestData(final YepAPI yep) throws YepException {
+    protected InstagramMediaList requestData(final YepAPI yep, InstagramMediaList oldData) throws YepException {
         return yep.getInstagramMediaList(mYepUserId);
     }
 
