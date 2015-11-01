@@ -21,8 +21,7 @@ import catchla.yep.view.holder.TopicViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class TopicsAdapter extends BaseRecyclerViewAdapter
-        implements ILoadMoreSupportAdapter {
+public class TopicsAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
 
     private final LayoutInflater mInflater;
@@ -69,25 +68,6 @@ public class TopicsAdapter extends BaseRecyclerViewAdapter
         return mData.size();
     }
 
-    @Override
-    public boolean isLoadMoreIndicatorVisible() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreIndicatorVisible(boolean enabled) {
-
-    }
-
-    @Override
-    public boolean isLoadMoreSupported() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreSupported(boolean supported) {
-
-    }
 
     public void setData(final List<Topic> data) {
         mData = data;

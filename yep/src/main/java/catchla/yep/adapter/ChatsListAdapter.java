@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import catchla.yep.R;
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Conversation;
 import catchla.yep.util.ImageLoaderWrapper;
@@ -22,7 +21,7 @@ import catchla.yep.view.holder.ChatEntryViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListAdapter extends BaseRecyclerViewAdapter implements ILoadMoreSupportAdapter {
+public class ChatsListAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     private final LayoutInflater mInflater;
     private List<Conversation> mData;
@@ -63,26 +62,6 @@ public class ChatsListAdapter extends BaseRecyclerViewAdapter implements ILoadMo
     public int getItemCount() {
         if (mData == null) return 0;
         return mData.size();
-    }
-
-    @Override
-    public boolean isLoadMoreIndicatorVisible() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreIndicatorVisible(boolean enabled) {
-
-    }
-
-    @Override
-    public boolean isLoadMoreSupported() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreSupported(boolean supported) {
-
     }
 
     public void setData(final List<Conversation> data) {

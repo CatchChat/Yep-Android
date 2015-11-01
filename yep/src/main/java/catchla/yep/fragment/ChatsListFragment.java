@@ -39,7 +39,7 @@ import catchla.yep.service.MessageService;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListFragment extends AbsContentRecyclerViewFragment<ChatsListAdapter> implements Constants,
+public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsListAdapter> implements Constants,
         LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
 
     @Override

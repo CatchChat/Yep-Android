@@ -17,7 +17,7 @@ import java.util.List;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.MediaViewerActivity;
-import catchla.yep.adapter.BaseRecyclerViewAdapter;
+import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.LatLng;
@@ -127,7 +127,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         messagesCountView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private static class TopicAttachmentsAdapter extends BaseRecyclerViewAdapter implements Constants {
+    private static class TopicAttachmentsAdapter extends LoadMoreSupportAdapter implements Constants {
         private static final int VIEW_TYPE_ITEM = 1;
         private final LayoutInflater mInflater;
         private List<Attachment> mAttachments;

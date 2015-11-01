@@ -18,7 +18,7 @@ import catchla.yep.model.User;
 /**
  * Created by mariotaku on 15/8/25.
  */
-public class SearchUsersFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
+public class SearchUsersFragment extends AbsContentListRecyclerViewFragment<UsersAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>> {
 
     @Override

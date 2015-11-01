@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import catchla.yep.R;
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.User;
 import catchla.yep.view.holder.FriendViewHolder;
@@ -21,7 +20,7 @@ import catchla.yep.view.holder.FriendViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class UsersGridAdapter extends BaseRecyclerViewAdapter implements ILoadMoreSupportAdapter {
+public class UsersGridAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
 
     private final LayoutInflater mInflater;
@@ -68,25 +67,6 @@ public class UsersGridAdapter extends BaseRecyclerViewAdapter implements ILoadMo
         return mData.size();
     }
 
-    @Override
-    public boolean isLoadMoreIndicatorVisible() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreIndicatorVisible(boolean enabled) {
-
-    }
-
-    @Override
-    public boolean isLoadMoreSupported() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreSupported(boolean supported) {
-
-    }
 
     public void setData(final List<User> data) {
         mData = data;

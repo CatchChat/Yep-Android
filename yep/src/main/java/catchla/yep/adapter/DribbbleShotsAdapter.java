@@ -14,7 +14,7 @@ import catchla.yep.view.holder.DribbbleShotViewHolder;
 /**
  * Created by mariotaku on 15/6/4.
  */
-public class DribbbleShotsAdapter extends BaseRecyclerViewAdapter {
+public class DribbbleShotsAdapter extends LoadMoreSupportAdapter {
     private final LayoutInflater mLayoutInflater;
     private List<DribbbleShot> mShots;
 

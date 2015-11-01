@@ -15,7 +15,7 @@ import catchla.yep.view.holder.InstagramMediaViewHolder;
 /**
  * Created by mariotaku on 15/6/4.
  */
-public class InstagramMediaAdapter extends BaseRecyclerViewAdapter {
+public class InstagramMediaAdapter extends LoadMoreSupportAdapter {
     private final LayoutInflater mLayoutInflater;
     private List<InstagramMedia> mShots;
 

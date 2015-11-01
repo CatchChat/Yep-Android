@@ -40,7 +40,7 @@ import catchla.yep.service.MessageService;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class FriendsListFragment extends AbsContentRecyclerViewFragment<FriendsListAdapter>
+public class FriendsListFragment extends AbsContentListRecyclerViewFragment<FriendsListAdapter>
         implements LoaderManager.LoaderCallbacks<List<Friendship>>, IActionButtonSupportFragment {
 
     @Override

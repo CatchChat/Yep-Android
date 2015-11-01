@@ -34,7 +34,7 @@ import catchla.yep.model.User;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class DiscoverGridFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
+public class DiscoverGridFragment extends AbsContentListRecyclerViewFragment<UsersAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
 
     @Override

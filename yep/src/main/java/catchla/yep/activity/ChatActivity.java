@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
+import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
@@ -463,7 +464,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         });
     }
 
-    public static class ChatAdapter extends BaseRecyclerViewAdapter {
+    public static class ChatAdapter extends LoadMoreSupportAdapter {
 
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
         private static final int VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001;

@@ -48,6 +48,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
+import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.NewAttachmentFile;
@@ -333,7 +334,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         });
     }
 
-    private static class TopicMediaAdapter extends BaseRecyclerViewAdapter {
+    private static class TopicMediaAdapter extends LoadMoreSupportAdapter {
         private static final int VIEW_TYPE_ADD = 1;
         private static final int VIEW_TYPE_ITEM = 2;
         private final LayoutInflater mInflater;

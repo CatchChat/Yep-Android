@@ -1,10 +1,24 @@
 /*
- * Copyright (c) 2015. Catch Inc,
+ *                 Twidere - Twitter client for Android
+ *
+ *  Copyright (C) 2012-2015 Mariotaku Lee <mariotaku.lee@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package catchla.yep.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -12,12 +26,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.FixedLinearLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -26,23 +36,22 @@ import android.widget.TextView;
 
 import catchla.yep.R;
 import catchla.yep.activity.iface.IControlBarActivity;
-import catchla.yep.adapter.decorator.DividerItemDecoration;
+import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.util.ContentListScrollListener;
 import catchla.yep.util.SimpleDrawerCallback;
 import catchla.yep.util.ThemeUtils;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.view.HeaderDrawerLayout;
 
 
 /**
- * Created by mariotaku on 15/4/16.
+ * Created by mariotaku on 15/10/26.
  */
-public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportAdapter> extends BaseFragment
-        implements OnRefreshListener, HeaderDrawerLayout.DrawerCallback, RefreshScrollTopInterface,
-        IControlBarActivity.ControlBarOffsetListener, ContentListScrollListener.ContentListSupport {
+public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAdapter, L extends RecyclerView.LayoutManager> extends BaseFragment
+        implements SwipeRefreshLayout.OnRefreshListener, HeaderDrawerLayout.DrawerCallback,
+        RefreshScrollTopInterface, IControlBarActivity.ControlBarOffsetListener,
+        ContentListScrollListener.ContentListSupport {
 
     private View mProgressContainer;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -51,7 +60,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
     private ImageView mErrorIconView;
     private TextView mErrorTextView;
 
-    private LinearLayoutManager mLayoutManager;
+    private L mLayoutManager;
     private A mAdapter;
 
     // Callbacks and listeners
@@ -104,11 +113,13 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
 
     @Override
     public boolean scrollToStart() {
-        mLayoutManager.scrollToPositionWithOffset(0, 0);
+        scrollToPositionWithOffset(0, 0);
         mRecyclerView.stopScroll();
         setControlVisible(true);
         return true;
     }
+
+    protected abstract void scrollToPositionWithOffset(int position, int offset);
 
     @Override
     public void setControlVisible(boolean visible) {
@@ -136,7 +147,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
     @Override
     public abstract boolean isRefreshing();
 
-    public LinearLayoutManager getLayoutManager() {
+    public L getLayoutManager() {
         return mLayoutManager;
     }
 
@@ -184,24 +195,20 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mSwipeRefreshLayout.setColorSchemeColors(ThemeUtils.getColorAccent(context));
         mAdapter = onCreateAdapter(context);
-        mLayoutManager = new FixedLinearLayoutManager(context);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mLayoutManager = onCreateLayoutManager(context);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    updateRefreshProgressOffset();
-                }
-                return false;
-            }
-        });
-        mRecyclerView.setAdapter((RecyclerView.Adapter) mAdapter);
+        setupRecyclerView(context);
+        mRecyclerView.setAdapter(mAdapter);
 
         mScrollListener = new ContentListScrollListener(this);
         mScrollListener.setTouchSlop(ViewConfiguration.get(context).getScaledTouchSlop());
     }
+
+    protected abstract void setupRecyclerView(Context context);
+
+    @NonNull
+    protected abstract L onCreateLayoutManager(Context context);
 
     @Override
     public void onStart() {
@@ -235,9 +242,16 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
         super.onDetach();
     }
 
+    @NonNull
+    protected Rect getExtraContentPadding() {
+        return new Rect();
+    }
+
     @Override
     protected void fitSystemWindows(Rect insets) {
-        mRecyclerView.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+        final Rect extraPadding = getExtraContentPadding();
+        mRecyclerView.setPadding(insets.left + extraPadding.left, insets.top + extraPadding.top,
+                insets.right + extraPadding.right, insets.bottom + extraPadding.bottom);
         mErrorContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         mProgressContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         mSystemWindowsInsets.set(insets);
@@ -290,17 +304,20 @@ public abstract class AbsContentRecyclerViewFragment<A extends ILoadMoreSupportA
 
     protected void updateRefreshProgressOffset() {
         final FragmentActivity activity = getActivity();
-        if (!(activity instanceof IControlBarActivity) || mSystemWindowsInsets.top == 0 || mSwipeRefreshLayout == null
+        final Rect insets = this.mSystemWindowsInsets;
+        final SwipeRefreshLayout layout = this.mSwipeRefreshLayout;
+        if (!(activity instanceof IControlBarActivity) || insets.top == 0 || layout == null
                 || isRefreshing()) {
             return;
         }
+        final int progressCircleDiameter = layout.getProgressCircleDiameter();
+        if (progressCircleDiameter == 0) return;
         final float density = getResources().getDisplayMetrics().density;
-        final int progressCircleDiameter = mSwipeRefreshLayout.getProgressCircleDiameter();
         final IControlBarActivity control = (IControlBarActivity) activity;
         final int controlBarOffsetPixels = Math.round(control.getControlBarHeight() * (1 - control.getControlBarOffset()));
-        final int swipeStart = (mSystemWindowsInsets.top - controlBarOffsetPixels) - progressCircleDiameter;
+        final int swipeStart = (insets.top - controlBarOffsetPixels) - progressCircleDiameter;
         // 64: SwipeRefreshLayout.DEFAULT_CIRCLE_TARGET
         final int swipeDistance = Math.round(64 * density);
-        mSwipeRefreshLayout.setProgressViewOffset(false, swipeStart, swipeStart + swipeDistance);
+        layout.setProgressViewOffset(false, swipeStart, swipeStart + swipeDistance);
     }
 }

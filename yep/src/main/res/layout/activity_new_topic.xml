@@ -34,12 +34,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/topic"/>
+            android:layout_marginLeft="@dimen/element_spacing_normal"
+            android:layout_marginStart="@dimen/element_spacing_normal"
+            android:text="@string/topic"
+            android:textStyle="bold"/>
 
         <Spinner
             android:id="@+id/topics_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/element_spacing_normal"/>
 
     </LinearLayout>
 </catchla.yep.view.TintedStatusFrameLayout>

@@ -18,7 +18,7 @@ import catchla.yep.util.Utils;
 /**
  * Created by mariotaku on 15/10/10.
  */
-public class BlockedUsersFragment extends AbsContentRecyclerViewFragment<UsersAdapter>
+public class BlockedUsersFragment extends AbsContentListRecyclerViewFragment<UsersAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>> {
 
     @Override

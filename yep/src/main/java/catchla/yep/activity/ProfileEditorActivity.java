@@ -85,12 +85,17 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         final Account account = getAccount();
         final User user = Utils.getAccountUser(this, account);
         if (user != null) {
-            onProfileUpdated(user);
+            displayUser(user);
         }
     }
 
     @Override
     public void onProfileUpdated(final User user) {
+        displayUser(user);
+        finish();
+    }
+
+    private void displayUser(final User user) {
         mCurrentUser = user;
         final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
         mImageLoader.displayProfileImage(url, mProfileImageView);
@@ -98,7 +103,6 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());
         mEditIntroduction.setText(user.getIntroduction());
-        finish();
     }
 
     public static class LogoutConfirmDialogFragment extends DialogFragment {

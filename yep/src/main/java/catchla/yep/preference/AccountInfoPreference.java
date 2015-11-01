@@ -27,12 +27,11 @@ import catchla.yep.util.dagger.DaggerGeneralComponent;
  */
 public class AccountInfoPreference extends Preference implements Constants {
 
-    @Inject
-    ImageLoaderWrapper mImageLoader;
-
     private final AccountManager mAccountManager;
     private final Account mAccount;
     private final User mAccountUser;
+    @Inject
+    ImageLoaderWrapper mImageLoader;
 
     public AccountInfoPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -47,6 +46,10 @@ public class AccountInfoPreference extends Preference implements Constants {
         this(context, attrs, android.R.attr.preferenceStyle);
     }
 
+    public AccountInfoPreference(Context context) {
+        this(context, null);
+    }
+
     @Override
     protected void onBindView(@NonNull final View view) {
         super.onBindView(view);
@@ -58,10 +61,6 @@ public class AccountInfoPreference extends Preference implements Constants {
             nameView.setText(mAccountUser.getNickname());
             introductionView.setText(mAccountUser.getIntroduction());
         }
-    }
-
-    public AccountInfoPreference(Context context) {
-        this(context, null);
     }
 
     @Override

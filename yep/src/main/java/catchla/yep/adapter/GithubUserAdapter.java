@@ -15,7 +15,7 @@ import catchla.yep.view.holder.GithubUserHeaderViewHolder;
 /**
  * Created by mariotaku on 15/6/4.
  */
-public class GithubUserAdapter extends BaseRecyclerViewAdapter {
+public class GithubUserAdapter extends LoadMoreSupportAdapter {
 
     private static final int VIEW_TYPE_HEADER = 1;
     private static final int VIEW_TYPE_ITEM = 2;

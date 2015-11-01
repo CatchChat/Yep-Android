@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import catchla.yep.R;
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Friendship;
 import catchla.yep.view.holder.FriendViewHolder;
@@ -21,7 +20,7 @@ import catchla.yep.view.holder.FriendViewHolder;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class FriendsListAdapter extends BaseRecyclerViewAdapter implements ILoadMoreSupportAdapter {
+public class FriendsListAdapter extends LoadMoreSupportAdapter {
 
 
     private static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
@@ -76,28 +75,8 @@ public class FriendsListAdapter extends BaseRecyclerViewAdapter implements ILoad
         return mData.get(position);
     }
 
-    @Override
-    public boolean isLoadMoreIndicatorVisible() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreIndicatorVisible(boolean enabled) {
-
-    }
-
     public void setItemClickListener(final ItemClickListener listener) {
         mItemClickListener = listener;
-    }
-
-    @Override
-    public boolean isLoadMoreSupported() {
-        return false;
-    }
-
-    @Override
-    public void setLoadMoreSupported(boolean supported) {
-
     }
 
     public void setData(final List<Friendship> data) {

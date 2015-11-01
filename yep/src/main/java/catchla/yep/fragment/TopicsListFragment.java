@@ -32,7 +32,7 @@ import catchla.yep.view.holder.TopicViewHolder;
 /**
  * Created by mariotaku on 15/10/12.
  */
-public class TopicsListFragment extends AbsContentRecyclerViewFragment<TopicsAdapter>
+public class TopicsListFragment extends AbsContentListRecyclerViewFragment<TopicsAdapter>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
         IActionButtonSupportFragment {
 
