@@ -96,10 +96,6 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
         updatePositionTitle();
     }
 
-    public boolean hasStatus() {
-        return false;
-    }
-
     @Override
     public void onContentChanged() {
         super.onContentChanged();
@@ -126,10 +122,6 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) return false;
         return actionBar.isShowing();
-    }
-
-    private boolean isMediaStatusEnabled() {
-        return false;
     }
 
     private void setBarVisibility(boolean visible) {

@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
@@ -23,24 +21,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.mariotaku.restfu.http.RestHttpResponse;
-
-import java.io.File;
-import java.io.IOException;
-
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.ProfileUpdate;
-import catchla.yep.model.S3UploadToken;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.util.Utils;
-import catchla.yep.util.YepAPI;
-import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.util.task.UpdateProfileTask;
 
-public class ProfileEditorActivity extends ContentActivity implements Constants {
+public class ProfileEditorActivity extends ContentActivity implements UpdateProfileTask.Callback, Constants {
 
     private static final int REQUEST_PICK_IMAGE = 101;
 
@@ -97,11 +85,12 @@ public class ProfileEditorActivity extends ContentActivity implements Constants 
         final Account account = getAccount();
         final User user = Utils.getAccountUser(this, account);
         if (user != null) {
-            displayUser(user);
+            onProfileUpdated(user);
         }
     }
 
-    private void displayUser(final User user) {
+    @Override
+    public void onProfileUpdated(final User user) {
         mCurrentUser = user;
         final String url = mProfileImageUri != null ? mProfileImageUri.toString() : user.getAvatarUrl();
         mImageLoader.displayProfileImage(url, mProfileImageView);
@@ -109,6 +98,7 @@ public class ProfileEditorActivity extends ContentActivity implements Constants 
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());
         mEditIntroduction.setText(user.getIntroduction());
+        finish();
     }
 
     public static class LogoutConfirmDialogFragment extends DialogFragment {
@@ -167,81 +157,15 @@ public class ProfileEditorActivity extends ContentActivity implements Constants 
             changed |= true;
         }
         if (changed) {
-            mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this),
-                    String.valueOf(mEditNickname.getText()), String.valueOf(mEditIntroduction.getText()),
-                    mProfileImageUri);
+            final ProfileUpdate update = new ProfileUpdate();
+            update.setNickname(String.valueOf(mEditNickname.getText()));
+            update.setIntroduction(String.valueOf(mEditIntroduction.getText()));
+            update.setAvatarUri(mProfileImageUri);
+            mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this), update);
             mTask.execute();
             return;
         }
         super.onBackPressed();
     }
 
-    private static class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<User>> {
-        private static final String UPDATE_PROFILE_DIALOG_FRAGMENT_TAG = "update_profile";
-        private final ProfileEditorActivity mActivity;
-        private final Account mAccount;
-        private final String mNickname;
-        private final String mIntroduction;
-        private final Uri mProfileImageUri;
-
-        public UpdateProfileTask(final ProfileEditorActivity activity, final Account account, final String nickname, final String introduction, final Uri profileImageUri) {
-            mActivity = activity;
-            mAccount = account;
-            mNickname = nickname;
-            mIntroduction = introduction;
-            mProfileImageUri = profileImageUri;
-        }
-
-        @Override
-        protected TaskResponse<User> doInBackground(final Object... params) {
-            final YepAPI yep = YepAPIFactory.getInstance(mActivity, mAccount);
-            final ProfileUpdate profileUpdate = new ProfileUpdate();
-            if (mProfileImageUri != null) {
-                try {
-                    final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.AVATAR);
-                    final RestHttpResponse response = Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, new File(mProfileImageUri.getPath()));
-                    if (response.isSuccessful()) {
-                        profileUpdate.setAvatarUrl(response.getHeader("Location"));
-                    } else {
-                        throw new YepException("Unable to upload to s3", response);
-                    }
-                } catch (YepException e) {
-                    return TaskResponse.getInstance(e);
-                } catch (IOException e) {
-                    return TaskResponse.getInstance(e);
-                }
-            }
-            profileUpdate.setNickname(mNickname);
-            profileUpdate.setIntroduction(mIntroduction);
-            try {
-                yep.updateProfile(profileUpdate);
-                final User data = yep.getUser();
-                Utils.saveUserInfo(mActivity, mAccount, data);
-                return TaskResponse.getInstance(data);
-            } catch (YepException e) {
-                return TaskResponse.getInstance(e);
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressDialogFragment df = ProgressDialogFragment.show(mActivity, UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
-            df.setCancelable(false);
-        }
-
-        @Override
-        protected void onPostExecute(final TaskResponse<User> result) {
-            final FragmentManager fm = mActivity.getSupportFragmentManager();
-            final Fragment fragment = fm.findFragmentByTag(UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
-            if (fragment instanceof DialogFragment) {
-                ((DialogFragment) fragment).dismiss();
-            }
-            if (result.hasData()) {
-                mActivity.displayUser(result.getData());
-                mActivity.finish();
-            }
-            super.onPostExecute(result);
-        }
-    }
 }

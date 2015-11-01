@@ -1,20 +1,26 @@
 package catchla.yep.activity;
 
 import android.accounts.Account;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +48,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.graphic.ActionBarDrawable;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
@@ -49,16 +57,19 @@ import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
+import catchla.yep.util.ParseUtils;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepException;
+import catchla.yep.util.task.UpdateProfileTask;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;
 
 public class UserActivity extends SwipeBackContentActivity implements Constants, View.OnClickListener,
-        LoaderManager.LoaderCallbacks<TaskResponse<User>>, AppBarLayout.OnOffsetChangedListener {
+        LoaderManager.LoaderCallbacks<TaskResponse<User>>, AppBarLayout.OnOffsetChangedListener,
+        UpdateProfileTask.Callback {
 
     private static final int REQUEST_SELECT_MASTER_SKILLS = 111;
     private static final int REQUEST_SELECT_LEARNING_SKILLS = 112;
@@ -74,6 +85,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private ActionBarDrawable mActionBarBackground;
     private AppBarLayout mAppBarLayout;
     private Rect mSystemWindowsInsets = new Rect();
+    private UpdateProfileTask mUpdateProfileTask;
 
     @Override
     public void onContentChanged() {
@@ -371,6 +383,20 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                 Utils.openSettings(this);
                 return true;
             }
+            case R.id.share: {
+                final User user = getCurrentUser();
+                if (!TextUtils.isEmpty(user.getUsername())) {
+                    final Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text_template,
+                            Utils.getDisplayName(getCurrentUser()), Utils.getUserLink(user)));
+                    startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                } else {
+                    SetUsernameDialogFragment df = new SetUsernameDialogFragment();
+                    df.show(getSupportFragmentManager(), "set_username");
+                }
+                return true;
+            }
             case R.id.block_user: {
                 AsyncManager.runBackgroundTask(new TaskRunnable() {
                     @Override
@@ -415,6 +441,11 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mActionBarBackground.setFactor(factor);
     }
 
+    @Override
+    public void onProfileUpdated(final User user) {
+        displayUser(user, Utils.getAccountId(this, getAccount()));
+    }
+
     public static class UserAppBarBehavior extends AppBarLayout.Behavior {
         private Rect mRect = new Rect();
         private int mViewHeight;
@@ -441,6 +472,39 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
         public void setSystemWindowsInsets(final Rect insets) {
             mRect.set(insets);
+        }
+    }
+
+    public static class SetUsernameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(R.string.set_username);
+            builder.setNegativeButton(android.R.string.cancel, null);
+            builder.setPositiveButton(android.R.string.ok, this);
+            builder.setView(R.layout.dialog_set_username);
+            return builder.create();
+        }
+
+        @Override
+        public void onClick(final DialogInterface dialog, final int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE: {
+                    final EditText editUsername = (EditText) ((Dialog) dialog).findViewById(R.id.edit_username);
+                    ((UserActivity) getActivity()).setUsername(ParseUtils.parseString(editUsername.getText()));
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setUsername(final String username) {
+        ProfileUpdate update = new ProfileUpdate();
+        update.setUsername(username);
+        if (mUpdateProfileTask == null || mUpdateProfileTask.getStatus() != AsyncTask.Status.RUNNING) {
+            mUpdateProfileTask = new UpdateProfileTask(this, getAccount(), update);
+            mUpdateProfileTask.execute();
         }
     }
 }

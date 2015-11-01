@@ -4,6 +4,11 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_action_share"
+        android:title="@string/share"
+        app:showAsAction="ifRoom"/>
     <group android:id="@+id/group_menu_myself">
         <item
             android:id="@+id/settings"

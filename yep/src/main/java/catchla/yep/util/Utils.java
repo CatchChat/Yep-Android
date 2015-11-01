@@ -467,4 +467,8 @@ public class Utils implements Constants {
         }
         return false;
     }
+
+    public static String getUserLink(final User user) {
+        return "http://soyep.com/" + user.getUsername();
+    }
 }
