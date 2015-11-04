@@ -30,6 +30,7 @@ import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.DiscoverLoader;
 import catchla.yep.model.DiscoverQuery;
+import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 
@@ -38,6 +39,8 @@ import catchla.yep.model.User;
  */
 public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
+
+    private int mPage = 1;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -86,6 +89,9 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
         final DiscoverQuery query = new DiscoverQuery();
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
+        final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache);
+        final Paging paging = new Paging();
+        paging.page(args.getInt(EXTRA_PAGE, 1));
         boolean writeCache = true;
         if (fragmentArgs != null) {
             if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
@@ -97,14 +103,25 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
                 writeCache = false;
             }
         }
-        return new DiscoverLoader(getActivity(), getAccount(), query, readCache, writeCache);
+        final List<User> oldData;
+        if (readOld) {
+            oldData = getAdapter().getUsers();
+        } else {
+            oldData = null;
+        }
+        return new DiscoverLoader(getActivity(), getAccount(), query, oldData, paging, readCache, writeCache);
     }
 
     @Override
     public void onLoadFinished(final Loader<TaskResponse<List<User>>> loader, final TaskResponse<List<User>> data) {
-        getAdapter().setData(data.getData());
+        final List<User> list = data.getData();
+        final UsersAdapter adapter = getAdapter();
+        adapter.setData(list);
+        adapter.setLoadMoreSupported(list != null && !list.isEmpty());
         showContent();
         setRefreshing(false);
+        setRefreshEnabled(true);
+        setLoadMoreIndicatorVisible(false);
     }
 
     @Override
@@ -132,6 +149,16 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     public void onRefresh() {
         final Bundle loaderArgs = new Bundle();
         loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
+        getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
+
+    @Override
+    public void onLoadMoreContents() {
+        super.onLoadMoreContents();
+        final Bundle loaderArgs = new Bundle();
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
+        loaderArgs.putBoolean(EXTRA_READ_OLD, true);
+        loaderArgs.putInt(EXTRA_PAGE, ++mPage);
         getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 

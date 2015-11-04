@@ -16,6 +16,7 @@ import catchla.yep.R;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.User;
 import catchla.yep.view.holder.FriendViewHolder;
+import catchla.yep.view.holder.LoadIndicatorViewHolder;
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -42,8 +43,21 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        return onCreateFriendViewHolder(parent);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_VIEW_TYPE_USER_ITEM: {
+                return onCreateFriendViewHolder(parent);
+            }
+            case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
+                final View view = mInflater.inflate(R.layout.card_item_load_indicator, parent, false);
+                return new LoadIndicatorViewHolder(view);
+            }
+        }
+        throw new UnsupportedOperationException("Unknown viewType " + viewType);
+    }
+
+    protected LayoutInflater getInflater() {
+        return mInflater;
     }
 
     protected RecyclerView.ViewHolder onCreateFriendViewHolder(final ViewGroup parent) {
@@ -53,7 +67,13 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public int getItemViewType(int position) {
+        if (position == getUsersCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
         return ITEM_VIEW_TYPE_USER_ITEM;
+    }
+
+    public int getUsersCount() {
+        if (mData == null) return 0;
+        return mData.size();
     }
 
     @Override
@@ -61,6 +81,9 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
         switch (getItemViewType(position)) {
             case ITEM_VIEW_TYPE_USER_ITEM: {
                 bindFriendViewHolder(holder, position);
+                break;
+            }
+            case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
                 break;
             }
         }
@@ -76,8 +99,7 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public int getItemCount() {
-        if (mData == null) return 0;
-        return mData.size();
+        return (isLoadMoreIndicatorVisible() ? 1 : 0) + getUsersCount();
     }
 
     public void setData(final List<User> data) {
@@ -85,4 +107,7 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
         notifyDataSetChanged();
     }
 
+    public List<User> getUsers() {
+        return mData;
+    }
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.model.DiscoverQuery;
-import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.User;
 import catchla.yep.util.YepAPI;
@@ -21,10 +20,13 @@ import catchla.yep.util.YepException;
 public class DiscoverLoader extends CachedYepListLoader<User> implements Constants {
 
     private final DiscoverQuery mQuery;
+    private final Paging mPaging;
 
-    public DiscoverLoader(Context context, Account account, DiscoverQuery query, boolean readCache, boolean writeCache) {
-        super(context, account, User.class, null, readCache, writeCache);
+    public DiscoverLoader(Context context, Account account, DiscoverQuery query, List<User> oldData,
+                          Paging paging, boolean readCache, boolean writeCache) {
+        super(context, account, User.class, oldData, readCache, writeCache);
         mQuery = query;
+        mPaging = paging;
     }
 
     @NonNull
@@ -35,14 +37,13 @@ public class DiscoverLoader extends CachedYepListLoader<User> implements Constan
 
     @Override
     protected List<User> requestData(final YepAPI yep, List<User> oldData) throws YepException {
-        final Paging paging = new Paging();
-        int page = 1;
         final List<User> list = new ArrayList<>();
-        PagedUsers users;
-        while ((users = yep.getDiscover(mQuery, paging)).size() > 0) {
-            list.addAll(users);
-            paging.page(++page);
-            if (users.getCount() < users.getPerPage()) break;
+        if (oldData != null) {
+            list.addAll(oldData);
+        }
+        for (User topic : yep.getDiscover(mQuery, mPaging)) {
+            list.remove(topic);
+            list.add(topic);
         }
         return list;
     }
