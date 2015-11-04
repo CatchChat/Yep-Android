@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.UsersAdapter;
+import catchla.yep.adapter.UsersGridAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.DiscoverLoader;
@@ -34,23 +36,13 @@ import catchla.yep.model.User;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class DiscoverFragment extends AbsContentListRecyclerViewFragment<UsersAdapter>
+public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        final Context viewContext = getActivity();
-
-        final RecyclerView recyclerView = getRecyclerView();
-        final LinearLayoutManager layoutManager = getLayoutManager();
-        final DividerItemDecoration itemDecoration = new DividerItemDecoration(viewContext, layoutManager.getOrientation());
-        final Resources res = viewContext.getResources();
-        final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
-                + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
-        itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
-        recyclerView.addItemDecoration(itemDecoration);
         final Bundle fragmentArgs = getArguments();
         final Bundle loaderArgs = new Bundle();
         if (fragmentArgs != null) {
@@ -62,6 +54,30 @@ public class DiscoverFragment extends AbsContentListRecyclerViewFragment<UsersAd
         getLoaderManager().initLoader(0, loaderArgs, this);
         getAdapter().setClickListener(this);
         showProgress();
+    }
+
+    @Override
+    protected void setupRecyclerView(final Context context) {
+        final RecyclerView recyclerView = getRecyclerView();
+        final RecyclerView.LayoutManager layoutManager = getLayoutManager();
+        if (layoutManager instanceof LinearLayoutManager &&
+                (!(layoutManager instanceof GridLayoutManager)
+                        || ((GridLayoutManager) layoutManager).getSpanCount() == 1)) {
+            final DividerItemDecoration itemDecoration = new DividerItemDecoration(context,
+                    ((LinearLayoutManager) layoutManager).getOrientation());
+            final Resources res = context.getResources();
+            final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
+                    + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
+            itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
+            recyclerView.addItemDecoration(itemDecoration);
+        }
+
+    }
+
+    @NonNull
+    @Override
+    protected RecyclerView.LayoutManager onCreateLayoutManager(final Context context) {
+        return new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
     }
 
 
@@ -99,7 +115,7 @@ public class DiscoverFragment extends AbsContentListRecyclerViewFragment<UsersAd
     @NonNull
     @Override
     protected UsersAdapter onCreateAdapter(Context context) {
-        return new UsersAdapter(context);
+        return new UsersGridAdapter(context);
     }
 
     @Override
@@ -120,6 +136,11 @@ public class DiscoverFragment extends AbsContentListRecyclerViewFragment<UsersAd
     }
 
     @Override
+    protected void scrollToPositionWithOffset(final int position, final int offset) {
+
+    }
+
+    @Override
     public boolean isRefreshing() {
         return getLoaderManager().hasRunningLoaders();
     }
@@ -127,7 +148,7 @@ public class DiscoverFragment extends AbsContentListRecyclerViewFragment<UsersAd
 
     @Override
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
-        final User user = getAdapter().getUser(position);
+        final User user = getAdapter().getUser((int) position);
         final Intent intent = new Intent(getActivity(), UserActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_USER, user);

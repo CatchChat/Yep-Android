@@ -10,28 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import catchla.yep.R;
-import catchla.yep.adapter.iface.ItemClickListener;
-import catchla.yep.model.User;
-import catchla.yep.view.holder.FriendViewHolder;
+import catchla.yep.view.holder.FriendGridViewHolder;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class UsersGridAdapter extends LoadMoreSupportAdapter {
-    private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
+public class UsersGridAdapter extends UsersAdapter {
 
     private final LayoutInflater mInflater;
-
-    public void setClickListener(final ItemClickListener listener) {
-        this.mClickListener = listener;
-    }
-
-    private ItemClickListener mClickListener;
-
-    private List<User> mData;
 
     public UsersGridAdapter(Context context) {
         super(context);
@@ -40,40 +27,14 @@ public class UsersGridAdapter extends LoadMoreSupportAdapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
-        return new FriendViewHolder(view, this, mClickListener);
+    protected RecyclerView.ViewHolder onCreateFriendViewHolder(final ViewGroup parent) {
+        final View view = mInflater.inflate(R.layout.grid_item_friend, parent, false);
+        return new FriendGridViewHolder(view, this, getClickListener());
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return ITEM_VIEW_TYPE_USER_ITEM;
+    protected void bindFriendViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        ((FriendGridViewHolder) holder).displayUser(getUser(position));
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        switch (getItemViewType(position)) {
-            case ITEM_VIEW_TYPE_USER_ITEM: {
-                final FriendViewHolder chatEntryViewHolder = (FriendViewHolder) holder;
-                chatEntryViewHolder.displayUser(mData.get(position));
-                break;
-            }
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        if (mData == null) return 0;
-        return mData.size();
-    }
-
-
-    public void setData(final List<User> data) {
-        mData = data;
-        notifyDataSetChanged();
-    }
-
-    public User getUser(final int position) {
-        return mData.get(position);
-    }
 }

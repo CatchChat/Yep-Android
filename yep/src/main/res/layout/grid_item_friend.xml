@@ -2,69 +2,64 @@
 <!--
   ~ Copyright (c) 2015. Catch Inc,
   -->
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="2dp">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="?selectableItemBackground"
-              android:clickable="true"
-              android:gravity="center_vertical"
-              android:orientation="horizontal"
-              android:paddingLeft="@dimen/element_spacing_normal"
-              android:paddingRight="@dimen/element_spacing_normal"
-              tools:layout_gravity="center">
-
-    <com.pkmmte.view.CircularImageView
-        android:id="@+id/profile_image"
-        android:layout_width="@dimen/icon_size_status_profile_image"
-        android:layout_height="@dimen/icon_size_status_profile_image"
-        android:layout_marginBottom="@dimen/element_spacing_normal"
-        android:layout_marginTop="@dimen/element_spacing_normal"
-        android:layout_weight="0"
-        android:scaleType="centerCrop"
-        app:border="false"
-        app:shadow="false"/>
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/element_spacing_normal"
-        android:layout_weight="1">
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
+        <catchla.yep.view.SquareImageView
+            android:id="@+id/profile_image"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/update_time"
-            android:singleLine="true"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="?android:textColorPrimary"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_image_default"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/element_spacing_small"
+                android:singleLine="true"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textColor="?android:textColorPrimary"
+                tools:text="Name"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/description"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/name"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:padding="@dimen/element_spacing_small"
+            android:singleLine="true"
+            android:textAppearance="?android:textAppearanceSmall"
             android:textColor="?android:textColorSecondary"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:layout_below="@+id/name"
-            android:layout_marginTop="@dimen/element_spacing_normal"
-            android:maxLines="2"/>
+            tools:text="A quick brown fox jumps over the lazy dog."/>
 
-        <TextView
-            android:id="@+id/update_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/name"
-            android:textColor="?android:textColorTertiary"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:layout_alignParentRight="true"
-            android:singleLine="true"/>
+        <org.apmem.tools.layouts.FlowLayout
+            android:id="@+id/user_skills"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-
-    </RelativeLayout>
-
-</LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

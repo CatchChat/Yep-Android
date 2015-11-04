@@ -24,13 +24,7 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
 
     private final LayoutInflater mInflater;
-
-    public void setClickListener(final ItemClickListener listener) {
-        this.mClickListener = listener;
-    }
-
     private ItemClickListener mClickListener;
-
     private List<User> mData;
 
     public UsersAdapter(Context context) {
@@ -39,8 +33,20 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
 
     }
 
+    protected ItemClickListener getClickListener() {
+        return mClickListener;
+    }
+
+    public void setClickListener(final ItemClickListener listener) {
+        this.mClickListener = listener;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+        return onCreateFriendViewHolder(parent);
+    }
+
+    protected RecyclerView.ViewHolder onCreateFriendViewHolder(final ViewGroup parent) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
         return new FriendViewHolder(view, this, mClickListener);
     }
@@ -54,11 +60,18 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case ITEM_VIEW_TYPE_USER_ITEM: {
-                final FriendViewHolder chatEntryViewHolder = (FriendViewHolder) holder;
-                chatEntryViewHolder.displayUser(mData.get(position));
+                bindFriendViewHolder(holder, position);
                 break;
             }
         }
+    }
+
+    protected void bindFriendViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        ((FriendViewHolder) holder).displayUser(getUser(position));
+    }
+
+    public User getUser(final int position) {
+        return mData.get(position);
     }
 
     @Override
@@ -72,7 +85,4 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
         notifyDataSetChanged();
     }
 
-    public User getUser(final int position) {
-        return mData.get(position);
-    }
 }
