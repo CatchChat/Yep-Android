@@ -83,6 +83,7 @@ public class ChatsListAdapter extends LoadMoreSupportAdapter {
                 final Conversation conversation = data.get(i);
                 if (Message.RecipientType.CIRCLE.equals(conversation.getRecipientType())) {
                     mCircleLength = i + 1;
+                } else {
                     break;
                 }
             }
@@ -93,7 +94,7 @@ public class ChatsListAdapter extends LoadMoreSupportAdapter {
     public Conversation getConversation(final int position) {
         if (mCircleLength == 0) return getRawConversation(position);
         if (position == 0) return getRawConversation(0);
-        return getRawConversation(position - mCircleLength + 1);
+        return getRawConversation(position + mCircleLength - 1);
     }
 
     public Conversation getRawConversation(final int position) {

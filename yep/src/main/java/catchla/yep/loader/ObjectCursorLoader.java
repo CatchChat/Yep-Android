@@ -54,8 +54,7 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
     /* Runs on a worker thread */
     @Override
     public ObjectCursor<T> loadInBackground() {
-        Cursor cursor = getContext().getContentResolver().query(mUri, mProjection, mSelection,
-                mSelectionArgs, mSortOrder);
+        Cursor cursor = query();
         if (cursor != null) {
             // Ensure the cursor window is filled
             cursor.getCount();
@@ -63,6 +62,11 @@ public class ObjectCursorLoader<T> extends AsyncTaskLoader<List<T>> {
         }
         if (cursor == null) return null;
         return new ObjectCursor<>(cursor, createIndices(cursor));
+    }
+
+    protected Cursor query() {
+        return getContext().getContentResolver().query(mUri, mProjection, mSelection,
+                mSelectionArgs, mSortOrder);
     }
 
     @SuppressWarnings("TryWithIdenticalCatches")

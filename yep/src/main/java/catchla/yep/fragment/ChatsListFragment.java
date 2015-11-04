@@ -32,6 +32,7 @@ import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.ConversationsLoader;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.Message;
 import catchla.yep.service.MessageService;
 
 /**
@@ -40,7 +41,7 @@ import catchla.yep.service.MessageService;
 public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsListAdapter> implements Constants,
         LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
 
-    public static final String EXTRA_CIRCLES_ONLY = "circles_only";
+    public static final String EXTRA_RECIPIENT_TYPE = "recipient_type";
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
             }
         });
         final Bundle loaderArgs = new Bundle();
-        loaderArgs.putBoolean(EXTRA_CIRCLES_ONLY, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
+        loaderArgs.putString(EXTRA_RECIPIENT_TYPE, getRecipientType());
         getLoaderManager().initLoader(0, loaderArgs, this);
         showProgress();
     }
@@ -85,7 +86,13 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
     @Subscribe
     public void onMessageRefreshed(MessageRefreshedEvent event) {
         setRefreshing(false);
-        getLoaderManager().restartLoader(0, null, this);
+        final Bundle loaderArgs = new Bundle();
+        loaderArgs.putString(EXTRA_RECIPIENT_TYPE, getRecipientType());
+        getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
+
+    private String getRecipientType() {
+        return getArguments().getString(EXTRA_RECIPIENT_TYPE, Message.RecipientType.USER);
     }
 
     @NonNull
@@ -111,19 +118,20 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
 
     @Override
     public Loader<List<Conversation>> onCreateLoader(final int id, final Bundle args) {
-        final boolean circlesOnly = args.getBoolean(EXTRA_CIRCLES_ONLY);
-        return new ConversationsLoader(getActivity(), getAccount(), circlesOnly);
+        final String recipientType = getRecipientType();
+        return new ConversationsLoader(getActivity(), getAccount(), recipientType,
+                !Message.RecipientType.CIRCLE.equals(recipientType));
     }
 
     @Override
     public void onLoadFinished(final Loader<List<Conversation>> loader, final List<Conversation> data) {
-        getAdapter().setData(data, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
+        getAdapter().setData(data, Message.RecipientType.CIRCLE.equals(getRecipientType()));
         showContent();
     }
 
     @Override
     public void onLoaderReset(final Loader<List<Conversation>> loader) {
-        getAdapter().setData(null, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
+        getAdapter().setData(null, Message.RecipientType.CIRCLE.equals(getRecipientType()));
     }
 
     @Override

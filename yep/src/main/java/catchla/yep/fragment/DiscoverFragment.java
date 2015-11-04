@@ -83,7 +83,6 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
         return new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
     }
 
-
     @Override
     public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
         final DiscoverQuery query = new DiscoverQuery();
@@ -126,7 +125,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
 
     @Override
     public void onLoaderReset(final Loader<TaskResponse<List<User>>> loader) {
-
+        getAdapter().setData(null);
     }
 
     @NonNull
@@ -164,7 +163,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
 
     @Override
     protected void scrollToPositionWithOffset(final int position, final int offset) {
-
+        getLayoutManager().scrollToPosition(position);
     }
 
     @Override
