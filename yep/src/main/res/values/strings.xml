@@ -94,4 +94,6 @@
     <string name="share_text_template"><xliff:g id="name">%1$s</xliff:g>, from Yep, with genius. <xliff:g id="name">%2$s</xliff:g></string>
     <string name="set_username">Set username</string>
     <string name="delete_topic">Delete topic</string>
+    <string name="joined_topics">Joined topics</string>
+    <string name="circles">Circles</string>
 </resources>

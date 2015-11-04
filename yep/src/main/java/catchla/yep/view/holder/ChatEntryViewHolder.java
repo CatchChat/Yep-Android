@@ -4,6 +4,7 @@
 
 package catchla.yep.view.holder;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,7 +15,6 @@ import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
-import catchla.yep.model.User;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.Utils;
 import catchla.yep.view.ShortTimeView;
@@ -48,26 +48,28 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayConversation(final Conversation conversation) {
-        final String recipientType = conversation.getRecipientType();
-        if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-            final User sender = conversation.getUser();
-            nameView.setText(sender.getNickname());
-            final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-            imageLoader.displayProfileImage(sender.getAvatarUrl(), profileImageView);
-        } else if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-            nameView.setText(conversation.getCircle().getName());
-        } else {
-            throw new UnsupportedOperationException(recipientType);
-        }
-        if (Message.MediaType.LOCATION.equalsIgnoreCase(conversation.getMediaType())) {
-            messageView.setText(R.string.location);
-        } else if (Message.MediaType.IMAGE.equalsIgnoreCase(conversation.getMediaType())) {
-            messageView.setText(R.string.image);
-        } else if (Message.MediaType.AUDIO.equalsIgnoreCase(conversation.getMediaType())) {
-            messageView.setText(R.string.audio);
-        } else {
-            messageView.setText(conversation.getTextContent());
-        }
+        nameView.setText(Utils.getConversationName(conversation));
+        final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
+        imageLoader.displayProfileImage(Utils.getConversationAvatarUrl(conversation), profileImageView);
+        messageView.setText(getConversationSummary(adapter.getContext(), conversation));
         timeView.setTime(Utils.getTime(conversation.getUpdatedAt()));
+    }
+
+    public void displayCirclesEntry(final Conversation conversation) {
+        nameView.setText(R.string.joined_topics);
+        messageView.setText(getConversationSummary(adapter.getContext(), conversation));
+        timeView.setTime(Utils.getTime(conversation.getUpdatedAt()));
+    }
+
+    private String getConversationSummary(final Context context, final Conversation conversation) {
+        if (Message.MediaType.LOCATION.equalsIgnoreCase(conversation.getMediaType())) {
+            return context.getString(R.string.location);
+        } else if (Message.MediaType.IMAGE.equalsIgnoreCase(conversation.getMediaType())) {
+            return context.getString(R.string.image);
+        } else if (Message.MediaType.AUDIO.equalsIgnoreCase(conversation.getMediaType())) {
+            return context.getString(R.string.audio);
+        } else {
+            return conversation.getTextContent();
+        }
     }
 }

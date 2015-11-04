@@ -17,13 +17,13 @@ import catchla.yep.util.YepException;
 /**
  * Created by mariotaku on 15/5/27.
  */
-public class DiscoverLoader extends CachedYepListLoader<User> implements Constants {
+public class DiscoverUsersLoader extends CachedYepListLoader<User> implements Constants {
 
     private final DiscoverQuery mQuery;
     private final Paging mPaging;
 
-    public DiscoverLoader(Context context, Account account, DiscoverQuery query, List<User> oldData,
-                          Paging paging, boolean readCache, boolean writeCache) {
+    public DiscoverUsersLoader(Context context, Account account, DiscoverQuery query, List<User> oldData,
+                               Paging paging, boolean readCache, boolean writeCache) {
         super(context, account, User.class, oldData, readCache, writeCache);
         mQuery = query;
         mPaging = paging;

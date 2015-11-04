@@ -6,7 +6,6 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -55,7 +54,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
@@ -398,7 +396,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     public void onLoadFinished(final Loader<List<Message>> loader, final List<Message> data) {
         final Conversation conversation = mConversation;
         if (conversation != null) {
-            setTitle(Utils.getDisplayName(conversation.getUser()));
+            setTitle(Utils.getConversationName(conversation));
         }
         mAdapter.setData(data);
     }
@@ -635,9 +633,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 }
                 if (metadata != null) {
                     imageView.setMediaSize(metadata.getWidth(), metadata.getHeight());
-                    final BitmapDrawable placeholder = Utils.getMetadataBitmap(imageView.getResources(), metadata);
                     final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-                    imageLoader.displayProfileImage(url, imageView);
+                    imageLoader.displayImage(url, imageView);
                 }
             }
         }

@@ -65,6 +65,8 @@ import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.Conversation;
+import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
@@ -393,6 +395,16 @@ public class Utils implements Constants {
         return new BitmapDrawable(res, bitmap);
     }
 
+    public static String getConversationName(final Conversation conversation) {
+        final String recipientType = conversation.getRecipientType();
+        if (Message.RecipientType.CIRCLE.equals(recipientType)) {
+            return "Circle";
+        } else if (Message.RecipientType.USER.equals(recipientType)) {
+            return getDisplayName(conversation.getUser());
+        }
+        throw new UnsupportedOperationException("Unknown recipientType " + recipientType);
+    }
+
     public static String getDisplayName(final User user) {
         if (!TextUtils.isEmpty(user.getNickname())) return user.getNickname();
         else if (!TextUtils.isEmpty(user.getContactName())) return user.getContactName();
@@ -470,5 +482,15 @@ public class Utils implements Constants {
 
     public static String getUserLink(final User user) {
         return "http://soyep.com/" + user.getUsername();
+    }
+
+    public static String getConversationAvatarUrl(final Conversation conversation) {
+        final String recipientType = conversation.getRecipientType();
+        if (Message.RecipientType.CIRCLE.equals(recipientType)) {
+            return null;
+        } else if (Message.RecipientType.USER.equals(recipientType)) {
+            return conversation.getUser().getAvatarUrl();
+        }
+        throw new UnsupportedOperationException("Unknown recipientType " + recipientType);
     }
 }

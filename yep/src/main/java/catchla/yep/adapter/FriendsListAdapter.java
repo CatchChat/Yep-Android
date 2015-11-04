@@ -43,7 +43,7 @@ public class FriendsListAdapter extends LoadMoreSupportAdapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view = mInflater.inflate(R.layout.list_item_friend, parent, false);
         return new FriendViewHolder(view, this, mInternalItemClickListener);
     }

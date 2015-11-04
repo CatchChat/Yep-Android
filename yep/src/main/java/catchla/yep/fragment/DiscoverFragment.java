@@ -28,7 +28,7 @@ import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.adapter.UsersGridAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
-import catchla.yep.loader.DiscoverLoader;
+import catchla.yep.loader.DiscoverUsersLoader;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Paging;
 import catchla.yep.model.TaskResponse;
@@ -109,7 +109,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
         } else {
             oldData = null;
         }
-        return new DiscoverLoader(getActivity(), getAccount(), query, oldData, paging, readCache, writeCache);
+        return new DiscoverUsersLoader(getActivity(), getAccount(), query, oldData, paging, readCache, writeCache);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
 
     @Override
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
-        final User user = getAdapter().getUser((int) position);
+        final User user = getAdapter().getUser(position);
         final Intent intent = new Intent(getActivity(), UserActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_USER, user);

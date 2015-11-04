@@ -27,6 +27,7 @@ import java.util.List;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.ChatActivity;
+import catchla.yep.activity.CirclesListActivity;
 import catchla.yep.adapter.ChatsListAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
@@ -59,8 +60,15 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
         getAdapter().setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
-                final Conversation conversation = getAdapter().getConversation(position);
-                final Intent intent = new Intent(getActivity(), ChatActivity.class);
+                final ChatsListAdapter adapter = getAdapter();
+                if (adapter.getItemViewType(position) == ChatsListAdapter.ITEM_VIEW_TYPE_CIRCLES_ENTRY) {
+                    final Intent intent = new Intent(getContext(), CirclesListActivity.class);
+                    intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                    startActivity(intent);
+                    return;
+                }
+                final Conversation conversation = adapter.getConversation(position);
+                final Intent intent = new Intent(getContext(), ChatActivity.class);
                 intent.putExtra(EXTRA_ACCOUNT, getAccount());
                 intent.putExtra(EXTRA_CONVERSATION, conversation);
                 startActivity(intent);
