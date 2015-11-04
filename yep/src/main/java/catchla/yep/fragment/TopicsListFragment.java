@@ -3,13 +3,11 @@ package catchla.yep.fragment;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,7 +20,6 @@ import catchla.yep.activity.NewTopicActivity;
 import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.TopicChatActivity;
 import catchla.yep.adapter.TopicsAdapter;
-import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
 import catchla.yep.model.Paging;
@@ -43,16 +40,6 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        final Context viewContext = getActivity();
-
-        final RecyclerView recyclerView = getRecyclerView();
-        final LinearLayoutManager layoutManager = getLayoutManager();
-        final DividerItemDecoration itemDecoration = new DividerItemDecoration(viewContext, layoutManager.getOrientation());
-        final Resources res = viewContext.getResources();
-        final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
-                + res.getDimensionPixelSize(R.dimen.icon_size_topic_item_profile_image);
-        itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
-        recyclerView.addItemDecoration(itemDecoration);
         final Bundle fragmentArgs = getArguments();
         final Bundle loaderArgs = new Bundle();
         if (fragmentArgs != null) {

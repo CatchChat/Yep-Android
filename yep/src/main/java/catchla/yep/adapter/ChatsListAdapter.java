@@ -75,10 +75,10 @@ public class ChatsListAdapter extends LoadMoreSupportAdapter {
         return mData.size() - mCircleLength + 1;
     }
 
-    public void setData(final List<Conversation> data) {
+    public void setData(final List<Conversation> data, final boolean circlesOnly) {
         mData = data;
         mCircleLength = 0;
-        if (data != null) {
+        if (data != null && !circlesOnly) {
             for (int i = 0, dataSize = data.size(); i < dataSize; i++) {
                 final Conversation conversation = data.get(i);
                 if (Message.RecipientType.CIRCLE.equals(conversation.getRecipientType())) {

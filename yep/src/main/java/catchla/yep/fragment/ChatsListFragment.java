@@ -7,14 +7,12 @@ package catchla.yep.fragment;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +27,6 @@ import catchla.yep.R;
 import catchla.yep.activity.ChatActivity;
 import catchla.yep.activity.CirclesListActivity;
 import catchla.yep.adapter.ChatsListAdapter;
-import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.ConversationsLoader;
@@ -43,20 +40,13 @@ import catchla.yep.service.MessageService;
 public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsListAdapter> implements Constants,
         LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
 
+    public static final String EXTRA_CIRCLES_ONLY = "circles_only";
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        final Context viewContext = getActivity();
 
-        final RecyclerView recyclerView = getRecyclerView();
-        final LinearLayoutManager layoutManager = getLayoutManager();
-        final DividerItemDecoration itemDecoration = new DividerItemDecoration(viewContext, layoutManager.getOrientation());
-        final Resources res = viewContext.getResources();
-        final int decorPaddingLeft = res.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
-                + res.getDimensionPixelSize(R.dimen.icon_size_status_profile_image);
-        itemDecoration.setPadding(decorPaddingLeft, 0, 0, 0);
-        recyclerView.addItemDecoration(itemDecoration);
         getAdapter().setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
@@ -74,7 +64,9 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
                 startActivity(intent);
             }
         });
-        getLoaderManager().initLoader(0, null, this);
+        final Bundle loaderArgs = new Bundle();
+        loaderArgs.putBoolean(EXTRA_CIRCLES_ONLY, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
+        getLoaderManager().initLoader(0, loaderArgs, this);
         showProgress();
     }
 
@@ -119,18 +111,19 @@ public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsL
 
     @Override
     public Loader<List<Conversation>> onCreateLoader(final int id, final Bundle args) {
-        return new ConversationsLoader(getActivity(), getAccount());
+        final boolean circlesOnly = args.getBoolean(EXTRA_CIRCLES_ONLY);
+        return new ConversationsLoader(getActivity(), getAccount(), circlesOnly);
     }
 
     @Override
     public void onLoadFinished(final Loader<List<Conversation>> loader, final List<Conversation> data) {
-        getAdapter().setData(data);
+        getAdapter().setData(data, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
         showContent();
     }
 
     @Override
     public void onLoaderReset(final Loader<List<Conversation>> loader) {
-        getAdapter().setData(null);
+        getAdapter().setData(null, getArguments().getBoolean(EXTRA_CIRCLES_ONLY));
     }
 
     @Override
