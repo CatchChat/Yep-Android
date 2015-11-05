@@ -5,6 +5,7 @@
 package catchla.yep.view.holder;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -58,9 +59,11 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
         descriptionView.setText(user.getIntroduction());
         userSkills.removeAllViews();
         final List<Skill> skills = ListUtils.nonNullList(user.getMasterSkills());
+        final LayoutInflater inflater = LayoutInflater.from(adapter.getContext());
         for (int i = 0, skillsSize = Math.min(3, skills.size()); i < skillsSize; i++) {
             final Skill skill = skills.get(i);
-            final TextView textView = new TextView(adapter.getContext());
+            final TextView textView = (TextView) inflater.inflate(R.layout.layout_friend_grid_skill,
+                    userSkills, false);
             textView.setText(Utils.getDisplayName(skill));
             userSkills.addView(textView);
         }

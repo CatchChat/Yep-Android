@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/element_spacing_xsmall"
+    android:background="@drawable/btn_skill"
+    android:padding="@dimen/element_spacing_xsmall"
+    android:textColor="?android:textColorPrimaryInverse"
+    android:textSize="@dimen/text_size_friend_grid_skill_label"/>

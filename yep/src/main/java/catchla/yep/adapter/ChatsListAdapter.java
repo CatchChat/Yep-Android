@@ -23,8 +23,10 @@ import catchla.yep.view.holder.ChatEntryViewHolder;
  * Created by mariotaku on 15/4/29.
  */
 public class ChatsListAdapter extends LoadMoreSupportAdapter {
+
     public static final int ITEM_VIEW_TYPE_CHAT_ENTRY = 1;
     public static final int ITEM_VIEW_TYPE_CIRCLES_ENTRY = 2;
+
     private final LayoutInflater mInflater;
     private List<Conversation> mData;
     private ItemClickListener mItemClickListener;
