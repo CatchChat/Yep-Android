@@ -5,6 +5,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/element_spacing_xsmall"
     android:background="@drawable/btn_skill"
-    android:padding="@dimen/element_spacing_xsmall"
+    android:padding="@dimen/element_spacing_small"
     android:textColor="?android:textColorPrimaryInverse"
     android:textSize="@dimen/text_size_friend_grid_skill_label"/>
