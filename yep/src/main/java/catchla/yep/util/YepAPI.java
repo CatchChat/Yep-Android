@@ -60,7 +60,7 @@ public interface YepAPI {
                                    @Form("client") Client client,
                                    @Form("expiring") long expiringInseconds) throws YepException;
 
-    @PUT("/auth/token_by_mobile")
+    @PUT("/v1/auth/token_by_mobile")
     @Body(BodyType.FORM)
     AccessToken tokenByMobile(@Form("mobile") String mobile,
                               @Form("phone_code") String phoneCode,

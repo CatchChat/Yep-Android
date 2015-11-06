@@ -41,7 +41,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/name">
 
-        <include layout="@layout/layout_skill_label_button"/>
+        <include layout="@layout/layout_topic_skill"/>
     </FrameLayout>
 
     <TextView

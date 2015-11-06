@@ -43,8 +43,17 @@ public class ChatsListAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = mInflater.inflate(R.layout.list_item_chat_entry, parent, false);
-        return new ChatEntryViewHolder(view, this, mItemClickListener);
+        switch (viewType) {
+            case ITEM_VIEW_TYPE_CIRCLES_ENTRY: {
+                final View view = mInflater.inflate(R.layout.list_item_circles_chat_entry, parent, false);
+                return new ChatEntryViewHolder(view, this, mItemClickListener);
+            }
+            case ITEM_VIEW_TYPE_CHAT_ENTRY: {
+                final View view = mInflater.inflate(R.layout.list_item_chat_entry, parent, false);
+                return new ChatEntryViewHolder(view, this, mItemClickListener);
+            }
+        }
+        throw new UnsupportedOperationException("Unknown viewType " + viewType);
     }
 
     @Override
