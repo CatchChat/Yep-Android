@@ -17,7 +17,6 @@ import java.util.List;
 import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.UsersGridAdapter;
-import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import catchla.yep.util.ImageLoaderWrapper;
@@ -44,15 +43,17 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
         nameView = (TextView) itemView.findViewById(R.id.name);
         descriptionView = (TextView) itemView.findViewById(R.id.description);
         userSkills = (FlowLayout) itemView.findViewById(R.id.user_skills);
-        itemView.setOnClickListener(this);
+        itemView.findViewById(R.id.item_content).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         if (listener == null) return;
-        if (v == itemView) {
-            listener.onItemClick(getAdapterPosition(), this);
-        } else switch (v.getId()) {
+        switch (v.getId()) {
+            case R.id.item_content: {
+                listener.onItemClick(getAdapterPosition(), this);
+                break;
+            }
             case R.id.skill_button: {
                 final Skill skill = (Skill) v.getTag();
                 listener.onSkillClick(getAdapterPosition(), skill, this);
