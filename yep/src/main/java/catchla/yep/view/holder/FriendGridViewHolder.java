@@ -16,6 +16,7 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
+import catchla.yep.adapter.UsersGridAdapter;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
@@ -29,13 +30,13 @@ import catchla.yep.util.Utils;
 public class FriendGridViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final BaseRecyclerViewAdapter adapter;
-    private final ItemClickListener listener;
+    private final UsersGridAdapter.UserGridItemClickListener listener;
 
     private final ImageView profileImageView;
     private final TextView nameView, descriptionView;
     private final FlowLayout userSkills;
 
-    public FriendGridViewHolder(View itemView, final BaseRecyclerViewAdapter adapter, final ItemClickListener listener) {
+    public FriendGridViewHolder(View itemView, final BaseRecyclerViewAdapter adapter, final UsersGridAdapter.UserGridItemClickListener listener) {
         super(itemView);
         this.adapter = adapter;
         this.listener = listener;
@@ -49,7 +50,15 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
     @Override
     public void onClick(View v) {
         if (listener == null) return;
-        listener.onItemClick(getAdapterPosition(), FriendGridViewHolder.this);
+        if (v == itemView) {
+            listener.onItemClick(getAdapterPosition(), this);
+        } else switch (v.getId()) {
+            case R.id.skill_button: {
+                final Skill skill = (Skill) v.getTag();
+                listener.onSkillClick(getAdapterPosition(), skill, this);
+                break;
+            }
+        }
     }
 
     public void displayUser(final User user) {
@@ -64,7 +73,9 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
             final Skill skill = skills.get(i);
             final TextView textView = (TextView) inflater.inflate(R.layout.layout_friend_grid_skill,
                     userSkills, false);
+            textView.setTag(skill);
             textView.setText(Utils.getDisplayName(skill));
+            textView.setOnClickListener(this);
             userSkills.addView(textView);
         }
     }

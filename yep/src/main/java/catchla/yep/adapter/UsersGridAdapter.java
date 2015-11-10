@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import catchla.yep.R;
+import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.model.Skill;
 import catchla.yep.view.holder.FriendGridViewHolder;
 
 /**
@@ -33,8 +35,23 @@ public class UsersGridAdapter extends UsersAdapter {
     }
 
     @Override
+    protected UserGridItemClickListener getClickListener() {
+        return (UserGridItemClickListener) super.getClickListener();
+    }
+
+    @Override
+    public void setClickListener(final ItemClickListener listener) {
+        super.setClickListener(listener);
+    }
+
+    @Override
     protected void bindFriendViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         ((FriendGridViewHolder) holder).displayUser(getUser(position));
+    }
+
+    public interface UserGridItemClickListener extends ItemClickListener {
+
+        void onSkillClick(int position, Skill skill, FriendGridViewHolder holder);
     }
 
 }

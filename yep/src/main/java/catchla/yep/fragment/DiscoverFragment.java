@@ -23,22 +23,24 @@ import android.view.View;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.adapter.UsersGridAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
-import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.DiscoverUsersLoader;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Paging;
+import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.view.holder.FriendGridViewHolder;
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, ItemClickListener {
+        implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, UsersGridAdapter.UserGridItemClickListener {
 
     private int mPage = 1;
 
@@ -183,5 +185,13 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
 
     private Account getAccount() {
         return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
+    @Override
+    public void onSkillClick(final int position, final Skill skill, final FriendGridViewHolder holder) {
+        final Intent intent = new Intent(getActivity(), SkillUpdatesActivity.class);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
+        intent.putExtra(EXTRA_SKILL, skill);
+        startActivity(intent);
     }
 }

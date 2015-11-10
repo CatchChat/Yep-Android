@@ -59,7 +59,8 @@
         <org.apmem.tools.layouts.FlowLayout
             android:id="@+id/user_skills"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/element_spacing_small"/>
 
     </LinearLayout>
 </android.support.v7.widget.CardView>
