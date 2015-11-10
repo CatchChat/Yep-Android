@@ -14,6 +14,7 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,14 +51,13 @@ public class ProviderOAuthActivity extends ContentActivity implements Constants 
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
                 final Uri uri = Uri.parse(url);
-                if (YepAPIFactory.isAPIUrl(uri)) {
-                    if (YepAPIFactory.isAuthSuccessUrl(url)) {
-                        finish();
-                    } else if (YepAPIFactory.isAuthFailureUrl(url)) {
-                        // TODO: Show error message
-                    } else {
-                        view.loadUrl(url, headers);
-                    }
+                if (YepAPIFactory.isAuthSuccessUrl(url)) {
+                    finish();
+                } else if (YepAPIFactory.isAuthFailureUrl(url)) {
+                    Toast.makeText(ProviderOAuthActivity.this, R.string.unable_to_connect, Toast.LENGTH_SHORT).show();
+                    finish();
+                } else if (YepAPIFactory.isAPIUrl(uri)) {
+                    view.loadUrl(url, headers);
                     return true;
                 }
                 return super.shouldOverrideUrlLoading(view, url);

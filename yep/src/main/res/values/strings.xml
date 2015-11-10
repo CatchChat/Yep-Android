@@ -96,4 +96,5 @@
     <string name="delete_topic">Delete topic</string>
     <string name="joined_topics">Joined topics</string>
     <string name="circles">Circles</string>
+    <string name="unable_to_connect">Unable to connect</string>
 </resources>

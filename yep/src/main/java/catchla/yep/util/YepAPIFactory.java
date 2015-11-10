@@ -126,11 +126,11 @@ public class YepAPIFactory implements Constants {
     }
 
     public static boolean isAuthSuccessUrl(final String url) {
-        return ("https://" + API_DOMAIN + "/auth/success").equals(url);
+        return "yep://auth/success".equals(url);
     }
 
     public static boolean isAuthFailureUrl(final String url) {
-        return ("https://" + API_DOMAIN + "/auth/failure").equals(url);
+        return "yep://auth/failure".equals(url);
     }
 
     public static RestHttpClient getHttpClient(final Object o) {

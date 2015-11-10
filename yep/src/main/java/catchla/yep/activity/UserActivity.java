@@ -282,15 +282,14 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                 final Intent intent;
                 if (provider.isSupported()) {
                     intent = new Intent(UserActivity.this, ProviderContentActivity.class);
+                } else if (isMySelf) {
+                    intent = new Intent(UserActivity.this, ProviderOAuthActivity.class);
                 } else {
-                    if (isMySelf) {
-                        intent = new Intent(UserActivity.this, ProviderOAuthActivity.class);
-                    } else {
-                        return;
-                    }
+                    return;
                 }
                 intent.putExtra(EXTRA_PROVIDER_NAME, provider.getName());
                 intent.putExtra(EXTRA_USER, user);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
                 startActivity(intent);
             }
         };
