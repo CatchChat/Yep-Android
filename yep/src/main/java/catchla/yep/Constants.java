@@ -49,7 +49,8 @@ public interface Constants {
     String EXTRA_QUERY = "query";
     String EXTRA_MEDIA = "media";
     String EXTRA_CURRENT_MEDIA = "current_media";
-    String EXTRA_PAGE = "extra_page";
+    String EXTRA_PAGE = "page";
+    String EXTRA_MAX_ID = "max_id";
 
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;

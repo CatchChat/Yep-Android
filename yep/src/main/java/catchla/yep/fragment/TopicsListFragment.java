@@ -34,8 +34,6 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
         IActionButtonSupportFragment {
 
-    private int mPage = 1;
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -59,12 +57,12 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
         final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache);
+        final String maxId = args.getString(EXTRA_MAX_ID);
         boolean writeCache = true;
-        if (fragmentArgs != null) {
-
-        }
         final Paging paging = new Paging();
-        paging.page(args.getInt(EXTRA_PAGE, 1));
+        if (maxId != null) {
+            paging.maxId(maxId);
+        }
         final List<Topic> oldData;
         if (readOld) {
             oldData = getAdapter().getTopics();
@@ -152,7 +150,11 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         final Bundle loaderArgs = new Bundle();
         loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
         loaderArgs.putBoolean(EXTRA_READ_OLD, true);
-        loaderArgs.putInt(EXTRA_PAGE, ++mPage);
+        final TopicsAdapter adapter = getAdapter();
+        final int topicsCount = adapter.getTopicsCount();
+        if (topicsCount > 0) {
+            loaderArgs.putString(EXTRA_MAX_ID, adapter.getTopic(topicsCount - 1).getId());
+        }
         getLoaderManager().restartLoader(0, loaderArgs, this);
     }
 
