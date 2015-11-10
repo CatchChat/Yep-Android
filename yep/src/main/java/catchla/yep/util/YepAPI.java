@@ -186,6 +186,10 @@ public interface YepAPI {
     @DELETE("/v1/topics/{id}")
     void deleteTopic(@Path("id") String id);
 
+    @POST("/v1/feedbacks")
+    @Body(BodyType.FORM)
+    void postFeedback(@Form("content") String content, @Form("device_info") String deviceInfo) throws YepException;
+
     interface AttachmentKind {
         String MESSAGE = "message";
         String TOPIC = "topic";

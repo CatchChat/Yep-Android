@@ -6,6 +6,7 @@ package catchla.yep.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.NavUtils;
@@ -15,11 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.view.TintedStatusFrameLayout;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity implements Constants {
     private TintedStatusFrameLayout mMainContent;
 
     @Override
@@ -77,6 +79,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         mMainContent.setFactor(1);
     }
 
+    @Override
+    public void startActivityForResult(final Intent intent, final int requestCode) {
+        addAccountInfo(intent);
+        super.startActivityForResult(intent, requestCode);
+    }
+
+    private void addAccountInfo(final Intent intent) {
+        if (intent.hasExtra(EXTRA_ACCOUNT)) return;
+        intent.putExtra(EXTRA_ACCOUNT, getIntent().getParcelableExtra(EXTRA_ACCOUNT));
+    }
+
+    @Override
+    public void startActivityForResult(final Intent intent, final int requestCode, final Bundle options) {
+        addAccountInfo(intent);
+        super.startActivityForResult(intent, requestCode, options);
+    }
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {

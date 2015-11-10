@@ -379,7 +379,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings: {
-                Utils.openSettings(this);
+                Utils.openSettings(this, getAccount());
                 return true;
             }
             case R.id.share: {

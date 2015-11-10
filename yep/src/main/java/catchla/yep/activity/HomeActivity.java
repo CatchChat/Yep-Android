@@ -74,7 +74,7 @@ public class HomeActivity extends AppCompatActivity implements Constants,
             public void onActionClick(HomeMenuActionProvider.Action action) {
                 switch (action.id) {
                     case R.id.settings: {
-                        Utils.openSettings(HomeActivity.this);
+                        Utils.openSettings(HomeActivity.this, getAccount());
                         break;
                     }
                     case R.id.about: {

@@ -356,12 +356,13 @@ public class Utils implements Constants {
         return client.execute(builder.build());
     }
 
-    public static void openSettings(Context context) {
+    public static void openSettings(Context context, Account account) {
         final Intent intent = new Intent(context, SettingsActivity.class);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
         final Bundle args = new Bundle();
         args.putInt(EXTRA_RESID, R.xml.pref_general);
         intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+        intent.putExtra(EXTRA_ACCOUNT, account);
         context.startActivity(intent);
     }
 
