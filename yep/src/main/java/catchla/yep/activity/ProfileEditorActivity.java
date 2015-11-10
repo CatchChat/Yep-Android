@@ -37,6 +37,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
     private TextView mCountryCodeView;
     private TextView mPhoneNumberView;
     private View mLogoutButton;
+    private EditText mEditUsername;
     private EditText mEditNickname;
     private EditText mEditIntroduction;
 
@@ -102,6 +103,8 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mCountryCodeView.setText(user.getPhoneCode());
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());
+        mEditUsername.setText(user.getUsername());
+        mEditUsername.setEnabled(TextUtils.isEmpty(user.getUsername()));
         mEditIntroduction.setText(user.getIntroduction());
     }
 
@@ -140,6 +143,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mPhoneNumberView = (TextView) findViewById(R.id.phone_number);
         mLogoutButton = findViewById(R.id.logout);
         mEditNickname = (EditText) findViewById(R.id.edit_nickname);
+        mEditUsername = (EditText) findViewById(R.id.edit_username);
         mEditIntroduction = (EditText) findViewById(R.id.edit_introduction);
     }
 
@@ -154,16 +158,20 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
     public void onBackPressed() {
         if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
         boolean changed = mProfileImageUri != null;
-        if (!TextUtils.equals(mCurrentUser.getNickname(), mEditNickname.getText())) {
+        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getNickname()), mEditNickname.getText())) {
             changed |= true;
         }
-        if (!TextUtils.equals(mCurrentUser.getIntroduction(), mEditIntroduction.getText())) {
+        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getIntroduction()), mEditIntroduction.getText())) {
+            changed |= true;
+        }
+        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getUsername()), mEditUsername.getText())) {
             changed |= true;
         }
         if (changed) {
             final ProfileUpdate update = new ProfileUpdate();
             update.setNickname(String.valueOf(mEditNickname.getText()));
             update.setIntroduction(String.valueOf(mEditIntroduction.getText()));
+            update.setUsername(String.valueOf(mEditUsername.getText()));
             update.setAvatarUri(mProfileImageUri);
             mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this), update);
             mTask.execute();

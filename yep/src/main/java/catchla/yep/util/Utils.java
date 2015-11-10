@@ -493,4 +493,9 @@ public class Utils implements Constants {
         }
         throw new UnsupportedOperationException("Unknown recipientType " + recipientType);
     }
+
+    public static String emptyIfNull(final CharSequence text) {
+        if (text == null) return "";
+        return String.valueOf(text);
+    }
 }
