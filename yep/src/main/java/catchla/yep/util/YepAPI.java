@@ -35,6 +35,7 @@ import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Topic;
+import catchla.yep.model.UrlResponse;
 import catchla.yep.model.User;
 import catchla.yep.model.UserSettings;
 import catchla.yep.model.VerificationMethod;
@@ -189,6 +190,9 @@ public interface YepAPI {
     @POST("/v1/feedbacks")
     @Body(BodyType.FORM)
     void postFeedback(@Form("content") String content, @Form("device_info") String deviceInfo) throws YepException;
+
+    @POST("/v1/circles/{id}/share")
+    UrlResponse getCircleShareUrl(@Path("id") String id) throws YepException;
 
     interface AttachmentKind {
         String MESSAGE = "message";

@@ -4,12 +4,12 @@ import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 
 import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.http.RestHttpRequest;
+import org.mariotaku.restfu.okhttp.OkHttpRestClient;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import catchla.yep.app.YepApplication;
-import catchla.yep.util.net.OkHttpRestClient;
 
 /**
  * Created by mariotaku on 15/10/15.

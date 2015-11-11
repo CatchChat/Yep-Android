@@ -1,111 +1,72 @@
 package catchla.yep.service;
 
 import android.accounts.Account;
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
-import com.saulpower.fayeclient.FayeClient;
-import com.saulpower.fayeclient.WebSocketClient;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+import com.squareup.okhttp.ws.WebSocket;
+import com.squareup.okhttp.ws.WebSocketCall;
+import com.squareup.okhttp.ws.WebSocketListener;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
-import java.net.URI;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import catchla.yep.model.User;
-import catchla.yep.util.Utils;
+import catchla.yep.Constants;
 import catchla.yep.util.YepAPIFactory;
+import okio.Buffer;
 
-public class FayeService extends IntentService implements FayeClient.FayeListener {
+public class FayeService extends Service implements Constants, WebSocketListener {
 
-    public final String TAG = this.getClass().getSimpleName();
-
-    FayeClient mClient;
-    private Handler mHandler;
-
-    public FayeService() {
-        super("FayeService");
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
-        Log.i(TAG, "Starting Web Socket");
-        final Account account = Utils.getCurrentAccount(this);
-        final User accountUser = Utils.getAccountUser(this, account);
-        if (account == null || accountUser == null) return;
-
-        final URI uri = URI.create("wss://faye.catchchatchina.com/faye");
-        final String channel = String.format("/v1/users/%s/messages", accountUser.getId());
-
-
-        WebSocketClient.setTrustManagers(new TrustManager[]{new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-
-            }
-
-            @Override
-            public void checkServerTrusted(final X509Certificate[] chain, final String authType) throws CertificateException {
-
-            }
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        }});
-        mClient = new FayeClient(mHandler, uri, channel);
-        mClient.setFayeListener(this);
-        mClient.connectToServer(YepAPIFactory.getFayeAuthExtension(this, account));
-
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mHandler = new Handler(Looper.getMainLooper());
-    }
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+        final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
+        final OkHttpClient client = YepAPIFactory.getOkHttpClient(this);
+        final Request.Builder builder = new Request.Builder();
+        final WebSocketCall call = WebSocketCall.create(client, builder.build());
+        call.enqueue(this);
+        return START_STICKY;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(final Intent intent) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void connectedToServer() {
-        Log.i(TAG, "Connected to Server");
+    public void onOpen(final WebSocket webSocket, final Response response) {
+
     }
 
     @Override
-    public void disconnectedFromServer() {
-        Log.i(TAG, "Disonnected to Server");
+    public void onFailure(final IOException e, final Response response) {
+
     }
 
     @Override
-    public void subscribedToChannel(String subscription) {
-        Log.i(TAG, String.format("Subscribed to channel %s on Faye", subscription));
+    public void onMessage(final ResponseBody message) throws IOException {
+
     }
 
     @Override
-    public void subscriptionFailedWithError(String error) {
-        Log.i(TAG, String.format("Subscription failed with error: %s", error));
+    public void onPong(final Buffer payload) {
+
     }
 
     @Override
-    public void messageReceived(JSONObject json) {
-        Log.i(TAG, String.format("Received message %s", json.toString()));
+    public void onClose(final int code, final String reason) {
+
     }
+
 }

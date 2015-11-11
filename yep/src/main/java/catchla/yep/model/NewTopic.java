@@ -1,21 +1,19 @@
 package catchla.yep.model;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+
 import org.mariotaku.restfu.http.SimpleValueMap;
 
 import java.io.IOException;
-
-import catchla.yep.model.util.ValueMapJsonMapper;
 
 /**
  * Created by mariotaku on 15/10/12.
  */
 public class NewTopic extends SimpleValueMap {
 
-    private static final ValueMapJsonMapper<NewTopic> sMapper = new ValueMapJsonMapper<>();
-
     public JsonBody toJson() {
         try {
-            final String json = sMapper.serialize(this);
+            final String json = LoganSquare.serialize(asMap());
             return new JsonBody(json);
         } catch (IOException e) {
             return null;

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,17 @@ public class TopicChatActivity extends SwipeBackContentActivity implements Const
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_topic_chat, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share: {
+
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

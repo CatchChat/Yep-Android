@@ -5,7 +5,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
-import android.util.Pair;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.squareup.okhttp.OkHttpClient;
@@ -13,6 +12,7 @@ import com.squareup.okhttp.OkHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mariotaku.restfu.ExceptionFactory;
+import org.mariotaku.restfu.Pair;
 import org.mariotaku.restfu.RequestInfoFactory;
 import org.mariotaku.restfu.RestAPIFactory;
 import org.mariotaku.restfu.RestClient;
@@ -25,6 +25,7 @@ import org.mariotaku.restfu.http.RestHttpClient;
 import org.mariotaku.restfu.http.RestHttpRequest;
 import org.mariotaku.restfu.http.RestHttpResponse;
 import org.mariotaku.restfu.http.mime.TypedData;
+import org.mariotaku.restfu.okhttp.OkHttpRestClient;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -39,7 +40,6 @@ import javax.net.ssl.SSLSession;
 
 import catchla.yep.Constants;
 import catchla.yep.model.TokenAuthorization;
-import catchla.yep.util.net.OkHttpRestClient;
 
 /**
  * Created by mariotaku on 15/5/23.
@@ -98,6 +98,11 @@ public class YepAPIFactory implements Constants {
     }
 
     public static OkHttpRestClient getHttpRestClient(final Context context) {
+        final OkHttpClient client = getOkHttpClient(context);
+        return new OkHttpRestClient(client);
+    }
+
+    public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient client = new OkHttpClient();
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         client.setReadTimeout(10, TimeUnit.SECONDS);
@@ -108,7 +113,7 @@ public class YepAPIFactory implements Constants {
                 return true;
             }
         });
-        return new OkHttpRestClient(context, client);
+        return client;
     }
 
     public static String getProviderOAuthUrl(final String providerName) {

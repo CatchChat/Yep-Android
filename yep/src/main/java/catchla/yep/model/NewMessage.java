@@ -3,14 +3,12 @@ package catchla.yep.model;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
-import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.LoganSquare;
 
 import org.mariotaku.restfu.http.SimpleValueMap;
 
 import java.io.IOException;
 
-import catchla.yep.model.util.ValueMapJsonMapper;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
@@ -19,8 +17,6 @@ import catchla.yep.util.ParseUtils;
  * Created by mariotaku on 15/6/12.
  */
 public class NewMessage extends SimpleValueMap {
-
-    private static final ValueMapJsonMapper<NewMessage> sMapper = new ValueMapJsonMapper<>();
 
     private String conversationId;
     private long createdAt;
@@ -130,7 +126,7 @@ public class NewMessage extends SimpleValueMap {
 
     public JsonBody toJson() {
         try {
-            final String json = sMapper.serialize(this);
+            final String json = LoganSquare.serialize(asMap());
             return new JsonBody(json);
         } catch (IOException e) {
             return null;
