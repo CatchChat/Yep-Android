@@ -280,17 +280,24 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         });
         mAttachPopupMenu.inflate(R.menu.action_attach_send);
         final Conversation conversation = intent.getParcelableExtra(EXTRA_CONVERSATION);
-        markAsRead(conversation);
         getSupportLoaderManager().initLoader(0, intent.getExtras(), this);
     }
 
     private void markAsRead(final Conversation conversation) {
+        final int itemCount = mAdapter.getItemCount();
+        if (itemCount == 0) return;
+        final String lastId = mAdapter.getMessage(0).getId();
         AsyncManager.runBackgroundTask(new TaskRunnable() {
             @Override
             public Object doLongOperation(final Object o) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
                 try {
-                    yep.batchMarkAsRead(conversation.getRecipientId(), conversation.getRecipientType(), System.currentTimeMillis() / 100f);
+                    final String recipientType = conversation.getRecipientType();
+                    if (Message.RecipientType.CIRCLE.equals(recipientType)) {
+                        yep.batchMarkAsRead(conversation.getRecipientId(), YepAPI.MarkAsReadRecipientType.CIRCLES, lastId);
+                    } else if (Message.RecipientType.USER.equals(recipientType)) {
+                        yep.batchMarkAsRead(conversation.getRecipientId(), YepAPI.MarkAsReadRecipientType.USERS, lastId);
+                    }
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
                 } catch (Throwable t) {
@@ -399,6 +406,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             setTitle(Utils.getConversationName(conversation));
         }
         mAdapter.setData(data);
+        markAsRead(conversation);
     }
 
     @Override

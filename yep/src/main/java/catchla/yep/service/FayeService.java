@@ -2,6 +2,7 @@ package catchla.yep.service;
 
 import android.accounts.Account;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -12,13 +13,16 @@ import com.squareup.okhttp.Request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 
 import catchla.yep.Constants;
+import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
+import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.FayeClient;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
@@ -103,6 +107,20 @@ public class FayeService extends Service implements Constants {
                     Message imMessage = JsonSerializer.parse(data.optJSONObject("message").toString(),
                             Message.class);
                     MessageService.insertMessages(FayeService.this, Collections.singleton(imMessage), accountId);
+                } else if ("mark_as_read".equals(msgType)) {
+                    MarkAsReadMessage markAsRead = JsonSerializer.parse(data.optJSONObject("message").toString(),
+                            MarkAsReadMessage.class);
+                    if (markAsRead != null) {
+                        final ContentValues values = new ContentValues();
+                        values.put(Messages.STATE, Messages.MessageState.READ);
+                        final Expression where = Expression.and(
+                                Expression.equalsArgs(Messages.RECIPIENT_ID),
+                                Expression.equalsArgs(Messages.RECIPIENT_TYPE),
+                                Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
+                        );
+                        final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
+                        getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                    }
                 }
             }
         });

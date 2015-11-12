@@ -7,6 +7,7 @@ import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONException;
@@ -107,6 +108,7 @@ public class YepAPIFactory implements Constants {
 
     public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient client = new OkHttpClient();
+        DebugModeUtils.initForHttpClient(client);
         client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
         client.setHostnameVerifier(new HostnameVerifier() {
             @Override

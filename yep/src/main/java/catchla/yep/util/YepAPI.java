@@ -1,5 +1,7 @@
 package catchla.yep.util;
 
+import android.support.annotation.StringDef;
+
 import org.mariotaku.restfu.annotation.method.DELETE;
 import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.annotation.method.PATCH;
@@ -155,8 +157,8 @@ public interface YepAPI {
 
     @PATCH("/v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
     @Body(BodyType.FORM)
-    MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @Path("recipient_type") String recipientType,
-                                     @Form("last_read_at") float lastReadAt) throws YepException;
+    MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @MarkAsReadRecipientType @Path("recipient_type") String recipientType,
+                                     @Form("max_id") String maxId) throws YepException;
 
     @GET("/v1/blocked_users")
     PagedUsers getBlockedUsers(@Query Paging paging) throws YepException;
@@ -198,6 +200,12 @@ public interface YepAPI {
         String MESSAGE = "message";
         String TOPIC = "topic";
         String AVATAR = "avatar";
+    }
+
+    @StringDef({MarkAsReadRecipientType.USERS, MarkAsReadRecipientType.CIRCLES})
+    @interface MarkAsReadRecipientType {
+        String USERS = "users";
+        String CIRCLES = "circles";
     }
 
 }

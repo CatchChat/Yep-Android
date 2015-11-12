@@ -19,6 +19,7 @@ import android.view.View;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.iface.IAccountActivity;
 import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ChatsListFragment;
@@ -28,7 +29,6 @@ import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.menu.HomeMenuActionProvider;
-import catchla.yep.service.FayeService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -38,7 +38,7 @@ import catchla.yep.view.iface.PagerIndicator;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class HomeActivity extends AppCompatActivity implements Constants,
+public class HomeActivity extends AppCompatActivity implements Constants, IAccountActivity,
         ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener,
         IControlBarActivity {
     private ViewPager mViewPager;
@@ -90,22 +90,6 @@ public class HomeActivity extends AppCompatActivity implements Constants,
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        final Intent fayeIntent = new Intent(this, FayeService.class);
-        fayeIntent.putExtra(EXTRA_ACCOUNT, getAccount());
-        startService(fayeIntent);
-    }
-
-    @Override
-    protected void onStop() {
-        stopService(new Intent(this, FayeService.class));
-
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
         mViewPager.removeOnPageChangeListener(this);
 
@@ -148,7 +132,8 @@ public class HomeActivity extends AppCompatActivity implements Constants,
         updateActionButton();
     }
 
-    private Account getAccount() {
+    @Override
+    public Account getAccount() {
         return Utils.getCurrentAccount(this);
     }
 
