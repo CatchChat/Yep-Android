@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/element_spacing_normal"
-        app:bubbleColor="#cccccc"
+        app:bubbleColor="#dddddd"
         app:caretPosition="topStart"
         app:caretWidth="4dp"
         app:cornerRadius="4dp">

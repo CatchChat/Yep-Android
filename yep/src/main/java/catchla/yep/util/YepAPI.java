@@ -157,7 +157,7 @@ public interface YepAPI {
 
     @PATCH("/v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
     @Body(BodyType.FORM)
-    MarkAsReadResult batchMarkAsRead(@Path("recipient_id") String recipientId, @MarkAsReadRecipientType @Path("recipient_type") String recipientType,
+    MarkAsReadResult batchMarkAsRead(@MarkAsReadRecipientType @Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
                                      @Form("max_id") String maxId) throws YepException;
 
     @GET("/v1/blocked_users")

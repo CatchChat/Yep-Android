@@ -68,7 +68,7 @@ dependencies {
     compile 'com.github.boxme:asyncmanager:1.0.0'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.github.mariotaku:PickNCrop:1dff3ed574'
-    compile 'com.github.mariotaku:SQLiteQB:88291f3a28'
+    compile 'com.github.mariotaku:SQLiteQB:e3b8e3b6ac'
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.9'
     compile 'org.osmdroid:osmdroid-android:4.3'
     compile 'org.slf4j:slf4j-simple:1.7.12'

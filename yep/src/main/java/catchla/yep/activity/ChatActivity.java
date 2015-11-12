@@ -6,6 +6,7 @@ package catchla.yep.activity;
 
 import android.accounts.Account;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -43,6 +44,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.mariotaku.restfu.http.RestHttpClient;
+import org.mariotaku.sqliteqb.library.Expression;
+import org.mariotaku.sqliteqb.library.OrderBy;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -68,6 +71,7 @@ import catchla.yep.model.NewImageAttachment;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.ImageLoaderWrapper;
@@ -284,25 +288,41 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     private void markAsRead(final Conversation conversation) {
-        final int itemCount = mAdapter.getItemCount();
-        if (itemCount == 0) return;
-        final String lastId = mAdapter.getMessage(0).getId();
         AsyncManager.runBackgroundTask(new TaskRunnable() {
             @Override
             public Object doLongOperation(final Object o) throws InterruptedException {
+                final String[] projection = {Messages.MESSAGE_ID};
+                final Expression where = Expression.and(
+                        Expression.equalsArgs(Messages.ACCOUNT_ID),
+                        Expression.equalsArgs(Messages.CONVERSATION_ID),
+                        Expression.isNot(Messages.OUTGOING, 1)
+                );
+                final String[] whereArgs = {conversation.getAccountId(), conversation.getId()};
+                final OrderBy orderBy = new OrderBy(Messages.CREATED_AT, false);
+                final Cursor incoming = getContentResolver().query(Messages.CONTENT_URI, projection,
+                        where.getSQL(), whereArgs, orderBy.getSQL());
+                assert incoming != null;
+                final String lastId;
+                try {
+                    if (!incoming.moveToFirst()) return null;
+                    lastId = incoming.getString(0);
+                } finally {
+                    incoming.close();
+                }
                 final YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
                 try {
                     final String recipientType = conversation.getRecipientType();
                     if (Message.RecipientType.CIRCLE.equals(recipientType)) {
-                        yep.batchMarkAsRead(conversation.getRecipientId(), YepAPI.MarkAsReadRecipientType.CIRCLES, lastId);
+                        yep.batchMarkAsRead(YepAPI.MarkAsReadRecipientType.CIRCLES, conversation.getRecipientId(), lastId);
                     } else if (Message.RecipientType.USER.equals(recipientType)) {
-                        yep.batchMarkAsRead(conversation.getRecipientId(), YepAPI.MarkAsReadRecipientType.USERS, lastId);
+                        yep.batchMarkAsRead(YepAPI.MarkAsReadRecipientType.USERS, conversation.getRecipientId(), lastId);
                     }
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
                 } catch (Throwable t) {
                     Log.wtf(LOGTAG, t);
                 }
+
                 return null;
             }
         });
