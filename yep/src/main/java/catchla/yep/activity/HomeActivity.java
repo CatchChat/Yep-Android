@@ -28,6 +28,7 @@ import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.menu.HomeMenuActionProvider;
+import catchla.yep.service.FayeService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.TabPagerIndicator;
@@ -89,9 +90,25 @@ public class HomeActivity extends AppCompatActivity implements Constants,
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        final Intent fayeIntent = new Intent(this, FayeService.class);
+        fayeIntent.putExtra(EXTRA_ACCOUNT, getAccount());
+        startService(fayeIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        stopService(new Intent(this, FayeService.class));
+
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
-//        stopService(new Intent(this, FayeService.class));
         mViewPager.removeOnPageChangeListener(this);
+
         super.onDestroy();
     }
 
@@ -127,8 +144,6 @@ public class HomeActivity extends AppCompatActivity implements Constants,
         mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args);
         mPagerIndicator.setViewPager(mViewPager);
         mPagerIndicator.updateAppearance();
-
-//        startService(new Intent(this, FayeService.class));
 
         updateActionButton();
     }

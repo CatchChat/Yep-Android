@@ -285,4 +285,27 @@ public class Message {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", id='" + id + '\'' +
+                ", recipientId='" + recipientId + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", textContent='" + textContent + '\'' +
+                ", createdAt=" + createdAt +
+                ", sender=" + sender +
+                ", recipientType='" + recipientType + '\'' +
+                ", mediaType='" + mediaType + '\'' +
+                ", circle=" + circle +
+                ", topic=" + topic +
+                ", conversationId='" + conversationId + '\'' +
+                ", outgoing=" + outgoing +
+                ", state='" + state + '\'' +
+                ", attachments=" + attachments +
+                ", localMetadata=" + localMetadata +
+                '}';
+    }
 }

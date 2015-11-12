@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,6 +19,7 @@ import org.mariotaku.sqliteqb.library.Columns;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -152,50 +154,8 @@ public class MessageService extends Service implements Constants {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     PagedMessages messages = yep.getUnreadMessages();
-                    HashMap<String, ContentValues> conversations = new HashMap<>();
-                    final ContentResolver cr = getContentResolver();
-                    final Set<String> ids = new HashSet<>();
-                    for (Message message : messages) {
-                        ids.add(message.getId());
-                        final String recipientType = message.getRecipientType();
-                        final String conversationId = Conversation.generateId(message);
-                        message.setConversationId(conversationId);
-                        message.setOutgoing(false);
-
-                        ContentValues conversation = conversations.get(conversationId);
-                        final boolean newConversation = conversation == null;
-                        if (conversation == null) {
-                            conversation = new ContentValues();
-                            conversation.put(Conversations.ACCOUNT_ID, accountUser.getId());
-                            conversation.put(Conversations.CONVERSATION_ID, conversationId);
-                        }
-                        final long createdAt = Utils.getTime(message.getCreatedAt());
-                        if (newConversation || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
-                            conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
-                            conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
-                            conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
-                            conversation.put(Conversations.TOPIC, JsonSerializer.serialize(message.getTopic(), Topic.class));
-                            conversation.put(Conversations.UPDATED_AT, createdAt);
-                            conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
-                            conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
-                        }
-                        if (newConversation) {
-                            conversations.put(conversationId, conversation);
-                        }
-                        final int idsSize = ids.size();
-                        final String[] selectionArgs = new String[idsSize + 1];
-                        selectionArgs[0] = accountUser.getId();
-                        System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
-                        cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
-                                        Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
-                                selectionArgs);
-                    }
-                    final ArrayList<ContentValues> messagesValues = new ArrayList<>();
-                    for (Message message : messages) {
-                        messagesValues.add(ContentValuesCreator.fromMessage(message, accountUser.getId()));
-                    }
-                    ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
-                    ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
+                    final String accountId = accountUser.getId();
+                    insertMessages(MessageService.this, messages, accountId);
                     return TaskResponse.getInstance(true);
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
@@ -217,5 +177,53 @@ public class MessageService extends Service implements Constants {
         task.setParams(account);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
+    }
+
+    public static void insertMessages(final Context context, final Collection<Message> messages, final String accountId) {
+        HashMap<String, ContentValues> conversations = new HashMap<>();
+        final ContentResolver cr = context.getContentResolver();
+        final Set<String> ids = new HashSet<>();
+        for (Message message : messages) {
+            ids.add(message.getId());
+            final String recipientType = message.getRecipientType();
+            final String conversationId = Conversation.generateId(message);
+            message.setConversationId(conversationId);
+            message.setOutgoing(false);
+
+            ContentValues conversation = conversations.get(conversationId);
+            final boolean newConversation = conversation == null;
+            if (conversation == null) {
+                conversation = new ContentValues();
+                conversation.put(Conversations.ACCOUNT_ID, accountId);
+                conversation.put(Conversations.CONVERSATION_ID, conversationId);
+            }
+            final long createdAt = Utils.getTime(message.getCreatedAt());
+            if (newConversation || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
+                conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
+                conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
+                conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
+                conversation.put(Conversations.TOPIC, JsonSerializer.serialize(message.getTopic(), Topic.class));
+                conversation.put(Conversations.UPDATED_AT, createdAt);
+                conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
+                conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
+            }
+            if (newConversation) {
+                conversations.put(conversationId, conversation);
+            }
+        }
+
+        final int idsSize = ids.size();
+        final String[] selectionArgs = new String[idsSize + 1];
+        selectionArgs[0] = accountId;
+        System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
+        cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
+                        Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
+                selectionArgs);
+        final ArrayList<ContentValues> messagesValues = new ArrayList<>();
+        for (Message message : messages) {
+            messagesValues.add(ContentValuesCreator.fromMessage(message, accountId));
+        }
+        ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
+        ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
     }
 }

@@ -70,4 +70,12 @@ public class LatLng implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         LatLngParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    @Override
+    public String toString() {
+        return "LatLng{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
+    }
 }

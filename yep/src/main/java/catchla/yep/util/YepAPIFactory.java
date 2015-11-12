@@ -47,6 +47,8 @@ import catchla.yep.model.TokenAuthorization;
 public class YepAPIFactory implements Constants {
 
     public static final String API_DOMAIN = "park.catchchatchina.com";
+    public static final String API_ENDPOINT_FAYE = "https://faye.catchchatchina.com/faye";
+    public static final String API_ENDPOINT_REST = "https://" + API_DOMAIN + "/api/";
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
@@ -55,7 +57,7 @@ public class YepAPIFactory implements Constants {
 
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
         RestAPIFactory factory = new RestAPIFactory();
-        factory.setEndpoint(new Endpoint("https://" + API_DOMAIN + "/api/"));
+        factory.setEndpoint(new Endpoint(API_ENDPOINT_REST));
         factory.setClient(getHttpRestClient(context));
         factory.setConverter(new LoganSquareConverter());
         factory.setAuthorization(new TokenAuthorization(accessToken));
@@ -99,13 +101,12 @@ public class YepAPIFactory implements Constants {
 
     public static OkHttpRestClient getHttpRestClient(final Context context) {
         final OkHttpClient client = getOkHttpClient(context);
+        client.setConnectTimeout(10, TimeUnit.SECONDS);
         return new OkHttpRestClient(client);
     }
 
     public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(10, TimeUnit.SECONDS);
-        client.setReadTimeout(10, TimeUnit.SECONDS);
         client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
         client.setHostnameVerifier(new HostnameVerifier() {
             @Override
