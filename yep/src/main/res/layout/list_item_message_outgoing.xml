@@ -4,25 +4,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="end"
+    android:gravity="end|center_vertical"
     android:orientation="horizontal">
 
 
-    <TextView
+    <ImageView
         android:id="@+id/state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="@dimen/element_spacing_normal"/>
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_margin="@dimen/element_spacing_small"
+        android:scaleType="center"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
+        android:id="@+id/message_bubble_outgoing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
         android:layout_margin="@dimen/element_spacing_normal"
+        android:minHeight="16dp"
+        android:minWidth="16dp"
         app:bubbleColor="#40C4FF"
         app:caretPosition="bottomEnd"
-        app:caretWidth="4dp"
+        app:caretWidth="2dp"
         app:cornerRadius="4dp">
 
         <include layout="@layout/layout_message_item_common"/>

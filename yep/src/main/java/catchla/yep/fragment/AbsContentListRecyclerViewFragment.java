@@ -23,6 +23,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.FixedLinearLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
@@ -38,9 +39,9 @@ public abstract class AbsContentListRecyclerViewFragment<A extends LoadMoreSuppo
     private DividerItemDecoration mItemDecoration;
 
     @Override
-    protected void setupRecyclerView(Context context) {
-        mItemDecoration = new DividerItemDecoration(context, getLayoutManager().getOrientation());
-        getRecyclerView().addItemDecoration(mItemDecoration);
+    protected void setupRecyclerView(Context context, RecyclerView recyclerView, final LinearLayoutManager layoutManager) {
+        mItemDecoration = new DividerItemDecoration(context, layoutManager.getOrientation());
+        recyclerView.addItemDecoration(mItemDecoration);
     }
 
     @Override
@@ -52,8 +53,8 @@ public abstract class AbsContentListRecyclerViewFragment<A extends LoadMoreSuppo
     }
 
     @Override
-    protected void scrollToPositionWithOffset(int position, int offset) {
-        getLayoutManager().scrollToPositionWithOffset(0, 0);
+    protected void onScrollToPositionWithOffset(final LinearLayoutManager layoutManager, int position, int offset) {
+        layoutManager.scrollToPositionWithOffset(0, 0);
     }
 
     @NonNull

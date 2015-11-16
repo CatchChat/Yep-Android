@@ -20,15 +20,7 @@
             android:id="@+id/list_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/input_panel">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"/>
-
-        </FrameLayout>
+            android:layout_above="@+id/input_panel"/>
 
         <RelativeLayout
             android:id="@+id/voice_wave_container"
@@ -53,7 +45,7 @@
             android:layout_above="@+id/input_panel"
             android:background="@drawable/shadow_top"/>
 
-        <RelativeLayout
+        <FrameLayout
             android:id="@+id/input_panel"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -61,13 +53,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="?android:colorBackground"
-            android:gravity="bottom"
             android:outlineProvider="bounds"
             android:paddingBottom="@dimen/element_spacing_normal"
-            android:paddingTop="@dimen/element_spacing_normal">
+            android:paddingTop="@dimen/element_spacing_normal"/>
 
-            <include layout="@layout/layout_chat_input_panel"/>
-        </RelativeLayout>
     </RelativeLayout>
 
 </catchla.yep.view.TintedStatusFrameLayout>

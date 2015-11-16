@@ -36,7 +36,6 @@ public class VoiceWaveView extends View {
     private int mViewHeight = 0;
     private float ViewMid = 0;
     private boolean mRecordingStarted;
-    private ArrayList<Float> mSamplesList = new ArrayList<>();
 
     public VoiceWaveView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
@@ -54,7 +53,6 @@ public class VoiceWaveView extends View {
 
     public void setAmplitude(final int amplitude) {
         mAmplitude = (mAmplitude + amplitude) / 2;
-        mSamplesList.add(amplitude / (float) Short.MAX_VALUE);
         phaseNext();
         invalidate();
     }
@@ -139,24 +137,11 @@ public class VoiceWaveView extends View {
     }
 
 
-    public float[] stopRecording() {
+    public void stopRecording() {
         mRecordingStarted = false;
-        final int size = mSamplesList.size();
-        final float[] rawSamplesArray = ArrayUtils.toPrimitive(mSamplesList.toArray(new Float[size]));
-        final int idealSampleSize = 20;
-        if (size < idealSampleSize) {
-            return rawSamplesArray;
-        }
-        final int gap = size / idealSampleSize;
-        final float[] result = new float[idealSampleSize];
-        for (int i = 0; i < idealSampleSize; i++) {
-            result[i] = MathUtils.avg(rawSamplesArray, i * gap, (i + 1) * gap - 1);
-        }
-        return result;
     }
 
     public void startRecording() {
         mRecordingStarted = true;
-        mSamplesList.clear();
     }
 }

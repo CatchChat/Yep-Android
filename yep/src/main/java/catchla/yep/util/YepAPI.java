@@ -17,6 +17,7 @@ import org.mariotaku.restfu.http.BodyType;
 import java.util.ArrayList;
 
 import catchla.yep.model.AccessToken;
+import catchla.yep.model.Circle;
 import catchla.yep.model.Client;
 import catchla.yep.model.ContactUpload;
 import catchla.yep.model.CreateRegistrationResult;
@@ -195,6 +196,12 @@ public interface YepAPI {
 
     @POST("/v1/circles/{id}/share")
     UrlResponse getCircleShareUrl(@Path("id") String id) throws YepException;
+
+    @POST("/v1/circles/{id}/join")
+    Circle joinCircle(@Path("id") String circleId) throws YepException;
+
+    @DELETE("/v1/circles/{id}/leave")
+    Circle leaveCircle(@Path("id") String circleId) throws YepException;
 
     interface AttachmentKind {
         String MESSAGE = "message";

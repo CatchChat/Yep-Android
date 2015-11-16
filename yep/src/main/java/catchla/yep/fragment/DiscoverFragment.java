@@ -62,12 +62,11 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    protected void setupRecyclerView(final Context context) {
-        final RecyclerView recyclerView = getRecyclerView();
-        final RecyclerView.LayoutManager layoutManager = getLayoutManager();
-        if (layoutManager instanceof LinearLayoutManager &&
-                (!(layoutManager instanceof GridLayoutManager)
-                        || ((GridLayoutManager) layoutManager).getSpanCount() == 1)) {
+    protected void setupRecyclerView(final Context context, final RecyclerView recyclerView, final RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof LinearLayoutManager) {
+            if (layoutManager instanceof GridLayoutManager && ((GridLayoutManager) layoutManager).getSpanCount() != 1) {
+                return;
+            }
             final DividerItemDecoration itemDecoration = new DividerItemDecoration(context,
                     ((LinearLayoutManager) layoutManager).getOrientation());
             final Resources res = context.getResources();
@@ -164,8 +163,8 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    protected void scrollToPositionWithOffset(final int position, final int offset) {
-        getLayoutManager().scrollToPosition(position);
+    protected void onScrollToPositionWithOffset(final RecyclerView.LayoutManager layoutManager, final int position, final int offset) {
+        layoutManager.scrollToPosition(position);
     }
 
     @Override

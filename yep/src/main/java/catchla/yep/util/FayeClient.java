@@ -1,5 +1,7 @@
 package catchla.yep.util;
 
+import android.support.annotation.WorkerThread;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -20,7 +22,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 import okio.Buffer;
@@ -127,14 +128,6 @@ public class FayeClient {
         extensions.remove(extension);
     }
 
-    public void subscribe(String channel, Callback listener) {
-
-    }
-
-    public void unsubscribe(String channel, Callback listener) {
-
-    }
-
     private void emit(Message[] messages, final Callback callback) throws IOException {
         for (final Message message : messages) {
             final String idStr = Long.toHexString(++this.id);
@@ -184,6 +177,7 @@ public class FayeClient {
     }
 
     public interface Callback {
+        @WorkerThread
         void callback(Message message);
     }
 

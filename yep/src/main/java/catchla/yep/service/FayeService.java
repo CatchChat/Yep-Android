@@ -4,12 +4,15 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.otto.Bus;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +22,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import catchla.yep.Constants;
+import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -27,14 +33,21 @@ import catchla.yep.util.FayeClient;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.DaggerGeneralComponent;
 
 public class FayeService extends Service implements Constants {
 
+    @Inject
+    Bus mBus;
     private FayeClient mFayeClient;
+    private Handler mHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mHandler = new Handler(Looper.getMainLooper());
+        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
     }
 
     @Override
@@ -121,6 +134,12 @@ public class FayeService extends Service implements Constants {
                         final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
                         getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
                     }
+                } else if ("instant_state".equals(msgType)) {
+                    InstantStateMessage instantState = JsonSerializer.parse(data.optJSONObject("message").toString(),
+                            InstantStateMessage.class);
+                    if (instantState != null) {
+                        postMessage(instantState);
+                    }
                 }
             }
         });
@@ -146,5 +165,13 @@ public class FayeService extends Service implements Constants {
         throw new UnsupportedOperationException();
     }
 
+    private void postMessage(final Object obj) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mBus.post(obj);
+            }
+        });
+    }
 
 }

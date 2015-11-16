@@ -11,7 +11,7 @@
         android:layout_margin="@dimen/element_spacing_normal"
         app:bubbleColor="#dddddd"
         app:caretPosition="topStart"
-        app:caretWidth="4dp"
+        app:caretWidth="2dp"
         app:cornerRadius="4dp">
 
         <include layout="@layout/layout_message_item_common"/>

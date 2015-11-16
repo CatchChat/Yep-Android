@@ -37,7 +37,6 @@ import android.widget.TextView;
 import catchla.yep.R;
 import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.util.ContentListScrollListener;
 import catchla.yep.util.SimpleDrawerCallback;
@@ -119,7 +118,11 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         return true;
     }
 
-    protected abstract void scrollToPositionWithOffset(int position, int offset);
+    protected abstract void onScrollToPositionWithOffset(final L layoutManager, int position, int offset);
+
+    public final void scrollToPositionWithOffset(int position, int offset) {
+        onScrollToPositionWithOffset(mLayoutManager, position, offset);
+    }
 
     @Override
     public void setControlVisible(boolean visible) {
@@ -198,14 +201,14 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         mLayoutManager = onCreateLayoutManager(context);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        setupRecyclerView(context);
+        setupRecyclerView(context, mRecyclerView, mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
         mScrollListener = new ContentListScrollListener(this);
         mScrollListener.setTouchSlop(ViewConfiguration.get(context).getScaledTouchSlop());
     }
 
-    protected abstract void setupRecyclerView(Context context);
+    protected abstract void setupRecyclerView(Context context, final RecyclerView recyclerView, final L layoutManager);
 
     @NonNull
     protected abstract L onCreateLayoutManager(Context context);
