@@ -1,10 +1,12 @@
 package catchla.yep.app;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import catchla.yep.Constants;
 import catchla.yep.activity.iface.IAccountActivity;
@@ -39,7 +41,11 @@ public class YepApplication extends Application implements Constants {
                 foregroundActivitiesCount++;
                 if (activity instanceof IAccountActivity) {
                     final Intent fayeIntent = new Intent(YepApplication.this, FayeService.class);
-                    fayeIntent.putExtra(EXTRA_ACCOUNT, ((IAccountActivity) activity).getAccount());
+                    final Account account = ((IAccountActivity) activity).getAccount();
+                    if (account == null) {
+                        Log.e(LOGTAG, "Account should not be null here", new Exception());
+                    }
+                    fayeIntent.putExtra(EXTRA_ACCOUNT, account);
                     startedService = startService(fayeIntent);
                 }
             }
