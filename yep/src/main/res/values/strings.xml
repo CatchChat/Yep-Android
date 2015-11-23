@@ -99,4 +99,5 @@
     <string name="unable_to_connect">Unable to connect</string>
     <string name="send_feedback_hint">We read every feedback carefully.</string>
     <string name="record_audio_permission_required">Recording permission is needed to send audio</string>
+    <string name="typing">Typing</string>
 </resources>

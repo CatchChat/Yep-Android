@@ -6,16 +6,20 @@ package catchla.yep.activity;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.squareup.otto.Subscribe;
 
 import org.mariotaku.sqliteqb.library.Expression;
 import org.mariotaku.sqliteqb.library.OrderBy;
@@ -25,6 +29,7 @@ import catchla.yep.R;
 import catchla.yep.fragment.ChatInputBarFragment;
 import catchla.yep.fragment.ChatListFragment;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
@@ -46,6 +51,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
     private VoiceWaveView mVoiceWaveView;
     private View mVoiceWaveContainer;
+    private Handler mHandler;
 
 
     @Override
@@ -60,6 +66,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler(Looper.getMainLooper());
         setContentView(R.layout.activity_chat);
         final ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
@@ -167,6 +174,40 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     @Override
     public void onMessageSentFinished(final TaskResponse<Message> result) {
 
+    }
+
+    @Subscribe
+    public void onReceivedInstantStateMessage(InstantStateMessage message) {
+        final Conversation conversation = getConversation();
+        if (Message.RecipientType.USER.equals(conversation.getRecipientType())) {
+            if (TextUtils.equals(conversation.getUser().getId(), message.getUser().getId())) {
+                setTitle(R.string.typing);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTitle(Utils.getConversationName(conversation));
+                    }
+                }, 2000);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mBus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        mBus.unregister(this);
+        super.onStop();
     }
 
     @Override
