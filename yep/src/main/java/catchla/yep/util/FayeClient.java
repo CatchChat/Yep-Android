@@ -162,6 +162,18 @@ public class FayeClient {
         return webSocket != null;
     }
 
+    public void publish(String channel, final Message message, final Callback callback) throws IOException {
+        message.setChannel(channel);
+        emit(new Message[]{message}, new Callback() {
+            @Override
+            public void callback(final Message message) {
+                if (callback != null) {
+                    callback.callback(message);
+                }
+            }
+        });
+    }
+
     public interface ConnectionListener {
         void onConnected();
 
@@ -229,6 +241,10 @@ public class FayeClient {
             }
         }
 
+        public boolean isSuccessful() {
+            return json.optBoolean("successful", true);
+        }
+
         public String getString(String key) {
             return json.optString(key, null);
         }
@@ -257,6 +273,13 @@ public class FayeClient {
             final JSONArray array = new JSONArray();
             array.put(json);
             return array.toString();
+        }
+
+        @Override
+        public String toString() {
+            return "Message{" +
+                    "json=" + json +
+                    '}';
         }
 
         void setVersion(final String version) {
@@ -294,6 +317,14 @@ public class FayeClient {
 
         void setConnectionType(final String type) {
             putInternal("connectionType", type);
+        }
+
+        public static Message create(final String json) {
+            try {
+                return new Message(new JSONObject(json));
+            } catch (JSONException e) {
+                return null;
+            }
         }
 
         public class Advice {

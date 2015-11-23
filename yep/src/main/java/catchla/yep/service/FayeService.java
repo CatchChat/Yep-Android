@@ -4,9 +4,11 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -19,12 +21,14 @@ import org.json.JSONObject;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import catchla.yep.Constants;
+import catchla.yep.IFayeService;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
@@ -42,6 +46,7 @@ public class FayeService extends Service implements Constants {
     Bus mBus;
     private FayeClient mFayeClient;
     private Handler mHandler;
+    private String mUserChannel;
 
     @Override
     public void onCreate() {
@@ -79,6 +84,7 @@ public class FayeService extends Service implements Constants {
             }
         });
         final String userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId);
+        mUserChannel = userChannel;
         mFayeClient.establish(new FayeClient.ConnectionListener() {
             @Override
             public void onConnected() {
@@ -114,6 +120,10 @@ public class FayeService extends Service implements Constants {
         }).subscribe(userChannel, new FayeClient.Callback() {
             @Override
             public void callback(final FayeClient.Message message) {
+                if (!message.isSuccessful()) {
+                    Log.w(LOGTAG, "Received error from faye, " + message.toString());
+                    return;
+                }
                 final JSONObject data = message.getJSONObject("data");
                 final String msgType = data.optString("message_type");
                 if ("message".equals(msgType)) {
@@ -162,7 +172,7 @@ public class FayeService extends Service implements Constants {
     @Nullable
     @Override
     public IBinder onBind(final Intent intent) {
-        throw new UnsupportedOperationException();
+        return new IFayeServiceBinder(this);
     }
 
     private void postMessage(final Object obj) {
@@ -172,6 +182,44 @@ public class FayeService extends Service implements Constants {
                 mBus.post(obj);
             }
         });
+    }
+
+    private static class IFayeServiceBinder extends IFayeService.Stub {
+
+        private final WeakReference<FayeService> mReference;
+
+        IFayeServiceBinder(FayeService service) {
+            mReference = new WeakReference<>(service);
+        }
+
+        @Override
+        public boolean instantState(final InstantStateMessage message) throws RemoteException {
+            final FayeService service = mReference.get();
+            return service.sendMessage("instant_state", service.mUserChannel, message);
+        }
+    }
+
+    private boolean sendMessage(final String messageType, final String channel, final Object message) {
+        if (mFayeClient == null || !mFayeClient.isConnected()) return false;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final JSONObject json = new JSONObject();
+                    json.put("message_type", messageType);
+                    json.put("message", JsonSerializer.serialize(message));
+                    mFayeClient.publish(channel, new FayeClient.Message(json), new FayeClient.Callback() {
+                        @Override
+                        public void callback(final FayeClient.Message message) {
+                            Log.d(LOGTAG, message.toString());
+                        }
+                    });
+                } catch (JSONException | IOException e) {
+                    Log.w(LOGTAG, e);
+                }
+            }
+        });
+        return true;
     }
 
 }

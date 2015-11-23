@@ -134,6 +134,9 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                 mAttachSendButton.setImageResource(s.length() > 0 ? R.drawable.ic_action_send : R.drawable.ic_action_attachment);
+                if (mListener != null) {
+                    mListener.onTypingText();
+                }
             }
 
             @Override
@@ -344,6 +347,8 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
         void onMessageSentFinished(TaskResponse<Message> result);
 
         void onMessageSentStarted(NewMessage newMessage);
+
+        void onTypingText();
     }
 
     private Listener mListener;
