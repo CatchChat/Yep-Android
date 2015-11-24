@@ -66,9 +66,8 @@ public class InstantStateMessage implements Parcelable {
         InstantStateMessageParcelablePlease.writeToParcel(this, dest, flags);
     }
 
-    public static InstantStateMessage create(final Conversation conversation, final String state) {
+    public static InstantStateMessage create(final String state) {
         final InstantStateMessage message = new InstantStateMessage();
-        message.setUser(conversation.getUser());
         message.setState(state);
         return message;
     }

@@ -231,9 +231,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     @Override
     public void onTypingText() {
         if (mFayeService == null) return;
-        InstantStateMessage message = InstantStateMessage.create(getConversation(), "typing");
         try {
-            mFayeService.instantState(message);
+            mFayeService.instantState(getConversation(), "typing");
         } catch (RemoteException e) {
             Log.w(LOGTAG, e);
         }

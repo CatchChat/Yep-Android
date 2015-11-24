@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import catchla.yep.Constants;
 import catchla.yep.IFayeService;
+import catchla.yep.model.Conversation;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
@@ -46,7 +47,6 @@ public class FayeService extends Service implements Constants {
     Bus mBus;
     private FayeClient mFayeClient;
     private Handler mHandler;
-    private String mUserChannel;
 
     @Override
     public void onCreate() {
@@ -84,7 +84,6 @@ public class FayeService extends Service implements Constants {
             }
         });
         final String userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId);
-        mUserChannel = userChannel;
         mFayeClient.establish(new FayeClient.ConnectionListener() {
             @Override
             public void onConnected() {
@@ -184,6 +183,26 @@ public class FayeService extends Service implements Constants {
         });
     }
 
+    private boolean sendMessage(final String messageType, final String channel, final Object message) {
+        if (mFayeClient == null || !mFayeClient.isConnected()) return false;
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final JSONObject json = new JSONObject();
+                    final JSONObject data = new JSONObject();
+                    data.put("message_type", messageType);
+                    data.put("message", new JSONObject(JsonSerializer.serialize(message)));
+                    json.put("data", data);
+                    mFayeClient.publish(channel, new FayeClient.Message(json), null);
+                } catch (JSONException | IOException e) {
+                    Log.w(LOGTAG, e);
+                }
+            }
+        });
+        return true;
+    }
+
     private static class IFayeServiceBinder extends IFayeService.Stub {
 
         private final WeakReference<FayeService> mReference;
@@ -193,33 +212,12 @@ public class FayeService extends Service implements Constants {
         }
 
         @Override
-        public boolean instantState(final InstantStateMessage message) throws RemoteException {
+        public boolean instantState(final Conversation conversation, final String type) throws RemoteException {
             final FayeService service = mReference.get();
-            return service.sendMessage("instant_state", service.mUserChannel, message);
+            InstantStateMessage message = InstantStateMessage.create(type);
+            final String userChannel = String.format(Locale.ROOT, "/users/%s/messages", conversation.getRecipientId());
+            return service.sendMessage("instant_state", userChannel, message);
         }
-    }
-
-    private boolean sendMessage(final String messageType, final String channel, final Object message) {
-        if (mFayeClient == null || !mFayeClient.isConnected()) return false;
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final JSONObject json = new JSONObject();
-                    json.put("message_type", messageType);
-                    json.put("message", JsonSerializer.serialize(message));
-                    mFayeClient.publish(channel, new FayeClient.Message(json), new FayeClient.Callback() {
-                        @Override
-                        public void callback(final FayeClient.Message message) {
-                            Log.d(LOGTAG, message.toString());
-                        }
-                    });
-                } catch (JSONException | IOException e) {
-                    Log.w(LOGTAG, e);
-                }
-            }
-        });
-        return true;
     }
 
 }
