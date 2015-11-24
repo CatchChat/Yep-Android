@@ -43,6 +43,9 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         if (fragmentArgs != null) {
             loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING)
                     && !fragmentArgs.containsKey(EXTRA_MASTER));
+            if (fragmentArgs.containsKey(EXTRA_USER_ID)) {
+                loaderArgs.putString(EXTRA_USER_ID, fragmentArgs.getString(EXTRA_USER_ID));
+            }
         } else {
             loaderArgs.putBoolean(EXTRA_READ_CACHE, true);
         }
@@ -54,11 +57,10 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
 
     @Override
     public Loader<TaskResponse<List<Topic>>> onCreateLoader(final int id, final Bundle args) {
-        final Bundle fragmentArgs = getArguments();
-        final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
-        final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache);
+        final boolean cachingEnabled = isCachingEnabled();
+        final boolean readCache = args.getBoolean(EXTRA_READ_CACHE) && cachingEnabled;
+        final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled;
         final String maxId = args.getString(EXTRA_MAX_ID);
-        boolean writeCache = true;
         final Paging paging = new Paging();
         if (maxId != null) {
             paging.maxId(maxId);
@@ -69,8 +71,8 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         } else {
             oldData = null;
         }
-        return new DiscoverTopicsLoader(getActivity(), getAccount(), Topic.SortOrder.TIME,
-                oldData, paging, readCache, writeCache);
+        return new DiscoverTopicsLoader(getActivity(), getAccount(), getArguments().getString(EXTRA_USER_ID),
+                paging, Topic.SortOrder.TIME, readCache, cachingEnabled, oldData);
     }
 
     @Override
@@ -118,6 +120,9 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         return getLoaderManager().hasRunningLoaders();
     }
 
+    public boolean isCachingEnabled() {
+        return getArguments().getBoolean(EXTRA_CACHING_ENABLED);
+    }
 
     @Override
     public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {

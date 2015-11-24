@@ -120,6 +120,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         mActionButton.setOnClickListener(this);
 
         final Bundle args = new Bundle();
+        args.putBoolean(EXTRA_CACHING_ENABLED, true);
         args.putParcelable(EXTRA_ACCOUNT, getAccount());
 
         mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);

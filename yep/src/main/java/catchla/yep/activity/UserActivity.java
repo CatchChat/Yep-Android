@@ -47,6 +47,7 @@ import java.util.List;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.graphic.ActionBarDrawable;
+import catchla.yep.loader.UserLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.Provider;
@@ -84,6 +85,9 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private View mUserScrollView;
     private ActionBarDrawable mActionBarBackground;
     private AppBarLayout mAppBarLayout;
+    private View mTopicsItemView;
+
+
     private Rect mSystemWindowsInsets = new Rect();
     private UpdateProfileTask mUpdateProfileTask;
 
@@ -99,6 +103,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mUserScrollContent = findViewById(R.id.user_scroll_content);
         mUserScrollView = findViewById(R.id.user_scroll_view);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        mTopicsItemView = findViewById(R.id.user_topics);
     }
 
     @Override
@@ -124,6 +129,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         }
         mAppBarLayout.addOnOffsetChangedListener(this);
         mActionButton.setOnClickListener(this);
+        mTopicsItemView.setOnClickListener(this);
 
         fixScrollView();
 
@@ -321,6 +327,13 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             case R.id.fab: {
                 final Intent intent = new Intent(this, ChatActivity.class);
                 intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(getCurrentUser(), Utils.getAccountId(this, getAccount())));
+                startActivity(intent);
+                break;
+            }
+            case R.id.user_topics: {
+                final Intent intent = new Intent(this, UserTopicsActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                intent.putExtra(EXTRA_USER, getCurrentUser());
                 startActivity(intent);
                 break;
             }

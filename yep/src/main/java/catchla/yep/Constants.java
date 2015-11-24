@@ -38,6 +38,7 @@ public interface Constants {
     String EXTRA_ACCOUNT = "account";
     String EXTRA_TOPIC = "topic";
     String EXTRA_USER = "user";
+    String EXTRA_USER_ID = "user_id";
     String EXTRA_CONVERSATION = "conversation";
     String EXTRA_SKILL = "skill";
     String EXTRA_READ_CACHE = "read_cache";
@@ -50,6 +51,7 @@ public interface Constants {
     String EXTRA_MEDIA = "media";
     String EXTRA_CURRENT_MEDIA = "current_media";
     String EXTRA_PAGE = "page";
+    String EXTRA_CACHING_ENABLED = "caching_enabled";
     String EXTRA_MAX_ID = "max_id";
 
     int TABLE_ID_FRIENDSHIPS = 1;

@@ -1,4 +1,4 @@
-package catchla.yep.activity;
+package catchla.yep.loader;
 
 import android.accounts.Account;
 import android.content.Context;

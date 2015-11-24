@@ -191,6 +191,14 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
+            android:name=".activity.UserTopicsActivity"
+            android:label="@string/topics"
+            android:theme="@style/Theme.Yep.Content">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
             android:name=".activity.ThemedImagePickerActivity"
             android:theme="@style/Theme.Yep.NoDisplay"
             android:windowSoftInputMode="stateAlwaysHidden"/>
