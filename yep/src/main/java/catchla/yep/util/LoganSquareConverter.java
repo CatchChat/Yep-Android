@@ -40,17 +40,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import catchla.yep.model.S3UploadToken;
-import catchla.yep.model.util.ConditionConverter;
-
 /**
  * Created by mariotaku on 15/5/5.
  */
 public class LoganSquareConverter implements Converter {
-
-    static {
-        LoganSquare.registerTypeConverter(S3UploadToken.Condition.class, new ConditionConverter());
-    }
 
     @Override
     public Object convert(RestHttpResponse response, Type type) throws Exception {

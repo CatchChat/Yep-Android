@@ -57,6 +57,7 @@ public class FayeService extends Service implements Constants {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return START_NOT_STICKY;
         final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
         final OkHttpClient client = YepAPIFactory.getOkHttpClient(this);
         final Request.Builder builder = new Request.Builder();
@@ -152,7 +153,7 @@ public class FayeService extends Service implements Constants {
                 }
             }
         });
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override

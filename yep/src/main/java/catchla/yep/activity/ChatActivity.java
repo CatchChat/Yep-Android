@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.desmond.asyncmanager.AsyncManager;
@@ -149,6 +150,20 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         });
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.profile: {
+                final Intent intent = new Intent(this, UserActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                intent.putExtra(EXTRA_USER, getConversation().getUser());
+                startActivity(intent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {

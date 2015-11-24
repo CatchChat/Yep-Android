@@ -4,7 +4,7 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 import catchla.yep.model.util.AWSDateConverter;
 
@@ -106,50 +106,28 @@ public class S3UploadToken implements UploadToken {
         @JsonField(name = "expiration", typeConverter = AWSDateConverter.class)
         private Date expiration;
         @JsonField(name = "conditions")
-        private List<Condition> conditions;
+        private Map<String, String> conditions;
 
         public void setExpiration(Date expiration) {
             this.expiration = expiration;
         }
 
-        public void setConditions(List<Condition> conditions) {
-            this.conditions = conditions;
-        }
 
         public Date getExpiration() {
             return expiration;
         }
 
-        public List<Condition> getConditions() {
+        public Map<String, String> getConditions() {
             return conditions;
         }
 
-        public static Condition getCondition(final Policy policy, final String key) {
-            for (Condition condition : policy.conditions) {
-                if (key.equalsIgnoreCase(condition.getName())) return condition;
-            }
-            return null;
+        public void setConditions(final Map<String, String> conditions) {
+            this.conditions = conditions;
+        }
+
+        public String getCondition(final String key) {
+            return conditions.get(key);
         }
     }
 
-    public static class Condition {
-        private String name;
-        private String value;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(final String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(final String value) {
-            this.value = value;
-        }
-    }
 }
