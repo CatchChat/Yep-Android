@@ -111,7 +111,10 @@ public class FayeClient {
     }
 
     public void disconnect() {
-        call.cancel();
+        if (call != null) {
+            call.cancel();
+        }
+        if (webSocket == null) return;
         try {
             webSocket.close(1000, "Exit");
         } catch (IOException e) {
