@@ -12,6 +12,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 import java.util.Date;
 import java.util.List;
 
+import catchla.yep.model.util.VariableTypeAttachmentsConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 
 /**
@@ -48,7 +49,7 @@ public class Topic implements Parcelable {
     @JsonField(name = "circle")
     Circle circle;
     @ParcelableThisPlease
-    @JsonField(name = "attachments")
+    @JsonField(name = "attachments", typeConverter = VariableTypeAttachmentsConverter.class)
     List<Attachment> attachments;
 
     @Override

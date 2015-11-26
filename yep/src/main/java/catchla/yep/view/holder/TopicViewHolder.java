@@ -19,8 +19,14 @@ import catchla.yep.R;
 import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.TopicsAdapter;
+import catchla.yep.model.AppleMediaAttachment;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.AttachmentFile;
+import catchla.yep.model.BasicAttachment;
+import catchla.yep.model.DribbbleAttachment;
+import catchla.yep.model.GithubAttachment;
 import catchla.yep.model.LatLng;
+import catchla.yep.model.LocationAttachment;
 import catchla.yep.model.Skill;
 import catchla.yep.model.Topic;
 import catchla.yep.model.User;
@@ -194,7 +200,21 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
             public void displayMedia(final Attachment media) {
                 final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-                imageLoader.displayImage(media.getFile().getUrl(), mediaPreviewView);
+                if (media instanceof DribbbleAttachment) {
+                    final String mediaUrl = ((DribbbleAttachment) media).getMediaUrl();
+                    if (mediaUrl == null) return;
+                    imageLoader.displayImage(mediaUrl, mediaPreviewView);
+                } else if (media instanceof GithubAttachment) {
+
+                } else if (media instanceof LocationAttachment) {
+
+                } else if (media instanceof AppleMediaAttachment) {
+
+                } else if (media instanceof BasicAttachment) {
+                    final AttachmentFile file = ((BasicAttachment) media).getFile();
+                    if (file == null) return;
+                    imageLoader.displayImage(file.getUrl(), mediaPreviewView);
+                }
             }
 
             @Override

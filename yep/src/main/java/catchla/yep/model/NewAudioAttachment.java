@@ -24,7 +24,7 @@ public class NewAudioAttachment implements NewAttachment {
         audio = new NewAttachmentFile[]{new NewAttachmentFile(token.getOptions().getKey(), metadata)};
     }
 
-    public NewAudioAttachment(S3UploadToken token, Attachment.AudioMetadata metadata) {
+    public NewAudioAttachment(S3UploadToken token, BasicAttachment.AudioMetadata metadata) {
         audio = new NewAttachmentFile[]{new NewAttachmentFile(token.getOptions().getKey(), metadata)};
     }
 

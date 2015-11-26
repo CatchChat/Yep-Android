@@ -7,14 +7,12 @@ package catchla.yep.fragment;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +27,6 @@ import catchla.yep.R;
 import catchla.yep.activity.FindFriendActivity;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.FriendsListAdapter;
-import catchla.yep.adapter.decorator.DividerItemDecoration;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.FriendshipsLoader;
@@ -96,7 +93,7 @@ public class FriendsListFragment extends AbsContentListRecyclerViewFragment<Frie
 
     @Override
     public Loader<List<Friendship>> onCreateLoader(final int id, final Bundle args) {
-        return new FriendshipsLoader(getActivity(), getAccount(), null);
+        return new FriendshipsLoader(getActivity(), getAccount());
     }
 
     @Override

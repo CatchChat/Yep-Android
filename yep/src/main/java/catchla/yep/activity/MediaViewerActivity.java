@@ -54,6 +54,7 @@ import catchla.yep.adapter.SupportFixedFragmentStatePagerAdapter;
 import catchla.yep.fragment.BaseFragment;
 import catchla.yep.loader.TileImageLoader;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.BasicAttachment;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
 import pl.droidsonroids.gif.GifSupportChecker;
@@ -172,7 +173,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
             setLoadProgressVisibility(View.VISIBLE);
             mProgressBar.spin();
             invalidateOptionsMenu();
-            final Attachment media = getMedia();
+            final BasicAttachment media = (BasicAttachment) getMedia();
             return new TileImageLoader(getActivity(), this, Uri.parse(media.getFile().getUrl()));
         }
 

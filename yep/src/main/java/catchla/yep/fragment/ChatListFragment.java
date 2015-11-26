@@ -38,6 +38,7 @@ import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.BasicAttachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages.MessageState;
@@ -146,7 +147,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
         getAdapter().setData(null);
     }
 
-    private void playAudio(final Attachment attachment) {
+    private void playAudio(final BasicAttachment attachment) {
         if (!"audio".equals(attachment.getKind())) return;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
@@ -292,7 +293,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             return mData.get(position);
         }
 
-        private void playAudio(final Attachment attachment) {
+        private void playAudio(final BasicAttachment attachment) {
             mActivity.playAudio(attachment);
         }
 
@@ -388,16 +389,17 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             public void displayMessage(Message message) {
                 super.displayMessage(message);
                 final String url;
-                final Attachment.ImageMetadata metadata;
+                final BasicAttachment.ImageMetadata metadata;
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 final List<Attachment> attachments = message.getAttachments();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
                     url = Message.LocalMetadata.get(localMetadata, "image");
-                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), Attachment.ImageMetadata.class);
+                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"),
+                            BasicAttachment.ImageMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final Attachment attachment = attachments.get(0);
+                    final BasicAttachment attachment = (BasicAttachment) attachments.get(0);
                     url = attachment.getFile().getUrl();
-                    metadata = JsonSerializer.parse(attachment.getMetadata(), Attachment.ImageMetadata.class);
+                    metadata = JsonSerializer.parse(attachment.getMetadata(), BasicAttachment.ImageMetadata.class);
                 } else {
                     return;
                 }
@@ -427,21 +429,21 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                final Attachment.AudioMetadata metadata = getAudioMetadata(message);
+                final BasicAttachment.AudioMetadata metadata = getAudioMetadata(message);
                 if (metadata != null) {
                     audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                     sampleView.setSamples(metadata.getSamples());
                 }
             }
 
-            private Attachment.AudioMetadata getAudioMetadata(Message message) {
+            private BasicAttachment.AudioMetadata getAudioMetadata(Message message) {
                 final List<Attachment> attachments = message.getAttachments();
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
-                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), Attachment.AudioMetadata.class);
+                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), BasicAttachment.AudioMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final Attachment attachment = attachments.get(0);
-                    return JsonSerializer.parse(attachment.getMetadata(), Attachment.AudioMetadata.class);
+                    final BasicAttachment attachment = (BasicAttachment) attachments.get(0);
+                    return JsonSerializer.parse(attachment.getMetadata(), BasicAttachment.AudioMetadata.class);
                 } else {
                     return null;
                 }
@@ -452,7 +454,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
                 final Message message = adapter.getMessage(getLayoutPosition());
                 final List<Attachment> attachments = message.getAttachments();
                 if (attachments == null || attachments.isEmpty()) return;
-                adapter.playAudio(attachments.get(0));
+                adapter.playAudio((BasicAttachment) attachments.get(0));
             }
         }
 

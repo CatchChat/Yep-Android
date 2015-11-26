@@ -18,7 +18,7 @@ public class NewAttachmentFile {
     public NewAttachmentFile() {
     }
 
-    public NewAttachmentFile(final S3UploadToken file, final Attachment.Metadata metadata) {
+    public NewAttachmentFile(final S3UploadToken file, final BasicAttachment.Metadata metadata) {
         this(file.getOptions().getKey(), metadata);
     }
 
@@ -26,7 +26,7 @@ public class NewAttachmentFile {
         this(file.getOptions().getKey(), metadata);
     }
 
-    public NewAttachmentFile(final String file, final Attachment.Metadata metadata) {
+    public NewAttachmentFile(final String file, final BasicAttachment.Metadata metadata) {
         setFile(file);
         setMetadata(metadata);
     }
@@ -40,7 +40,7 @@ public class NewAttachmentFile {
         this.file = file;
     }
 
-    public void setMetadata(final Attachment.Metadata metadata) {
+    public void setMetadata(final BasicAttachment.Metadata metadata) {
         setMetadata(JsonSerializer.serialize(metadata));
     }
 

@@ -51,6 +51,7 @@ import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.BasicAttachment;
 import catchla.yep.model.NewAttachmentFile;
 import catchla.yep.model.NewImageAttachment;
 import catchla.yep.model.NewTopic;
@@ -240,7 +241,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
                         } catch (IOException e) {
                             throw new YepException(e);
                         }
-                        final Attachment.ImageMetadata medatata = new Attachment.ImageMetadata();
+                        final BasicAttachment.ImageMetadata medatata = new BasicAttachment.ImageMetadata();
                         files.add(new NewAttachmentFile(token, medatata));
                     }
                     if (!files.isEmpty()) {
