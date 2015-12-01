@@ -67,9 +67,8 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
             newMessage.mediaType(getMediaType());
             draftId = saveUnsentMessage(newMessage);
             newMessage.attachment(uploadAttachment(yep, newMessage));
-            final NewMessage.JsonBody messageBody = newMessage.toJson();
-            final Message message = yep.createMessage(newMessage.recipientType(), newMessage.recipientId(),
-                    messageBody);
+            final Message message = yep.createMessage(newMessage.recipientType(),
+                    newMessage.recipientId(), newMessage);
             updateSentMessage(draftId, message);
             return TaskResponse.getInstance(message);
         } catch (YepException e) {

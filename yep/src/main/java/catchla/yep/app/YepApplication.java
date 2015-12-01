@@ -14,6 +14,10 @@ import catchla.yep.service.FayeService;
 import catchla.yep.util.DebugModeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
 
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
+
 /**
  * Created by mariotaku on 15/5/29.
  */
@@ -24,6 +28,7 @@ public class YepApplication extends Application implements Constants {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         getApplicationModule();
         DebugModeUtils.initForApplication(this);
 

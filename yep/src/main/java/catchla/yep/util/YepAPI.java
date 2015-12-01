@@ -2,18 +2,6 @@ package catchla.yep.util;
 
 import android.support.annotation.StringDef;
 
-import org.mariotaku.restfu.annotation.method.DELETE;
-import org.mariotaku.restfu.annotation.method.GET;
-import org.mariotaku.restfu.annotation.method.PATCH;
-import org.mariotaku.restfu.annotation.method.POST;
-import org.mariotaku.restfu.annotation.method.PUT;
-import org.mariotaku.restfu.annotation.param.Body;
-import org.mariotaku.restfu.annotation.param.File;
-import org.mariotaku.restfu.annotation.param.Form;
-import org.mariotaku.restfu.annotation.param.Path;
-import org.mariotaku.restfu.annotation.param.Query;
-import org.mariotaku.restfu.http.BodyType;
-
 import java.util.ArrayList;
 
 import catchla.yep.model.AccessToken;
@@ -42,6 +30,19 @@ import catchla.yep.model.UrlResponse;
 import catchla.yep.model.User;
 import catchla.yep.model.UserSettings;
 import catchla.yep.model.VerificationMethod;
+import retrofit.http.Body;
+import retrofit.http.DELETE;
+import retrofit.http.Field;
+import retrofit.http.FieldMap;
+import retrofit.http.FormUrlEncoded;
+import retrofit.http.GET;
+import retrofit.http.Multipart;
+import retrofit.http.PATCH;
+import retrofit.http.POST;
+import retrofit.http.PUT;
+import retrofit.http.Path;
+import retrofit.http.Query;
+import retrofit.http.QueryMap;
 
 /**
  * Created by mariotaku on 15/5/12.
@@ -49,38 +50,38 @@ import catchla.yep.model.VerificationMethod;
 public interface YepAPI {
 
     @POST("/v1/registration/create")
-    @Body(BodyType.FORM)
-    CreateRegistrationResult createRegistration(@Form("mobile") String mobile,
-                                                @Form("phone_code") String phoneCode,
-                                                @Form("nickname") String nickname,
-                                                @Form("longitude") double longitude,
-                                                @Form("latitude") double latitude) throws YepException;
+    @FormUrlEncoded
+    CreateRegistrationResult createRegistration(@Field("mobile") String mobile,
+                                                @Field("phone_code") String phoneCode,
+                                                @Field("nickname") String nickname,
+                                                @Field("longitude") double longitude,
+                                                @Field("latitude") double latitude) throws YepException;
 
     @PUT("/v1/registration/update")
-    @Body(BodyType.FORM)
-    AccessToken updateRegistration(@Form("mobile") String mobile,
-                                   @Form("phone_code") String phoneCode,
-                                   @Form("token") String token,
-                                   @Form("client") Client client,
-                                   @Form("expiring") long expiringInseconds) throws YepException;
+    @FormUrlEncoded
+    AccessToken updateRegistration(@Field("mobile") String mobile,
+                                   @Field("phone_code") String phoneCode,
+                                   @Field("token") String token,
+                                   @Field("client") Client client,
+                                   @Field("expiring") long expiringInseconds) throws YepException;
 
     @PUT("/v1/auth/token_by_mobile")
-    @Body(BodyType.FORM)
-    AccessToken tokenByMobile(@Form("mobile") String mobile,
-                              @Form("phone_code") String phoneCode,
-                              @Form("token") String token,
-                              @Form("client") Client client,
-                              @Form("expiring") long expiringInseconds) throws YepException;
+    @FormUrlEncoded
+    AccessToken tokenByMobile(@Field("mobile") String mobile,
+                              @Field("phone_code") String phoneCode,
+                              @Field("token") String token,
+                              @Field("client") Client client,
+                              @Field("expiring") long expiringInseconds) throws YepException;
 
     @POST("/v1/sms_verification_codes")
-    @Body(BodyType.FORM)
-    void sendVerifyCode(@Form("mobile") String mobile,
-                        @Form("phone_code") String phoneCode,
-                        @Form("method") VerificationMethod method) throws YepException;
+    @FormUrlEncoded
+    void sendVerifyCode(@Field("mobile") String mobile,
+                        @Field("phone_code") String phoneCode,
+                        @Field("method") VerificationMethod method) throws YepException;
 
     @PATCH("/v1/user")
-    @Body(BodyType.FORM)
-    User updateProfile(@Form ProfileUpdate profileUpdate) throws YepException;
+    @FormUrlEncoded
+    User updateProfile(@FieldMap ProfileUpdate profileUpdate) throws YepException;
 
     @GET("/v1/user")
     User getUser() throws YepException;
@@ -89,23 +90,23 @@ public interface YepAPI {
     User showUser(@Path("id") String userId) throws YepException;
 
     @GET("/v1/user/discover")
-    PagedUsers getDiscover(@Query DiscoverQuery query, @Query Paging paging) throws YepException;
+    PagedUsers getDiscover(@QueryMap DiscoverQuery query, @QueryMap Paging paging) throws YepException;
 
     @GET("/v1/skill_categories")
     PagedSkillCategories getSkillCategories() throws YepException;
 
     @GET("/v1/friendships")
-    PagedFriendships getFriendships(@Query Paging paging) throws YepException;
+    PagedFriendships getFriendships(@QueryMap Paging paging) throws YepException;
 
     @GET("/v1/messages/unread")
     PagedMessages getUnreadMessages() throws YepException;
 
     @GET("/v1/{recipient_type}/{recipient_id}/messages")
     PagedMessages getHistoricalMessages(@Path("recipient_type") String recipientType, @Path("recipient_id")
-    String recipientId, @Query Paging paging) throws YepException;
+    String recipientId, @QueryMap Paging paging) throws YepException;
 
     @GET("/v1/messages/sent_unread")
-    PagedMessages getSentUnreadMessages(@Query Paging paging) throws YepException;
+    PagedMessages getSentUnreadMessages(@QueryMap Paging paging) throws YepException;
 
     @GET("/v1/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
@@ -117,31 +118,31 @@ public interface YepAPI {
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
     @POST("/v1/{recipient_type}/{recipient_id}/messages")
-    @Body(BodyType.FILE)
+    @Multipart
     Message createMessage(@Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
-                          @File NewMessage.JsonBody message) throws YepException;
+                          @Body NewMessage message) throws YepException;
 
     @DELETE("/v1/learning_skills/{id}")
     void removeLearningSkill(@Path("id") String id) throws YepException;
 
     @POST("/v1/learning_skills")
-    @Body(BodyType.FORM)
-    void addLearningSkill(@Form("skill_id") String id) throws YepException;
+    @FormUrlEncoded
+    void addLearningSkill(@Field("skill_id") String id) throws YepException;
 
     @DELETE("/v1/master_skills/{id}")
     void removeMasterSkill(@Path("id") String id) throws YepException;
 
     @POST("/v1/master_skills")
-    @Body(BodyType.FORM)
-    void addMasterSkill(@Form("skill_id") String id) throws YepException;
+    @FormUrlEncoded
+    void addMasterSkill(@Field("skill_id") String id) throws YepException;
 
     @POST("/v1/do_not_disturb_users")
-    @Body(BodyType.FORM)
-    void addDoNotDisturb(@Form("user_id") String id) throws YepException;
+    @FormUrlEncoded
+    void addDoNotDisturb(@Field("user_id") String id) throws YepException;
 
     @POST("/v1/user_reports")
-    @Body(BodyType.FORM)
-    void reportUser(@Form("recipient_id") String id, @Form("report_type") int reportType, @Form("reason") String reason) throws YepException;
+    @FormUrlEncoded
+    void reportUser(@Field("recipient_id") String id, @Field("report_type") int reportType, @Field("reason") String reason) throws YepException;
 
     @DELETE("/v1/do_not_disturb_users/{user_id}")
     void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
@@ -150,22 +151,22 @@ public interface YepAPI {
     S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
 
     @POST("/v1/contacts/upload")
-    @Body(BodyType.FORM)
-    ArrayList<User> uploadContact(@Form ContactUpload contactUpload) throws YepException;
+    @FormUrlEncoded
+    ArrayList<User> uploadContact(@FieldMap ContactUpload contactUpload) throws YepException;
 
     @GET("/v1/users/search")
-    PagedUsers searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
+    PagedUsers searchUsers(@Query("q") String query, @QueryMap Paging paging) throws YepException;
 
     @PATCH("/v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
-    @Body(BodyType.FORM)
+    @FormUrlEncoded
     MarkAsReadResult batchMarkAsRead(@MarkAsReadRecipientType @Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
-                                     @Form("max_id") String maxId) throws YepException;
+                                     @Field("max_id") String maxId) throws YepException;
 
     @GET("/v1/blocked_users")
-    PagedUsers getBlockedUsers(@Query Paging paging) throws YepException;
+    PagedUsers getBlockedUsers(@QueryMap Paging paging) throws YepException;
 
     @POST("/v1/blocked_users")
-    void blockUser(@Form("user_id") String id) throws YepException;
+    void blockUser(@Field("user_id") String id) throws YepException;
 
     @DELETE("/v1/blocked_users/{id}")
     void unblockUser(@Path("id") String id) throws YepException;
@@ -174,28 +175,28 @@ public interface YepAPI {
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
     @GET("/v1/topics/discover")
-    PagedTopics getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @Query Paging paging) throws YepException;
+    PagedTopics getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @QueryMap Paging paging) throws YepException;
 
     @GET("/v1/topics")
-    PagedTopics getTopics(@Query Paging paging) throws YepException;
+    PagedTopics getTopics(@QueryMap Paging paging) throws YepException;
 
     @GET("/v2/users/{id}/topics")
-    PagedTopics getTopics(@Path("id") String userId, @Query Paging paging) throws YepException;
+    PagedTopics getTopics(@Path("id") String userId, @QueryMap Paging paging) throws YepException;
 
     @POST("/v1/topics")
-    @Body(BodyType.FILE)
-    Topic postTopic(@File NewTopic.JsonBody topic) throws YepException;
+    @Multipart
+    Topic postTopic(@Body NewTopic topic) throws YepException;
 
     @PUT("/v1/topics/{id}")
-    @Body(BodyType.FORM)
-    void updateTopic(@Path("id") String id, @Form("allow_comment") boolean allowComment);
+    @FormUrlEncoded
+    void updateTopic(@Path("id") String id, @Field("allow_comment") boolean allowComment);
 
     @DELETE("/v1/topics/{id}")
     void deleteTopic(@Path("id") String id);
 
     @POST("/v1/feedbacks")
-    @Body(BodyType.FORM)
-    void postFeedback(@Form("content") String content, @Form("device_info") String deviceInfo) throws YepException;
+    @FormUrlEncoded
+    void postFeedback(@Field("content") String content, @Field("device_info") String deviceInfo) throws YepException;
 
     @POST("/v1/circles/{id}/share")
     UrlResponse getCircleShareUrl(@Path("id") String id) throws YepException;

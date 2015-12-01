@@ -30,9 +30,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.mariotaku.restfu.http.RestHttpClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -242,7 +242,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 final String path = imageUri.getPath();
 
                 final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
-                final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                final OkHttpClient client = YepAPIFactory.getOkHttpClient(getContext());
                 try {
                     Utils.uploadToS3(client, token, new File(path));
                 } catch (IOException e) {
@@ -497,7 +497,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 @Override
                 public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
-                    final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                    final OkHttpClient client = YepAPIFactory.getOkHttpClient(mFragment.getContext());
                     try {
                         Utils.uploadToS3(client, token, new File(recordPath));
                     } catch (IOException e) {

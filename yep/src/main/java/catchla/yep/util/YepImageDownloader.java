@@ -1,10 +1,8 @@
 package catchla.yep.util;
 
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
-
-import org.mariotaku.restfu.annotation.method.GET;
-import org.mariotaku.restfu.http.RestHttpRequest;
-import org.mariotaku.restfu.okhttp.OkHttpRestClient;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,20 +13,19 @@ import catchla.yep.app.YepApplication;
  * Created by mariotaku on 15/10/15.
  */
 public class YepImageDownloader extends BaseImageDownloader {
-    private final OkHttpRestClient client;
+    private final OkHttpClient client;
 
     @Override
     protected InputStream getStreamFromNetwork(final String imageUri, final Object extra) throws IOException {
-        final RestHttpRequest.Builder builder = new RestHttpRequest.Builder();
+        final Request.Builder builder = new Request.Builder();
         builder.url(imageUri);
-        builder.method(GET.METHOD);
-        final RestHttpRequest request = builder.build();
-        return client.execute(request).getBody().stream();
+        final Request request = builder.build();
+        return client.newCall(request).execute().body().byteStream();
     }
 
     public YepImageDownloader(final YepApplication application) {
         super(application);
-        this.client = YepAPIFactory.getHttpRestClient(application);
+        this.client = YepAPIFactory.getOkHttpClient(application);
     }
 
 

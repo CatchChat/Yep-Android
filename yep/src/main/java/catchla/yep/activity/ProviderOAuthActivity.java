@@ -23,7 +23,6 @@ import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.model.Provider;
-import catchla.yep.model.TokenAuthorization;
 import catchla.yep.util.YepAPIFactory;
 
 /**
@@ -42,7 +41,7 @@ public class ProviderOAuthActivity extends ContentActivity implements Constants 
         final String providerName = intent.getStringExtra(EXTRA_PROVIDER_NAME);
         final String url = YepAPIFactory.getProviderOAuthUrl(providerName);
         final Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", TokenAuthorization.getAuthorizationHeaderValue(
+        headers.put("Authorization", YepAPIFactory.getAuthorizationHeaderValue(
                 YepAPIFactory.getAuthToken(this, getAccount())));
         setTitle(getString(R.string.sign_in_to_provider_name, Provider.getProviderName(this, providerName)));
         mWebView.loadUrl(url, headers);

@@ -38,21 +38,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.otto.Bus;
-
-import org.mariotaku.restfu.annotation.method.POST;
-import org.mariotaku.restfu.http.RestHttpClient;
-import org.mariotaku.restfu.http.RestHttpRequest;
-import org.mariotaku.restfu.http.RestHttpResponse;
-import org.mariotaku.restfu.http.mime.FileTypedData;
-import org.mariotaku.restfu.http.mime.MultipartTypedBody;
-import org.mariotaku.restfu.http.mime.StringTypedData;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -64,7 +59,6 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
-import catchla.yep.model.Attachment;
 import catchla.yep.model.BasicAttachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
@@ -75,6 +69,7 @@ import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
+import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -307,8 +302,8 @@ public class Utils implements Constants {
         }
     }
 
-    public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, File file) throws IOException {
-        return uploadToS3(client, token, new FileTypedData(file));
+    public static Response uploadToS3(OkHttpClient client, S3UploadToken token, File file) throws IOException {
+        return uploadToS3(client, token, FileRequestBody.create(file));
     }
 
     public static Location getCachedLocation(Context context) {
@@ -331,30 +326,28 @@ public class Utils implements Constants {
         return location;
     }
 
-    public static RestHttpResponse uploadToS3(RestHttpClient client, S3UploadToken token, FileTypedData file) throws IOException {
+    public static Response uploadToS3(OkHttpClient client, S3UploadToken token, FileRequestBody file) throws IOException {
         final S3UploadToken.Options options = token.getOptions();
         final S3UploadToken.Policy policy = options.getPolicy();
-        final RestHttpRequest.Builder builder = new RestHttpRequest.Builder();
-        builder.method(POST.METHOD);
-        builder.url(options.getUrl());
-        final MultipartTypedBody body = new MultipartTypedBody();
-        final Charset charset = Charset.forName("UTF-8");
+        final MultipartBuilder bodyBuilder = new MultipartBuilder();
         final String key = policy.getCondition("key");
         final String acl = policy.getCondition("acl");
         final String algorithm = policy.getCondition("x-amz-algorithm");
         final String credential = policy.getCondition("x-amz-credential");
         final String date = policy.getCondition("x-amz-date");
         assert key != null && acl != null && algorithm != null && credential != null && date != null;
-        body.add("key", new StringTypedData(key, charset));
-        body.add("acl", new StringTypedData(acl, charset));
-        body.add("X-Amz-Algorithm", new StringTypedData(algorithm, charset));
-        body.add("X-Amz-Signature", new StringTypedData(options.getSignature(), charset));
-        body.add("X-Amz-Date", new StringTypedData(date, charset));
-        body.add("X-Amz-Credential", new StringTypedData(credential, charset));
-        body.add("Policy", new StringTypedData(options.getEncodedPolicy(), charset));
-        body.add("file", file);
-        builder.body(body);
-        return client.execute(builder.build());
+        bodyBuilder.addFormDataPart("key", key);
+        bodyBuilder.addFormDataPart("acl", acl);
+        bodyBuilder.addFormDataPart("X-Amz-Algorithm", algorithm);
+        bodyBuilder.addFormDataPart("X-Amz-Signature", options.getSignature());
+        bodyBuilder.addFormDataPart("X-Amz-Date", date);
+        bodyBuilder.addFormDataPart("X-Amz-Credential", credential);
+        bodyBuilder.addFormDataPart("Policy", options.getEncodedPolicy());
+        bodyBuilder.addFormDataPart("file", file.getFileName(), file);
+        final Request.Builder builder = new Request.Builder();
+        builder.method("POST", bodyBuilder.build());
+        builder.url(options.getUrl());
+        return client.newCall(builder.build()).execute();
     }
 
     public static void openSettings(Context context, Account account) {

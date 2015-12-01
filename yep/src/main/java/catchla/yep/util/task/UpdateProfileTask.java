@@ -8,7 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-import org.mariotaku.restfu.http.RestHttpResponse;
+import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,11 +46,11 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
         if (profileImageUri != null) {
             try {
                 final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.AVATAR);
-                final RestHttpResponse response = Utils.uploadToS3(YepAPIFactory.getHttpClient(yep), token, new File(profileImageUri.getPath()));
+                final Response response = Utils.uploadToS3(YepAPIFactory.getOkHttpClient(mActivity), token, new File(profileImageUri.getPath()));
                 if (response.isSuccessful()) {
-                    profileUpdate.setAvatarUrl(response.getHeader("Location"));
+                    profileUpdate.setAvatarUrl(response.header("Location"));
                 } else {
-                    throw new YepException("Unable to upload to s3", response);
+                    throw new YepException("Unable to upload to s3");
                 }
             } catch (YepException e) {
                 return TaskResponse.getInstance(e);

@@ -3,44 +3,21 @@ package catchla.yep.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
-import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 
-import com.bluelinelabs.logansquare.LoganSquare;
-import com.facebook.stetho.okhttp.StethoInterceptor;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.mariotaku.restfu.ExceptionFactory;
-import org.mariotaku.restfu.Pair;
-import org.mariotaku.restfu.RequestInfoFactory;
-import org.mariotaku.restfu.RestAPIFactory;
-import org.mariotaku.restfu.RestClient;
-import org.mariotaku.restfu.RestMethodInfo;
-import org.mariotaku.restfu.RestRequestInfo;
-import org.mariotaku.restfu.annotation.RestMethod;
-import org.mariotaku.restfu.http.Endpoint;
-import org.mariotaku.restfu.http.FileValue;
-import org.mariotaku.restfu.http.RestHttpClient;
-import org.mariotaku.restfu.http.RestHttpRequest;
-import org.mariotaku.restfu.http.RestHttpResponse;
-import org.mariotaku.restfu.http.mime.TypedData;
-import org.mariotaku.restfu.okhttp.OkHttpRestClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 import catchla.yep.Constants;
-import catchla.yep.model.TokenAuthorization;
+import retrofit.Retrofit;
 
 /**
  * Created by mariotaku on 15/5/23.
@@ -57,59 +34,30 @@ public class YepAPIFactory implements Constants {
     }
 
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
-        RestAPIFactory factory = new RestAPIFactory();
-        factory.setEndpoint(new Endpoint(API_ENDPOINT_REST));
-        factory.setClient(getHttpRestClient(context));
-        factory.setConverter(new LoganSquareConverter());
-        factory.setAuthorization(new TokenAuthorization(accessToken));
-        factory.setRequestInfoFactory(new RequestInfoFactory() {
-            @Override
-            public RestRequestInfo create(final RestMethodInfo methodInfo) {
-
-                final RestMethod method = methodInfo.getMethod();
-                final String path = methodInfo.getPath();
-                final List<Pair<String, String>> queries = new ArrayList<>(methodInfo.getQueries());
-                final List<Pair<String, String>> forms = new ArrayList<>(methodInfo.getForms());
-                final List<Pair<String, String>> headers = methodInfo.getHeaders();
-                final List<Pair<String, TypedData>> parts = methodInfo.getParts();
-                final FileValue file = methodInfo.getFile();
-                final Map<String, Object> extras = methodInfo.getExtras();
-                headers.add(Pair.create("Accept", "application/json"));
-                return new RestRequestInfo(method.value(), path, queries, forms, headers, parts, file,
-                        methodInfo.getBody(), extras);
-            }
-        });
-        factory.setExceptionFactory(new ExceptionFactory() {
-            @Override
-            public Exception newException(final Throwable cause, final RestHttpRequest request, final RestHttpResponse response) {
-                YepException exception;
-                try {
-                    if (response != null) {
-                        exception = LoganSquare.parse(response.getBody().stream(), YepException.class);
-                    } else {
-                        exception = new YepException(cause);
-                    }
-                } catch (IOException e) {
-                    exception = new YepException(cause);
-                }
-                exception.setRequest(request);
-                exception.setResponse(response);
-                return exception;
-            }
-        });
-        return factory.build(YepAPI.class);
-    }
-
-    public static OkHttpRestClient getHttpRestClient(final Context context) {
+        Retrofit.Builder builder = new Retrofit.Builder();
         final OkHttpClient client = getOkHttpClient(context);
-        client.setConnectTimeout(10, TimeUnit.SECONDS);
-        return new OkHttpRestClient(client);
+        builder.client(client);
+        builder.baseUrl(API_ENDPOINT_REST);
+        builder.addConverterFactory(new LoganSquareConverterFactory());
+
+        client.interceptors().add(new Interceptor() {
+            @Override
+            public Response intercept(final Chain chain) throws IOException {
+                Request.Builder builder = chain.request().newBuilder();
+                builder.addHeader("Accept", "application/json");
+                if (accessToken != null) {
+                    builder.addHeader("Authorization", getAuthorizationHeaderValue(accessToken));
+                }
+                return chain.proceed(builder.build());
+            }
+        });
+        final Retrofit retrofit = builder.build();
+        return retrofit.create(YepAPI.class);
     }
 
     public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient client = new OkHttpClient();
         DebugModeUtils.initForHttpClient(client);
-        client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
         client.setHostnameVerifier(new HostnameVerifier() {
             @Override
             public boolean verify(final String hostname, final SSLSession session) {
@@ -141,20 +89,7 @@ public class YepAPIFactory implements Constants {
         return "yep://auth/failure".equals(url);
     }
 
-    public static RestHttpClient getHttpClient(final Object o) {
-        final InvocationHandler handler = Proxy.getInvocationHandler(o);
-        final RestClient client = (RestClient) handler;
-        return client.getRestClient();
-    }
-
-    public static JSONObject getFayeAuthExtension(final Context context, final Account account) {
-        try {
-            final JSONObject ext = new JSONObject();
-            ext.put("version", "v1");
-            ext.put("access_token", getAuthToken(context, account));
-            return ext;
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+    public static String getAuthorizationHeaderValue(String accessToken) {
+        return String.format(Locale.ROOT, "Token token=\"%s\"", accessToken);
     }
 }

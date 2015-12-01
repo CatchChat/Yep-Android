@@ -31,9 +31,9 @@ import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mariotaku.restfu.http.RestHttpClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,10 +47,8 @@ import java.util.Set;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
-import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
-import catchla.yep.model.Attachment;
 import catchla.yep.model.BasicAttachment;
 import catchla.yep.model.NewAttachmentFile;
 import catchla.yep.model.NewImageAttachment;
@@ -230,7 +228,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             @Override
             public TaskResponse<Topic> doLongOperation(final NewTopic params) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(NewTopicActivity.this, getAccount());
-                final RestHttpClient client = YepAPIFactory.getHttpClient(yep);
+                final OkHttpClient client = YepAPIFactory.getOkHttpClient(NewTopicActivity.this);
                 try {
                     List<NewAttachmentFile> files = new ArrayList<>();
                     for (String mediaItem : media) {
@@ -247,7 +245,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
                     if (!files.isEmpty()) {
                         newTopic.attachment(new NewImageAttachment(files));
                     }
-                    return TaskResponse.getInstance(yep.postTopic(params.toJson()));
+                    return TaskResponse.getInstance(yep.postTopic(params));
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
                 } catch (Throwable t) {

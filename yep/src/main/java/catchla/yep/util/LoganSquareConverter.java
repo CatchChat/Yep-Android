@@ -24,15 +24,13 @@ import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-
-import org.mariotaku.restfu.Converter;
-import org.mariotaku.restfu.Utils;
-import org.mariotaku.restfu.http.ContentType;
-import org.mariotaku.restfu.http.RestHttpResponse;
-import org.mariotaku.restfu.http.mime.TypedData;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -40,16 +38,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.Converter;
+
 /**
  * Created by mariotaku on 15/5/5.
  */
 public class LoganSquareConverter implements Converter {
 
     @Override
-    public Object convert(RestHttpResponse response, Type type) throws Exception {
-        final TypedData body = response.getBody();
-        final ContentType contentType = body.contentType();
-        final InputStream stream = body.stream();
+    public Object convert(Response response, Type type) throws Exception {
+        final ResponseBody body = response.body();
+        final MediaType contentType = body.contentType();
+        final InputStream stream = body.byteStream();
         try {
             if (type instanceof Class<?>) {
                 final Class<?> cls = (Class<?>) type;
@@ -70,21 +70,26 @@ public class LoganSquareConverter implements Converter {
         }
     }
 
-    private static <T> T parseOrThrow(RestHttpResponse resp, InputStream stream, Class<T> cls) throws IOException, YepException {
+    private static <T> T parseOrThrow(Response resp, InputStream stream, Class<T> cls) throws IOException, YepException {
         if (void.class.isAssignableFrom(cls) || Void.class.isAssignableFrom(cls)) return null;
         try {
             return LoganSquare.parse(stream, cls);
         } catch (JsonParseException e) {
-            throw new YepException("Malformed JSON Data", resp);
+            throw new YepException("Malformed JSON Data");
         }
     }
 
-    private static <T> List<T> parseListOrThrow(RestHttpResponse resp, InputStream stream, Class<T> elementCls) throws IOException, YepException {
+    private static <T> List<T> parseListOrThrow(Response resp, InputStream stream, Class<T> elementCls) throws IOException, YepException {
         try {
             return LoganSquare.parseList(stream, elementCls);
         } catch (JsonParseException e) {
-            throw new YepException("Malformed JSON Data", resp);
+            throw new YepException("Malformed JSON Data");
         }
+    }
+
+    @Override
+    public Object convert(final Object value) throws IOException {
+        return null;
     }
 
 
@@ -125,4 +130,5 @@ public class LoganSquareConverter implements Converter {
             super("Unsupported type " + type);
         }
     }
+
 }

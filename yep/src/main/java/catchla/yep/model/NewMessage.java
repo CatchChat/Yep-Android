@@ -3,45 +3,60 @@ package catchla.yep.model;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import org.mariotaku.restfu.http.SimpleValueMap;
-
-import java.io.IOException;
-
+import catchla.yep.model.iface.JsonBody;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.ParseUtils;
 
 /**
  * Created by mariotaku on 15/6/12.
  */
-public class NewMessage extends SimpleValueMap {
+@JsonObject
+public class NewMessage implements JsonBody {
 
-    private String conversationId;
-    private long createdAt;
-    private Circle circle;
-    private User sender;
-    private Message.LocalMetadata[] localMetadata;
-    private String accountId;
+    String conversationId;
+    long createdAt;
+    Circle circle;
+    User sender;
+    Message.LocalMetadata[] localMetadata;
+    String accountId;
+
+    @JsonField(name = "recipient_id")
+    String recipientId;
+    @JsonField(name = "recipient_type")
+    String recipientType;
+    @JsonField(name = "parent_id")
+    String parentId;
+    @JsonField(name = "latitude")
+    double latitude;
+    @JsonField(name = "longitude")
+    double longitude;
+    @JsonField(name = "text_content")
+    String textContent;
+    @JsonField(name = "media_type")
+    String mediaType;
+    @JsonField(name = "attachments")
+    NewAttachment attachments;
 
     public NewMessage recipientId(String recipientId) {
-        put("recipient_id", recipientId);
+        this.recipientId = recipientId;
         return this;
     }
 
     public NewMessage recipientType(String recipientType) {
-        put("recipient_type", recipientType);
+        this.recipientType = recipientType;
         return this;
     }
 
     public NewMessage mediaType(String mediaType) {
-        put("media_type", mediaType);
+        this.mediaType = mediaType;
         return this;
     }
 
     public NewMessage textContent(String textContent) {
-        put("text_content", textContent);
+        this.textContent = textContent;
         return this;
     }
 
@@ -56,13 +71,13 @@ public class NewMessage extends SimpleValueMap {
     }
 
     public NewMessage parentId(String parentId) {
-        put("parent_id", parentId);
+        this.parentId = parentId;
         return this;
     }
 
     public NewMessage location(double latitude, double longitude) {
-        put("latitude", latitude);
-        put("longitude", longitude);
+        this.latitude = latitude;
+        this.longitude = longitude;
         return this;
     }
 
@@ -75,15 +90,15 @@ public class NewMessage extends SimpleValueMap {
     }
 
     public String parentId() {
-        return ParseUtils.parseString(get("parent_id"), null);
+        return parentId;
     }
 
     public String recipientId() {
-        return ParseUtils.parseString(get("recipient_id"), null);
+        return recipientId;
     }
 
     public String recipientType() {
-        return ParseUtils.parseString(get("recipient_type"), null);
+        return recipientType;
     }
 
     public void circle(final Circle circle) {
@@ -103,34 +118,25 @@ public class NewMessage extends SimpleValueMap {
     }
 
     public String textContent() {
-        return ParseUtils.parseString(get("text_content"), null);
+        return textContent;
     }
 
-    public <T extends NewAttachment> void attachment(final T attachment) {
-        if (attachment == null) return;
+    public <T extends NewAttachment> void attachment(final T attachments) {
+        if (attachments == null) return;
         //noinspection unchecked
-        put("attachments", attachment);
+        this.attachments = attachments;
     }
 
     public String mediaType() {
-        return ParseUtils.parseString(get("media_type"));
+        return mediaType;
     }
 
     public double latitude() {
-        return ParseUtils.parseDouble(ParseUtils.parseString(get("latitude")), Double.NaN);
+        return latitude;
     }
 
     public double longitude() {
-        return ParseUtils.parseDouble(ParseUtils.parseString(get("longitude")), Double.NaN);
-    }
-
-    public JsonBody toJson() {
-        try {
-            final String json = LoganSquare.serialize(asMap());
-            return new JsonBody(json);
-        } catch (IOException e) {
-            return null;
-        }
+        return longitude;
     }
 
     public NewMessage localMetadata(final Message.LocalMetadata[] localMetadata) {
@@ -150,19 +156,19 @@ public class NewMessage extends SimpleValueMap {
     public ContentValues toDraftValues() {
         final ContentValues values = new ContentValues();
         values.put(Messages.ACCOUNT_ID, accountId);
-        values.put(Messages.RECIPIENT_ID, recipientId());
-        values.put(Messages.TEXT_CONTENT, textContent());
+        values.put(Messages.RECIPIENT_ID, recipientId);
+        values.put(Messages.TEXT_CONTENT, textContent);
         values.put(Messages.CREATED_AT, createdAt);
         values.put(Messages.SENDER, JsonSerializer.serialize(sender, User.class));
-        values.put(Messages.RECIPIENT_TYPE, recipientType());
+        values.put(Messages.RECIPIENT_TYPE, recipientType);
         values.put(Messages.CIRCLE, JsonSerializer.serialize(circle, Circle.class));
-        values.put(Messages.PARENT_ID, parentId());
+        values.put(Messages.PARENT_ID, parentId);
         values.put(Messages.CONVERSATION_ID, conversationId);
         values.put(Messages.STATE, Messages.MessageState.SENDING);
         values.put(Messages.OUTGOING, true);
-        values.put(Messages.LATITUDE, latitude());
-        values.put(Messages.LONGITUDE, longitude());
-        values.put(Messages.MEDIA_TYPE, mediaType());
+        values.put(Messages.LATITUDE, latitude);
+        values.put(Messages.LONGITUDE, longitude);
+        values.put(Messages.MEDIA_TYPE, mediaType);
         values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata, Message.LocalMetadata.class));
         return values;
     }
@@ -174,14 +180,6 @@ public class NewMessage extends SimpleValueMap {
     public String getMetadataValue(@NonNull final String key, final String def) {
         if (localMetadata == null) return def;
         return Message.LocalMetadata.get(localMetadata, key, def);
-    }
-
-    public static final class JsonBody extends AbsJsonBody {
-
-        private JsonBody(String json) {
-            super(json);
-        }
-
     }
 
 }

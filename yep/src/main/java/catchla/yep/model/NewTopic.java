@@ -1,53 +1,47 @@
 package catchla.yep.model;
 
-import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
-import org.mariotaku.restfu.http.SimpleValueMap;
-
-import java.io.IOException;
+import catchla.yep.model.iface.JsonBody;
 
 /**
  * Created by mariotaku on 15/10/12.
  */
-public class NewTopic extends SimpleValueMap {
+@JsonObject
+public class NewTopic implements JsonBody {
 
-    public JsonBody toJson() {
-        try {
-            final String json = LoganSquare.serialize(asMap());
-            return new JsonBody(json);
-        } catch (IOException e) {
-            return null;
-        }
-    }
+    @JsonField(name = "body")
+    String body;
+    @JsonField(name = "skill_id")
+    String skillId;
+    @JsonField(name = "attachments")
+    NewAttachment attachments;
+    @JsonField(name = "latitude")
+    double latitude;
+    @JsonField(name = "longitude")
+    double longitude;
 
     public NewTopic body(String body) {
-        put("body", body);
+        this.body = body;
         return this;
     }
 
     public NewTopic skillId(String skillId) {
-        put("skill_id", skillId);
+        this.skillId = skillId;
         return this;
     }
 
-    public <T extends NewAttachment> void attachment(final T attachment) {
-        if (attachment == null) return;
-        //noinspection unchecked
-        put("attachments", attachment);
+    public <T extends NewAttachment> void attachment(final T attachments) {
+        if (attachments == null) return;
+        this.attachments = attachments;
     }
 
     public NewTopic location(double latitude, double longitude) {
-        put("latitude", latitude);
-        put("longitude", longitude);
+        this.latitude = latitude;
+        this.longitude = longitude;
         return this;
     }
 
 
-    public static final class JsonBody extends AbsJsonBody {
-
-        private JsonBody(String json) {
-            super(json);
-        }
-
-    }
 }

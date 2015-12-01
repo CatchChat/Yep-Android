@@ -225,6 +225,9 @@
                 android:resource="@xml/authenticator_yep"/>
         </service>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3030ba006e21bcf8eb4a2127b6a7931ea6667486"/>
     </application>
 
 </manifest>

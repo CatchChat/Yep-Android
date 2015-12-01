@@ -1,13 +1,12 @@
 package catchla.yep.model;
 
 import android.net.Uri;
-
-import org.mariotaku.restfu.http.SimpleValueMap;
+import android.support.v4.util.ArrayMap;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class ProfileUpdate extends SimpleValueMap {
+public class ProfileUpdate extends ArrayMap<String, String> {
 
     private Uri avatarUri;
 
