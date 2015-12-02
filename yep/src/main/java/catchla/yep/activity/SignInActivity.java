@@ -35,6 +35,9 @@ import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+
+import java.util.Locale;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -42,6 +45,8 @@ import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
+import catchla.yep.model.ResponseCode;
+import catchla.yep.model.SMSVerificationCodeRequest;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.VerificationMethod;
 import catchla.yep.util.JsonSerializer;
@@ -53,6 +58,7 @@ import catchla.yep.util.YepException;
 public class SignInActivity extends ContentActivity implements Constants, ViewPager.OnPageChangeListener,
         View.OnClickListener {
 
+    public static final String TAG_VERIFY_PHONE = "verify_phone";
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
 
@@ -63,16 +69,22 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_sign_in_sign_up);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setEnabled(false);
-        mViewPager.setOnPageChangeListener(this);
+        mViewPager.addOnPageChangeListener(this);
 
         mNextButton.setOnClickListener(this);
 
         mAdapter.addTab(EditPhoneNumberFragment.class, null, 0, null);
         mAdapter.addTab(VerifyPhoneNumberFragment.class, null, 0, null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mViewPager.removeOnPageChangeListener(this);
+        super.onDestroy();
     }
 
     @Override
@@ -134,7 +146,12 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             public TaskResponse<Pair<String, String>> doLongOperation(final String[] args) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
-                    yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS);
+                    SMSVerificationCodeRequest req = new SMSVerificationCodeRequest();
+                    req.setMobile(args[0]);
+                    req.setPhoneCode(args[1]);
+                    req.setMethod(VerificationMethod.SMS);
+                    ResponseCode code = yep.sendVerifyCode(req);
+                    System.identityHashCode(code);
                     return TaskResponse.getInstance(Pair.create(args[0], args[1]));
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
@@ -175,7 +192,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
     }
 
     private void verifyPhoneNumber(final String verifyCode) {
-        ProgressDialogFragment.show(this, "update_registration");
+        ProgressDialogFragment.show(this, TAG_VERIFY_PHONE);
         final TaskRunnable<String[], TaskResponse<AccessToken>, SignInActivity> task
                 = new TaskRunnable<String[], TaskResponse<AccessToken>, SignInActivity>() {
 
@@ -183,7 +200,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             public TaskResponse<AccessToken> doLongOperation(final String[] args) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
-                    return TaskResponse.getInstance(yep.updateRegistration(args[0], args[1], args[2],
+                    return TaskResponse.getInstance(yep.tokenByMobile(args[0], args[1], args[2],
                             Client.OFFICIAL, 0));
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
@@ -192,7 +209,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
             @Override
             public void callback(final SignInActivity handler, final TaskResponse<AccessToken> result) {
-                final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("update_registration");
+                final Fragment f = handler.getSupportFragmentManager().findFragmentByTag(TAG_VERIFY_PHONE);
                 if (f instanceof DialogFragment) {
                     ((DialogFragment) f).dismiss();
                 }
@@ -309,6 +326,10 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
                 }
             });
+            if (savedInstanceState == null) {
+                final PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+                mEditCountryCode.setText(String.valueOf(util.getCountryCodeForRegion(Locale.getDefault().getCountry())));
+            }
         }
     }
 

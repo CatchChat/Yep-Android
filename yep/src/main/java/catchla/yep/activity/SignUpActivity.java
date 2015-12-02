@@ -64,7 +64,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_sign_in_sign_up);
         mAdapter = new TabsAdapter(this, getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setEnabled(false);

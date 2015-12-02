@@ -1,0 +1,40 @@
+rules:
+  com/bluelinelabs/logansquare/LoganSquare:
+    fields:
+      OBJECT_MAPPERS:
+        modifiers: +public
+      PARAMETERIZED_OBJECT_MAPPERS:
+        modifiers: +public
+    methods:
+      getMapper:
+        modifiers: +public
+  /retrofit/Converter:
+    methods:
+      convert:
+        exceptions: java/lang/Exception
+  /retrofit/RequestBuilderAction:
+    methods:
+      perform:
+        exceptions: java/lang/Exception
+  /retrofit/RequestFactory:
+    methods:
+      create:
+        exceptions: java/lang/Exception
+  retrofit/OkHttpCall:
+    methods:
+      parseResponse:
+        exceptions: java/lang/Exception
+      createRawCall:
+        exceptions: java/lang/Exception
+  /retrofit/Call:
+    methods:
+      execute:
+        exceptions: java/lang/Exception
+  /retrofit/CallAdapter:
+    methods:
+      adapt:
+        exceptions: java/lang/Exception
+  retrofit/MethodHandler:
+    methods:
+      invoke:
+        exceptions: java/lang/Exception

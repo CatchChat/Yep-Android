@@ -38,6 +38,7 @@ public class YepAPIFactory implements Constants {
         final OkHttpClient client = getOkHttpClient(context);
         builder.client(client);
         builder.baseUrl(API_ENDPOINT_REST);
+        builder.addCallAdapterFactory(new YepCallAdapterFactory());
         builder.addConverterFactory(new LoganSquareConverterFactory());
 
         client.interceptors().add(new Interceptor() {
@@ -92,4 +93,5 @@ public class YepAPIFactory implements Constants {
     public static String getAuthorizationHeaderValue(String accessToken) {
         return String.format(Locale.ROOT, "Token token=\"%s\"", accessToken);
     }
+
 }

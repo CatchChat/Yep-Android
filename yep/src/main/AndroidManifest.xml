@@ -117,10 +117,12 @@
         <activity
             android:name=".activity.SignInActivity"
             android:label="@string/sign_in"
+            android:theme="@style/Theme.Yep.Content"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
             android:name=".activity.SignUpActivity"
             android:label="@string/sign_up"
+            android:theme="@style/Theme.Yep.Content"
             android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
             android:name=".activity.BlockedUsersActivity"

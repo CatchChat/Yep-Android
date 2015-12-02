@@ -24,12 +24,13 @@ import catchla.yep.model.PagedTopics;
 import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
+import catchla.yep.model.ResponseCode;
 import catchla.yep.model.S3UploadToken;
+import catchla.yep.model.SMSVerificationCodeRequest;
 import catchla.yep.model.Topic;
 import catchla.yep.model.UrlResponse;
 import catchla.yep.model.User;
 import catchla.yep.model.UserSettings;
-import catchla.yep.model.VerificationMethod;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.Field;
@@ -73,11 +74,8 @@ public interface YepAPI {
                               @Field("client") Client client,
                               @Field("expiring") long expiringInseconds) throws YepException;
 
-    @POST("/v1/sms_verification_codes")
-    @FormUrlEncoded
-    void sendVerifyCode(@Field("mobile") String mobile,
-                        @Field("phone_code") String phoneCode,
-                        @Field("method") VerificationMethod method) throws YepException;
+    @POST("/v2/sms_verification_codes")
+    ResponseCode sendVerifyCode(@Body SMSVerificationCodeRequest request) throws YepException;
 
     @PATCH("/v1/user")
     @FormUrlEncoded
@@ -123,29 +121,29 @@ public interface YepAPI {
                           @Body NewMessage message) throws YepException;
 
     @DELETE("/v1/learning_skills/{id}")
-    void removeLearningSkill(@Path("id") String id) throws YepException;
+    ResponseCode removeLearningSkill(@Path("id") String id) throws YepException;
 
     @POST("/v1/learning_skills")
     @FormUrlEncoded
-    void addLearningSkill(@Field("skill_id") String id) throws YepException;
+    ResponseCode addLearningSkill(@Field("skill_id") String id) throws YepException;
 
     @DELETE("/v1/master_skills/{id}")
-    void removeMasterSkill(@Path("id") String id) throws YepException;
+    ResponseCode removeMasterSkill(@Path("id") String id) throws YepException;
 
     @POST("/v1/master_skills")
     @FormUrlEncoded
-    void addMasterSkill(@Field("skill_id") String id) throws YepException;
+    ResponseCode addMasterSkill(@Field("skill_id") String id) throws YepException;
 
     @POST("/v1/do_not_disturb_users")
     @FormUrlEncoded
-    void addDoNotDisturb(@Field("user_id") String id) throws YepException;
+    ResponseCode addDoNotDisturb(@Field("user_id") String id) throws YepException;
 
     @POST("/v1/user_reports")
     @FormUrlEncoded
-    void reportUser(@Field("recipient_id") String id, @Field("report_type") int reportType, @Field("reason") String reason) throws YepException;
+    ResponseCode reportUser(@Field("recipient_id") String id, @Field("report_type") int reportType, @Field("reason") String reason) throws YepException;
 
     @DELETE("/v1/do_not_disturb_users/{user_id}")
-    void removeDoNotDisturb(@Path("user_id") String id) throws YepException;
+    ResponseCode removeDoNotDisturb(@Path("user_id") String id) throws YepException;
 
     @GET("/v1/attachments/{kind}/s3_upload_form_fields")
     S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
@@ -166,10 +164,10 @@ public interface YepAPI {
     PagedUsers getBlockedUsers(@QueryMap Paging paging) throws YepException;
 
     @POST("/v1/blocked_users")
-    void blockUser(@Field("user_id") String id) throws YepException;
+    ResponseCode blockUser(@Field("user_id") String id) throws YepException;
 
     @DELETE("/v1/blocked_users/{id}")
-    void unblockUser(@Path("id") String id) throws YepException;
+    ResponseCode unblockUser(@Path("id") String id) throws YepException;
 
     @GET("/v1/users/{id}/settings_with_current_user")
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
@@ -189,14 +187,14 @@ public interface YepAPI {
 
     @PUT("/v1/topics/{id}")
     @FormUrlEncoded
-    void updateTopic(@Path("id") String id, @Field("allow_comment") boolean allowComment);
+    ResponseCode updateTopic(@Path("id") String id, @Field("allow_comment") boolean allowComment);
 
     @DELETE("/v1/topics/{id}")
-    void deleteTopic(@Path("id") String id);
+    ResponseCode deleteTopic(@Path("id") String id);
 
     @POST("/v1/feedbacks")
     @FormUrlEncoded
-    void postFeedback(@Field("content") String content, @Field("device_info") String deviceInfo) throws YepException;
+    ResponseCode postFeedback(@Field("content") String content, @Field("device_info") String deviceInfo) throws YepException;
 
     @POST("/v1/circles/{id}/share")
     UrlResponse getCircleShareUrl(@Path("id") String id) throws YepException;
