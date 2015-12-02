@@ -152,7 +152,7 @@ public interface YepAPI {
 
     @POST("/v1/contacts/upload")
     @FormUrlEncoded
-    ArrayList<User> uploadContact(@FieldMap ContactUpload contactUpload) throws YepException;
+    ArrayList<User> uploadContact(@Field("contacts") ContactUpload contactUpload) throws YepException;
 
     @GET("/v1/users/search")
     PagedUsers searchUsers(@Query("q") String query, @QueryMap Paging paging) throws YepException;

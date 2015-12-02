@@ -1,18 +1,16 @@
 package catchla.yep.model;
 
-import android.support.v4.util.ArrayMap;
-
+import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-
-import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/7/2.
  */
-public class ContactUpload extends ArrayMap<String, String> {
+public class ContactUpload {
 
     private ArrayList<ContactItem> items = new ArrayList<>();
 
@@ -20,20 +18,14 @@ public class ContactUpload extends ArrayMap<String, String> {
         items.add(new ContactItem(name, number));
     }
 
-    @Override
-    public boolean has(final String s) {
-        return "contacts".equals(s);
-    }
 
     @Override
-    public String get(final String s) {
-        if (!"contacts".equals(s)) return null;
-        return JsonSerializer.serialize(items, ContactItem.class);
-    }
-
-    @Override
-    public String[] keys() {
-        return new String[]{"contacts"};
+    public String toString() {
+        try {
+            return LoganSquare.serialize(items, ContactItem.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @JsonObject
