@@ -14,7 +14,7 @@ import catchla.yep.R;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/10/10.

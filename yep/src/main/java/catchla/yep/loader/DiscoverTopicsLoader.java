@@ -13,7 +13,7 @@ import catchla.yep.model.PagedTopics;
 import catchla.yep.model.Paging;
 import catchla.yep.model.Topic;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/5/27.

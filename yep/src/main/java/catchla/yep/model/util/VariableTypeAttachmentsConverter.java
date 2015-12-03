@@ -61,8 +61,22 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
     }
 
     @Override
-    public void serialize(final List<Attachment> object, final String fieldName,
+    public void serialize(final List<Attachment> list, final String fieldName,
                           final boolean writeFieldNameForObject, final JsonGenerator jsonGenerator) throws IOException {
-        throw new UnsupportedOperationException();
+        if (writeFieldNameForObject) {
+            jsonGenerator.writeFieldName(fieldName);
+        }
+        jsonGenerator.writeStartArray();
+        for (Attachment item : list) {
+            if (item != null) {
+                //noinspection unchecked
+                final Class<Attachment> cls = (Class<Attachment>) item.getClass();
+                final JsonMapper<Attachment> jsonMapper = LoganSquare.mapperFor(cls);
+                jsonMapper.serialize(item, jsonGenerator, true);
+            } else {
+                jsonGenerator.writeNull();
+            }
+        }
+        jsonGenerator.writeEndArray();
     }
 }

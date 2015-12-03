@@ -45,9 +45,10 @@ public class YepAPIFactory implements Constants {
             @Override
             public Response intercept(final Chain chain) throws IOException {
                 Request.Builder builder = chain.request().newBuilder();
-                builder.addHeader("Accept", "application/json");
+                builder.header("Accept", "application/json");
+                builder.header("Accept-Language", Locale.getDefault().toString());
                 if (accessToken != null) {
-                    builder.addHeader("Authorization", getAuthorizationHeaderValue(accessToken));
+                    builder.header("Authorization", getAuthorizationHeaderValue(accessToken));
                 }
                 return chain.proceed(builder.build());
             }

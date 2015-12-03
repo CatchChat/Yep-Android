@@ -49,7 +49,7 @@ import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
 

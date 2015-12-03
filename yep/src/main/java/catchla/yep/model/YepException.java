@@ -1,4 +1,4 @@
-package catchla.yep.util;
+package catchla.yep.model;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;

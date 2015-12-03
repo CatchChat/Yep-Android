@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 
 import retrofit.Call;
+import retrofit.Response;
 
 /**
  * Created by mariotaku on 15/12/2.
@@ -36,8 +37,16 @@ public class ResponseCode {
         }
 
         @Override
-        public <R> ResponseCode adapt(final Call<R> call) throws Exception {
-            return new ResponseCode(call.execute().code());
+        public <R> ResponseCode adapt(final Call<R> call) throws YepException {
+            try {
+                final Response<R> execute = call.execute();
+                if (execute.isSuccess()) {
+                    return new ResponseCode(execute.code());
+                }
+                throw new YepException(execute.message());
+            } catch (IOException e) {
+                throw new YepException(e);
+            }
         }
     }
 }

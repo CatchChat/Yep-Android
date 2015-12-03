@@ -58,7 +58,7 @@ import catchla.yep.util.MathUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 import catchla.yep.util.task.SendMessageTask;
 
 /**

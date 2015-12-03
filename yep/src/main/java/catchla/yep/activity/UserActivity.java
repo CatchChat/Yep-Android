@@ -63,7 +63,7 @@ import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 import catchla.yep.util.task.UpdateProfileTask;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;

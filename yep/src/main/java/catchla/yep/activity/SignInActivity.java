@@ -46,14 +46,13 @@ import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.ResponseCode;
-import catchla.yep.model.SMSVerificationCodeRequest;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.VerificationMethod;
+import catchla.yep.model.YepException;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
 
 public class SignInActivity extends ContentActivity implements Constants, ViewPager.OnPageChangeListener,
         View.OnClickListener {
@@ -146,11 +145,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             public TaskResponse<Pair<String, String>> doLongOperation(final String[] args) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
-                    SMSVerificationCodeRequest req = new SMSVerificationCodeRequest();
-                    req.setMobile(args[0]);
-                    req.setPhoneCode(args[1]);
-                    req.setMethod(VerificationMethod.SMS);
-                    ResponseCode code = yep.sendVerifyCode(req);
+                    ResponseCode code = yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS);
                     System.identityHashCode(code);
                     return TaskResponse.getInstance(Pair.create(args[0], args[1]));
                 } catch (YepException e) {

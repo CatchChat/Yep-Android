@@ -12,7 +12,7 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Paging;
 import catchla.yep.model.User;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/5/27.

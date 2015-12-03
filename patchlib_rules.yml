@@ -11,30 +11,32 @@ rules:
   /retrofit/Converter:
     methods:
       convert:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
   /retrofit/RequestBuilderAction:
     methods:
       perform:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
   /retrofit/RequestFactory:
     methods:
       create:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
   retrofit/OkHttpCall:
     methods:
       parseResponse:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
       createRawCall:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
+      execute:
+        exceptions: +catchla/yep/model/YepException
   /retrofit/Call:
     methods:
       execute:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
   /retrofit/CallAdapter:
     methods:
       adapt:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException
   retrofit/MethodHandler:
     methods:
       invoke:
-        exceptions: java/lang/Exception
+        exceptions: +catchla/yep/model/YepException

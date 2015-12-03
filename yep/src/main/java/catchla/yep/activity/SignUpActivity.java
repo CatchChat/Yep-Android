@@ -48,7 +48,7 @@ import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 public class SignUpActivity extends ContentActivity implements Constants, ViewPager.OnPageChangeListener,
         View.OnClickListener {

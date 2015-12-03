@@ -66,6 +66,7 @@ import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
+import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;

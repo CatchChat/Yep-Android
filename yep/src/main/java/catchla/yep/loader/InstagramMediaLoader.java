@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import catchla.yep.model.InstagramMediaList;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/6/3.

@@ -21,7 +21,7 @@ import catchla.yep.activity.SignInActivity;
 import catchla.yep.activity.WelcomeActivity;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.YepException;
+import catchla.yep.model.YepException;
 
 public class AccountService extends Service implements Constants {
 

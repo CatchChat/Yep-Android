@@ -2,11 +2,15 @@ package catchla.yep.util;
 
 import android.support.v4.util.SimpleArrayMap;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import catchla.yep.model.ResponseCode;
+import catchla.yep.model.YepException;
+import retrofit.Call;
 import retrofit.CallAdapter;
+import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
@@ -21,6 +25,32 @@ public class YepCallAdapterFactory implements CallAdapter.Factory {
 
     @Override
     public CallAdapter<?> get(final Type returnType, final Annotation[] annotations, final Retrofit retrofit) {
-        return sResponseConverters.get(returnType);
+        final CallAdapter<?> adapter = sResponseConverters.get(returnType);
+        if (adapter != null) return adapter;
+        return new DefaultCallAdapter(returnType);
+    }
+
+    private class DefaultCallAdapter implements CallAdapter<Object> {
+        private final Type returnType;
+
+        public DefaultCallAdapter(final Type returnType) {
+            this.returnType = returnType;
+        }
+
+        @Override
+        public Type responseType() {
+            return returnType;
+        }
+
+        @Override
+        public <R> Object adapt(final Call<R> call) throws YepException {
+            try {
+                final Response<R> execute = call.execute();
+                if (!execute.isSuccess()) throw new YepException(execute.message());
+                return execute.body();
+            } catch (IOException e) {
+                throw new YepException(e);
+            }
+        }
     }
 }
