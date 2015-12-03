@@ -9,9 +9,15 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
+import org.mariotaku.library.objectcursor.ObjectCursor;
+import org.mariotaku.library.objectcursor.annotation.CursorField;
+import org.mariotaku.library.objectcursor.annotation.CursorObject;
+
 import java.util.Date;
 import java.util.Locale;
 
+import catchla.yep.model.util.LoganSquareCursorFieldConverter;
+import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.util.JsonSerializer;
@@ -21,6 +27,7 @@ import catchla.yep.util.JsonSerializer;
  */
 @ParcelablePlease
 @JsonObject
+@CursorObject
 public class Conversation implements Parcelable {
 
     public static final Creator<Conversation> CREATOR = new Creator<Conversation>() {
@@ -36,39 +43,48 @@ public class Conversation implements Parcelable {
     };
     @ParcelableThisPlease
     @JsonField(name = "media_type")
+    @CursorField(Conversations.MEDIA_TYPE)
     String mediaType;
     /**
      * Corresponding to {@link Message#getSender()}
      */
     @ParcelableThisPlease
     @JsonField(name = "user")
+    @CursorField(Conversations.USER)
     User user;
     @ParcelableThisPlease
     @JsonField(name = "account_id")
+    @CursorField(Conversations.ACCOUNT_ID)
     String accountId;
     @ParcelableThisPlease
     @JsonField(name = "sender")
+    @CursorField(value = Conversations.SENDER, converter = LoganSquareCursorFieldConverter.class)
     User sender;
     @ParcelableThisPlease
     @JsonField(name = "circle")
+    @CursorField(value = Conversations.CIRCLE, converter = LoganSquareCursorFieldConverter.class)
     Circle circle;
     /**
      * Corresponding to {@link Message#getRecipientType()}
      */
     @ParcelableThisPlease
     @JsonField(name = "recipient_type")
+    @CursorField(Conversations.RECIPIENT_TYPE)
     String recipientType;
     /**
      * Corresponding to {@link Message#getTextContent()}
      */
     @ParcelableThisPlease
     @JsonField(name = "text_content")
+    @CursorField(Conversations.TEXT_CONTENT)
     String textContent;
     @ParcelableThisPlease
     @JsonField(name = "id")
+    @CursorField(Conversations.CONVERSATION_ID)
     String id;
     @ParcelableThisPlease
-    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
+    @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Conversations.UPDATED_AT, converter = TimestampToDateConverter.class)
     Date updatedAt;
 
     protected Conversation(Parcel in) {
@@ -193,35 +209,4 @@ public class Conversation implements Parcelable {
         ConversationParcelablePlease.writeToParcel(this, dest, flags);
     }
 
-    public static final class Indices extends ObjectCursor.CursorIndices<Conversation> {
-
-        final int account_id, conversation_id, circle, user, text_content, recipient_type, updated_at,
-                media_type;
-
-        public Indices(final Cursor cursor) {
-            super(cursor);
-            account_id = cursor.getColumnIndex(Conversations.ACCOUNT_ID);
-            conversation_id = cursor.getColumnIndex(Conversations.CONVERSATION_ID);
-            circle = cursor.getColumnIndex(Conversations.CIRCLE);
-            user = cursor.getColumnIndex(Conversations.USER);
-            text_content = cursor.getColumnIndex(Conversations.TEXT_CONTENT);
-            recipient_type = cursor.getColumnIndex(Conversations.RECIPIENT_TYPE);
-            updated_at = cursor.getColumnIndex(Conversations.UPDATED_AT);
-            media_type = cursor.getColumnIndex(Conversations.MEDIA_TYPE);
-        }
-
-        @Override
-        public Conversation newObject(final Cursor cursor) {
-            final Conversation conversation = new Conversation();
-            conversation.setId(cursor.getString(conversation_id));
-            conversation.setAccountId(cursor.getString(account_id));
-            conversation.setTextContent(cursor.getString(text_content));
-            conversation.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
-            conversation.setUser(JsonSerializer.parse(cursor.getString(user), User.class));
-            conversation.setRecipientType(cursor.getString(recipient_type));
-            conversation.setUpdatedAt(new Date(cursor.getLong(updated_at)));
-            conversation.setMediaType(cursor.getString(media_type));
-            return conversation;
-        }
-    }
 }

@@ -26,14 +26,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.LoaderTrojan;
 
+import org.mariotaku.library.objectcursor.ObjectCursor;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
-
-import catchla.yep.model.ObjectCursor;
 
 /**
  * Created by mariotaku on 15-7-5.

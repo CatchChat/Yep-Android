@@ -24,6 +24,7 @@ public interface YepDataStore {
         String SENDER = "sender";
         String RECIPIENT_TYPE = "recipient_type";
         String CIRCLE = "circle";
+        String TOPIC = "topic";
         String PARENT_ID = "parent_id";
         String CONVERSATION_ID = "conversation_id";
         String STATE = "state";
@@ -39,13 +40,13 @@ public interface YepDataStore {
 
         String TABLE_NAME = "messages";
 
-        String[] COLUMNS = {_ID, ACCOUNT_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT, SENDER, RECIPIENT_TYPE,
-                CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING, LATITUDE, LONGITUDE, MEDIA_TYPE,
-                ATTACHMENTS, LOCAL_METADATA};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT};
+        String[] COLUMNS = {_ID, ACCOUNT_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT,
+                SENDER, RECIPIENT_TYPE, CIRCLE, TOPIC, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING,
+                LATITUDE, LONGITUDE, MEDIA_TYPE, ATTACHMENTS, LOCAL_METADATA};
+        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL,
+                DataType.TEXT, DataType.TEXT, DataType.TEXT};
 
         interface MessageState {
             String READ = "read";
@@ -69,11 +70,13 @@ public interface YepDataStore {
         String UPDATED_AT = "updated_at";
         String RECIPIENT_TYPE = "recipient_type";
         String MEDIA_TYPE = "media_type";
+        String SENDER = "sender";
 
-        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, USER, CIRCLE, TOPIC, RECIPIENT_TYPE,
-                UPDATED_AT, MEDIA_TYPE};
+        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, USER, CIRCLE, TOPIC,
+                RECIPIENT_TYPE, UPDATED_AT, MEDIA_TYPE, SENDER};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.TEXT};
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER,
+                DataType.TEXT, DataType.TEXT};
     }
 
     interface Friendships extends Users {

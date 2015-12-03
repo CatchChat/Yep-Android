@@ -7,6 +7,7 @@ import org.mariotaku.sqliteqb.library.OrderBy;
 
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
+import catchla.yep.model.MessageCursorIndices;
 import catchla.yep.provider.YepDataStore.Messages;
 
 /**
@@ -16,7 +17,7 @@ public class MessagesLoader extends ObjectCursorLoader<Message> {
     private final Conversation mConversation;
 
     public MessagesLoader(final Context context, final Conversation conversation) {
-        super(context, Message.Indices.class, Messages.CONTENT_URI, Messages.COLUMNS, null, null, null);
+        super(context, MessageCursorIndices.class, Messages.CONTENT_URI, Messages.COLUMNS, null, null, null);
         mConversation = conversation;
         setSelection(Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
                 Expression.equalsArgs(Messages.CONVERSATION_ID)).getSQL());

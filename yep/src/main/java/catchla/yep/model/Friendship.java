@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import org.mariotaku.library.objectcursor.ObjectCursor;
+
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.JsonSerializer;
 
@@ -59,13 +61,12 @@ public class Friendship {
         this.friend = friend;
     }
 
-    public static class Indices extends ObjectCursor.CursorIndices<Friendship> {
+    public static class Indices implements ObjectCursor.CursorIndices<Friendship> {
 
         public final int user_id, friend_id, nickname, username, avatar_url, introduction,
                 learning_skills, master_skills, providers;
 
         public Indices(@NonNull final Cursor cursor) {
-            super(cursor);
             user_id = cursor.getColumnIndex(Friendships.USER_ID);
             friend_id = cursor.getColumnIndex(Friendships.FRIEND_ID);
             nickname = cursor.getColumnIndex(Friendships.NICKNAME);
@@ -80,6 +81,12 @@ public class Friendship {
         @Override
         public Friendship newObject(final Cursor cursor) {
             final Friendship friendship = new Friendship();
+            parseFields(friendship, cursor);
+            return friendship;
+        }
+
+        @Override
+        public void parseFields(final Friendship friendship, final Cursor cursor) {
             final User friend = new User();
             friendship.setUserId(cursor.getString(user_id));
             friend.setId(cursor.getString(friend_id));
@@ -91,7 +98,16 @@ public class Friendship {
             friend.setMasterSkills(JsonSerializer.parseList(cursor.getString(master_skills), Skill.class));
             friend.setProviders(JsonSerializer.parseList(cursor.getString(providers), Provider.class));
             friendship.setFriend(friend);
-            return friendship;
+        }
+
+        @Override
+        public void callBeforeCreated(final Friendship instance) {
+
+        }
+
+        @Override
+        public void callAfterCreated(final Friendship instance) {
+
         }
     }
 }

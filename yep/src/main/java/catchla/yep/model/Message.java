@@ -6,9 +6,15 @@ import android.support.annotation.NonNull;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import org.mariotaku.library.objectcursor.annotation.CursorField;
+import org.mariotaku.library.objectcursor.annotation.CursorObject;
+
 import java.util.Date;
 import java.util.List;
 
+import catchla.yep.model.util.NaNIfNullDoubleConverter;
+import catchla.yep.model.util.TimestampToDateConverter;
+import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.NaNDoubleConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -18,41 +24,59 @@ import catchla.yep.util.JsonSerializer;
  * Created by mariotaku on 15/5/12.
  */
 @JsonObject
+@CursorObject(valuesCreator = true)
 public class Message {
 
     @JsonField(name = "latitude", typeConverter = NaNDoubleConverter.class)
+    @CursorField(value = Messages.LATITUDE, converter = NaNIfNullDoubleConverter.class)
     double latitude = Double.NaN;
     @JsonField(name = "longitude", typeConverter = NaNDoubleConverter.class)
+    @CursorField(value = Messages.LONGITUDE, converter = NaNIfNullDoubleConverter.class)
     double longitude = Double.NaN;
     @JsonField(name = "id")
+    @CursorField(Messages.MESSAGE_ID)
     String id;
     @JsonField(name = "recipient_id")
+    @CursorField(Messages.RECIPIENT_ID)
     String recipientId;
     @JsonField(name = "parent_id")
+    @CursorField(Messages.PARENT_ID)
     String parentId;
     @JsonField(name = "text_content")
+    @CursorField(Messages.TEXT_CONTENT)
     String textContent;
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Messages.CREATED_AT, converter = TimestampToDateConverter.class)
     Date createdAt;
     @JsonField(name = "sender")
+    @CursorField(value = Messages.SENDER, converter = LoganSquareCursorFieldConverter.class)
     User sender;
     @JsonField(name = "recipient_type")
+    @CursorField(value = Messages.RECIPIENT_TYPE)
     String recipientType;
     @JsonField(name = "media_type")
+    @CursorField(value = Messages.MEDIA_TYPE)
     String mediaType;
     @JsonField(name = "circle")
+    @CursorField(value = Messages.CIRCLE, converter = LoganSquareCursorFieldConverter.class)
     Circle circle;
     @JsonField(name = "topic")
+    @CursorField(value = Messages.TOPIC, converter = LoganSquareCursorFieldConverter.class)
     Topic topic;
     @JsonField(name = "conversation_id")
+    @CursorField(Messages.CONVERSATION_ID)
     String conversationId;
     @JsonField(name = "outgoing")
+    @CursorField(Messages.OUTGOING)
     boolean outgoing;
     @JsonField(name = "state")
+    @CursorField(Messages.STATE)
     String state;
     @JsonField(name = "attachments")
+    @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)
     List<Attachment> attachments;
     @JsonField(name = "local_metadata")
+    @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)
     List<LocalMetadata> localMetadata;
 
     public List<LocalMetadata> getLocalMetadata() {
@@ -203,52 +227,6 @@ public class Message {
         String AUDIO = "audio";
     }
 
-
-    public static class Indices extends ObjectCursor.CursorIndices<Message> {
-        private final int message_id, created_at, text_content, outgoing, latitude, longitude,
-                sender, circle, recipient_id, recipient_type, media_type, state, attachments,
-                conversation_id, local_metadata;
-
-        public Indices(@NonNull final Cursor cursor) {
-            super(cursor);
-            message_id = cursor.getColumnIndex(Messages.MESSAGE_ID);
-            created_at = cursor.getColumnIndex(Messages.CREATED_AT);
-            text_content = cursor.getColumnIndex(Messages.TEXT_CONTENT);
-            outgoing = cursor.getColumnIndex(Messages.OUTGOING);
-            latitude = cursor.getColumnIndex(Messages.LATITUDE);
-            longitude = cursor.getColumnIndex(Messages.LONGITUDE);
-            sender = cursor.getColumnIndex(Messages.SENDER);
-            circle = cursor.getColumnIndex(Messages.CIRCLE);
-            recipient_id = cursor.getColumnIndex(Messages.RECIPIENT_ID);
-            recipient_type = cursor.getColumnIndex(Messages.RECIPIENT_TYPE);
-            media_type = cursor.getColumnIndex(Messages.MEDIA_TYPE);
-            state = cursor.getColumnIndex(Messages.STATE);
-            attachments = cursor.getColumnIndex(Messages.ATTACHMENTS);
-            conversation_id = cursor.getColumnIndex(Messages.CONVERSATION_ID);
-            local_metadata = cursor.getColumnIndex(Messages.LOCAL_METADATA);
-        }
-
-        @Override
-        public Message newObject(final Cursor cursor) {
-            final Message message = new Message();
-            message.setId(cursor.getString(message_id));
-            message.setCreatedAt(new Date(cursor.getLong(created_at)));
-            message.setTextContent(cursor.getString(text_content));
-            message.setOutgoing(cursor.getShort(outgoing) == 1);
-            message.setLatitude(cursor.isNull(latitude) ? Double.NaN : cursor.getDouble(latitude));
-            message.setLongitude(cursor.isNull(longitude) ? Double.NaN : cursor.getDouble(longitude));
-            message.setSender(JsonSerializer.parse(cursor.getString(sender), User.class));
-            message.setCircle(JsonSerializer.parse(cursor.getString(circle), Circle.class));
-            message.setRecipientId(cursor.getString(recipient_id));
-            message.setRecipientType(cursor.getString(recipient_type));
-            message.setMediaType(cursor.getString(media_type));
-            message.setState(cursor.getString(state));
-            message.setAttachments(JsonSerializer.parseList(cursor.getString(attachments), Attachment.class));
-            message.setLocalMetadata(JsonSerializer.parseList(cursor.getString(local_metadata), LocalMetadata.class));
-            message.setConversationId(cursor.getString(conversation_id));
-            return message;
-        }
-    }
 
     @JsonObject
     public static class LocalMetadata {

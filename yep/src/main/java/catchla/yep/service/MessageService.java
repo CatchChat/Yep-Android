@@ -200,7 +200,9 @@ public class MessageService extends Service implements Constants {
             final long createdAt = Utils.getTime(message.getCreatedAt());
             if (newConversation || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
                 conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
-                conversation.put(Conversations.USER, JsonSerializer.serialize(message.getSender(), User.class));
+                final String senderString = JsonSerializer.serialize(message.getSender(), User.class);
+                conversation.put(Conversations.USER, senderString);
+                conversation.put(Conversations.SENDER, senderString);
                 conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
                 conversation.put(Conversations.TOPIC, JsonSerializer.serialize(message.getTopic(), Topic.class));
                 conversation.put(Conversations.UPDATED_AT, createdAt);
