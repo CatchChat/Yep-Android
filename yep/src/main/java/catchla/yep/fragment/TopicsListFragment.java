@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -34,9 +35,12 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
         IActionButtonSupportFragment {
 
+    private String mSortBy;
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mSortBy = mPreferences.getString(KEY_TOPICS_SORT_ORDER, Topic.SortOrder.TIME);
         setHasOptionsMenu(true);
         final Bundle fragmentArgs = getArguments();
         final Bundle loaderArgs = new Bundle();
@@ -53,7 +57,6 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         getAdapter().setClickListener(this);
         showProgress();
     }
-
 
     @Override
     public Loader<TaskResponse<List<Topic>>> onCreateLoader(final int id, final Bundle args) {
@@ -72,7 +75,12 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
             oldData = null;
         }
         return new DiscoverTopicsLoader(getActivity(), getAccount(), getArguments().getString(EXTRA_USER_ID),
-                paging, Topic.SortOrder.TIME, readCache, cachingEnabled, oldData);
+                paging, getSortOrder(), readCache, cachingEnabled, oldData);
+    }
+
+    @Topic.SortOrder
+    private String getSortOrder() {
+        return mSortBy != null ? mSortBy : Topic.SortOrder.TIME;
     }
 
     @Override
@@ -149,6 +157,12 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         startActivity(intent);
     }
 
+    @Nullable
+    @Override
+    public Class<? extends FloatingActionMenuFragment> getActionMenuFragment() {
+        return TopicsMenuFragment.class;
+    }
+
     @Override
     public void onLoadMoreContents() {
         super.onLoadMoreContents();
@@ -169,5 +183,16 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_SKILL, getAdapter().getTopic(position).getSkill());
         startActivity(intent);
+    }
+
+    public void reloadWithSortOrder(final String sortBy) {
+        if (TextUtils.equals(getSortOrder(), sortBy)) return;
+        mSortBy = sortBy;
+        mPreferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply();
+        final Bundle loaderArgs = new Bundle();
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
+        loaderArgs.putBoolean(EXTRA_READ_OLD, false);
+        getLoaderManager().restartLoader(0, loaderArgs, this);
+        showProgress();
     }
 }

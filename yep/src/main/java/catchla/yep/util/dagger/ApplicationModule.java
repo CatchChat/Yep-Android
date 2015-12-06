@@ -1,6 +1,7 @@
 package catchla.yep.util.dagger;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -17,6 +18,7 @@ import com.squareup.otto.ThreadEnforcer;
 import java.io.IOException;
 
 import catchla.yep.BuildConfig;
+import catchla.yep.Constants;
 import catchla.yep.app.YepApplication;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.YepImageDownloader;
@@ -27,7 +29,7 @@ import dagger.Provides;
  * Created by mariotaku on 15/10/8.
  */
 @Module
-public class ApplicationModule {
+public class ApplicationModule implements Constants {
 
     private final Bus bus;
     private final ImageLoader imageLoader;
@@ -35,6 +37,7 @@ public class ApplicationModule {
     private final ImageLoaderWrapper imageLoaderWrapper;
     private final YepImageDownloader imageDownloader;
     private final DiskCache diskCache;
+    private final SharedPreferences sharedPreferences;
 
     public ApplicationModule(YepApplication application) {
         this.application = application;
@@ -43,6 +46,7 @@ public class ApplicationModule {
         diskCache = createDiskCache();
         imageLoader = createImageLoader(imageDownloader, diskCache);
         imageLoaderWrapper = new ImageLoaderWrapper(imageLoader);
+        sharedPreferences = application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     public static ApplicationModule get(final Context context) {
@@ -59,6 +63,11 @@ public class ApplicationModule {
 
     private YepImageDownloader createImageDownloader(final YepApplication application) {
         return new YepImageDownloader(application);
+    }
+
+    @Provides
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
     }
 
     @Provides

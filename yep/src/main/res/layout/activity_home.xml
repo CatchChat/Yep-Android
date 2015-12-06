@@ -7,19 +7,42 @@
     android:layout_height="match_parent"
     app:setPadding="true">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/element_spacing_large"
-        android:src="@drawable/ic_action_add"
-        app:elevation="4dp"
-        app:pressedTranslationZ="2dp"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/floating_action_menur"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginLeft="@dimen/element_spacing_large"
+                android:layout_marginStart="@dimen/element_spacing_large"
+                android:minWidth="72dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="4dp"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floating_action_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_margin="@dimen/element_spacing_large"
+                android:src="@drawable/ic_action_add"
+                app:elevation="4dp"
+                app:pressedTranslationZ="2dp"/>
+
+        </FrameLayout>
+    </RelativeLayout>
 
 </catchla.yep.view.TintedStatusFrameLayout>

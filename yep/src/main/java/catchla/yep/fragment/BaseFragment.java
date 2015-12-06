@@ -6,6 +6,7 @@ package catchla.yep.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +31,8 @@ public class BaseFragment extends Fragment implements IBaseFragment, Constants {
     protected Bus mBus;
     @Inject
     protected ImageLoaderWrapper mImageLoader;
+    @Inject
+    protected SharedPreferences mPreferences;
 
     @Override
     public final void onViewCreated(View view, @Nullable Bundle savedInstanceState) {

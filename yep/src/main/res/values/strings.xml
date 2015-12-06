@@ -100,4 +100,6 @@
     <string name="send_feedback_hint">We read every feedback carefully.</string>
     <string name="record_audio_permission_required">Recording permission is needed to send audio</string>
     <string name="typing">Typing</string>
+    <string name="distance">Distance</string>
+    <string name="time">Time</string>
 </resources>

@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -24,6 +26,7 @@ import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.TabsAdapter;
 import catchla.yep.fragment.ConversationsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
+import catchla.yep.fragment.FloatingActionMenuFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
@@ -43,7 +46,8 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         IControlBarActivity {
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
-    private FloatingActionButton mActionButton;
+    private FloatingActionButton mFloatingActionButton;
+    private View mFloatingActionMenu;
     private TabPagerIndicator mPagerIndicator;
     private TintedStatusFrameLayout mMainContent;
 
@@ -52,7 +56,8 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         super.onContentChanged();
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mActionButton = (FloatingActionButton) findViewById(R.id.action_button);
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
+        mFloatingActionMenu = findViewById(R.id.floating_action_menur);
     }
 
     @Override
@@ -117,7 +122,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         mMainContent.setDrawColor(true);
         mMainContent.setDrawShadow(false);
         mMainContent.setColor(primaryColor);
-        mActionButton.setOnClickListener(this);
+        mFloatingActionButton.setOnClickListener(this);
 
         final Bundle args = new Bundle();
         args.putBoolean(EXTRA_CACHING_ENABLED, true);
@@ -164,10 +169,29 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
     private void updateActionButton() {
         final Fragment currentFragment = getCurrentFragment();
         if (currentFragment instanceof IActionButtonSupportFragment) {
-            mActionButton.setImageResource(((IActionButtonSupportFragment) currentFragment).getActionIcon());
-            mActionButton.show();
+            mFloatingActionButton.setImageResource(((IActionButtonSupportFragment) currentFragment).getActionIcon());
+            mFloatingActionButton.show();
+            final Class<? extends FloatingActionMenuFragment> actionMenuFragmentCls =
+                    ((IActionButtonSupportFragment) currentFragment).getActionMenuFragment();
+            final FragmentManager fm = getSupportFragmentManager();
+            final FragmentTransaction ft = fm.beginTransaction();
+            if (actionMenuFragmentCls != null) {
+                mFloatingActionMenu.setVisibility(View.VISIBLE);
+                FloatingActionMenuFragment actionMenuFragment = (FloatingActionMenuFragment)
+                        Fragment.instantiate(this, actionMenuFragmentCls.getName());
+                actionMenuFragment.setBelongsTo(currentFragment);
+                ft.replace(mFloatingActionMenu.getId(), actionMenuFragment);
+            } else {
+                final Fragment currentMenuFragment = fm.findFragmentById(mFloatingActionMenu.getId());
+                if (currentMenuFragment != null) {
+                    ft.remove(currentMenuFragment);
+                }
+                mFloatingActionMenu.setVisibility(View.GONE);
+            }
+            ft.commit();
         } else {
-            mActionButton.hide();
+            mFloatingActionButton.hide();
+            mFloatingActionMenu.setVisibility(View.GONE);
         }
     }
 
@@ -183,7 +207,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
     @Override
     public void onClick(final View v) {
         switch (v.getId()) {
-            case R.id.action_button: {
+            case R.id.floating_action_button: {
                 final Fragment fragment = getCurrentFragment();
                 if (fragment instanceof IActionButtonSupportFragment) {
                     ((IActionButtonSupportFragment) fragment).onActionPerformed();
@@ -200,10 +224,22 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
 
     @Override
     public void setControlBarVisibleAnimate(final boolean visible) {
-        if (visible && getCurrentFragment() instanceof IActionButtonSupportFragment) {
-            mActionButton.show();
+        final Fragment currentFragment = getCurrentFragment();
+        if (currentFragment instanceof IActionButtonSupportFragment) {
+            if (visible) {
+                mFloatingActionButton.show();
+                if (((IActionButtonSupportFragment) currentFragment).getActionMenuFragment() != null) {
+                    mFloatingActionMenu.setVisibility(View.VISIBLE);
+                } else {
+                    mFloatingActionMenu.setVisibility(View.GONE);
+                }
+            } else {
+                mFloatingActionButton.hide();
+                mFloatingActionMenu.setVisibility(View.GONE);
+            }
         } else {
-            mActionButton.hide();
+            mFloatingActionButton.hide();
+            mFloatingActionMenu.setVisibility(View.GONE);
         }
     }
 

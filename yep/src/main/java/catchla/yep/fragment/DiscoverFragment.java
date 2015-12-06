@@ -16,9 +16,11 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -59,6 +61,11 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
         getLoaderManager().initLoader(0, loaderArgs, this);
         getAdapter().setClickListener(this);
         showProgress();
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

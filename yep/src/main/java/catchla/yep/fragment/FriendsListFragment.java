@@ -145,4 +145,10 @@ public class FriendsListFragment extends AbsContentListRecyclerViewFragment<Frie
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         startActivity(intent);
     }
+
+    @Nullable
+    @Override
+    public Class<? extends FloatingActionMenuFragment> getActionMenuFragment() {
+        return null;
+    }
 }

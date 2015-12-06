@@ -176,7 +176,7 @@ public interface YepAPI {
     @GET("v1/users/{id}/settings_with_current_user")
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
-    @GET("v1/topics/discover")
+    @GET("v2/topics/discover")
     PagedTopics getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @QueryMap Paging paging) throws YepException;
 
     @GET("v1/topics")

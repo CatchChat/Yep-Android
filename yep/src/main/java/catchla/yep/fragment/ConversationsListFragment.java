@@ -157,4 +157,10 @@ public class ConversationsListFragment extends AbsContentListRecyclerViewFragmen
     public void onActionPerformed() {
 
     }
+
+    @Nullable
+    @Override
+    public Class<? extends FloatingActionMenuFragment> getActionMenuFragment() {
+        return null;
+    }
 }
