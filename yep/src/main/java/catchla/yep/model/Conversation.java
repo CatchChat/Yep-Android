@@ -1,6 +1,5 @@
 package catchla.yep.model;
 
-import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,7 +8,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
-import org.mariotaku.library.objectcursor.ObjectCursor;
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
 
@@ -20,7 +18,6 @@ import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Conversations;
-import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -50,7 +47,7 @@ public class Conversation implements Parcelable {
      */
     @ParcelableThisPlease
     @JsonField(name = "user")
-    @CursorField(Conversations.USER)
+    @CursorField(value = Conversations.USER, converter = LoganSquareCursorFieldConverter.class)
     User user;
     @ParcelableThisPlease
     @JsonField(name = "account_id")

@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.fragment.ChatsListFragment;
+import catchla.yep.fragment.ConversationsListFragment;
 import catchla.yep.model.Message;
 
 /**
@@ -17,8 +17,8 @@ public class CirclesListActivity extends SwipeBackContentActivity implements Con
         setContentView(R.layout.activity_fragment_content);
         final Bundle args = new Bundle();
         args.putParcelable(EXTRA_ACCOUNT, getAccount());
-        args.putString(ChatsListFragment.EXTRA_RECIPIENT_TYPE, Message.RecipientType.CIRCLE);
-        final ChatsListFragment f = new ChatsListFragment();
+        args.putString(ConversationsListFragment.EXTRA_RECIPIENT_TYPE, Message.RecipientType.CIRCLE);
+        final ConversationsListFragment f = new ConversationsListFragment();
         f.setArguments(args);
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, f).commit();
     }

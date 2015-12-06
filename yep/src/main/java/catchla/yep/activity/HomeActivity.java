@@ -22,7 +22,7 @@ import catchla.yep.R;
 import catchla.yep.activity.iface.IAccountActivity;
 import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.TabsAdapter;
-import catchla.yep.fragment.ChatsListFragment;
+import catchla.yep.fragment.ConversationsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FriendsListFragment;
 import catchla.yep.fragment.TopicsListFragment;
@@ -123,7 +123,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         args.putBoolean(EXTRA_CACHING_ENABLED, true);
         args.putParcelable(EXTRA_ACCOUNT, getAccount());
 
-        mAdapter.addTab(ChatsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);
+        mAdapter.addTab(ConversationsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);
         mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args);
         mAdapter.addTab(TopicsListFragment.class, getString(R.string.topics), R.drawable.ic_action_feeds, args);
         mAdapter.addTab(DiscoverFragment.class, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args);

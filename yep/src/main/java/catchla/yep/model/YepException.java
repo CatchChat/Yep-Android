@@ -10,7 +10,7 @@ import com.squareup.okhttp.Response;
  * Created by mariotaku on 15/5/23.
  */
 @JsonObject
-public class YepException extends Exception {
+public class YepException extends RuntimeException {
 
     private Request request;
     private Response response;

@@ -4,7 +4,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: "androidsvgdrawable"
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'org.mariotaku.patchlib'
 
 buildscript {
     repositories {
@@ -13,7 +12,6 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.mariotaku.PatchLib:gradle-plugin:0.1.1-SNAPSHOT'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -47,10 +45,6 @@ android {
     }
 }
 
-patchLib {
-    rule rootProject.file('patchlib_rules.yml')
-}
-
 repositories {
     jcenter()
     maven { url 'https://s3.amazonaws.com/repo.commonsware.com' }
@@ -78,7 +72,7 @@ dependencies {
     compile 'org.jraf:android-switch-backport:2.0.1'
     compile 'com.github.techfreak:wizardpager:1.0.0'
     compile 'org.apache.commons:commons-lang3:3.4'
-    patchCompile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.okhttp:okhttp:2.6.0'
     compile 'com.squareup.okhttp:okhttp-ws:2.6.0'
     compile 'com.squareup:tape:1.2.3'

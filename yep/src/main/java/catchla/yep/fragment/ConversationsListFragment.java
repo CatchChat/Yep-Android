@@ -38,7 +38,7 @@ import catchla.yep.service.MessageService;
 /**
  * Created by mariotaku on 15/4/29.
  */
-public class ChatsListFragment extends AbsContentListRecyclerViewFragment<ChatsListAdapter> implements Constants,
+public class ConversationsListFragment extends AbsContentListRecyclerViewFragment<ChatsListAdapter> implements Constants,
         LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
 
     public static final String EXTRA_RECIPIENT_TYPE = "recipient_type";
