@@ -80,7 +80,13 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
 
     @Topic.SortOrder
     private String getSortOrder() {
+        if (hasUserId()) return Topic.SortOrder.TIME;
         return mSortBy != null ? mSortBy : Topic.SortOrder.TIME;
+    }
+
+    private boolean hasUserId() {
+        final Bundle fragmentArgs = getArguments();
+        return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID);
     }
 
     @Override
@@ -186,7 +192,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     public void reloadWithSortOrder(final String sortBy) {
-        if (TextUtils.equals(getSortOrder(), sortBy)) return;
+        if (TextUtils.equals(getSortOrder(), sortBy) || hasUserId()) return;
         mSortBy = sortBy;
         mPreferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply();
         final Bundle loaderArgs = new Bundle();
