@@ -49,4 +49,25 @@ public class LocationAttachment extends Attachment implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         LocationAttachmentParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    @Override
+    public String toString() {
+        return "LocationAttachment{" +
+                "place='" + place + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                "} " + super.toString();
+    }
 }

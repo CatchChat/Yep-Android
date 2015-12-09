@@ -1,6 +1,7 @@
 package catchla.yep.fragment;
 
 import android.content.Context;
+import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,10 +26,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-import org.osmdroid.api.IMapController;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-
 import java.io.File;
 import java.util.List;
 
@@ -38,15 +34,17 @@ import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
-import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages.MessageState;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.JsonSerializer;
+import catchla.yep.util.StaticMapUrlGenerator;
 import catchla.yep.util.Utils;
 import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.MediaSizeImageView;
+import catchla.yep.view.StaticMapView;
 import okio.BufferedSink;
 import okio.Okio;
 
@@ -352,27 +350,22 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
         }
 
         private static class LocationChatViewHolder extends MessageViewHolder {
-            private final MapView mapView;
+            private final StaticMapView mapView;
 
             public LocationChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
                 super(itemView, outgoing, adapter);
-                mapView = (MapView) itemView.findViewById(R.id.map_view);
-                mapView.setTilesScaledToDpi(true);
-                mapView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(final View v, final MotionEvent event) {
-                        return true;
-                    }
-                });
+                mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
+                mapView.setProvider(new StaticMapUrlGenerator.OpenStreetMapProvider(StaticMapUrlGenerator.OpenStreetMapProvider.MapType.MAPNIK));
+                mapView.setScaleToDensity(true);
             }
 
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                final GeoPoint gp = new GeoPoint((int) (message.getLatitude() * 1E6), (int) (message.getLongitude() * 1E6));
-                final IMapController mc = mapView.getController();
-                mc.setZoom(12);
-                mc.setCenter(gp);
+                final Location location = new Location("");
+                location.setLatitude(message.getLatitude());
+                location.setLongitude(message.getLongitude());
+                mapView.display(location, 12);
             }
         }
 

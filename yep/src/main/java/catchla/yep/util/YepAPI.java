@@ -38,7 +38,6 @@ import retrofit.http.Field;
 import retrofit.http.FieldMap;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
-import retrofit.http.Multipart;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.PUT;
@@ -120,7 +119,6 @@ public interface YepAPI {
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
     @POST("v1/{recipient_type}/{recipient_id}/messages")
-    @Multipart
     Message createMessage(@Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
                           @Body NewMessage message) throws YepException;
 
@@ -186,7 +184,6 @@ public interface YepAPI {
     PagedTopics getTopics(@Path("id") String userId, @QueryMap Paging paging) throws YepException;
 
     @POST("v1/topics")
-    @Multipart
     Topic postTopic(@Body NewTopic topic) throws YepException;
 
     @PUT("v1/topics/{id}")

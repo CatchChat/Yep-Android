@@ -20,6 +20,7 @@ import catchla.yep.R;
 import catchla.yep.activity.NewTopicActivity;
 import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.TopicChatActivity;
+import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
@@ -188,6 +189,14 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         final Intent intent = new Intent(getContext(), SkillUpdatesActivity.class);
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_SKILL, getAdapter().getTopic(position).getSkill());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onUserClick(final int position, final TopicViewHolder holder) {
+        final Intent intent = new Intent(getContext(), UserActivity.class);
+        intent.putExtra(EXTRA_ACCOUNT, getAccount());
+        intent.putExtra(EXTRA_USER, getAdapter().getTopic(position).getUser());
         startActivity(intent);
     }
 

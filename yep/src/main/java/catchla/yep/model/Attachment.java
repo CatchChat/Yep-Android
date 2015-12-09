@@ -65,5 +65,7 @@ public class Attachment implements Parcelable {
     public @interface Kind {
         String GITHUB = "github";
         String DRIBBBLE = "dribbble";
+        String LOCATION = "location";
+        String IMAGE = "image";
     }
 }

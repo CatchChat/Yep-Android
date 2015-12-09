@@ -7,6 +7,7 @@ import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.preference.AccountInfoPreference;
 import catchla.yep.service.FayeService;
 import catchla.yep.service.MessageService;
+import catchla.yep.view.StaticMapView;
 import dagger.Component;
 
 /**
@@ -29,4 +30,6 @@ public interface GeneralComponent {
     void inject(BaseRecyclerViewAdapter adapter);
 
     void inject(FayeService service);
+
+    void inject(StaticMapView view);
 }

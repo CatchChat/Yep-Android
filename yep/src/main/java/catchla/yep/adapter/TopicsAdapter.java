@@ -19,6 +19,7 @@ import catchla.yep.model.Topic;
 import catchla.yep.view.holder.GalleryTopicViewHolder;
 import catchla.yep.view.holder.GithubTopicViewHolder;
 import catchla.yep.view.holder.LoadIndicatorViewHolder;
+import catchla.yep.view.holder.LocationTopicViewHolder;
 import catchla.yep.view.holder.TopicViewHolder;
 
 /**
@@ -28,6 +29,7 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_BASIC = 1;
     private static final int ITEM_VIEW_TYPE_MEDIA_GALLERY = 2;
     private static final int ITEM_VIEW_TYPE_GITHUB = 3;
+    private static final int ITEM_VIEW_TYPE_LOCATION = 4;
 
     private final LayoutInflater mInflater;
 
@@ -58,6 +60,11 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
                 mInflater.inflate(R.layout.layout_topic_attachment_github, (ViewGroup) view);
                 return new GithubTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
             }
+            case ITEM_VIEW_TYPE_LOCATION: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_location, (ViewGroup) view);
+                return new LocationTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+            }
             case ITEM_VIEW_TYPE_BASIC: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_null, (ViewGroup) view);
@@ -75,10 +82,12 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     public int getItemViewType(int position) {
         if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
         final String topicsKind = getTopic(position).getAttachmentKind();
-        if ("image".equals(topicsKind)) {
+        if (Attachment.Kind.IMAGE.equals(topicsKind)) {
             return ITEM_VIEW_TYPE_MEDIA_GALLERY;
         } else if (Attachment.Kind.GITHUB.equals(topicsKind)) {
             return ITEM_VIEW_TYPE_GITHUB;
+        } else if (Attachment.Kind.LOCATION.equals(topicsKind)) {
+            return ITEM_VIEW_TYPE_LOCATION;
         }
         return ITEM_VIEW_TYPE_BASIC;
     }
@@ -92,7 +101,8 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
             }
             case ITEM_VIEW_TYPE_BASIC:
             case ITEM_VIEW_TYPE_MEDIA_GALLERY:
-            case ITEM_VIEW_TYPE_GITHUB: {
+            case ITEM_VIEW_TYPE_GITHUB:
+            case ITEM_VIEW_TYPE_LOCATION: {
                 final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
                 topicViewHolder.displayTopic(mData.get(position));
                 break;
@@ -126,5 +136,7 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
 
     public interface TopicClickAdapter extends ItemClickListener {
         void onSkillClick(int position, TopicViewHolder holder);
+
+        void onUserClick(int position, TopicViewHolder holder);
     }
 }

@@ -86,4 +86,17 @@ public class AppleMediaAttachment extends Attachment implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         AppleMediaAttachmentParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    @Override
+    public String toString() {
+        return "AppleMediaAttachment{" +
+                "kind='" + kind + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", poster='" + poster + '\'' +
+                ", mediaUrl='" + mediaUrl + '\'' +
+                ", previewUrl='" + previewUrl + '\'' +
+                ", timeMillis='" + timeMillis + '\'' +
+                "} " + super.toString();
+    }
 }

@@ -71,14 +71,6 @@ public class FileAttachment extends Attachment implements Parcelable {
     }
 
     @Override
-    public String toString() {
-        return "FileAttachment{" +
-                "metadata='" + metadata + '\'' +
-                ", file=" + file +
-                "} " + super.toString();
-    }
-
-    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -190,5 +182,13 @@ public class FileAttachment extends Attachment implements Parcelable {
         public void setBlurredThumbnail(final String blurredThumbnail) {
             this.blurredThumbnail = blurredThumbnail;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FileAttachment{" +
+                "metadata='" + metadata + '\'' +
+                ", file=" + file +
+                "} " + super.toString();
     }
 }

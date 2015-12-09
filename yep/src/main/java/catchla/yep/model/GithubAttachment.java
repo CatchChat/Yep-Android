@@ -57,18 +57,6 @@ public class GithubAttachment extends Attachment implements Parcelable {
         super();
     }
 
-    @Override
-    public String toString() {
-        return "GithubAttachment{" +
-                "createdAt=" + createdAt +
-                ", description='" + description + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", repoId=" + repoId +
-                ", name='" + name + '\'' +
-                ", url='" + url + '\'' +
-                "} " + super.toString();
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -101,5 +89,17 @@ public class GithubAttachment extends Attachment implements Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         GithubAttachmentParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
+    @Override
+    public String toString() {
+        return "GithubAttachment{" +
+                "createdAt=" + createdAt +
+                ", description='" + description + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", repoId=" + repoId +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                "} " + super.toString();
     }
 }

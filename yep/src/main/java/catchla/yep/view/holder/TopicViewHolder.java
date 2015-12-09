@@ -55,6 +55,8 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         currentLocation = Utils.getCachedLocation(context);
         tempLocation = new Location("");
 
+        profileImageView.setOnClickListener(this);
+        nameView.setOnClickListener(this);
         skillButton.setOnClickListener(this);
     }
 
@@ -105,6 +107,10 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
             case R.id.skill_button: {
                 listener.onSkillClick(getLayoutPosition(), this);
                 break;
+            }
+            case R.id.profile_image:
+            case R.id.name: {
+                listener.onUserClick(getLayoutPosition(), this);
             }
         }
     }

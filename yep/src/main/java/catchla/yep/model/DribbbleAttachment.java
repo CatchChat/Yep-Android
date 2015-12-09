@@ -58,18 +58,6 @@ public class DribbbleAttachment extends Attachment implements Parcelable {
         super();
     }
 
-    @Override
-    public String toString() {
-        return "DribbbleAttachment{" +
-                "createdAt=" + createdAt +
-                ", description='" + description + '\'' +
-                ", mediaUrl='" + mediaUrl + '\'' +
-                ", shotId=" + shotId +
-                ", title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                "} " + super.toString();
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -102,5 +90,17 @@ public class DribbbleAttachment extends Attachment implements Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         DribbbleAttachmentParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
+    @Override
+    public String toString() {
+        return "DribbbleAttachment{" +
+                "createdAt=" + createdAt +
+                ", description='" + description + '\'' +
+                ", mediaUrl='" + mediaUrl + '\'' +
+                ", shotId=" + shotId +
+                ", title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                "} " + super.toString();
     }
 }

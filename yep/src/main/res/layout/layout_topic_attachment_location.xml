@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/attachment_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/text"
+    android:layout_alignStart="@+id/text"
+    android:layout_below="@+id/text"
+    android:layout_marginEnd="@dimen/element_spacing_large"
+    android:layout_marginRight="@dimen/element_spacing_large"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:orientation="vertical">
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="128dp">
+
+        <catchla.yep.view.StaticMapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_map_marker"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/element_spacing_normal"/>
+
+</LinearLayout>
