@@ -61,4 +61,9 @@ public class Attachment implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         AttachmentParcelablePlease.writeToParcel(this, dest, flags);
     }
+
+    public @interface Kind {
+        String GITHUB = "github";
+        String DRIBBBLE = "dribbble";
+    }
 }

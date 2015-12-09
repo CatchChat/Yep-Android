@@ -56,8 +56,9 @@
             android:outlineProvider="bounds"
             android:paddingBottom="@dimen/element_spacing_normal"
             android:paddingTop="@dimen/element_spacing_normal"
-            app:layout_anchor="@+id/recycler_view"
-            app:layout_anchorGravity="bottom|end">
+            app:layout_anchor="@+id/topic_full"
+            app:layout_anchorGravity="bottom|end"
+            tools:ignore="UnusedAttribute">
 
             <include layout="@layout/layout_chat_input_panel"/>
         </RelativeLayout>

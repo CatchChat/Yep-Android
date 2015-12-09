@@ -25,16 +25,16 @@ import catchla.yep.util.Utils;
  */
 @ParcelablePlease
 @JsonObject
-public class BasicAttachment extends Attachment implements Parcelable {
-    public static final Creator<BasicAttachment> CREATOR = new Creator<BasicAttachment>() {
+public class FileAttachment extends Attachment implements Parcelable {
+    public static final Creator<FileAttachment> CREATOR = new Creator<FileAttachment>() {
         @Override
-        public BasicAttachment createFromParcel(Parcel in) {
-            return new BasicAttachment(in);
+        public FileAttachment createFromParcel(Parcel in) {
+            return new FileAttachment(in);
         }
 
         @Override
-        public BasicAttachment[] newArray(int size) {
-            return new BasicAttachment[size];
+        public FileAttachment[] newArray(int size) {
+            return new FileAttachment[size];
         }
     };
     @ParcelableThisPlease
@@ -44,11 +44,11 @@ public class BasicAttachment extends Attachment implements Parcelable {
     @JsonField(name = "file")
     AttachmentFile file;
 
-    protected BasicAttachment(Parcel in) {
-        BasicAttachmentParcelablePlease.readFromParcel(this, in);
+    protected FileAttachment(Parcel in) {
+        FileAttachmentParcelablePlease.readFromParcel(this, in);
     }
 
-    public BasicAttachment() {
+    public FileAttachment() {
 
     }
 
@@ -67,12 +67,12 @@ public class BasicAttachment extends Attachment implements Parcelable {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        BasicAttachmentParcelablePlease.writeToParcel(this, dest, flags);
+        FileAttachmentParcelablePlease.writeToParcel(this, dest, flags);
     }
 
     @Override
     public String toString() {
-        return "BasicAttachment{" +
+        return "FileAttachment{" +
                 "metadata='" + metadata + '\'' +
                 ", file=" + file +
                 "} " + super.toString();
@@ -83,7 +83,7 @@ public class BasicAttachment extends Attachment implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final BasicAttachment that = (BasicAttachment) o;
+        final FileAttachment that = (FileAttachment) o;
 
         if (kind != null ? !kind.equals(that.kind) : that.kind != null) return false;
         return !(file != null ? !file.equals(that.file) : that.file != null);

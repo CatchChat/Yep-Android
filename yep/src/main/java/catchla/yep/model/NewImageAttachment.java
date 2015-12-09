@@ -22,7 +22,7 @@ public class NewImageAttachment implements NewAttachment {
         this.image = image;
     }
 
-    public NewImageAttachment(S3UploadToken token, BasicAttachment.ImageMetadata metadata) {
+    public NewImageAttachment(S3UploadToken token, FileAttachment.ImageMetadata metadata) {
         image = new NewAttachmentFile[]{new NewAttachmentFile(token.getOptions().getKey(), metadata)};
     }
 

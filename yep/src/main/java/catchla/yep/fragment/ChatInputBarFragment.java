@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.ThemedImagePickerActivity;
-import catchla.yep.model.BasicAttachment;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewAttachment;
@@ -256,8 +256,8 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
                 Message.LocalMetadata[] metadata = new Message.LocalMetadata[2];
                 final String path = imageUri.getPath();
-                final String imageMetadata = JsonSerializer.serialize(BasicAttachment.ImageMetadata.getImageMetadata(path),
-                        BasicAttachment.ImageMetadata.class);
+                final String imageMetadata = JsonSerializer.serialize(FileAttachment.ImageMetadata.getImageMetadata(path),
+                        FileAttachment.ImageMetadata.class);
                 metadata[0] = new Message.LocalMetadata("image", imageUri.toString());
                 metadata[1] = new Message.LocalMetadata("metadata", imageMetadata);
                 return metadata;
@@ -485,11 +485,11 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
                     final Message.LocalMetadata[] metadata = new Message.LocalMetadata[1];
                     final MediaPlayer player = MediaPlayer.create(mFragment.getContext(), Uri.parse(recordPath));
-                    final BasicAttachment.AudioMetadata metadataItem = new BasicAttachment.AudioMetadata();
+                    final FileAttachment.AudioMetadata metadataItem = new FileAttachment.AudioMetadata();
                     metadataItem.setDuration(player.getDuration() / 1000f);
                     metadataItem.setSamples(samples);
                     metadata[0] = new Message.LocalMetadata("metadata", JsonSerializer.serialize(metadataItem,
-                            BasicAttachment.AudioMetadata.class));
+                            FileAttachment.AudioMetadata.class));
                     player.release();
                     return metadata;
                 }

@@ -38,7 +38,7 @@ import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
-import catchla.yep.model.BasicAttachment;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages.MessageState;
@@ -147,7 +147,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
         getAdapter().setData(null);
     }
 
-    private void playAudio(final BasicAttachment attachment) {
+    private void playAudio(final FileAttachment attachment) {
         if (!"audio".equals(attachment.getKind())) return;
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
@@ -237,19 +237,19 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
                     return new MessageViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_LOCATION: {
-                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_view);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_location, attachmentContainer);
                     return new LocationChatViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_IMAGE: {
-                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_view);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_image, attachmentContainer);
                     return new ImageChatViewHolder(baseView, isOutgoing, this);
                 }
                 case VIEW_SUBTYPE_MESSAGE_AUDIO: {
-                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_container);
+                    final ViewGroup attachmentContainer = (ViewGroup) baseView.findViewById(R.id.attachment_view);
                     attachmentContainer.setVisibility(View.VISIBLE);
                     View.inflate(attachmentContainer.getContext(), R.layout.layout_message_attachment_audio, attachmentContainer);
                     return new AudioChatViewHolder(baseView, isOutgoing, this);
@@ -293,7 +293,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             return mData.get(position);
         }
 
-        private void playAudio(final BasicAttachment attachment) {
+        private void playAudio(final FileAttachment attachment) {
             mActivity.playAudio(attachment);
         }
 
@@ -389,17 +389,17 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             public void displayMessage(Message message) {
                 super.displayMessage(message);
                 final String url;
-                final BasicAttachment.ImageMetadata metadata;
+                final FileAttachment.ImageMetadata metadata;
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 final List<Attachment> attachments = message.getAttachments();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
                     url = Message.LocalMetadata.get(localMetadata, "image");
                     metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"),
-                            BasicAttachment.ImageMetadata.class);
+                            FileAttachment.ImageMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final BasicAttachment attachment = (BasicAttachment) attachments.get(0);
+                    final FileAttachment attachment = (FileAttachment) attachments.get(0);
                     url = attachment.getFile().getUrl();
-                    metadata = JsonSerializer.parse(attachment.getMetadata(), BasicAttachment.ImageMetadata.class);
+                    metadata = JsonSerializer.parse(attachment.getMetadata(), FileAttachment.ImageMetadata.class);
                 } else {
                     return;
                 }
@@ -429,21 +429,21 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
             @Override
             public void displayMessage(Message message) {
                 super.displayMessage(message);
-                final BasicAttachment.AudioMetadata metadata = getAudioMetadata(message);
+                final FileAttachment.AudioMetadata metadata = getAudioMetadata(message);
                 if (metadata != null) {
                     audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
                     sampleView.setSamples(metadata.getSamples());
                 }
             }
 
-            private BasicAttachment.AudioMetadata getAudioMetadata(Message message) {
+            private FileAttachment.AudioMetadata getAudioMetadata(Message message) {
                 final List<Attachment> attachments = message.getAttachments();
                 final List<Message.LocalMetadata> localMetadata = message.getLocalMetadata();
                 if (localMetadata != null && !localMetadata.isEmpty()) {
-                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), BasicAttachment.AudioMetadata.class);
+                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), FileAttachment.AudioMetadata.class);
                 } else if (attachments != null && !attachments.isEmpty()) {
-                    final BasicAttachment attachment = (BasicAttachment) attachments.get(0);
-                    return JsonSerializer.parse(attachment.getMetadata(), BasicAttachment.AudioMetadata.class);
+                    final FileAttachment attachment = (FileAttachment) attachments.get(0);
+                    return JsonSerializer.parse(attachment.getMetadata(), FileAttachment.AudioMetadata.class);
                 } else {
                     return null;
                 }
@@ -454,7 +454,7 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
                 final Message message = adapter.getMessage(getLayoutPosition());
                 final List<Attachment> attachments = message.getAttachments();
                 if (attachments == null || attachments.isEmpty()) return;
-                adapter.playAudio((BasicAttachment) attachments.get(0));
+                adapter.playAudio((FileAttachment) attachments.get(0));
             }
         }
 

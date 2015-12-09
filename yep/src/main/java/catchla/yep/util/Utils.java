@@ -59,7 +59,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
-import catchla.yep.model.BasicAttachment;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
@@ -379,7 +379,7 @@ public class Utils implements Constants {
         return date.getTime();
     }
 
-    public static BitmapDrawable getMetadataBitmap(final Resources res, final BasicAttachment.ImageMetadata metadata) {
+    public static BitmapDrawable getMetadataBitmap(final Resources res, final FileAttachment.ImageMetadata metadata) {
         final byte[] bytes;
         try {
             bytes = Base64.decode(metadata.getBlurredThumbnail(), Base64.DEFAULT);

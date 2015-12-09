@@ -6,14 +6,19 @@ import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.jr.ob.JSON;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import catchla.yep.model.AppleMediaAttachment;
 import catchla.yep.model.Attachment;
-import catchla.yep.model.BasicAttachment;
 import catchla.yep.model.DribbbleAttachment;
+import catchla.yep.model.FileAttachment;
+import catchla.yep.model.GithubAttachment;
+import catchla.yep.model.LocationAttachment;
 
 /**
  * Created by mariotaku on 15/11/26.
@@ -32,25 +37,32 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
                     jsonParser.skipChildren();
                     continue;
                 }
-                Attachment instance = null;
-                JsonMapper<Attachment> mapper = null;
-                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                    String fieldName = jsonParser.getCurrentName();
-                    jsonParser.nextToken();
-                    if ("kind".equals(fieldName)) {
-                        final String kind = jsonParser.getValueAsString();
-                        if ("dribbble".equals(kind)) {
-                            instance = new DribbbleAttachment();
-                        } else {
-                            instance = new BasicAttachment();
-                        }
-                        instance.setKind(kind);
-                        //noinspection unchecked
-                        mapper = (JsonMapper<Attachment>) LoganSquare.mapperFor(instance.getClass());
-                    } else if (instance != null && mapper != null) {
-                        mapper.parseField(instance, fieldName, jsonParser);
-                    }
-                    jsonParser.skipChildren();
+                Map<String, Object> attachmentMap = JSON.std.mapFrom(jsonParser);
+                final String kind = (String) attachmentMap.get("kind");
+                Attachment instance;
+                switch (kind) {
+                    case "dribbble":
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), DribbbleAttachment.class);
+                        break;
+                    case "github":
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), GithubAttachment.class);
+                        break;
+                    case "location":
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), LocationAttachment.class);
+                        break;
+                    case "apple_music":
+                    case "apple_movie":
+                    case "apple_ebook":
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), AppleMediaAttachment.class);
+                        break;
+                    case "image":
+                    case "video":
+                    case "audio":
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), FileAttachment.class);
+                        break;
+                    default:
+                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), Attachment.class);
+                        break;
                 }
                 if (instance != null) {
                     list.add(instance);

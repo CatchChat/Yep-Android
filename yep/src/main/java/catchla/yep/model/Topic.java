@@ -194,6 +194,15 @@ public class Topic implements Parcelable {
         TopicParcelablePlease.writeToParcel(this, dest, flags);
     }
 
+    public String getAttachmentKind() {
+        if (attachments == null) return null;
+        //noinspection LoopStatementThatDoesntLoop
+        for (final Attachment attachment : attachments) {
+            return attachment.getKind();
+        }
+        return null;
+    }
+
     @StringDef({SortOrder.DISTANCE, SortOrder.TIME})
     public @interface SortOrder {
         String DISTANCE = "distance";

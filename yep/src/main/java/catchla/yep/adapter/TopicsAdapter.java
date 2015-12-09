@@ -14,7 +14,10 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.iface.ItemClickListener;
+import catchla.yep.model.Attachment;
 import catchla.yep.model.Topic;
+import catchla.yep.view.holder.GalleryTopicViewHolder;
+import catchla.yep.view.holder.GithubTopicViewHolder;
 import catchla.yep.view.holder.LoadIndicatorViewHolder;
 import catchla.yep.view.holder.TopicViewHolder;
 
@@ -22,7 +25,9 @@ import catchla.yep.view.holder.TopicViewHolder;
  * Created by mariotaku on 15/4/29.
  */
 public class TopicsAdapter extends LoadMoreSupportAdapter {
-    private static final int ITEM_VIEW_TYPE_USER_ITEM = 1;
+    private static final int ITEM_VIEW_TYPE_BASIC = 1;
+    private static final int ITEM_VIEW_TYPE_MEDIA_GALLERY = 2;
+    private static final int ITEM_VIEW_TYPE_GITHUB = 3;
 
     private final LayoutInflater mInflater;
 
@@ -43,8 +48,19 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case ITEM_VIEW_TYPE_USER_ITEM: {
+            case ITEM_VIEW_TYPE_MEDIA_GALLERY: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_media_gallery, (ViewGroup) view);
+                return new GalleryTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+            }
+            case ITEM_VIEW_TYPE_GITHUB: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_github, (ViewGroup) view);
+                return new GithubTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+            }
+            case ITEM_VIEW_TYPE_BASIC: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_null, (ViewGroup) view);
                 return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
@@ -58,8 +74,15 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     @Override
     public int getItemViewType(int position) {
         if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
-        return ITEM_VIEW_TYPE_USER_ITEM;
+        final String topicsKind = getTopic(position).getAttachmentKind();
+        if ("image".equals(topicsKind)) {
+            return ITEM_VIEW_TYPE_MEDIA_GALLERY;
+        } else if (Attachment.Kind.GITHUB.equals(topicsKind)) {
+            return ITEM_VIEW_TYPE_GITHUB;
+        }
+        return ITEM_VIEW_TYPE_BASIC;
     }
+
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -67,7 +90,9 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
             case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
                 break;
             }
-            case ITEM_VIEW_TYPE_USER_ITEM: {
+            case ITEM_VIEW_TYPE_BASIC:
+            case ITEM_VIEW_TYPE_MEDIA_GALLERY:
+            case ITEM_VIEW_TYPE_GITHUB: {
                 final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
                 topicViewHolder.displayTopic(mData.get(position));
                 break;

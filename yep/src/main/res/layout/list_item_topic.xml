@@ -24,25 +24,39 @@
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginRight="@dimen/element_spacing_normal"
         android:layout_toEndOf="@+id/profile_image"
-        android:layout_toLeftOf="@+id/skill_container"
+        android:layout_toLeftOf="@+id/provider_skill_container"
         android:layout_toRightOf="@+id/profile_image"
-        android:layout_toStartOf="@+id/skill_container"
+        android:layout_toStartOf="@+id/provider_skill_container"
         android:gravity="center_vertical"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="?android:textColorLink"
         tools:text="Name"/>
 
-    <FrameLayout
-        android:id="@+id/skill_container"
+    <LinearLayout
+        android:id="@+id/provider_skill_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/name"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/name">
+        android:layout_alignTop="@+id/name"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-        <include layout="@layout/layout_topic_skill"/>
-    </FrameLayout>
+        <ImageView
+            android:id="@+id/provider_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="@dimen/element_spacing_xsmall"/>
+
+        <LinearLayout
+            android:id="@+id/skill_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/layout_topic_skill"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/text"
@@ -56,11 +70,6 @@
         android:textAppearance="?android:textAppearanceSmall"
         tools:text="Blah blah blah"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/media_gallery"
-        android:layout_width="match_parent"
-        android:layout_height="128dp"
-        android:layout_below="@+id/text"/>
 
     <catchla.yep.view.ShortTimeView
         android:id="@+id/time"
@@ -93,13 +102,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/media_gallery"
+        android:layout_below="@+id/attachment_view"
         android:layout_marginTop="@dimen/element_spacing_normal"
         android:drawableEnd="@drawable/ic_btn_topic_bubble"
         android:drawablePadding="@dimen/element_spacing_normal"
         android:drawableRight="@drawable/ic_btn_topic_bubble"
         android:gravity="center_vertical"
         android:textColor="?android:textColorLink"
+        tools:ignore="UnknownIdInLayout"
         tools:text="10"/>
 
 

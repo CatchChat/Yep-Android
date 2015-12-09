@@ -15,7 +15,7 @@
         android:layout_margin="@dimen/element_spacing_normal"/>
 
     <FrameLayout
-        android:id="@+id/attachment_container"
+        android:id="@+id/attachment_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
