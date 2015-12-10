@@ -2,6 +2,7 @@ package catchla.yep.view.holder;
 
 import android.content.Context;
 import android.location.Location;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,6 +61,10 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         skillButton.setOnClickListener(this);
     }
 
+    public ImageLoaderWrapper getImageLoader() {
+        return imageLoader;
+    }
+
     public void displayTopic(final Topic topic) {
         final User user = topic.getUser();
         imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
@@ -88,13 +93,16 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
         final String attachmentKind = topic.getAttachmentKind();
         if (Attachment.Kind.GITHUB.equals(attachmentKind)) {
             providerIcon.setImageResource(R.drawable.ic_provider_github);
-            providerIcon.setColorFilter(R.color.color_github);
+            providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.getContext(),
+                    R.color.color_github));
         } else if (Attachment.Kind.DRIBBBLE.equals(attachmentKind)) {
             providerIcon.setImageResource(R.drawable.ic_provider_dribbble);
-            providerIcon.setColorFilter(R.color.color_dribbble);
+            providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.getContext(),
+                    R.color.color_dribbble));
         } else {
             providerIcon.setImageDrawable(null);
         }
+
     }
 
     @Override

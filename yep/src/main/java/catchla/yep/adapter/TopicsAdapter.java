@@ -16,6 +16,7 @@ import catchla.yep.R;
 import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.Topic;
+import catchla.yep.view.holder.DribbbleTopicViewHolder;
 import catchla.yep.view.holder.GalleryTopicViewHolder;
 import catchla.yep.view.holder.GithubTopicViewHolder;
 import catchla.yep.view.holder.LoadIndicatorViewHolder;
@@ -29,7 +30,8 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_BASIC = 1;
     private static final int ITEM_VIEW_TYPE_MEDIA_GALLERY = 2;
     private static final int ITEM_VIEW_TYPE_GITHUB = 3;
-    private static final int ITEM_VIEW_TYPE_LOCATION = 4;
+    private static final int ITEM_VIEW_TYPE_DRIBBBLE = 4;
+    private static final int ITEM_VIEW_TYPE_LOCATION = 5;
 
     private final LayoutInflater mInflater;
 
@@ -60,6 +62,11 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
                 mInflater.inflate(R.layout.layout_topic_attachment_github, (ViewGroup) view);
                 return new GithubTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
             }
+            case ITEM_VIEW_TYPE_DRIBBBLE: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_dribbble, (ViewGroup) view);
+                return new DribbbleTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+            }
             case ITEM_VIEW_TYPE_LOCATION: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_location, (ViewGroup) view);
@@ -86,6 +93,8 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
             return ITEM_VIEW_TYPE_MEDIA_GALLERY;
         } else if (Attachment.Kind.GITHUB.equals(topicsKind)) {
             return ITEM_VIEW_TYPE_GITHUB;
+        } else if (Attachment.Kind.DRIBBBLE.equals(topicsKind)) {
+            return ITEM_VIEW_TYPE_DRIBBBLE;
         } else if (Attachment.Kind.LOCATION.equals(topicsKind)) {
             return ITEM_VIEW_TYPE_LOCATION;
         }
@@ -102,6 +111,7 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
             case ITEM_VIEW_TYPE_BASIC:
             case ITEM_VIEW_TYPE_MEDIA_GALLERY:
             case ITEM_VIEW_TYPE_GITHUB:
+            case ITEM_VIEW_TYPE_DRIBBBLE:
             case ITEM_VIEW_TYPE_LOCATION: {
                 final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
                 topicViewHolder.displayTopic(mData.get(position));
