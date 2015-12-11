@@ -135,9 +135,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 try {
                     final String recipientType = conversation.getRecipientType();
                     if (Message.RecipientType.CIRCLE.equals(recipientType)) {
-                        yep.batchMarkAsRead(YepAPI.MarkAsReadRecipientType.CIRCLES, conversation.getRecipientId(), lastId);
+                        yep.batchMarkAsRead(YepAPI.PathRecipientType.CIRCLES, conversation.getRecipientId(), lastId);
                     } else if (Message.RecipientType.USER.equals(recipientType)) {
-                        yep.batchMarkAsRead(YepAPI.MarkAsReadRecipientType.USERS, conversation.getRecipientId(), lastId);
+                        yep.batchMarkAsRead(YepAPI.PathRecipientType.USERS, conversation.getRecipientId(), lastId);
                     }
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);

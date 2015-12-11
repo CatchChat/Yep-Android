@@ -34,7 +34,6 @@ import catchla.yep.loader.DiscoverUsersLoader;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Paging;
 import catchla.yep.model.Skill;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.view.holder.FriendGridViewHolder;
 
@@ -42,7 +41,7 @@ import catchla.yep.view.holder.FriendGridViewHolder;
  * Created by mariotaku on 15/4/29.
  */
 public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>>, UsersGridAdapter.UserGridItemClickListener {
+        implements LoaderManager.LoaderCallbacks<List<User>>, UsersGridAdapter.UserGridItemClickListener {
 
     private int mPage = 1;
 
@@ -92,7 +91,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<User>> onCreateLoader(final int id, final Bundle args) {
         final DiscoverQuery query = new DiscoverQuery();
         final Bundle fragmentArgs = getArguments();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE);
@@ -120,11 +119,10 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<List<User>>> loader, final TaskResponse<List<User>> data) {
-        final List<User> list = data.getData();
+    public void onLoadFinished(final Loader<List<User>> loader, final List<User> data) {
         final UsersAdapter adapter = getAdapter();
-        adapter.setData(list);
-        adapter.setLoadMoreSupported(list != null && !list.isEmpty());
+        adapter.setData(data);
+        adapter.setLoadMoreSupported(data != null && !data.isEmpty());
         showContent();
         setRefreshing(false);
         setRefreshEnabled(true);
@@ -132,7 +130,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<List<User>>> loader) {
+    public void onLoaderReset(final Loader<List<User>> loader) {
         getAdapter().setData(null);
     }
 

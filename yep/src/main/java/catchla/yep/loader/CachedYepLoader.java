@@ -19,11 +19,12 @@ import catchla.yep.model.YepException;
 /**
  * Created by mariotaku on 15/6/3.
  */
-public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>> {
+public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> {
 
     private final Account mAccount;
     private final T mOldData;
     private final boolean mReadCache, mWriteCache;
+    private YepException mException;
 
     public CachedYepLoader(Context context, Account account, T oldData, boolean readCache, boolean writeCache) {
         super(context);
@@ -33,8 +34,12 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>
         mWriteCache = writeCache;
     }
 
+    public YepException getException() {
+        return mException;
+    }
+
     @Override
-    public TaskResponse<T> loadInBackground() {
+    public T loadInBackground() {
         final YepAPI yep = YepAPIFactory.getInstance(getContext(), mAccount);
         try {
             final File cacheFile = new File(getContext().getCacheDir(), getCacheFileName());
@@ -43,7 +48,7 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>
                 try {
                     is = new FileInputStream(cacheFile);
                     T cached = deserialize(is);
-                    if (cached != null) return TaskResponse.getInstance(cached);
+                    if (cached != null) return cached;
                 } catch (IOException e) {
                     // Ignore
                 } finally {
@@ -64,9 +69,10 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<TaskResponse<T>
                     Utils.closeSilently(os);
                 }
             }
-            return TaskResponse.getInstance(data);
+            return data;
         } catch (YepException e) {
-            return TaskResponse.getInstance(e);
+            mException = e;
+            return null;
         }
     }
 

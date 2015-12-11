@@ -1,32 +1,37 @@
 package catchla.yep.activity;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import org.apache.commons.lang3.StringUtils;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.fragment.TopicChatListFragment;
 import catchla.yep.model.Topic;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
-import catchla.yep.view.holder.TopicViewHolder;
 
 public class TopicChatActivity extends SwipeBackContentActivity implements Constants {
 
-    private View mTopicFullView;
-    private TopicViewHolder mTopicViewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_topic_chat);
-        mTopicViewHolder.setReplyButtonVisible(false);
 
         final Topic topic = getTopic();
         displayTopic(topic);
+
+        final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        final Bundle args = new Bundle();
+        args.putParcelable(EXTRA_ACCOUNT, getAccount());
+        args.putParcelable(EXTRA_TOPIC, topic);
+        ft.replace(R.id.chat_list, Fragment.instantiate(this, TopicChatListFragment.class.getName(), args));
+        ft.commit();
     }
 
     private Topic getTopic() {
@@ -58,14 +63,10 @@ public class TopicChatActivity extends SwipeBackContentActivity implements Const
     }
 
     private void displayTopic(final Topic topic) {
-        mTopicViewHolder.displayTopic(topic);
     }
 
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        mTopicFullView = findViewById(R.id.topic_full);
-        mTopicViewHolder = new TopicViewHolder(mTopicFullView.findViewById(R.id.item_content),
-                this, mImageLoader, null);
     }
 }

@@ -18,14 +18,13 @@ import catchla.yep.R;
 import catchla.yep.adapter.GithubUserAdapter;
 import catchla.yep.loader.GithubUserInfoLoader;
 import catchla.yep.model.GithubUserInfo;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/6/4.
  */
 public class GithubUserInfoFragment extends Fragment implements Constants,
-        LoaderManager.LoaderCallbacks<TaskResponse<GithubUserInfo>> {
+        LoaderManager.LoaderCallbacks<GithubUserInfo> {
 
 
     private RecyclerView mRecyclerView;
@@ -33,7 +32,7 @@ public class GithubUserInfoFragment extends Fragment implements Constants,
     private View mLoadProgress;
 
     @Override
-    public Loader<TaskResponse<GithubUserInfo>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<GithubUserInfo> onCreateLoader(final int id, final Bundle args) {
         final Bundle fragmentArgs = getArguments();
         final User user = fragmentArgs.getParcelable(EXTRA_USER);
         final String userId = user.getId();
@@ -60,9 +59,9 @@ public class GithubUserInfoFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<GithubUserInfo>> loader, final TaskResponse<GithubUserInfo> data) {
-        if (data.hasData()) {
-            mAdapter.setData(data.getData());
+    public void onLoadFinished(final Loader<GithubUserInfo> loader, final GithubUserInfo data) {
+        if (data != null) {
+            mAdapter.setData(data);
         } else {
             mAdapter.setData(null);
         }
@@ -70,7 +69,7 @@ public class GithubUserInfoFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<GithubUserInfo>> loader) {
+    public void onLoaderReset(final Loader<GithubUserInfo> loader) {
         mAdapter.setData(null);
     }
 

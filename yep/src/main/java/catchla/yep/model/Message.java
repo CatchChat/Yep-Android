@@ -16,6 +16,7 @@ import catchla.yep.model.util.NaNIfNullDoubleConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.NaNDoubleConverter;
+import catchla.yep.model.util.VariableTypeAttachmentsConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
@@ -72,8 +73,8 @@ public class Message {
     @JsonField(name = "state")
     @CursorField(Messages.STATE)
     String state;
-    @JsonField(name = "attachments")
-    @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)
+    @JsonField(name = "attachments", typeConverter = VariableTypeAttachmentsConverter.class)
+    @CursorField(value = Messages.ATTACHMENTS, converter = VariableTypeAttachmentsConverter.class)
     List<Attachment> attachments;
     @JsonField(name = "local_metadata")
     @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)

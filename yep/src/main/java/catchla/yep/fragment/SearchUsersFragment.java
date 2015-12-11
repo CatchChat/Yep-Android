@@ -12,14 +12,13 @@ import java.util.List;
 
 import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.loader.SearchUsersLoader;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/8/25.
  */
 public class SearchUsersFragment extends AbsContentListRecyclerViewFragment<UsersAdapter>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<User>>> {
+        implements LoaderManager.LoaderCallbacks<List<User>> {
 
     @Override
     public void onRefresh() {
@@ -51,20 +50,20 @@ public class SearchUsersFragment extends AbsContentListRecyclerViewFragment<User
     }
 
     @Override
-    public Loader<TaskResponse<List<User>>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<User>> onCreateLoader(final int id, final Bundle args) {
         final String query = args.getString(EXTRA_QUERY);
         return new SearchUsersLoader(getActivity(), getAccount(), query);
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<List<User>>> loader, final TaskResponse<List<User>> data) {
-        getAdapter().setData(data.getData());
+    public void onLoadFinished(final Loader<List<User>> loader, final List<User> data) {
+        getAdapter().setData(data);
         showContent();
         setRefreshing(false);
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<List<User>>> loader) {
+    public void onLoaderReset(final Loader<List<User>> loader) {
         getAdapter().setData(null);
     }
 }

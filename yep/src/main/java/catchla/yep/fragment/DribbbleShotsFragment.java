@@ -17,21 +17,20 @@ import catchla.yep.R;
 import catchla.yep.adapter.DribbbleShotsAdapter;
 import catchla.yep.loader.DribbbleShotsLoader;
 import catchla.yep.model.DribbbleShots;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
 public class DribbbleShotsFragment extends Fragment implements Constants,
-        LoaderManager.LoaderCallbacks<TaskResponse<DribbbleShots>> {
+        LoaderManager.LoaderCallbacks<DribbbleShots> {
 
     private RecyclerView mRecyclerView;
     private DribbbleShotsAdapter mAdapter;
     private View mLoadProgress;
 
     @Override
-    public Loader<TaskResponse<DribbbleShots>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<DribbbleShots> onCreateLoader(final int id, final Bundle args) {
         final Bundle fragmentArgs = getArguments();
         final User user = fragmentArgs.getParcelable(EXTRA_USER);
         final String userId = user.getId();
@@ -58,9 +57,9 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<DribbbleShots>> loader, final TaskResponse<DribbbleShots> data) {
-        if (data.hasData()) {
-            mAdapter.setData(data.getData().getShots());
+    public void onLoadFinished(final Loader<DribbbleShots> loader, final DribbbleShots data) {
+        if (data != null) {
+            mAdapter.setData(data.getShots());
         } else {
             mAdapter.setData(null);
         }
@@ -68,7 +67,7 @@ public class DribbbleShotsFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<DribbbleShots>> loader) {
+    public void onLoaderReset(final Loader<DribbbleShots> loader) {
         mAdapter.setData(null);
     }
 

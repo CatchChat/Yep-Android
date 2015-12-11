@@ -24,14 +24,14 @@ import catchla.yep.model.User;
  * Created by mariotaku on 15/6/3.
  */
 public class InstagramMediaFragment extends Fragment implements Constants,
-        LoaderManager.LoaderCallbacks<TaskResponse<InstagramMediaList>> {
+        LoaderManager.LoaderCallbacks<InstagramMediaList> {
 
     private RecyclerView mRecyclerView;
     private InstagramMediaAdapter mAdapter;
     private View mLoadProgress;
 
     @Override
-    public Loader<TaskResponse<InstagramMediaList>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<InstagramMediaList> onCreateLoader(final int id, final Bundle args) {
         final Bundle fragmentArgs = getArguments();
         final User user = fragmentArgs.getParcelable(EXTRA_USER);
         final String userId = user.getId();
@@ -59,9 +59,9 @@ public class InstagramMediaFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<InstagramMediaList>> loader, final TaskResponse<InstagramMediaList> data) {
-        if (data.hasData()) {
-            mAdapter.setData(data.getData().getMedia());
+    public void onLoadFinished(final Loader<InstagramMediaList> loader, final InstagramMediaList data) {
+        if (data != null) {
+            mAdapter.setData(data.getMedia());
         } else {
             mAdapter.setData(null);
         }
@@ -69,7 +69,7 @@ public class InstagramMediaFragment extends Fragment implements Constants,
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<InstagramMediaList>> loader) {
+    public void onLoaderReset(final Loader<InstagramMediaList> loader) {
         mAdapter.setData(null);
     }
 

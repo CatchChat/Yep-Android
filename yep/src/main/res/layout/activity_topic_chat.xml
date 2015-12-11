@@ -9,41 +9,23 @@
     android:fitsSystemWindows="true"
     tools:context="catchla.yep.activity.TopicChatActivity">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:colorBackground">
-
-            <FrameLayout
-                android:id="@+id/topic_full"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/element_spacing_normal"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-                <include layout="@layout/list_item_topic"/>
-            </FrameLayout>
-
-        </android.support.design.widget.AppBarLayout>
 
         <FrameLayout
             android:id="@+id/chat_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/input_panel"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <View
             android:id="@+id/input_panel_shadow_compat"
             android:layout_width="match_parent"
             android:layout_height="@dimen/element_spacing_small"
-            android:background="@drawable/shadow_top"
-            app:layout_anchor="@+id/input_panel"
-            app:layout_anchorGravity="top|end"/>
+            android:layout_above="@+id/input_panel"
+            android:background="@drawable/shadow_top"/>
 
         <RelativeLayout
             android:id="@+id/input_panel"
@@ -51,17 +33,16 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:background="?android:colorBackground"
             android:gravity="bottom"
             android:outlineProvider="bounds"
             android:paddingBottom="@dimen/element_spacing_normal"
             android:paddingTop="@dimen/element_spacing_normal"
-            app:layout_anchor="@+id/topic_full"
-            app:layout_anchorGravity="bottom|end"
             tools:ignore="UnusedAttribute">
 
             <include layout="@layout/layout_chat_input_panel"/>
         </RelativeLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </RelativeLayout>
 </catchla.yep.view.TintedStatusFrameLayout>

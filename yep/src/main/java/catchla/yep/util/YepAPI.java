@@ -80,14 +80,14 @@ public interface YepAPI {
                                 @Field("phone_code") String phoneCode,
                                 @Field("method") VerificationMethod method) throws YepException;
 
-    @PATCH("v1/user")
+    @PATCH("v2/user")
     @FormUrlEncoded
     User updateProfile(@FieldMap ProfileUpdate profileUpdate) throws YepException;
 
-    @GET("v1/user")
+    @GET("v2/user")
     User getUser() throws YepException;
 
-    @GET("v1/users/{id}")
+    @GET("v2/users/{id}")
     User showUser(@Path("id") String userId) throws YepException;
 
     @GET("v1/user/discover")
@@ -102,23 +102,24 @@ public interface YepAPI {
     @GET("v1/messages/unread")
     PagedMessages getUnreadMessages() throws YepException;
 
-    @GET("v1/{recipient_type}/{recipient_id}/messages")
-    PagedMessages getHistoricalMessages(@Path("recipient_type") String recipientType, @Path("recipient_id")
-    String recipientId, @QueryMap Paging paging) throws YepException;
+    @GET("v2/{recipient_type}/{recipient_id}/messages")
+    PagedMessages getHistoricalMessages(@PathRecipientType @Path("recipient_type") String recipientType,
+                                        @Path("recipient_id") String recipientId,
+                                        @QueryMap Paging paging) throws YepException;
 
     @GET("v1/messages/sent_unread")
     PagedMessages getSentUnreadMessages(@QueryMap Paging paging) throws YepException;
 
-    @GET("v1/users/{id}/dribbble")
+    @GET("v2/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
 
-    @GET("v1/users/{id}/github")
+    @GET("v2/users/{id}/github")
     GithubUserInfo getGithubUserInfo(@Path("id") String userId) throws YepException;
 
-    @GET("v1/users/{id}/instagram")
+    @GET("v2/users/{id}/instagram")
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
-    @POST("v1/{recipient_type}/{recipient_id}/messages")
+    @POST("v2/{recipient_type}/{recipient_id}/messages")
     Message createMessage(@Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
                           @Body NewMessage message) throws YepException;
 
@@ -159,7 +160,7 @@ public interface YepAPI {
 
     @PATCH("v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
     @FormUrlEncoded
-    MarkAsReadResult batchMarkAsRead(@MarkAsReadRecipientType @Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
+    MarkAsReadResult batchMarkAsRead(@PathRecipientType @Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
                                      @Field("max_id") String maxId) throws YepException;
 
     @GET("v1/blocked_users")
@@ -212,8 +213,8 @@ public interface YepAPI {
         String AVATAR = "avatar";
     }
 
-    @StringDef({MarkAsReadRecipientType.USERS, MarkAsReadRecipientType.CIRCLES})
-    @interface MarkAsReadRecipientType {
+    @StringDef({PathRecipientType.USERS, PathRecipientType.CIRCLES})
+    @interface PathRecipientType {
         String USERS = "users";
         String CIRCLES = "circles";
     }

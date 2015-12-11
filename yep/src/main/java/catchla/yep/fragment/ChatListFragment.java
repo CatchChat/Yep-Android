@@ -31,10 +31,8 @@ import java.util.List;
 
 import catchla.yep.R;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
-import catchla.yep.loader.MessagesLoader;
 import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
-import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages.MessageState;
@@ -52,7 +50,7 @@ import okio.Okio;
  * List component for chat activities
  * Created by mariotaku on 15/11/16.
  */
-public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter, LinearLayoutManager>
+public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter, LinearLayoutManager>
         implements LoaderManager.LoaderCallbacks<List<Message>> {
 
     private MediaPlayer mMediaPlayer;
@@ -102,15 +100,6 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
         showProgress();
-    }
-
-    @Override
-    public Loader<List<Message>> onCreateLoader(final int id, final Bundle args) {
-        return new MessagesLoader(getContext(), getConversation());
-    }
-
-    public Conversation getConversation() {
-        return getArguments().getParcelable(EXTRA_CONVERSATION);
     }
 
     @Override
@@ -306,6 +295,10 @@ public class ChatListFragment extends AbsContentRecyclerViewFragment<ChatListFra
         private int getMessagesCount() {
             if (mData == null) return 0;
             return mData.size();
+        }
+
+        public List<Message> getData() {
+            return mData;
         }
 
         private static class MessageViewHolder extends RecyclerView.ViewHolder {

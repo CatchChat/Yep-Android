@@ -33,7 +33,7 @@ import catchla.yep.view.holder.TopicViewHolder;
  * Created by mariotaku on 15/10/12.
  */
 public class TopicsListFragment extends AbsContentListRecyclerViewFragment<TopicsAdapter>
-        implements LoaderManager.LoaderCallbacks<TaskResponse<List<Topic>>>, TopicsAdapter.TopicClickAdapter,
+        implements LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickAdapter,
         IActionButtonSupportFragment {
 
     private String mSortBy;
@@ -60,7 +60,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     @Override
-    public Loader<TaskResponse<List<Topic>>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Topic>> onCreateLoader(final int id, final Bundle args) {
         final boolean cachingEnabled = isCachingEnabled();
         final boolean readCache = args.getBoolean(EXTRA_READ_CACHE) && cachingEnabled;
         final boolean readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled;
@@ -91,11 +91,10 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     @Override
-    public void onLoadFinished(final Loader<TaskResponse<List<Topic>>> loader, final TaskResponse<List<Topic>> data) {
+    public void onLoadFinished(final Loader<List<Topic>> loader, final List<Topic> data) {
         final TopicsAdapter adapter = getAdapter();
-        final List<Topic> list = data.getData();
-        adapter.setData(list);
-        adapter.setLoadMoreSupported(list != null && !list.isEmpty());
+        adapter.setData(data);
+        adapter.setLoadMoreSupported(data != null && !data.isEmpty());
         showContent();
         setRefreshing(false);
         setRefreshEnabled(true);
@@ -103,7 +102,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     @Override
-    public void onLoaderReset(final Loader<TaskResponse<List<Topic>>> loader) {
+    public void onLoaderReset(final Loader<List<Topic>> loader) {
 
     }
 

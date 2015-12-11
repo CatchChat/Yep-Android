@@ -1,5 +1,8 @@
 package catchla.yep.model.util;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
@@ -8,7 +11,11 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.jr.ob.JSON;
 
+import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
+
 import java.io.IOException;
+import java.io.StringWriter;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +26,13 @@ import catchla.yep.model.DribbbleAttachment;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.GithubAttachment;
 import catchla.yep.model.LocationAttachment;
+import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/11/26.
  */
-public class VariableTypeAttachmentsConverter implements TypeConverter<List<Attachment>> {
+public class VariableTypeAttachmentsConverter implements TypeConverter<List<Attachment>>,
+        CursorFieldConverter<List<Attachment>> {
     @Override
     public List<Attachment> parse(final JsonParser jsonParser) throws IOException {
         List<Attachment> list = new ArrayList<>();
@@ -93,6 +102,29 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
             jsonGenerator.writeEndArray();
         } else {
             jsonGenerator.writeNull();
+        }
+    }
+
+    @Override
+    public List<Attachment> parseField(final Cursor cursor, final int columnIndex, final ParameterizedType fieldType) {
+        try {
+            return parse(LoganSquare.JSON_FACTORY.createParser(cursor.getString(columnIndex)));
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void writeField(final ContentValues values, final List<Attachment> object,
+                           final String columnName, final ParameterizedType fieldType) {
+        final StringWriter sw = new StringWriter();
+        try {
+            serialize(object, null, false, LoganSquare.JSON_FACTORY.createGenerator(sw));
+            values.put(columnName, sw.toString());
+        } catch (IOException e) {
+            // Ignore
+        } finally {
+            Utils.closeSilently(sw);
         }
     }
 }
