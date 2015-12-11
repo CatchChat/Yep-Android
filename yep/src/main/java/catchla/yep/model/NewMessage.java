@@ -23,9 +23,7 @@ public class NewMessage implements JsonBody {
     Message.LocalMetadata[] localMetadata;
     String accountId;
 
-    @JsonField(name = "recipient_id")
     String recipientId;
-    @JsonField(name = "recipient_type")
     String recipientType;
     @JsonField(name = "parent_id")
     String parentId;

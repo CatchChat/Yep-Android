@@ -17,13 +17,9 @@ import catchla.yep.R;
 import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.TopicsAdapter;
-import catchla.yep.model.AppleMediaAttachment;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.AttachmentFile;
-import catchla.yep.model.DribbbleAttachment;
 import catchla.yep.model.FileAttachment;
-import catchla.yep.model.GithubAttachment;
-import catchla.yep.model.LocationAttachment;
 import catchla.yep.model.Topic;
 import catchla.yep.util.ImageLoaderWrapper;
 
@@ -34,10 +30,10 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
     private final RecyclerView mediaGallery;
     private final TopicAttachmentsAdapter topicMediaAdapter;
 
-    public GalleryTopicViewHolder(final View itemView, final Context context,
+    public GalleryTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                   final ImageLoaderWrapper imageLoader,
                                   final TopicsAdapter.TopicClickAdapter listener) {
-        super(itemView, context, imageLoader, listener);
+        super(topicsAdapter, itemView, context, imageLoader, listener);
         mediaGallery = (RecyclerView) itemView.findViewById(R.id.attachment_view);
         mediaGallery.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         topicMediaAdapter = new GalleryTopicViewHolder.TopicAttachmentsAdapter(context);
@@ -87,7 +83,7 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
             switch (viewType) {
                 case VIEW_TYPE_BASIC_ATTACHMENT: {
                     final View view = mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false);
-                    return new BasicAttachmentHolder(view, this);
+                    return new GalleryAttachmentItemHolder(view, this);
                 }
             }
             throw new UnsupportedOperationException("Unsupported itemType " + viewType);
@@ -97,7 +93,7 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
         public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
             switch (getItemViewType(position)) {
                 case VIEW_TYPE_BASIC_ATTACHMENT: {
-                    final BasicAttachmentHolder itemHolder = (BasicAttachmentHolder) holder;
+                    final GalleryAttachmentItemHolder itemHolder = (GalleryAttachmentItemHolder) holder;
                     itemHolder.displayMedia(mAttachments.get(position));
                     break;
                 }
@@ -111,12 +107,12 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
         }
 
 
-        private class BasicAttachmentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private class GalleryAttachmentItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             private final TopicAttachmentsAdapter adapter;
             private final ImageView mediaPreviewView;
             private final ImageView mediaRemoveView;
 
-            public BasicAttachmentHolder(final View itemView, final TopicAttachmentsAdapter adapter) {
+            public GalleryAttachmentItemHolder(final View itemView, final TopicAttachmentsAdapter adapter) {
                 super(itemView);
                 itemView.setOnClickListener(this);
                 this.adapter = adapter;
@@ -128,21 +124,9 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
 
             public void displayMedia(final Attachment media) {
                 final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-                if (media instanceof DribbbleAttachment) {
-                    final String mediaUrl = ((DribbbleAttachment) media).getMediaUrl();
-                    if (mediaUrl == null) return;
-                    imageLoader.displayImage(mediaUrl, mediaPreviewView);
-                } else if (media instanceof GithubAttachment) {
-
-                } else if (media instanceof LocationAttachment) {
-
-                } else if (media instanceof AppleMediaAttachment) {
-
-                } else if (media instanceof FileAttachment) {
-                    final AttachmentFile file = ((FileAttachment) media).getFile();
-                    if (file == null) return;
-                    imageLoader.displayImage(file.getUrl(), mediaPreviewView);
-                }
+                final AttachmentFile file = ((FileAttachment) media).getFile();
+                if (file == null) return;
+                imageLoader.displayImage(file.getUrl(), mediaPreviewView);
             }
 
             @Override

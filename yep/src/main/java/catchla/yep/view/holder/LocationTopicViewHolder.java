@@ -21,10 +21,10 @@ public class LocationTopicViewHolder extends TopicViewHolder {
     private final StaticMapView mapView;
     private final TextView placeView;
 
-    public LocationTopicViewHolder(final View itemView, final Context context,
+    public LocationTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                    final ImageLoaderWrapper imageLoader,
                                    final TopicsAdapter.TopicClickAdapter listener) {
-        super(itemView, context, imageLoader, listener);
+        super(topicsAdapter, itemView, context, imageLoader, listener);
         mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
         placeView = (TextView) itemView.findViewById(R.id.place);
         mapView.setProvider(new StaticMapUrlGenerator.OpenStreetMapProvider(StaticMapUrlGenerator.OpenStreetMapProvider.MapType.MAPNIK));

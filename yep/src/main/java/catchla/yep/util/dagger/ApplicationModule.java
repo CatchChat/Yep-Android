@@ -44,8 +44,9 @@ public class ApplicationModule implements Constants {
         bus = new Bus(ThreadEnforcer.MAIN);
         imageDownloader = createImageDownloader(application);
         diskCache = createDiskCache();
-        imageLoader = createImageLoader(imageDownloader, diskCache);
-        imageLoaderWrapper = new ImageLoaderWrapper(imageLoader);
+        final DisplayImageOptions defaultDisplayImageOptions = createDefaultDisplayImageOptions();
+        imageLoader = createImageLoader(imageDownloader, diskCache, defaultDisplayImageOptions);
+        imageLoaderWrapper = new ImageLoaderWrapper(imageLoader, defaultDisplayImageOptions);
         sharedPreferences = application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
@@ -83,20 +84,26 @@ public class ApplicationModule implements Constants {
         }
     }
 
-    private ImageLoader createImageLoader(ImageDownloader downloader, DiskCache cache) {
+    private ImageLoader createImageLoader(ImageDownloader downloader, DiskCache cache, DisplayImageOptions defaultDisplayImageOptions) {
         final ImageLoader loader = ImageLoader.getInstance();
         final ImageLoaderConfiguration.Builder cb = new ImageLoaderConfiguration.Builder(application);
         cb.threadPriority(Thread.NORM_PRIORITY - 2);
         cb.diskCache(cache);
-        final DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
-        builder.resetViewBeforeLoading(true);
-        cb.defaultDisplayImageOptions(builder.build());
+        cb.defaultDisplayImageOptions(defaultDisplayImageOptions);
         cb.imageDownloader(downloader);
         cb.denyCacheImageMultipleSizesInMemory();
         cb.tasksProcessingOrder(QueueProcessingType.LIFO);
         L.writeDebugLogs(BuildConfig.DEBUG);
         loader.init(cb.build());
         return loader;
+    }
+
+    private DisplayImageOptions createDefaultDisplayImageOptions() {
+        final DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
+        builder.cacheOnDisk(true);
+        builder.cacheInMemory(true);
+        builder.resetViewBeforeLoading(true);
+        return builder.build();
     }
 
     @Provides

@@ -17,10 +17,10 @@ public class GithubTopicViewHolder extends TopicViewHolder {
 
     private final TextView repoName, repoDescription;
 
-    public GithubTopicViewHolder(final View itemView, final Context context,
+    public GithubTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                  final ImageLoaderWrapper imageLoader,
                                  final TopicsAdapter.TopicClickAdapter listener) {
-        super(itemView, context, imageLoader, listener);
+        super(topicsAdapter, itemView, context, imageLoader, listener);
         repoName = (TextView) itemView.findViewById(R.id.repo_name);
         repoDescription = (TextView) itemView.findViewById(R.id.repo_description);
     }

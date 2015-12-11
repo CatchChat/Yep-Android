@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/attachment_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/text"
+    android:layout_alignStart="@+id/text"
+    android:layout_below="@+id/text"
+    android:layout_marginEnd="@dimen/element_spacing_xlarge"
+    android:layout_marginRight="@dimen/element_spacing_xlarge"
+    android:clickable="true"
+    android:foreground="?selectableItemBackground">
+
+    <catchla.yep.view.SquareImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"/>
+
+</FrameLayout>

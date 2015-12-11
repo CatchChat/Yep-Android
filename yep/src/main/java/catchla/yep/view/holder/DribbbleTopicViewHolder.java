@@ -19,10 +19,10 @@ public class DribbbleTopicViewHolder extends TopicViewHolder {
     private final ImageView mediaPreviewView;
     private final TextView titleView;
 
-    public DribbbleTopicViewHolder(final View itemView, final Context context,
+    public DribbbleTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                    final ImageLoaderWrapper imageLoader,
                                    final TopicsAdapter.TopicClickAdapter listener) {
-        super(itemView, context, imageLoader, listener);
+        super(topicsAdapter, itemView, context, imageLoader, listener);
         mediaPreviewView = (ImageView) itemView.findViewById(R.id.media_preview);
         titleView = (TextView) itemView.findViewById(R.id.title);
     }

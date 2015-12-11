@@ -21,16 +21,22 @@
              android:layout_height="match_parent"
              android:animateLayoutChanges="true">
 
-    <pl.droidsonroids.gif.GifTextureView
-        android:id="@+id/gif_image_view"
+    <catchla.yep.view.OverDragLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:layout_height="match_parent">
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <pl.droidsonroids.gif.GifTextureView
+            android:id="@+id/gif_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </catchla.yep.view.OverDragLayout>
 
     <include layout="@layout/layout_progress_wheel_medium"/>
 

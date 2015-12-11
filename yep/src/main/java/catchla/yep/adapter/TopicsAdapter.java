@@ -21,6 +21,7 @@ import catchla.yep.view.holder.GalleryTopicViewHolder;
 import catchla.yep.view.holder.GithubTopicViewHolder;
 import catchla.yep.view.holder.LoadIndicatorViewHolder;
 import catchla.yep.view.holder.LocationTopicViewHolder;
+import catchla.yep.view.holder.SingleImageTopicViewHolder;
 import catchla.yep.view.holder.TopicViewHolder;
 
 /**
@@ -32,6 +33,7 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     private static final int ITEM_VIEW_TYPE_GITHUB = 3;
     private static final int ITEM_VIEW_TYPE_DRIBBBLE = 4;
     private static final int ITEM_VIEW_TYPE_LOCATION = 5;
+    private static final int ITEM_VIEW_TYPE_SINGLE_IMAGE = 6;
 
     private final LayoutInflater mInflater;
 
@@ -54,28 +56,33 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
         switch (viewType) {
             case ITEM_VIEW_TYPE_MEDIA_GALLERY: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
-                mInflater.inflate(R.layout.layout_topic_attachment_media_gallery, (ViewGroup) view);
-                return new GalleryTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+                mInflater.inflate(R.layout.layout_topic_attachment_gallery, (ViewGroup) view);
+                return new GalleryTopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_GITHUB: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_github, (ViewGroup) view);
-                return new GithubTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+                return new GithubTopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_DRIBBBLE: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_dribbble, (ViewGroup) view);
-                return new DribbbleTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+                return new DribbbleTopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_LOCATION: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_location, (ViewGroup) view);
-                return new LocationTopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+                return new LocationTopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_BASIC: {
                 final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
                 mInflater.inflate(R.layout.layout_topic_attachment_null, (ViewGroup) view);
-                return new TopicViewHolder(view, getContext(), getImageLoader(), mClickListener);
+                return new TopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
+            }
+            case ITEM_VIEW_TYPE_SINGLE_IMAGE: {
+                final View view = mInflater.inflate(R.layout.list_item_topic, parent, false);
+                mInflater.inflate(R.layout.layout_topic_attachment_image, (ViewGroup) view);
+                return new SingleImageTopicViewHolder(this, view, getContext(), getImageLoader(), mClickListener);
             }
             case ITEM_VIEW_TYPE_LOAD_INDICATOR: {
                 final View view = mInflater.inflate(R.layout.card_item_load_indicator, parent, false);
@@ -90,7 +97,11 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
         if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
         final String topicsKind = getTopic(position).getAttachmentKind();
         if (Attachment.Kind.IMAGE.equals(topicsKind)) {
-            return ITEM_VIEW_TYPE_MEDIA_GALLERY;
+            if (getTopic(position).getAttachments().size() > 1) {
+                return ITEM_VIEW_TYPE_MEDIA_GALLERY;
+            } else {
+                return ITEM_VIEW_TYPE_SINGLE_IMAGE;
+            }
         } else if (Attachment.Kind.GITHUB.equals(topicsKind)) {
             return ITEM_VIEW_TYPE_GITHUB;
         } else if (Attachment.Kind.DRIBBBLE.equals(topicsKind)) {
@@ -112,7 +123,8 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
             case ITEM_VIEW_TYPE_MEDIA_GALLERY:
             case ITEM_VIEW_TYPE_GITHUB:
             case ITEM_VIEW_TYPE_DRIBBBLE:
-            case ITEM_VIEW_TYPE_LOCATION: {
+            case ITEM_VIEW_TYPE_LOCATION:
+            case ITEM_VIEW_TYPE_SINGLE_IMAGE: {
                 final TopicViewHolder topicViewHolder = (TopicViewHolder) holder;
                 topicViewHolder.displayTopic(mData.get(position));
                 break;

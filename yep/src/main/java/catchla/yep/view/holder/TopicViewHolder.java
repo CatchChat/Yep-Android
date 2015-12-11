@@ -35,11 +35,19 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private final Location currentLocation, tempLocation;
     private final TopicsAdapter.TopicClickAdapter listener;
     private final TextView skillButton;
+    private final Context context;
+    protected final TopicsAdapter adapter;
 
-    public TopicViewHolder(final View itemView, final Context context,
+    public Context getContext() {
+        return context;
+    }
+
+    public TopicViewHolder(final TopicsAdapter adapter, final View itemView, final Context context,
                            final ImageLoaderWrapper imageLoader,
                            final TopicsAdapter.TopicClickAdapter listener) {
         super(itemView);
+        this.adapter = adapter;
+        this.context = context;
         this.imageLoader = imageLoader;
         this.listener = listener;
         if (listener != null) {
