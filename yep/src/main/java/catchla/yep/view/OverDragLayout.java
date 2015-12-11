@@ -45,6 +45,9 @@ public class OverDragLayout extends FrameLayout {
 
             @Override
             public int clampViewPositionVertical(final View child, final int top, final int dy) {
+                if (ViewCompat.canScrollVertically(child, dy)) {
+                    return 0;
+                }
                 return top - dy / 2;
             }
 
