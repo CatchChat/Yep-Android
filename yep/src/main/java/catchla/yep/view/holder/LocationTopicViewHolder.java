@@ -23,7 +23,7 @@ public class LocationTopicViewHolder extends TopicViewHolder {
 
     public LocationTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                    final ImageLoaderWrapper imageLoader,
-                                   final TopicsAdapter.TopicClickAdapter listener) {
+                                   final TopicsAdapter.TopicClickListener listener) {
         super(topicsAdapter, itemView, context, imageLoader, listener);
         mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
         placeView = (TextView) itemView.findViewById(R.id.place);

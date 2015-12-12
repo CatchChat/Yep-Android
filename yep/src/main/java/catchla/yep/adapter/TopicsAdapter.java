@@ -37,11 +37,11 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
 
     private final LayoutInflater mInflater;
 
-    public void setClickListener(final TopicClickAdapter listener) {
+    public void setClickListener(final TopicClickListener listener) {
         this.mClickListener = listener;
     }
 
-    private TopicClickAdapter mClickListener;
+    private TopicClickListener mClickListener;
 
     private List<Topic> mData;
 
@@ -156,9 +156,11 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
         return mData;
     }
 
-    public interface TopicClickAdapter extends ItemClickListener {
+    public interface TopicClickListener extends ItemClickListener {
         void onSkillClick(int position, TopicViewHolder holder);
 
         void onUserClick(int position, TopicViewHolder holder);
+
+        void onMediaClick(Attachment[] attachments, Attachment attachment, View clickedView);
     }
 }

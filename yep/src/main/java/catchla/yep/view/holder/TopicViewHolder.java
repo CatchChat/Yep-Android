@@ -33,7 +33,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private final TextView distanceView;
     private final TextView messagesCountView;
     private final Location currentLocation, tempLocation;
-    private final TopicsAdapter.TopicClickAdapter listener;
+    protected final TopicsAdapter.TopicClickListener listener;
     private final TextView skillButton;
     private final Context context;
     protected final TopicsAdapter adapter;
@@ -44,7 +44,7 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public TopicViewHolder(final TopicsAdapter adapter, final View itemView, final Context context,
                            final ImageLoaderWrapper imageLoader,
-                           final TopicsAdapter.TopicClickAdapter listener) {
+                           final TopicsAdapter.TopicClickListener listener) {
         super(itemView);
         this.adapter = adapter;
         this.context = context;
@@ -75,7 +75,11 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public void displayTopic(final Topic topic) {
         final User user = topic.getUser();
-        imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
+        final String avatarUrl = user.getAvatarUrl();
+        if (!avatarUrl.equals(profileImageView.getTag())) {
+            imageLoader.displayProfileImage(avatarUrl, profileImageView);
+        }
+        profileImageView.setTag(avatarUrl);
         nameView.setText(Utils.getDisplayName(user));
         textView.setText(topic.getBody());
         timeView.setTime(topic.getCreatedAt().getTime());

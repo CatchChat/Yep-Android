@@ -37,7 +37,12 @@ public class ExtendedViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(final MotionEvent event) {
         if (!isEnabled()) return false;
-        return super.onInterceptTouchEvent(event);
+        try {
+            return super.onInterceptTouchEvent(event);
+        } catch (IllegalArgumentException e) {
+            //Ignore
+            return false;
+        }
     }
 
     @Override

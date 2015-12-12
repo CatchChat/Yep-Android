@@ -15,6 +15,7 @@ public class OverDragLayout extends FrameLayout {
 
 
     private final ViewDragHelper mViewDragHelper;
+    private OnDragListener mOnDragListener;
 
     public OverDragLayout(final Context context) {
         this(context, null);
@@ -27,6 +28,8 @@ public class OverDragLayout extends FrameLayout {
     public OverDragLayout(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mViewDragHelper = ViewDragHelper.create(this, new ViewDragHelper.Callback() {
+            public int top;
+
             @Override
             public boolean tryCaptureView(final View child, final int pointerId) {
                 return true;
@@ -39,8 +42,10 @@ public class OverDragLayout extends FrameLayout {
 
             @Override
             public void onViewReleased(final View releasedChild, final float xvel, final float yvel) {
-                mViewDragHelper.settleCapturedViewAt(0, 0);
-                ViewCompat.postInvalidateOnAnimation(OverDragLayout.this);
+                if (mOnDragListener != null && mOnDragListener.onReleased(top)) {
+                    mViewDragHelper.settleCapturedViewAt(0, 0);
+                    ViewCompat.postInvalidateOnAnimation(OverDragLayout.this);
+                }
             }
 
             @Override
@@ -52,10 +57,30 @@ public class OverDragLayout extends FrameLayout {
             }
 
             @Override
+            public void onViewPositionChanged(final View changedView, final int left, final int top,
+                                              final int dx, final int dy) {
+                this.top = top;
+                if (mOnDragListener != null) {
+                    mOnDragListener.onPositionChanged(top);
+                }
+                super.onViewPositionChanged(changedView, left, top, dx, dy);
+            }
+
+            @Override
             public int getViewVerticalDragRange(final View child) {
                 return Integer.MAX_VALUE;
             }
         });
+    }
+
+    public void setOnDragListener(OnDragListener listener) {
+        mOnDragListener = listener;
+    }
+
+    public interface OnDragListener {
+        void onPositionChanged(int top);
+
+        boolean onReleased(int top);
     }
 
     @Override

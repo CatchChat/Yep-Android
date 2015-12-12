@@ -1,8 +1,8 @@
 package catchla.yep.view.holder;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +14,6 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.Attachment;
@@ -32,11 +31,11 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
 
     public GalleryTopicViewHolder(final TopicsAdapter topicsAdapter, final View itemView, final Context context,
                                   final ImageLoaderWrapper imageLoader,
-                                  final TopicsAdapter.TopicClickAdapter listener) {
+                                  final TopicsAdapter.TopicClickListener listener) {
         super(topicsAdapter, itemView, context, imageLoader, listener);
         mediaGallery = (RecyclerView) itemView.findViewById(R.id.attachment_view);
         mediaGallery.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        topicMediaAdapter = new GalleryTopicViewHolder.TopicAttachmentsAdapter(context);
+        topicMediaAdapter = new GalleryTopicViewHolder.TopicAttachmentsAdapter(context, listener);
         mediaGallery.setAdapter(topicMediaAdapter);
 
         final Resources res = context.getResources();
@@ -60,10 +59,12 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
     private static class TopicAttachmentsAdapter extends LoadMoreSupportAdapter implements Constants {
         private static final int VIEW_TYPE_BASIC_ATTACHMENT = 1;
         private final LayoutInflater mInflater;
+        private final TopicsAdapter.TopicClickListener listener;
         private List<Attachment> mAttachments;
 
-        public TopicAttachmentsAdapter(final Context context) {
+        public TopicAttachmentsAdapter(final Context context, final TopicsAdapter.TopicClickListener listener) {
             super(context);
+            this.listener = listener;
             mInflater = LayoutInflater.from(context);
         }
 
@@ -107,7 +108,7 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
         }
 
 
-        private class GalleryAttachmentItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private static class GalleryAttachmentItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             private final TopicAttachmentsAdapter adapter;
             private final ImageView mediaPreviewView;
             private final ImageView mediaRemoveView;
@@ -117,6 +118,7 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
                 itemView.setOnClickListener(this);
                 this.adapter = adapter;
                 this.mediaPreviewView = (ImageView) itemView.findViewById(R.id.media_preview);
+                ViewCompat.setTransitionName(mediaPreviewView, "media");
                 this.mediaRemoveView = (ImageView) itemView.findViewById(R.id.media_remove);
 
                 mediaRemoveView.setVisibility(View.GONE);
@@ -133,18 +135,16 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
             public void onClick(final View v) {
                 switch (v.getId()) {
                     case R.id.item_content: {
-                        adapter.notifyMediaClicked(getLayoutPosition());
+                        adapter.notifyMediaClicked(getLayoutPosition(), v);
                         break;
                     }
                 }
             }
         }
 
-        private void notifyMediaClicked(final int position) {
-            final Intent intent = new Intent(getContext(), MediaViewerActivity.class);
-            intent.putExtra(EXTRA_MEDIA, mAttachments.toArray(new Attachment[mAttachments.size()]));
-            intent.putExtra(EXTRA_CURRENT_MEDIA, mAttachments.get(position));
-            getContext().startActivity(intent);
+        private void notifyMediaClicked(final int position, final View v) {
+            listener.onMediaClick(mAttachments.toArray(new Attachment[mAttachments.size()]),
+                    mAttachments.get(position), v);
         }
 
     }

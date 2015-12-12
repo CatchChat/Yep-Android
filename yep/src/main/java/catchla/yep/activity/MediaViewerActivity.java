@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
@@ -57,6 +58,7 @@ import catchla.yep.model.Attachment;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
+import catchla.yep.view.OverDragLayout;
 import pl.droidsonroids.gif.GifSupportChecker;
 import pl.droidsonroids.gif.GifTextureView;
 import pl.droidsonroids.gif.InputSource;
@@ -82,6 +84,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setContentView(R.layout.activity_media_viewer);
+        ViewCompat.setTransitionName(findViewById(R.id.transition_layer), "media");
         mPagerAdapter = new MediaPagerAdapter(this);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.element_spacing_normal));
@@ -149,6 +152,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
 
         private SubsamplingScaleImageView mImageView;
         private ProgressWheel mProgressBar;
+        private OverDragLayout mDragLayout;
         private boolean mLoaderInitialized;
         private float mContentLength;
 
@@ -159,6 +163,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
             super.onBaseViewCreated(view, savedInstanceState);
             mImageView = (SubsamplingScaleImageView) view.findViewById(R.id.image_view);
             mProgressBar = (ProgressWheel) view.findViewById(R.id.load_progress);
+            mDragLayout = (OverDragLayout) view.findViewById(R.id.drag_layout);
         }
 
         @Override
@@ -318,6 +323,27 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
                 @Override
                 public boolean onGenericMotion(View v, MotionEvent event) {
                     final SubsamplingScaleImageView iv = (SubsamplingScaleImageView) v;
+                    return false;
+                }
+            });
+            mDragLayout.setOnDragListener(new OverDragLayout.OnDragListener() {
+                @Override
+                public void onPositionChanged(final int top) {
+                    final MediaViewerActivity activity = (MediaViewerActivity) getActivity();
+                    final ActionBar actionBar = activity.getSupportActionBar();
+                    if (actionBar == null) return;
+                    actionBar.setHideOffset(Math.abs(top));
+                }
+
+                @Override
+                public boolean onReleased(final int top) {
+                    final MediaViewerActivity activity = (MediaViewerActivity) getActivity();
+                    final ActionBar actionBar = activity.getSupportActionBar();
+                    if (actionBar == null) return false;
+                    if (actionBar.getHideOffset() < actionBar.getHeight()) {
+                        return true;
+                    }
+                    activity.finish();
                     return false;
                 }
             });

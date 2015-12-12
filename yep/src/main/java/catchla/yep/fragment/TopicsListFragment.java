@@ -3,11 +3,19 @@ package catchla.yep.fragment;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -17,6 +25,7 @@ import android.view.View;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.activity.NewTopicActivity;
 import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.TopicChatActivity;
@@ -24,8 +33,8 @@ import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
+import catchla.yep.model.Attachment;
 import catchla.yep.model.Paging;
-import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
 import catchla.yep.view.holder.TopicViewHolder;
 
@@ -33,7 +42,7 @@ import catchla.yep.view.holder.TopicViewHolder;
  * Created by mariotaku on 15/10/12.
  */
 public class TopicsListFragment extends AbsContentListRecyclerViewFragment<TopicsAdapter>
-        implements LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickAdapter,
+        implements LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickListener,
         IActionButtonSupportFragment {
 
     private String mSortBy;
@@ -197,6 +206,23 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         intent.putExtra(EXTRA_ACCOUNT, getAccount());
         intent.putExtra(EXTRA_USER, getAdapter().getTopic(position).getUser());
         startActivity(intent);
+    }
+
+    @Override
+    public void onMediaClick(final Attachment[] attachments, final Attachment attachment, View view) {
+        final Intent intent = new Intent(getContext(), MediaViewerActivity.class);
+        intent.putExtra(EXTRA_MEDIA, attachments);
+        intent.putExtra(EXTRA_CURRENT_MEDIA, attachment);
+        ViewCompat.setTransitionName(view, "media");
+        final Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                view, "media").toBundle();
+        ActivityCompat.setExitSharedElementCallback(getActivity(), new SharedElementCallback() {
+            @Override
+            public Parcelable onCaptureSharedElementSnapshot(final View sharedElement, final Matrix viewToGlobalMatrix, final RectF screenBounds) {
+                return super.onCaptureSharedElementSnapshot(sharedElement, viewToGlobalMatrix, screenBounds);
+            }
+        });
+        ActivityCompat.startActivity(getActivity(), intent, options);
     }
 
     public void reloadWithSortOrder(final String sortBy) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Yep.MediaViewer" parent="@style/Theme.AppCompat">
+        <item name="actionBarStyle">@style/Widget.Yep.MediaViewer.ActionBar</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowContentTransitions">true</item>
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/open_media_viewer_transform
+        </item>
+        <item name="android:windowSharedElementExitTransition">
+            @transition/open_media_viewer_transform
+        </item>
+    </style>
+</resources>
