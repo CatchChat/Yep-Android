@@ -32,7 +32,7 @@ public class OverDragLayout extends FrameLayout {
 
             @Override
             public boolean tryCaptureView(final View child, final int pointerId) {
-                return true;
+                return mOnDragListener != null && mOnDragListener.shouldStartDragging(child);
             }
 
             @Override
@@ -81,6 +81,8 @@ public class OverDragLayout extends FrameLayout {
         void onPositionChanged(int top);
 
         boolean onReleased(int top);
+
+        boolean shouldStartDragging(View child);
     }
 
     @Override
@@ -92,8 +94,12 @@ public class OverDragLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(final MotionEvent ev) {
-        if (mViewDragHelper.shouldInterceptTouchEvent(ev)) {
-            return true;
+        try {
+            if (mViewDragHelper.shouldInterceptTouchEvent(ev)) {
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return false;
         }
         return super.onInterceptTouchEvent(ev);
     }

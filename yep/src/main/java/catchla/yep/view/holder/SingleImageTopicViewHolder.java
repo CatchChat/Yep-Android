@@ -28,7 +28,6 @@ public class SingleImageTopicViewHolder extends TopicViewHolder implements Const
         super(adapter, itemView, context, imageLoader, listener);
         itemView.findViewById(R.id.attachment_view).setOnClickListener(this);
         mediaPreviewView = (ImageView) itemView.findViewById(R.id.image);
-        ViewCompat.setTransitionName(mediaPreviewView, "media");
     }
 
     @Override

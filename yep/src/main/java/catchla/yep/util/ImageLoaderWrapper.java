@@ -43,6 +43,10 @@ public class ImageLoaderWrapper {
         imageLoader.displayImage(uri, view);
     }
 
+    public void displayImage(final String uri, final ImageView view, DisplayImageOptions options) {
+        imageLoader.displayImage(uri, view, options);
+    }
+
     public void displayImage(final String uri, final ImageView view,
                              final ImageLoadingListener loadingListener,
                              final ImageLoadingProgressListener progressListener) {

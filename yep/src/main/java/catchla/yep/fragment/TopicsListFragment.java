@@ -3,19 +3,14 @@ package catchla.yep.fragment;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Matrix;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.Loader;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.WindowCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -213,15 +208,12 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         final Intent intent = new Intent(getContext(), MediaViewerActivity.class);
         intent.putExtra(EXTRA_MEDIA, attachments);
         intent.putExtra(EXTRA_CURRENT_MEDIA, attachment);
-        ViewCompat.setTransitionName(view, "media");
-        final Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                view, "media").toBundle();
-        ActivityCompat.setExitSharedElementCallback(getActivity(), new SharedElementCallback() {
-            @Override
-            public Parcelable onCaptureSharedElementSnapshot(final View sharedElement, final Matrix viewToGlobalMatrix, final RectF screenBounds) {
-                return super.onCaptureSharedElementSnapshot(sharedElement, viewToGlobalMatrix, screenBounds);
-            }
-        });
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        intent.setSourceBounds(new Rect(location[0], location[1], location[0] + view.getWidth(),
+                location[1] + view.getHeight()));
+        final Bundle options = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0,
+                view.getWidth(), view.getHeight()).toBundle();
         ActivityCompat.startActivity(getActivity(), intent, options);
     }
 

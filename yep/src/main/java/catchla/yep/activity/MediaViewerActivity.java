@@ -19,15 +19,15 @@ package catchla.yep.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.NetworkOnMainThreadException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.support.v4.util.Pair;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,12 +37,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnGenericMotionListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.DisplayImageOptionsTrojan;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -69,6 +70,8 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
     private static boolean ANIMATED_GIF_SUPPORTED = GifSupportChecker.isSupported();
     private ViewPager mViewPager;
     private MediaPagerAdapter mPagerAdapter;
+    private ImageView mTransitionView;
+    private int mCurrentIndex;
 
 
     @Override
@@ -84,18 +87,29 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setContentView(R.layout.activity_media_viewer);
-        ViewCompat.setTransitionName(findViewById(R.id.transition_layer), "media");
         mPagerAdapter = new MediaPagerAdapter(this);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.element_spacing_normal));
         mViewPager.addOnPageChangeListener(this);
         final Intent intent = getIntent();
+
         final Attachment[] media = Utils.newParcelableArray(intent.getParcelableArrayExtra(EXTRA_MEDIA), Attachment.CREATOR);
         final Attachment currentMedia = intent.getParcelableExtra(EXTRA_CURRENT_MEDIA);
         mPagerAdapter.setMedia(media);
-        final int currentIndex = ArrayUtils.indexOf(media, currentMedia);
-        if (currentIndex != -1) {
-            mViewPager.setCurrentItem(currentIndex, false);
+        mCurrentIndex = ArrayUtils.indexOf(media, currentMedia);
+        if (mCurrentIndex != -1) {
+            mViewPager.setCurrentItem(mCurrentIndex, false);
+        }
+
+        DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
+        builder.cacheInMemory(false);
+        builder.cacheOnDisk(false);
+        DisplayImageOptionsTrojan.setSyncLoading(builder, true);
+        try {
+            mImageLoader.displayImage(((FileAttachment) currentMedia).getFile().getUrl(),
+                    mTransitionView, builder.build());
+        } catch (NetworkOnMainThreadException e) {
+            // Ignore
         }
         updatePositionTitle();
     }
@@ -104,11 +118,23 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
     public void onContentChanged() {
         super.onContentChanged();
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mTransitionView = (ImageView) findViewById(R.id.transition_layer);
     }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        float currentPositionOffset = position + positionOffset;
+        if (currentPositionOffset > mCurrentIndex - 1 && currentPositionOffset < mCurrentIndex + 1) {
+            if (currentPositionOffset < mCurrentIndex) {
+                mTransitionView.setTranslationX(mTransitionView.getWidth() - positionOffsetPixels
+                        + mViewPager.getPageMargin());
+            } else {
+                mTransitionView.setTranslationX(-positionOffsetPixels);
+            }
+            setTransitionViewEnabled(true);
+        } else {
+            setTransitionViewEnabled(false);
+        }
     }
 
     @Override
@@ -119,7 +145,6 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
     }
 
     private boolean isBarShowing() {
@@ -145,6 +170,14 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
 
     private void updatePositionTitle() {
         setTitle(String.format("%d / %d", mViewPager.getCurrentItem() + 1, mPagerAdapter.getCount()));
+    }
+
+    public void animateFinish() {
+        finish();
+    }
+
+    private void setTransitionViewEnabled(final boolean enabled) {
+        mTransitionView.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
     }
 
     public static class BaseImagePageFragment extends AbsMediaPageFragment
@@ -175,8 +208,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
 
         @Override
         public Loader<TileImageLoader.Result> onCreateLoader(final int id, final Bundle args) {
-            setLoadProgressVisibility(View.VISIBLE);
-            mProgressBar.spin();
+            setLoadProgressVisibility(View.GONE);
             invalidateOptionsMenu();
             final FileAttachment media = (FileAttachment) getMedia();
             return new TileImageLoader(getActivity(), this, Uri.parse(media.getFile().getUrl()));
@@ -220,6 +252,8 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
 
         @Override
         public void onDownloadStart(final long total) {
+            if (!getLoaderManager().hasRunningLoaders()) return;
+            setLoadProgressVisibility(View.VISIBLE);
             mContentLength = total;
             mProgressBar.spin();
         }
@@ -272,27 +306,8 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
         public void onPrepareOptionsMenu(Menu menu) {
             super.onPrepareOptionsMenu(menu);
             final boolean isLoading = getLoaderManager().hasRunningLoaders();
-            final TaskRunnable<File, Pair<Boolean, Intent>, Pair<Fragment, Menu>> checkState = new TaskRunnable<File, Pair<Boolean, Intent>, Pair<Fragment, Menu>>() {
-                @Override
-                public Pair<Boolean, Intent> doLongOperation(File file) throws InterruptedException {
-                    final boolean hasImage = file != null && file.exists();
-                    if (!hasImage) {
-                        return Pair.create(false, null);
-                    }
-                    return Pair.create(true, null);
-                }
-
-                @Override
-                public void callback(Pair<Fragment, Menu> callback, Pair<Boolean, Intent> result) {
-                    if (callback.first.isDetached() || callback.first.getActivity() == null) return;
-                    final Menu menu = callback.second;
-                    final boolean hasImage = result.first;
-                    MenuUtils.setMenuItemAvailability(menu, R.id.refresh, !hasImage && !isLoading);
-                }
-            };
-            checkState.setParams(mImageFile);
-            checkState.setResultHandler(Pair.<Fragment, Menu>create(this, menu));
-            AsyncManager.runBackgroundTask(checkState);
+            final boolean hasImage = mImageFile != null && mImageFile.exists();
+            MenuUtils.setMenuItemAvailability(menu, R.id.refresh, !hasImage && !isLoading);
         }
 
 
@@ -330,6 +345,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
                 @Override
                 public void onPositionChanged(final int top) {
                     final MediaViewerActivity activity = (MediaViewerActivity) getActivity();
+                    activity.setTransitionViewEnabled(false);
                     final ActionBar actionBar = activity.getSupportActionBar();
                     if (actionBar == null) return;
                     actionBar.setHideOffset(Math.abs(top));
@@ -343,7 +359,14 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
                     if (actionBar.getHideOffset() < actionBar.getHeight()) {
                         return true;
                     }
-                    activity.finish();
+                    activity.animateFinish();
+                    return false;
+                }
+
+                @Override
+                public boolean shouldStartDragging(final View child) {
+                    if (mImageView.getVisibility() == View.VISIBLE)
+                        return mImageView.isReady();
                     return false;
                 }
             });

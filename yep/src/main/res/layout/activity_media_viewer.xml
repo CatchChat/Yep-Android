@@ -24,13 +24,14 @@
        android:animateLayoutChanges="true"
        tools:menu="menu_media_viewer_image_page">
 
+    <ImageView
+        android:id="@+id/transition_layer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"/>
+
     <catchla.yep.view.MediaViewPager
         android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <View
-        android:id="@+id/transition_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

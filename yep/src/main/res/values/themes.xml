@@ -50,8 +50,12 @@
         <item name="android:windowDisablePreview">true</item>
     </style>
 
-    <style name="Theme.Yep.MediaViewer" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="Theme.Yep.MediaViewer" parent="@style/Theme.AppCompat">
         <item name="actionBarStyle">@style/Widget.Yep.MediaViewer.ActionBar</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Yep.MediaViewer</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 

@@ -118,7 +118,6 @@ public class GalleryTopicViewHolder extends TopicViewHolder {
                 itemView.setOnClickListener(this);
                 this.adapter = adapter;
                 this.mediaPreviewView = (ImageView) itemView.findViewById(R.id.media_preview);
-                ViewCompat.setTransitionName(mediaPreviewView, "media");
                 this.mediaRemoveView = (ImageView) itemView.findViewById(R.id.media_remove);
 
                 mediaRemoveView.setVisibility(View.GONE);
