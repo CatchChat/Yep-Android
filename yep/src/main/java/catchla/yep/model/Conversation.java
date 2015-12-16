@@ -104,7 +104,7 @@ public class Conversation implements Parcelable {
     public static String generateId(Message message) {
         final String recipientType = message.getRecipientType();
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
-            return generateId(recipientType, message.getCircle().getId());
+            return generateId(recipientType, message.getRecipientId());
         } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
             return generateId(recipientType, message.getSender().getId());
         }

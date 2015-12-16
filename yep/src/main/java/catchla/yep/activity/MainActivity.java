@@ -8,18 +8,18 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import catchla.yep.Constants;
 import catchla.yep.util.Utils;
 
 
-public class MainActivity extends AppCompatActivity implements Constants {
+public class MainActivity extends Activity implements Constants {
 
     private static final int REQUEST_SELECT_ACCOUNT = 101;
 

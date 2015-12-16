@@ -305,6 +305,7 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
 
             protected final ChatAdapter adapter;
 
+            private final ImageView profileImageView;
             private final TextView text1;
             private final ImageView stateView;
 
@@ -313,11 +314,16 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
                 this.adapter = adapter;
                 text1 = (TextView) itemView.findViewById(android.R.id.text1);
                 stateView = (ImageView) itemView.findViewById(R.id.state);
+                profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
             }
 
             public void displayMessage(Message message) {
                 text1.setText(message.getTextContent());
                 text1.setVisibility(text1.length() > 0 ? View.VISIBLE : View.GONE);
+                if (profileImageView != null) {
+                    adapter.getImageLoader().displayProfileImage(message.getSender().getAvatarUrl(),
+                            profileImageView);
+                }
                 if (stateView != null) {
                     final String state = message.getState();
                     switch (Utils.emptyIfNull(state)) {

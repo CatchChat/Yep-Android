@@ -34,6 +34,7 @@ import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
+import catchla.yep.view.FloatingActionMenu;
 import catchla.yep.view.TabPagerIndicator;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.PagerIndicator;
@@ -47,7 +48,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
     private ViewPager mViewPager;
     private TabsAdapter mAdapter;
     private FloatingActionButton mFloatingActionButton;
-    private View mFloatingActionMenu;
+    private FloatingActionMenu mFloatingActionMenu;
     private TabPagerIndicator mPagerIndicator;
     private TintedStatusFrameLayout mMainContent;
 
@@ -57,7 +58,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         mMainContent = (TintedStatusFrameLayout) findViewById(R.id.main_content);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
-        mFloatingActionMenu = findViewById(R.id.floating_action_menur);
+        mFloatingActionMenu = (FloatingActionMenu) findViewById(R.id.floating_action_menur);
     }
 
     @Override
@@ -229,17 +230,17 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
             if (visible) {
                 mFloatingActionButton.show();
                 if (((IActionButtonSupportFragment) currentFragment).getActionMenuFragment() != null) {
-                    mFloatingActionMenu.setVisibility(View.VISIBLE);
+                    mFloatingActionMenu.show();
                 } else {
-                    mFloatingActionMenu.setVisibility(View.GONE);
+                    mFloatingActionMenu.hide();
                 }
             } else {
                 mFloatingActionButton.hide();
-                mFloatingActionMenu.setVisibility(View.GONE);
+                mFloatingActionMenu.hide();
             }
         } else {
             mFloatingActionButton.hide();
-            mFloatingActionMenu.setVisibility(View.GONE);
+            mFloatingActionMenu.hide();
         }
     }
 

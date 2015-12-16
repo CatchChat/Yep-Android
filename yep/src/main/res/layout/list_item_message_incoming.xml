@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/element_spacing_normal">
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/profile_image"
+        android:layout_width="@dimen/icon_size_chat_bubble_profile_image"
+        android:layout_height="@dimen/icon_size_chat_bubble_profile_image"
+        android:scaleType="centerCrop"
+        app:border="false"
+        app:shadow="false"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/element_spacing_normal"
+        android:layout_marginLeft="@dimen/element_spacing_minus_small"
+        android:layout_marginStart="@dimen/element_spacing_minus_small"
+        android:minHeight="@dimen/icon_size_chat_bubble_profile_image"
         app:bubbleColor="#dddddd"
         app:caretPosition="topStart"
         app:caretWidth="2dp"
@@ -16,4 +28,4 @@
 
         <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>
-</FrameLayout>
+</LinearLayout>
