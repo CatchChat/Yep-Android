@@ -11,6 +11,7 @@ import org.mariotaku.sqliteqb.library.OnConflict;
 import org.mariotaku.sqliteqb.library.SQLQueryBuilder;
 
 import catchla.yep.Constants;
+import catchla.yep.provider.YepDataStore.Circles;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -30,6 +31,8 @@ public class YepSQLiteOpenHelper extends SQLiteOpenHelper implements Constants {
         db.execSQL(createTable(Messages.TABLE_NAME, Messages.COLUMNS, Messages.TYPES, true));
         db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true,
                 Constraint.unique(new Columns(Conversations.CONVERSATION_ID), OnConflict.REPLACE)));
+        db.execSQL(createTable(Circles.TABLE_NAME, Circles.COLUMNS, Circles.TYPES, true,
+                Constraint.unique(new Columns(Circles.CIRCLE_ID), OnConflict.REPLACE)));
         db.setTransactionSuccessful();
         db.endTransaction();
     }

@@ -6,14 +6,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.desmond.asyncmanager.AsyncManager;
+import com.desmond.asyncmanager.TaskRunnable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.fragment.TopicChatListFragment;
+import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
+import catchla.yep.model.UrlResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.Utils;
+import catchla.yep.util.YepAPI;
+import catchla.yep.util.YepAPIFactory;
 
 public class TopicChatActivity extends SwipeBackContentActivity implements Constants {
 
@@ -48,7 +56,20 @@ public class TopicChatActivity extends SwipeBackContentActivity implements Const
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share: {
+                AsyncManager.runBackgroundTask(new TaskRunnable<Object, TaskResponse<UrlResponse>,
+                        TopicChatActivity>() {
+                    @Override
+                    public TaskResponse<UrlResponse> doLongOperation(final Object o) throws InterruptedException {
+                        YepAPI yep = YepAPIFactory.getInstance(TopicChatActivity.this, getAccount());
+                        try {
+                            return TaskResponse.getInstance(yep.getCircleShareUrl(getTopic().getCircle().getId()));
+                        } catch (YepException e) {
+                            return TaskResponse.getInstance(e);
+                        }
+                    }
 
+
+                });
                 return true;
             }
         }

@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -13,7 +14,8 @@
         android:layout_height="@dimen/icon_size_chat_bubble_profile_image"
         android:scaleType="centerCrop"
         app:border="false"
-        app:shadow="false"/>
+        app:shadow="false"
+        tools:src="@drawable/ic_profile_image_default"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
         android:layout_width="wrap_content"
@@ -22,9 +24,10 @@
         android:layout_marginStart="@dimen/element_spacing_minus_small"
         android:minHeight="@dimen/icon_size_chat_bubble_profile_image"
         app:bubbleColor="#dddddd"
+        app:caretHeight="6dp"
         app:caretPosition="topStart"
-        app:caretWidth="2dp"
-        app:cornerRadius="4dp">
+        app:caretWidth="6dp"
+        app:cornerRadius="2dp">
 
         <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>

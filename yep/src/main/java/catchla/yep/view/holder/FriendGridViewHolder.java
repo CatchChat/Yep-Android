@@ -64,7 +64,11 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
 
     public void displayUser(final User user) {
         final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-        imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
+        final String avatarUrl = user.getAvatarUrl();
+        if (!avatarUrl.equals(profileImageView.getTag()) || profileImageView.getDrawable() == null) {
+            imageLoader.displayProfileImage(avatarUrl, profileImageView);
+        }
+        profileImageView.setTag(avatarUrl);
         nameView.setText(user.getNickname());
         descriptionView.setText(user.getIntroduction());
         userSkills.removeAllViews();

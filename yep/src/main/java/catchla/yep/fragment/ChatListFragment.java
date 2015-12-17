@@ -62,6 +62,11 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
     }
 
     @Override
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_chat_list, container, false);
+    }
+
+    @Override
     public boolean isRefreshing() {
         return false;
     }

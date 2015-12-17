@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
-import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.User;
 import catchla.yep.util.YepAPI;
 import catchla.yep.model.YepException;
@@ -37,7 +37,7 @@ public class SearchUsersLoader extends CachedYepListLoader<User> implements Cons
         final Paging paging = new Paging();
         int page = 1;
         final List<User> list = new ArrayList<>();
-        PagedUsers users;
+        ResponseList<User> users;
         while ((users = yep.searchUsers(mQuery, paging)).size() > 0) {
             list.addAll(users);
             paging.page(++page);

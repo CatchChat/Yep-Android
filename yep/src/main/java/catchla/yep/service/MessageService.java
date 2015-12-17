@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -31,15 +33,16 @@ import catchla.yep.Constants;
 import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Circle;
+import catchla.yep.model.CircleCursorIndices;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
-import catchla.yep.model.PagedFriendships;
-import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.TaskResponse;
-import catchla.yep.model.Topic;
 import catchla.yep.model.User;
+import catchla.yep.model.YepException;
+import catchla.yep.provider.YepDataStore.Circles;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -49,7 +52,6 @@ import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
 
@@ -88,6 +90,7 @@ public class MessageService extends Service implements Constants {
                 break;
             }
             case ACTION_REFRESH_MESSAGES: {
+                refreshCircles();
                 refreshMessages();
                 break;
             }
@@ -103,7 +106,7 @@ public class MessageService extends Service implements Constants {
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
-                    PagedFriendships friendships;
+                    ResponseList<Friendship> friendships;
                     int page = 1;
                     final Paging paging = new Paging();
                     final ArrayList<ContentValues> values = new ArrayList<>();
@@ -153,9 +156,50 @@ public class MessageService extends Service implements Constants {
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
-                    PagedMessages messages = yep.getUnreadMessages();
+                    ResponseList<Message> messages = yep.getUnreadMessages();
                     final String accountId = accountUser.getId();
                     insertMessages(MessageService.this, messages, accountId);
+                    return TaskResponse.getInstance(true);
+                } catch (YepException e) {
+                    Log.w(LOGTAG, e);
+                    return TaskResponse.getInstance(e);
+                } catch (Throwable e) {
+                    Log.wtf(LOGTAG, e);
+                    return TaskResponse.getInstance(e);
+                } finally {
+                }
+            }
+
+            @Override
+            public void callback(final TaskResponse<Boolean> response) {
+                mBus.post(new MessageRefreshedEvent());
+            }
+
+            @Override
+            public void callback(final MessageService messageService, final TaskResponse<Boolean> response) {
+                callback(response);
+            }
+        };
+        task.setParams(account);
+        task.setResultHandler(this);
+        AsyncManager.runBackgroundTask(task);
+    }
+
+    private void refreshCircles() {
+        final Account account = Utils.getCurrentAccount(this);
+        if (account == null) return;
+        final User accountUser = Utils.getAccountUser(this, account);
+        if (accountUser == null) return;
+        final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
+                task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
+            @Override
+            public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
+                final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
+                try {
+                    Paging paging = new Paging();
+                    ResponseList<Circle> circles = yep.getCircles(paging);
+                    final String accountId = accountUser.getId();
+                    insertCircles(MessageService.this, circles, accountId);
                     return TaskResponse.getInstance(true);
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
@@ -177,6 +221,16 @@ public class MessageService extends Service implements Constants {
         task.setParams(account);
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
+    }
+
+    public static void insertCircles(final Context context, final Collection<Circle> circles, final String accountId) {
+        final ContentResolver cr = context.getContentResolver();
+        cr.delete(Circles.CONTENT_URI, null, null);
+        final List<ContentValues> contentValues = new ArrayList<>();
+        for (final Circle circle : circles) {
+            contentValues.add(ContentValuesCreator.fromCircle(circle, accountId));
+        }
+        ContentResolverUtils.bulkInsert(cr, Circles.CONTENT_URI, contentValues);
     }
 
     public static void insertMessages(final Context context, final Collection<Message> messages, final String accountId) {
@@ -203,8 +257,7 @@ public class MessageService extends Service implements Constants {
                 final String senderString = JsonSerializer.serialize(message.getSender(), User.class);
                 conversation.put(Conversations.USER, senderString);
                 conversation.put(Conversations.SENDER, senderString);
-                conversation.put(Conversations.CIRCLE, JsonSerializer.serialize(message.getCircle(), Circle.class));
-                conversation.put(Conversations.TOPIC, JsonSerializer.serialize(message.getTopic(), Topic.class));
+                conversation.put(Conversations.CIRCLE, getMessageCircle(context, message, accountId));
                 conversation.put(Conversations.UPDATED_AT, createdAt);
                 conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
                 conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
@@ -227,5 +280,27 @@ public class MessageService extends Service implements Constants {
         }
         ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
         ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
+    }
+
+    private static String getMessageCircle(final Context context, final Message message, final String accountId) {
+        if (!Message.RecipientType.CIRCLE.equals(message.getRecipientType())) return null;
+        Circle circle = message.getCircle();
+        // First try to load from database
+        if (circle.getTopic() == null) {
+            final String where = Expression.and(Expression.equalsArgs(Circles.ACCOUNT_ID),
+                    Expression.equalsArgs(Circles.CIRCLE_ID)).getSQL();
+            String[] whereArgs = {accountId, circle.getId()};
+            final Cursor c = context.getContentResolver().query(Circles.CONTENT_URI,
+                    Circles.COLUMNS, where, whereArgs, null);
+            try {
+                if (c != null && c.moveToFirst()) {
+                    final CircleCursorIndices ci = new CircleCursorIndices(c);
+                    circle = ci.newObject(c);
+                }
+            } finally {
+                Utils.closeSilently(c);
+            }
+        }
+        return JsonSerializer.serialize(circle, Circle.class);
     }
 }

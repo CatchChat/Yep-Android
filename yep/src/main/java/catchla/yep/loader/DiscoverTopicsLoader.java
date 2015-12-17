@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
-import catchla.yep.model.PagedTopics;
 import catchla.yep.model.Paging;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.Topic;
 import catchla.yep.util.YepAPI;
 import catchla.yep.model.YepException;
@@ -47,7 +47,7 @@ public class DiscoverTopicsLoader extends CachedYepListLoader<Topic> implements 
         if (oldData != null) {
             list.addAll(oldData);
         }
-        final PagedTopics topics;
+        final ResponseList<Topic> topics;
         if (mUserId != null) {
             topics = yep.getTopics(mUserId, mPaging);
         } else {

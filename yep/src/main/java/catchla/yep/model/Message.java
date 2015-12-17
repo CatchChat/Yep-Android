@@ -61,9 +61,6 @@ public class Message {
     @JsonField(name = "circle")
     @CursorField(value = Messages.CIRCLE, converter = LoganSquareCursorFieldConverter.class)
     Circle circle;
-    @JsonField(name = "topic")
-    @CursorField(value = Messages.TOPIC, converter = LoganSquareCursorFieldConverter.class)
-    Topic topic;
     @JsonField(name = "conversation_id")
     @CursorField(Messages.CONVERSATION_ID)
     String conversationId;
@@ -94,14 +91,6 @@ public class Message {
 
     public void setAttachments(final List<Attachment> attachments) {
         this.attachments = attachments;
-    }
-
-    public Topic getTopic() {
-        return topic;
-    }
-
-    public void setTopic(final Topic topic) {
-        this.topic = topic;
     }
 
     public double getLongitude() {
@@ -279,7 +268,6 @@ public class Message {
                 ", recipientType='" + recipientType + '\'' +
                 ", mediaType='" + mediaType + '\'' +
                 ", circle=" + circle +
-                ", topic=" + topic +
                 ", conversationId='" + conversationId + '\'' +
                 ", outgoing=" + outgoing +
                 ", state='" + state + '\'' +

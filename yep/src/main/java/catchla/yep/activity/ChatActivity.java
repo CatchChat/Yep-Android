@@ -35,18 +35,19 @@ import catchla.yep.IFayeService;
 import catchla.yep.R;
 import catchla.yep.fragment.ChatInputBarFragment;
 import catchla.yep.fragment.ChatListFragment;
+import catchla.yep.fragment.ConversationChatListFragment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.service.FayeService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.VoiceWaveView;
 
@@ -93,9 +94,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         final Bundle fragmentArgs = new Bundle();
         fragmentArgs.putParcelable(EXTRA_CONVERSATION, conversation);
-        final Fragment chatListFragment = Fragment.instantiate(this, ChatListFragment.class.getName(), fragmentArgs);
+        final Fragment chatListFragment = Fragment.instantiate(this,
+                ConversationChatListFragment.class.getName(), fragmentArgs);
         final ChatInputBarFragment chatInputBarFragment =
-                (ChatInputBarFragment) Fragment.instantiate(this, ChatInputBarFragment.class.getName(), fragmentArgs);
+                (ChatInputBarFragment) Fragment.instantiate(this,
+                        ChatInputBarFragment.class.getName(), fragmentArgs);
 
         chatInputBarFragment.setListener(this);
 

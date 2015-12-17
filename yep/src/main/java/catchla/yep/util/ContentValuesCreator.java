@@ -3,6 +3,7 @@ package catchla.yep.util;
 import android.content.ContentValues;
 
 import catchla.yep.model.Circle;
+import catchla.yep.model.CircleValuesCreator;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
 import catchla.yep.model.MessageValuesCreator;
@@ -10,6 +11,7 @@ import catchla.yep.model.NewMessage;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Circles;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.provider.YepDataStore.Users;
@@ -96,4 +98,9 @@ public class ContentValuesCreator {
         return values;
     }
 
+    public static ContentValues fromCircle(final Circle circle, final String accountId) {
+        final ContentValues values = CircleValuesCreator.create(circle);
+        values.put(Circles.ACCOUNT_ID, accountId);
+        return values;
+    }
 }

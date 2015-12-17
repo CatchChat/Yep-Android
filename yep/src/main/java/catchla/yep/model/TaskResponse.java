@@ -2,9 +2,9 @@ package catchla.yep.model;
 
 public class TaskResponse<D> {
     private final D data;
-    private final Exception exception;
+    private final Throwable exception;
 
-    protected TaskResponse(final D data, final Exception exception) {
+    protected TaskResponse(final D data, final Throwable exception) {
         this.data = data;
         this.exception = exception;
     }
@@ -13,11 +13,11 @@ public class TaskResponse<D> {
         return data;
     }
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 
-    public static <D> TaskResponse<D> getInstance(final Exception exception) {
+    public static <D> TaskResponse<D> getInstance(final Throwable exception) {
         return new TaskResponse<>(null, exception);
     }
 

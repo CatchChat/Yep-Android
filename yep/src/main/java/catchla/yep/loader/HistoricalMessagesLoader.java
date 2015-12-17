@@ -10,8 +10,8 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.model.Message;
-import catchla.yep.model.PagedMessages;
 import catchla.yep.model.Paging;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.YepException;
 import catchla.yep.util.YepAPI;
 
@@ -47,7 +47,7 @@ public class HistoricalMessagesLoader extends CachedYepListLoader<Message> imple
         if (oldData != null) {
             list.addAll(oldData);
         }
-        final PagedMessages topics = yep.getHistoricalMessages(mRecipientType, mRecipientId, mPaging);
+        final ResponseList<Message> topics = yep.getHistoricalMessages(mRecipientType, mRecipientId, mPaging);
         for (Message topic : topics) {
             list.remove(topic);
             list.add(topic);

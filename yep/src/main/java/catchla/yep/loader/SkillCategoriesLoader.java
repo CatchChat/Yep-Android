@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import catchla.yep.Constants;
-import catchla.yep.model.PagedSkillCategories;
 import catchla.yep.model.Paging;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.SkillCategory;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/5/27.
@@ -53,7 +53,7 @@ public class SkillCategoriesLoader extends AsyncTaskLoader<TaskResponse<List<Ski
             final Paging paging = new Paging();
             int page = 1;
             final List<SkillCategory> list = new ArrayList<>();
-            PagedSkillCategories users = yep.getSkillCategories();
+            ResponseList<SkillCategory> users = yep.getSkillCategories();
             list.addAll(users);
             if (mWriteCache) {
                 saveCached(list);

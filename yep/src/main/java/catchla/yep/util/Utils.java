@@ -59,8 +59,9 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
-import catchla.yep.model.FileAttachment;
+import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
 import catchla.yep.model.S3UploadToken;
@@ -394,7 +395,12 @@ public class Utils implements Constants {
     public static String getConversationName(final Conversation conversation) {
         final String recipientType = conversation.getRecipientType();
         if (Message.RecipientType.CIRCLE.equals(recipientType)) {
-            return "Circle";
+            final Circle circle = conversation.getCircle();
+            if (circle == null || circle.getTopic() == null || TextUtils.isEmpty(circle.getTopic().getBody())) {
+                return "Circle";
+            } else {
+                return circle.getTopic().getBody();
+            }
         } else if (Message.RecipientType.USER.equals(recipientType)) {
             return getDisplayName(conversation.getUser());
         }

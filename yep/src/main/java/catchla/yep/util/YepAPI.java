@@ -11,21 +11,19 @@ import catchla.yep.model.ContactUpload;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
+import catchla.yep.model.Friendship;
 import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.MarkAsReadResult;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.NewTopic;
-import catchla.yep.model.PagedFriendships;
-import catchla.yep.model.PagedMessages;
-import catchla.yep.model.PagedSkillCategories;
-import catchla.yep.model.PagedTopics;
-import catchla.yep.model.PagedUsers;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.ResponseCode;
+import catchla.yep.model.ResponseList;
 import catchla.yep.model.S3UploadToken;
+import catchla.yep.model.SkillCategory;
 import catchla.yep.model.Topic;
 import catchla.yep.model.UrlResponse;
 import catchla.yep.model.User;
@@ -91,24 +89,24 @@ public interface YepAPI {
     User showUser(@Path("id") String userId) throws YepException;
 
     @GET("v1/user/discover")
-    PagedUsers getDiscover(@QueryMap DiscoverQuery query, @QueryMap Paging paging) throws YepException;
+    ResponseList<User> getDiscover(@QueryMap DiscoverQuery query, @QueryMap Paging paging) throws YepException;
 
     @GET("v1/skill_categories")
-    PagedSkillCategories getSkillCategories() throws YepException;
+    ResponseList<SkillCategory> getSkillCategories() throws YepException;
 
     @GET("v1/friendships")
-    PagedFriendships getFriendships(@QueryMap Paging paging) throws YepException;
+    ResponseList<Friendship> getFriendships(@QueryMap Paging paging) throws YepException;
 
     @GET("v1/messages/unread")
-    PagedMessages getUnreadMessages() throws YepException;
+    ResponseList<Message> getUnreadMessages() throws YepException;
 
     @GET("v2/{recipient_type}/{recipient_id}/messages")
-    PagedMessages getHistoricalMessages(@PathRecipientType @Path("recipient_type") String recipientType,
-                                        @Path("recipient_id") String recipientId,
-                                        @QueryMap Paging paging) throws YepException;
+    ResponseList<Message> getHistoricalMessages(@PathRecipientType @Path("recipient_type") String recipientType,
+                                                @Path("recipient_id") String recipientId,
+                                                @QueryMap Paging paging) throws YepException;
 
     @GET("v1/messages/sent_unread")
-    PagedMessages getSentUnreadMessages(@QueryMap Paging paging) throws YepException;
+    ResponseList<Message> getSentUnreadMessages(@QueryMap Paging paging) throws YepException;
 
     @GET("v2/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
@@ -156,7 +154,7 @@ public interface YepAPI {
     ArrayList<User> uploadContact(@Field("contacts") ContactUpload contactUpload) throws YepException;
 
     @GET("v1/users/search")
-    PagedUsers searchUsers(@Query("q") String query, @QueryMap Paging paging) throws YepException;
+    ResponseList<User> searchUsers(@Query("q") String query, @QueryMap Paging paging) throws YepException;
 
     @PATCH("v1/{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
     @FormUrlEncoded
@@ -164,7 +162,7 @@ public interface YepAPI {
                                      @Field("max_id") String maxId) throws YepException;
 
     @GET("v1/blocked_users")
-    PagedUsers getBlockedUsers(@QueryMap Paging paging) throws YepException;
+    ResponseList<User> getBlockedUsers(@QueryMap Paging paging) throws YepException;
 
     @POST("v1/blocked_users")
     ResponseCode blockUser(@Field("user_id") String id) throws YepException;
@@ -176,13 +174,13 @@ public interface YepAPI {
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
     @GET("v2/topics/discover")
-    PagedTopics getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @QueryMap Paging paging) throws YepException;
+    ResponseList<Topic> getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @QueryMap Paging paging) throws YepException;
 
     @GET("v1/topics")
-    PagedTopics getTopics(@QueryMap Paging paging) throws YepException;
+    ResponseList<Topic> getTopics(@QueryMap Paging paging) throws YepException;
 
     @GET("v2/users/{id}/topics")
-    PagedTopics getTopics(@Path("id") String userId, @QueryMap Paging paging) throws YepException;
+    ResponseList<Topic> getTopics(@Path("id") String userId, @QueryMap Paging paging) throws YepException;
 
     @POST("v1/topics")
     Topic postTopic(@Body NewTopic topic) throws YepException;
@@ -206,6 +204,9 @@ public interface YepAPI {
 
     @DELETE("v1/circles/{id}/leave")
     Circle leaveCircle(@Path("id") String circleId) throws YepException;
+
+    @GET("v2/circles")
+    ResponseList<Circle> getCircles(@QueryMap Paging paging) throws YepException;
 
     interface AttachmentKind {
         String MESSAGE = "message";
