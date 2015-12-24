@@ -11,6 +11,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
@@ -24,9 +25,9 @@ import retrofit.Retrofit;
  */
 public class YepAPIFactory implements Constants {
 
-    public static final String API_DOMAIN = "park.catchchatchina.com";
+    public static final String API_DOMAIN = "api.soyep.com";
     public static final String API_ENDPOINT_FAYE = "https://faye.catchchatchina.com/faye";
-    public static final String API_ENDPOINT_REST = "https://" + API_DOMAIN + "/api/";
+    public static final String API_ENDPOINT_REST = "https://" + API_DOMAIN + "/";
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;

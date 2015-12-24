@@ -4,22 +4,24 @@ import android.accounts.Account;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import catchla.yep.model.TaskResponse;
+import catchla.yep.BuildConfig;
+import catchla.yep.Constants;
+import catchla.yep.model.YepException;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
-public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> {
+public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements Constants {
 
     private final Account mAccount;
     private final T mOldData;
@@ -71,6 +73,9 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> {
             }
             return data;
         } catch (YepException e) {
+            if (BuildConfig.DEBUG) {
+                Log.w(LOGTAG, e);
+            }
             mException = e;
             return null;
         }

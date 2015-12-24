@@ -64,7 +64,7 @@ public interface YepAPI {
                                    @Field("client") Client client,
                                    @Field("expiring") long expiringInSeconds) throws YepException;
 
-    @POST("v2/auth/token_by_mobile")
+    @POST("v1/auth/token_by_mobile")
     @FormUrlEncoded
     AccessToken tokenByMobile(@Field("mobile") String mobile,
                               @Field("phone_code") String phoneCode,
@@ -72,20 +72,20 @@ public interface YepAPI {
                               @Field("client") Client client,
                               @Field("expiring") long expiringInSeconds) throws YepException;
 
-    @POST("v2/sms_verification_codes")
+    @POST("v1/sms_verification_codes")
     @FormUrlEncoded
     ResponseCode sendVerifyCode(@Field("mobile") String mobile,
                                 @Field("phone_code") String phoneCode,
                                 @Field("method") VerificationMethod method) throws YepException;
 
-    @PATCH("v2/user")
+    @PATCH("v1/user")
     @FormUrlEncoded
     User updateProfile(@FieldMap ProfileUpdate profileUpdate) throws YepException;
 
-    @GET("v2/user")
+    @GET("v1/user")
     User getUser() throws YepException;
 
-    @GET("v2/users/{id}")
+    @GET("v1/users/{id}")
     User showUser(@Path("id") String userId) throws YepException;
 
     @GET("v1/user/discover")
@@ -100,7 +100,7 @@ public interface YepAPI {
     @GET("v1/messages/unread")
     ResponseList<Message> getUnreadMessages() throws YepException;
 
-    @GET("v2/{recipient_type}/{recipient_id}/messages")
+    @GET("v1/{recipient_type}/{recipient_id}/messages")
     ResponseList<Message> getHistoricalMessages(@PathRecipientType @Path("recipient_type") String recipientType,
                                                 @Path("recipient_id") String recipientId,
                                                 @QueryMap Paging paging) throws YepException;
@@ -108,16 +108,16 @@ public interface YepAPI {
     @GET("v1/messages/sent_unread")
     ResponseList<Message> getSentUnreadMessages(@QueryMap Paging paging) throws YepException;
 
-    @GET("v2/users/{id}/dribbble")
+    @GET("v1/users/{id}/dribbble")
     DribbbleShots getDribbbleShots(@Path("id") String userId) throws YepException;
 
-    @GET("v2/users/{id}/github")
+    @GET("v1/users/{id}/github")
     GithubUserInfo getGithubUserInfo(@Path("id") String userId) throws YepException;
 
-    @GET("v2/users/{id}/instagram")
+    @GET("v1/users/{id}/instagram")
     InstagramMediaList getInstagramMediaList(@Path("id") String userId) throws YepException;
 
-    @POST("v2/{recipient_type}/{recipient_id}/messages")
+    @POST("v1/{recipient_type}/{recipient_id}/messages")
     Message createMessage(@Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
                           @Body NewMessage message) throws YepException;
 
@@ -173,13 +173,13 @@ public interface YepAPI {
     @GET("v1/users/{id}/settings_with_current_user")
     UserSettings getUserSettings(@Path("id") String id) throws YepException;
 
-    @GET("v2/topics/discover")
+    @GET("v1/topics/discover")
     ResponseList<Topic> getDiscoverTopics(@Query("sort") @Topic.SortOrder String sortOrder, @QueryMap Paging paging) throws YepException;
 
     @GET("v1/topics")
     ResponseList<Topic> getTopics(@QueryMap Paging paging) throws YepException;
 
-    @GET("v2/users/{id}/topics")
+    @GET("v1/users/{id}/topics")
     ResponseList<Topic> getTopics(@Path("id") String userId, @QueryMap Paging paging) throws YepException;
 
     @POST("v1/topics")
@@ -205,7 +205,7 @@ public interface YepAPI {
     @DELETE("v1/circles/{id}/leave")
     Circle leaveCircle(@Path("id") String circleId) throws YepException;
 
-    @GET("v2/circles")
+    @GET("v1/circles")
     ResponseList<Circle> getCircles(@QueryMap Paging paging) throws YepException;
 
     interface AttachmentKind {

@@ -37,6 +37,7 @@ public class FayeClient {
     private WebSocket webSocket;
     private long id;
     private String clientId;
+    private boolean wantClose;
 
     public FayeClient(final WebSocketCall call) {
         this.call = call;
@@ -54,6 +55,7 @@ public class FayeClient {
             @Override
             public void onOpen(final WebSocket webSocket, final Response response) {
                 setWebSocket(webSocket);
+                wantClose = false;
                 listener.onConnected();
                 established.resolve(webSocket);
             }
@@ -144,7 +146,13 @@ public class FayeClient {
             callbacks.put(idStr, callback);
         }
         final RequestBody body = RequestBody.create(WebSocket.TEXT, Message.toJson(messages));
-        webSocket.sendMessage(body);
+        try {
+            webSocket.sendMessage(body);
+        } catch (IOException e) {
+            webSocket.close(200, "OK");
+            wantClose = true;
+            throw e;
+        }
     }
 
     private void setClientId(final String clientId) {
@@ -152,6 +160,7 @@ public class FayeClient {
     }
 
     public void ping() {
+        if (wantClose) return;
         Buffer buffer = new Buffer();
         buffer.writeString("[]", Charset.defaultCharset());
         try {

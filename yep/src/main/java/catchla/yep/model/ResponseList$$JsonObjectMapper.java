@@ -59,6 +59,7 @@ public final class ResponseList$$JsonObjectMapper<T> extends JsonMapper<Response
     public void parseField(ResponseList<T> instance, String fieldName, JsonParser jsonParser) throws IOException {
         switch (fieldName) {
             case "users":
+            case "topics":
             case "circles":
             case "messages":
             case "friendships":
