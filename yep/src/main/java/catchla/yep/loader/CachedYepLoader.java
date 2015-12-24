@@ -9,6 +9,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 
 import catchla.yep.BuildConfig;
@@ -48,6 +49,13 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
             if (mReadCache) {
                 FileInputStream is = null;
                 try {
+                    char[] buf = new char[1024];
+                    try (FileReader fr = new FileReader(cacheFile)) {
+                        int len;
+                        while ((len = fr.read(buf)) > 0) {
+                            Log.d(LOGTAG, new String(buf, 0, len));
+                        }
+                    }
                     is = new FileInputStream(cacheFile);
                     T cached = deserialize(is);
                     if (cached != null) return cached;

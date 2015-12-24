@@ -95,9 +95,10 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     @Override
     public int getItemViewType(int position) {
         if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
-        final String topicsKind = getTopic(position).getAttachmentKind();
+        final Topic topic = getTopic(position);
+        final String topicsKind = topic.getAttachmentKind();
         if (Attachment.Kind.IMAGE.equals(topicsKind)) {
-            if (getTopic(position).getAttachments().size() > 1) {
+            if (topic.getAttachments().size() > 1) {
                 return ITEM_VIEW_TYPE_MEDIA_GALLERY;
             } else {
                 return ITEM_VIEW_TYPE_SINGLE_IMAGE;

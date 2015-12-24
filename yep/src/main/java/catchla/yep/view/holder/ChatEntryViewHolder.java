@@ -56,7 +56,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayCirclesEntry(final Conversation conversation) {
-        nameView.setText(R.string.joined_topics);
+        nameView.setText(R.string.circles);
         messageView.setText(getConversationSummary(adapter.getContext(), conversation));
         timeView.setTime(Utils.getTime(conversation.getUpdatedAt()));
     }

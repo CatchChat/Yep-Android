@@ -2,14 +2,18 @@ package catchla.yep.model.util;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.jr.ob.JSON;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.simple.tree.JsonString;
+import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
 
 import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
 
@@ -18,8 +22,9 @@ import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import catchla.yep.BuildConfig;
+import catchla.yep.Constants;
 import catchla.yep.model.AppleMediaAttachment;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.DribbbleAttachment;
@@ -32,45 +37,44 @@ import catchla.yep.util.Utils;
  * Created by mariotaku on 15/11/26.
  */
 public class VariableTypeAttachmentsConverter implements TypeConverter<List<Attachment>>,
-        CursorFieldConverter<List<Attachment>> {
+        CursorFieldConverter<List<Attachment>>, Constants {
+
+    SimpleTreeCodec codec = new SimpleTreeCodec();
+
     @Override
     public List<Attachment> parse(final JsonParser jsonParser) throws IOException {
         List<Attachment> list = new ArrayList<>();
+        if (jsonParser.getCurrentToken() == null) {
+            jsonParser.nextToken();
+        }
         if (jsonParser.getCurrentToken() == JsonToken.START_ARRAY) {
-            while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
-
-                if (jsonParser.getCurrentToken() == null) {
-                    jsonParser.nextToken();
-                }
-                if (jsonParser.getCurrentToken() != JsonToken.START_OBJECT) {
-                    jsonParser.skipChildren();
-                    continue;
-                }
-                Map<String, Object> attachmentMap = JSON.std.mapFrom(jsonParser);
-                final String kind = (String) attachmentMap.get("kind");
+            TreeNode treeNode = codec.readTree(jsonParser);
+            for (int i = 0; i < treeNode.size(); i++) {
+                TreeNode child = treeNode.get(i);
+                final String kind = ((JsonString) child.get("kind")).getValue();
                 Attachment instance;
                 switch (kind) {
                     case "dribbble":
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), DribbbleAttachment.class);
+                        instance = LoganSquare.mapperFor(DribbbleAttachment.class).parse(codec.treeAsTokens(child));
                         break;
                     case "github":
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), GithubAttachment.class);
+                        instance = LoganSquare.mapperFor(GithubAttachment.class).parse(codec.treeAsTokens(child));
                         break;
                     case "location":
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), LocationAttachment.class);
+                        instance = LoganSquare.mapperFor(LocationAttachment.class).parse(codec.treeAsTokens(child));
                         break;
                     case "apple_music":
                     case "apple_movie":
                     case "apple_ebook":
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), AppleMediaAttachment.class);
+                        instance = LoganSquare.mapperFor(AppleMediaAttachment.class).parse(codec.treeAsTokens(child));
                         break;
                     case "image":
                     case "video":
                     case "audio":
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), FileAttachment.class);
+                        instance = LoganSquare.mapperFor(FileAttachment.class).parse(codec.treeAsTokens(child));
                         break;
                     default:
-                        instance = LoganSquare.parse(JSON.std.asString(attachmentMap), Attachment.class);
+                        instance = LoganSquare.mapperFor(Attachment.class).parse(codec.treeAsTokens(child));
                         break;
                 }
                 if (instance != null) {
@@ -108,8 +112,12 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
     @Override
     public List<Attachment> parseField(final Cursor cursor, final int columnIndex, final ParameterizedType fieldType) {
         try {
-            return parse(LoganSquare.JSON_FACTORY.createParser(cursor.getString(columnIndex)));
+            final String json = cursor.getString(columnIndex);
+            return parse(LoganSquare.JSON_FACTORY.createParser(json));
         } catch (IOException e) {
+            if (e instanceof JsonProcessingException && BuildConfig.DEBUG) {
+                Log.w(LOGTAG, e);
+            }
             return null;
         }
     }

@@ -1,6 +1,7 @@
 package catchla.yep.util;
 
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -24,12 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import catchla.yep.BuildConfig;
+import catchla.yep.Constants;
 import okio.Buffer;
 
 /**
  * Created by mariotaku on 15/11/11.
  */
-public class FayeClient {
+public class FayeClient implements Constants {
     private final WebSocketCall call;
     private final List<FayeExtension> extensions = new ArrayList<>();
     private final HashMap<String, Callback> callbacks = new HashMap<>();
@@ -149,7 +152,7 @@ public class FayeClient {
         try {
             webSocket.sendMessage(body);
         } catch (IOException e) {
-            webSocket.close(200, "OK");
+            webSocket.close(1000, "OK");
             wantClose = true;
             throw e;
         }
@@ -166,7 +169,9 @@ public class FayeClient {
         try {
             webSocket.sendPing(buffer);
         } catch (IOException e) {
-            e.printStackTrace();
+            if (BuildConfig.DEBUG) Log.w(LOGTAG, e);
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.w(LOGTAG, e);
         }
     }
 
