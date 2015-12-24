@@ -54,6 +54,7 @@ import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.MathUtils;
@@ -63,7 +64,6 @@ import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 import catchla.yep.util.task.UpdateProfileTask;
 import catchla.yep.view.TintedStatusFrameLayout;
 import catchla.yep.view.iface.IExtendedView;
@@ -515,7 +515,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         ProfileUpdate update = new ProfileUpdate();
         update.setUsername(username);
         if (mUpdateProfileTask == null || mUpdateProfileTask.getStatus() != AsyncTask.Status.RUNNING) {
-            mUpdateProfileTask = new UpdateProfileTask(this, getAccount(), update);
+            mUpdateProfileTask = new UpdateProfileTask(this, getAccount(), update, null);
             mUpdateProfileTask.execute();
         }
     }

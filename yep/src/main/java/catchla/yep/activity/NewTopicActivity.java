@@ -31,12 +31,10 @@ import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,20 +48,20 @@ import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.FileAttachment;
-import catchla.yep.model.NewAttachmentFile;
-import catchla.yep.model.NewImageAttachment;
+import catchla.yep.model.IdResponse;
 import catchla.yep.model.NewTopic;
-import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
 import catchla.yep.model.User;
+import catchla.yep.model.YepException;
 import catchla.yep.util.ImageLoaderWrapper;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
+import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/10/13.
@@ -228,22 +226,17 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             @Override
             public TaskResponse<Topic> doLongOperation(final NewTopic params) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(NewTopicActivity.this, getAccount());
-                final OkHttpClient client = YepAPIFactory.getOkHttpClient(NewTopicActivity.this);
                 try {
-                    List<NewAttachmentFile> files = new ArrayList<>();
+                    List<IdResponse> files = new ArrayList<>();
                     for (String mediaItem : media) {
                         final String path = Uri.parse(mediaItem).getPath();
-                        final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.TOPIC);
-                        try {
-                            Utils.uploadToS3(client, token, new File(path));
-                        } catch (IOException e) {
-                            throw new YepException(e);
-                        }
-                        final FileAttachment.ImageMetadata medatata = new FileAttachment.ImageMetadata();
-                        files.add(new NewAttachmentFile(token, medatata));
+                        final FileAttachment.ImageMetadata metadata = new FileAttachment.ImageMetadata();
+                        final IdResponse attachmentId = yep.uploadAttachment(FileRequestBody.create(new File(path)),
+                                YepAPI.AttachableType.TOPIC, JsonSerializer.serialize(metadata));
+                        files.add(attachmentId);
                     }
                     if (!files.isEmpty()) {
-                        newTopic.attachment(new NewImageAttachment(files));
+                        newTopic.attachments(files);
                     }
                     return TaskResponse.getInstance(yep.postTopic(params));
                 } catch (YepException e) {

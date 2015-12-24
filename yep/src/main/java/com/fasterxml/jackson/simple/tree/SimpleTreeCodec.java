@@ -24,7 +24,9 @@ public class SimpleTreeCodec extends TreeCodec {
 
     private <T extends TreeNode> T nodeFrom(JsonParser jsonParser) throws IOException {
         TreeNode node = null;
-
+        if (jsonParser.getCurrentToken() == null) {
+            jsonParser.nextToken();
+        }
         if (jsonParser.getCurrentToken() == JsonToken.VALUE_TRUE || jsonParser.getCurrentToken() == JsonToken.VALUE_FALSE)
             node = (jsonParser.getValueAsBoolean() ? JsonBoolean.TRUE : JsonBoolean.FALSE);
         else if (jsonParser.getCurrentToken() == JsonToken.VALUE_NUMBER_INT || jsonParser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT)

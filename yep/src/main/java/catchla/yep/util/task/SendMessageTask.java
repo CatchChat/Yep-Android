@@ -16,11 +16,12 @@ import org.mariotaku.sqliteqb.library.Expression;
 
 import catchla.yep.Constants;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
-import catchla.yep.model.NewAttachment;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
+import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentValuesCreator;
@@ -29,7 +30,6 @@ import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/9/12.
@@ -55,7 +55,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
     }
 
     @Nullable
-    protected NewAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+    protected IdResponse uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
         return null;
     }
 
@@ -66,12 +66,16 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
         try {
             newMessage.mediaType(getMediaType());
             draftId = saveUnsentMessage(newMessage);
-            newMessage.attachment(uploadAttachment(yep, newMessage));
+            final IdResponse attachment = uploadAttachment(yep, newMessage);
+            if (attachment != null) {
+                newMessage.attachmentId(attachment.getId());
+            }
             final Message message = yep.createMessage(newMessage.recipientType(),
                     newMessage.recipientId(), newMessage);
             updateSentMessage(draftId, message);
             return TaskResponse.getInstance(message);
         } catch (YepException e) {
+            Log.w(LOGTAG, e);
             if (draftId != -1) {
                 final ContentResolver cr = context.getContentResolver();
                 final ContentValues values = new ContentValues();

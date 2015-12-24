@@ -30,11 +30,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
-import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.MediaType;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,24 +43,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.ThemedImagePickerActivity;
-import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.FileAttachment;
+import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
-import catchla.yep.model.NewAttachment;
-import catchla.yep.model.NewAudioAttachment;
-import catchla.yep.model.NewImageAttachment;
 import catchla.yep.model.NewMessage;
-import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
+import catchla.yep.util.http.FileRequestBody;
 import catchla.yep.util.task.SendMessageTask;
+import okio.Okio;
 
 /**
  * Input bar component for chat activities
@@ -220,7 +219,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
     private void sendLocation() {
         sendMessage(new SendMessageHandler() {
             @Override
-            public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final Location location = Utils.getCachedLocation(getContext());
                 if (location == null) return null;
                 message.location(location.getLatitude(), location.getLongitude());
@@ -238,17 +237,14 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
     private void sendImage(final Uri imageUri) {
         sendMessage(new SendMessageHandler() {
             @Override
-            public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
-
-                final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
-                final OkHttpClient client = YepAPIFactory.getOkHttpClient(getContext());
                 try {
-                    Utils.uploadToS3(client, token, new File(path));
-                } catch (IOException e) {
+                    return yep.uploadAttachment(FileRequestBody.create(new File(path)),
+                            YepAPI.AttachableType.MESSAGE, message.getMetadataValue("metadata", null));
+                } catch (FileNotFoundException e) {
                     throw new YepException(e);
                 }
-                return new NewImageAttachment(token, message.getMetadataValue("metadata", null));
             }
 
             @Nullable
@@ -287,7 +283,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             }
 
             @Override
-            protected NewAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+            protected IdResponse uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
                 return sendMessageHandler.uploadAttachment(yep, newMessage);
             }
 
@@ -324,7 +320,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
 
     static abstract class SendMessageHandler {
         @Nullable
-        NewAttachment uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
+        IdResponse uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
             return null;
         }
 
@@ -495,15 +491,16 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 }
 
                 @Override
-                public NewAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
-                    final S3UploadToken token = yep.getS3UploadToken(YepAPI.AttachmentKind.MESSAGE);
-                    final OkHttpClient client = YepAPIFactory.getOkHttpClient(mFragment.getContext());
+                public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     try {
-                        Utils.uploadToS3(client, token, new File(recordPath));
-                    } catch (IOException e) {
+                        final File file = new File(recordPath);
+                        final FileRequestBody body = new FileRequestBody(Okio.source(file),
+                                "audio.m4a", MediaType.parse("audio/mp4"), file.length());
+                        return yep.uploadAttachment(body, YepAPI.AttachableType.MESSAGE,
+                                message.getMetadataValue("metadata", null));
+                    } catch (FileNotFoundException e) {
                         throw new YepException(e);
                     }
-                    return new NewAudioAttachment(token, message.getMetadataValue("metadata", null));
                 }
 
                 @Override

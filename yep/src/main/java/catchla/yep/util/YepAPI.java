@@ -2,9 +2,12 @@ package catchla.yep.util;
 
 import android.support.annotation.StringDef;
 
+import com.squareup.okhttp.RequestBody;
+
 import java.util.ArrayList;
 
 import catchla.yep.model.AccessToken;
+import catchla.yep.model.AvatarResponse;
 import catchla.yep.model.Circle;
 import catchla.yep.model.Client;
 import catchla.yep.model.ContactUpload;
@@ -13,6 +16,7 @@ import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.GithubUserInfo;
+import catchla.yep.model.IdResponse;
 import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.MarkAsReadResult;
 import catchla.yep.model.Message;
@@ -36,9 +40,11 @@ import retrofit.http.Field;
 import retrofit.http.FieldMap;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.Multipart;
 import retrofit.http.PATCH;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
@@ -84,6 +90,10 @@ public interface YepAPI {
 
     @GET("v1/user")
     User getUser() throws YepException;
+
+    @POST("v1/user/set_avatar")
+    @Multipart
+    AvatarResponse setAvatar(@Part("file") RequestBody file) throws YepException;
 
     @GET("v1/users/{id}")
     User showUser(@Path("id") String userId) throws YepException;
@@ -149,6 +159,12 @@ public interface YepAPI {
     @GET("v1/attachments/{kind}/s3_upload_form_fields")
     S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
 
+    @POST("v1/attachments")
+    @Multipart
+    IdResponse uploadAttachment(@Part("file") RequestBody file,
+                                @AttachableType @Part("attachable_type") String attachableType,
+                                @Part("metadata") String metadata) throws YepException;
+
     @POST("v1/contacts/upload")
     @FormUrlEncoded
     ArrayList<User> uploadContact(@Field("contacts") ContactUpload contactUpload) throws YepException;
@@ -208,10 +224,17 @@ public interface YepAPI {
     @GET("v1/circles")
     ResponseList<Circle> getCircles(@QueryMap Paging paging) throws YepException;
 
-    interface AttachmentKind {
+
+    @interface AttachmentKind {
         String MESSAGE = "message";
         String TOPIC = "topic";
         String AVATAR = "avatar";
+    }
+
+    @StringDef({AttachableType.MESSAGE, AttachableType.TOPIC})
+    @interface AttachableType {
+        String MESSAGE = "Message";
+        String TOPIC = "Topic";
     }
 
     @StringDef({PathRecipientType.USERS, PathRecipientType.CIRCLES})

@@ -35,8 +35,8 @@ public class NewMessage implements JsonBody {
     String textContent;
     @JsonField(name = "media_type")
     String mediaType;
-    @JsonField(name = "attachments")
-    NewAttachment attachments;
+    @JsonField(name = "attachment_id")
+    String attachmentId;
 
     public NewMessage recipientId(String recipientId) {
         this.recipientId = recipientId;
@@ -119,10 +119,10 @@ public class NewMessage implements JsonBody {
         return textContent;
     }
 
-    public <T extends NewAttachment> void attachment(final T attachments) {
-        if (attachments == null) return;
+    public void attachmentId(final String attachmentId) {
+        if (attachmentId == null) return;
         //noinspection unchecked
-        this.attachments = attachments;
+        this.attachmentId = attachmentId;
     }
 
     public String mediaType() {

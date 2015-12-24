@@ -8,22 +8,8 @@ import android.support.v4.util.ArrayMap;
  */
 public class ProfileUpdate extends ArrayMap<String, String> {
 
-    private Uri avatarUri;
-
     public void setNickname(String nickname) {
         put("nickname", nickname);
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        put("avatar_url", avatarUrl);
-    }
-
-    public Uri getAvatarUri() {
-        return avatarUri;
-    }
-
-    public void setAvatarUri(Uri avatarUri) {
-        this.avatarUri = avatarUri;
     }
 
     public void setUsername(String username) {

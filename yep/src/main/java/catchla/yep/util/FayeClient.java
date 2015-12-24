@@ -3,6 +3,13 @@ package catchla.yep.util;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.simple.tree.JsonArray;
+import com.fasterxml.jackson.simple.tree.JsonBoolean;
+import com.fasterxml.jackson.simple.tree.JsonNumber;
+import com.fasterxml.jackson.simple.tree.JsonString;
+import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -15,14 +22,16 @@ import com.squareup.okhttp.ws.WebSocketListener;
 import org.jdeferred.DoneCallback;
 import org.jdeferred.impl.DeferredObject;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import catchla.yep.BuildConfig;
@@ -155,6 +164,8 @@ public class FayeClient implements Constants {
             webSocket.close(1000, "OK");
             wantClose = true;
             throw e;
+        } catch (IllegalStateException e) {
+            if (BuildConfig.DEBUG) Log.w(LOGTAG, e);
         }
     }
 
@@ -211,85 +222,85 @@ public class FayeClient implements Constants {
     }
 
     public static class Message {
-        private final JSONObject json;
+
+        private final static SimpleTreeCodec codec = new SimpleTreeCodec();
+        private final Map<String, TreeNode> json;
 
         public Message() {
-            this(new JSONObject());
+            this(new LinkedHashMap<String, TreeNode>());
         }
 
-        public Message(final JSONObject json) {
+        public Message(final TreeNode json) {
+            this(toMap(json));
+        }
+
+        private static Map<String, TreeNode> toMap(final TreeNode json) {
+            final LinkedHashMap<String, TreeNode> map = new LinkedHashMap<>();
+            final Iterator<String> fieldNames = json.fieldNames();
+            while (fieldNames.hasNext()) {
+                final String fieldName = fieldNames.next();
+                map.put(fieldName, json.get(fieldName));
+            }
+            return map;
+        }
+
+        public Message(final Map<String, TreeNode> json) {
             this.json = json;
         }
 
-        public static Message[] parse(String str) throws IOException {
+        public static <T> T getAs(TreeNode node, Class<T> cls) {
             try {
-                final JSONArray json = new JSONArray(str);
-                final Message[] message = new Message[json.length()];
-                for (int i = 0; i < message.length; i++) {
-                    message[i] = new Message(json.getJSONObject(i));
-                }
-                return message;
-            } catch (JSONException e) {
-                throw new IOException(e);
+                return LoganSquare.mapperFor(cls).parse(codec.treeAsTokens(node));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+        }
+
+        public static Message[] parse(String str) throws IOException {
+            SimpleTreeCodec codec = new SimpleTreeCodec();
+            TreeNode json = codec.readTree(LoganSquare.JSON_FACTORY.createParser(str));
+            final Message[] message = new Message[json.size()];
+            for (int i = 0; i < message.length; i++) {
+                message[i] = new Message(json.get(i));
+            }
+            return message;
         }
 
         public void put(String key, String value) {
-            putInternal(key, value);
+            json.put(key, new JsonString(value));
         }
 
-        public void put(String key, JSONObject value) {
-            putInternal(key, value);
+        public void put(String key, TreeNode value) {
+            json.put(key, value);
         }
 
-        private void putInternal(final String key, final Object value) {
-            try {
-                json.put(key, value);
-            } catch (JSONException e) {
-                // Ignore
-            }
-        }
 
         public String getId() {
-            try {
-                return json.getString("id");
-            } catch (JSONException e) {
-                return null;
-            }
+            return getString("id");
         }
 
         public boolean isSuccessful() {
-            return json.optBoolean("successful", true);
+            return getJson("successful") == JsonBoolean.TRUE;
         }
 
-        public String getString(String key) {
-            return json.optString(key, null);
-        }
-
-        public JSONObject getJSONObject(String key) {
-            return json.optJSONObject(key);
+        public TreeNode getJson(String key) {
+            return json.get(key);
         }
 
         void setId(final String id) {
-            putInternal("id", id);
+            put("id", id);
         }
 
         public String getChannel() {
-            try {
-                return json.getString("channel");
-            } catch (JSONException e) {
-                return null;
-            }
+            return getString("channel");
+        }
+
+        private String getString(String name) {
+            return ((JsonString) json.get(name)).getValue();
         }
 
         void setChannel(final String id) {
-            putInternal("channel", id);
-        }
-
-        public String toJson() {
-            final JSONArray array = new JSONArray();
-            array.put(json);
-            return array.toString();
+            put("channel", id);
         }
 
         @Override
@@ -300,19 +311,19 @@ public class FayeClient implements Constants {
         }
 
         void setVersion(final String version) {
-            putInternal("version", version);
+            put("version", version);
         }
 
         void setSupportedConnectionTypes(final String[] supportedConnectionTypes) {
-            final JSONArray typesJson = new JSONArray();
+            final List<TreeNode> values = new LinkedList<>();
             for (final String supportedConnectionType : supportedConnectionTypes) {
-                typesJson.put(supportedConnectionType);
+                values.add(new JsonString(supportedConnectionType));
             }
-            putInternal("supportedConnectionTypes", typesJson);
+            put("supportedConnectionTypes", new JsonArray(values));
         }
 
         void setClientId(final String clientId) {
-            putInternal("clientId", clientId);
+            put("clientId", clientId);
         }
 
         public static String toJson(final Message[] messages) {
@@ -324,24 +335,12 @@ public class FayeClient implements Constants {
         }
 
         public Advice getAdvice() {
-            try {
-                return new Advice(json.getJSONObject("advice"));
-            } catch (JSONException e) {
-                return null;
-            }
+            return new Advice(json.get("advice"));
         }
 
 
         void setConnectionType(final String type) {
-            putInternal("connectionType", type);
-        }
-
-        public static Message create(final String json) {
-            try {
-                return new Message(new JSONObject(json));
-            } catch (JSONException e) {
-                return null;
-            }
+            put("connectionType", type);
         }
 
         public class Advice {
@@ -350,10 +349,17 @@ public class FayeClient implements Constants {
             long interval;
             long timeout;
 
-            public Advice(final JSONObject json) {
-                reconnect = json.optString("reconnect");
-                interval = json.optLong("interval");
-                timeout = json.optLong("timeout");
+            public Advice(final TreeNode json) {
+                if (json == null) return;
+                if (!json.path("reconnect").isMissingNode()) {
+                    reconnect = ((JsonString) json.path("reconnect")).getValue();
+                }
+                if (!json.path("interval").isMissingNode()) {
+                    interval = ((JsonNumber) json.path("interval")).getValue().longValue();
+                }
+                if (!json.path("timeout").isMissingNode()) {
+                    timeout = ((JsonNumber) json.path("timeout")).getValue().longValue();
+                }
             }
         }
     }

@@ -172,8 +172,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
             update.setNickname(String.valueOf(mEditNickname.getText()));
             update.setIntroduction(String.valueOf(mEditIntroduction.getText()));
             update.setUsername(String.valueOf(mEditUsername.getText()));
-            update.setAvatarUri(mProfileImageUri);
-            mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this), update);
+            mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this), update, mProfileImageUri);
             mTask.execute();
             return;
         }

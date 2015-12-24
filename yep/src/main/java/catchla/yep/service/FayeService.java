@@ -12,17 +12,24 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.bluelinelabs.logansquare.JsonMapper;
+import com.bluelinelabs.logansquare.LoganSquare;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.simple.tree.JsonObject;
+import com.fasterxml.jackson.simple.tree.JsonString;
+import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
+import com.fasterxml.jackson.simple.tree.TokenBufferTrojan;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.otto.Bus;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -35,7 +42,6 @@ import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.FayeClient;
-import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.dagger.ApplicationModule;
@@ -74,14 +80,10 @@ public class FayeService extends Service implements Constants {
 
             @Override
             public void processOutgoing(final FayeClient.Message message) {
-                JSONObject ext = new JSONObject();
-                try {
-                    ext.put("version", "v1");
-                    ext.put("access_token", authToken);
-                    message.put("ext", ext);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                LinkedHashMap<String, TreeNode> nodes = new LinkedHashMap<>();
+                nodes.put("version", new JsonString("v1"));
+                nodes.put("access_token", new JsonString(authToken));
+                message.put("ext", new JsonObject(nodes));
             }
         });
         final String userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId);
@@ -124,15 +126,13 @@ public class FayeService extends Service implements Constants {
                     Log.w(LOGTAG, "Received error from faye, " + message.toString());
                     return;
                 }
-                final JSONObject data = message.getJSONObject("data");
-                final String msgType = data.optString("message_type");
+                final TreeNode data = message.getJson("data");
+                final String msgType = ((JsonString) data.get("message_type")).getValue();
                 if ("message".equals(msgType)) {
-                    Message imMessage = JsonSerializer.parse(data.optJSONObject("message").toString(),
-                            Message.class);
+                    Message imMessage = FayeClient.Message.getAs(data.get("message"), Message.class);
                     MessageService.insertMessages(FayeService.this, Collections.singleton(imMessage), accountId);
                 } else if ("mark_as_read".equals(msgType)) {
-                    MarkAsReadMessage markAsRead = JsonSerializer.parse(data.optJSONObject("message").toString(),
-                            MarkAsReadMessage.class);
+                    MarkAsReadMessage markAsRead = FayeClient.Message.getAs(data.get("message"), MarkAsReadMessage.class);
                     if (markAsRead != null) {
                         final ContentValues values = new ContentValues();
                         values.put(Messages.STATE, Messages.MessageState.READ);
@@ -145,8 +145,7 @@ public class FayeService extends Service implements Constants {
                         getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
                     }
                 } else if ("instant_state".equals(msgType)) {
-                    InstantStateMessage instantState = JsonSerializer.parse(data.optJSONObject("message").toString(),
-                            InstantStateMessage.class);
+                    InstantStateMessage instantState = FayeClient.Message.getAs(data.get("message"), InstantStateMessage.class);
                     if (instantState != null) {
                         postMessage(instantState);
                     }
@@ -190,13 +189,17 @@ public class FayeService extends Service implements Constants {
             @Override
             public void run() {
                 try {
-                    final JSONObject json = new JSONObject();
-                    final JSONObject data = new JSONObject();
-                    data.put("message_type", messageType);
-                    data.put("message", new JSONObject(JsonSerializer.serialize(message)));
-                    json.put("data", data);
-                    mFayeClient.publish(channel, new FayeClient.Message(json), null);
-                } catch (JSONException | IOException e) {
+                    final LinkedHashMap<String, TreeNode> data = new LinkedHashMap<>();
+                    data.put("message_type", new JsonString(messageType));
+                    final JsonGenerator generator = TokenBufferTrojan.createTokenBuffer(null, true);
+                    final SimpleTreeCodec codec = new SimpleTreeCodec();
+                    final JsonMapper jsonMapper = LoganSquare.mapperFor(message.getClass());
+                    //noinspection unchecked
+                    jsonMapper.serialize(message, generator, true);
+                    data.put("message", codec.readTree(TokenBufferTrojan.asParser(generator)));
+                    mFayeClient.publish(channel, new FayeClient.Message(new JsonObject(
+                            Collections.<String, TreeNode>singletonMap("data", new JsonObject(data)))), null);
+                } catch (IOException e) {
                     Log.w(LOGTAG, e);
                 }
             }

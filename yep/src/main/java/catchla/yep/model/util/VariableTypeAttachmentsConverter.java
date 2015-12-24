@@ -2,6 +2,7 @@ package catchla.yep.model.util;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.bluelinelabs.logansquare.JsonMapper;
@@ -51,7 +52,12 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
             TreeNode treeNode = codec.readTree(jsonParser);
             for (int i = 0; i < treeNode.size(); i++) {
                 TreeNode child = treeNode.get(i);
-                final String kind = ((JsonString) child.get("kind")).getValue();
+                final JsonString kindNode = (JsonString) child.get("kind");
+                if (kindNode == null) {
+                    codec.writeTree(LoganSquare.JSON_FACTORY.createGenerator(System.err), child);
+                    continue;
+                }
+                final String kind = kindNode.getValue();
                 Attachment instance;
                 switch (kind) {
                     case "dribbble":
@@ -111,8 +117,9 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
 
     @Override
     public List<Attachment> parseField(final Cursor cursor, final int columnIndex, final ParameterizedType fieldType) {
+        final String json = cursor.getString(columnIndex);
+        if (TextUtils.isEmpty(json)) return null;
         try {
-            final String json = cursor.getString(columnIndex);
             return parse(LoganSquare.JSON_FACTORY.createParser(json));
         } catch (IOException e) {
             if (e instanceof JsonProcessingException && BuildConfig.DEBUG) {
@@ -130,6 +137,9 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
             serialize(object, null, false, LoganSquare.JSON_FACTORY.createGenerator(sw));
             values.put(columnName, sw.toString());
         } catch (IOException e) {
+            if (BuildConfig.DEBUG) {
+                Log.w(LOGTAG, e);
+            }
             // Ignore
         } finally {
             Utils.closeSilently(sw);

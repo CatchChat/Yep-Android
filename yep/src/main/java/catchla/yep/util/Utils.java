@@ -38,14 +38,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.otto.Bus;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -64,14 +59,12 @@ import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
-import catchla.yep.model.S3UploadToken;
 import catchla.yep.model.Skill;
 import catchla.yep.model.User;
 import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -304,10 +297,6 @@ public class Utils implements Constants {
         }
     }
 
-    public static Response uploadToS3(OkHttpClient client, S3UploadToken token, File file) throws IOException {
-        return uploadToS3(client, token, FileRequestBody.create(file));
-    }
-
     public static Location getCachedLocation(Context context) {
         Location location = null;
         try {
@@ -326,30 +315,6 @@ public class Utils implements Constants {
         } catch (Exception ignore) {
         }
         return location;
-    }
-
-    public static Response uploadToS3(OkHttpClient client, S3UploadToken token, FileRequestBody file) throws IOException {
-        final S3UploadToken.Options options = token.getOptions();
-        final S3UploadToken.Policy policy = options.getPolicy();
-        final MultipartBuilder bodyBuilder = new MultipartBuilder();
-        final String key = policy.getCondition("key");
-        final String acl = policy.getCondition("acl");
-        final String algorithm = policy.getCondition("x-amz-algorithm");
-        final String credential = policy.getCondition("x-amz-credential");
-        final String date = policy.getCondition("x-amz-date");
-        assert key != null && acl != null && algorithm != null && credential != null && date != null;
-        bodyBuilder.addFormDataPart("key", key);
-        bodyBuilder.addFormDataPart("acl", acl);
-        bodyBuilder.addFormDataPart("X-Amz-Algorithm", algorithm);
-        bodyBuilder.addFormDataPart("X-Amz-Signature", options.getSignature());
-        bodyBuilder.addFormDataPart("X-Amz-Date", date);
-        bodyBuilder.addFormDataPart("X-Amz-Credential", credential);
-        bodyBuilder.addFormDataPart("Policy", options.getEncodedPolicy());
-        bodyBuilder.addFormDataPart("file", file.getFileName(), file);
-        final Request.Builder builder = new Request.Builder();
-        builder.method("POST", bodyBuilder.build());
-        builder.url(options.getUrl());
-        return client.newCall(builder.build()).execute();
     }
 
     public static void openSettings(Context context, Account account) {

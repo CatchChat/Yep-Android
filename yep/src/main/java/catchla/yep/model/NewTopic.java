@@ -3,6 +3,8 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.List;
+
 import catchla.yep.model.iface.JsonBody;
 
 /**
@@ -16,7 +18,7 @@ public class NewTopic implements JsonBody {
     @JsonField(name = "skill_id")
     String skillId;
     @JsonField(name = "attachments")
-    NewAttachment attachments;
+    List<IdResponse> attachments;
     @JsonField(name = "latitude")
     double latitude;
     @JsonField(name = "longitude")
@@ -32,7 +34,7 @@ public class NewTopic implements JsonBody {
         return this;
     }
 
-    public <T extends NewAttachment> void attachment(final T attachments) {
+    public void attachments(final List<IdResponse> attachments) {
         if (attachments == null) return;
         this.attachments = attachments;
     }

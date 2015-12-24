@@ -286,20 +286,26 @@ public class MessageService extends Service implements Constants {
         if (!Message.RecipientType.CIRCLE.equals(message.getRecipientType())) return null;
         Circle circle = message.getCircle();
         // First try to load from database
-        if (circle.getTopic() == null) {
-            final String where = Expression.and(Expression.equalsArgs(Circles.ACCOUNT_ID),
-                    Expression.equalsArgs(Circles.CIRCLE_ID)).getSQL();
-            String[] whereArgs = {accountId, circle.getId()};
-            final Cursor c = context.getContentResolver().query(Circles.CONTENT_URI,
-                    Circles.COLUMNS, where, whereArgs, null);
-            try {
-                if (c != null && c.moveToFirst()) {
-                    final CircleCursorIndices ci = new CircleCursorIndices(c);
-                    circle = ci.newObject(c);
-                }
-            } finally {
-                Utils.closeSilently(c);
+        final String circleId;
+        if (circle == null) {
+            circleId = message.getRecipientId();
+        } else if (circle.getTopic() == null) {
+            circleId = circle.getId();
+        } else {
+            return JsonSerializer.serialize(circle, Circle.class);
+        }
+        final String where = Expression.and(Expression.equalsArgs(Circles.ACCOUNT_ID),
+                Expression.equalsArgs(Circles.CIRCLE_ID)).getSQL();
+        String[] whereArgs = {accountId, circleId};
+        final Cursor c = context.getContentResolver().query(Circles.CONTENT_URI,
+                Circles.COLUMNS, where, whereArgs, null);
+        try {
+            if (c != null && c.moveToFirst()) {
+                final CircleCursorIndices ci = new CircleCursorIndices(c);
+                circle = ci.newObject(c);
             }
+        } finally {
+            Utils.closeSilently(c);
         }
         return JsonSerializer.serialize(circle, Circle.class);
     }
