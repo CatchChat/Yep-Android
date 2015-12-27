@@ -12,7 +12,6 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
-import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
 
 import java.util.List;
 
@@ -68,6 +67,10 @@ public class User implements Parcelable {
     @JsonField(name = "avatar_url")
     @CursorField(Users.AVATAR_URL)
     String avatarUrl;
+    @ParcelableThisPlease
+    @JsonField(name = "avatar_thumb_url")
+    @CursorField(Users.AVATAR_THUMB_URL)
+    String avatarThumbUrl;
     @ParcelableThisPlease
     @JsonField(name = "avatar")
     Avatar avatar;
@@ -241,6 +244,10 @@ public class User implements Parcelable {
             location = null;
         } else {
             location = new LatLng(latitude, longitude);
+        }
+        if (avatar != null) {
+            avatarUrl = avatar.url;
+            avatarThumbUrl = avatar.thumbUrl;
         }
     }
 
