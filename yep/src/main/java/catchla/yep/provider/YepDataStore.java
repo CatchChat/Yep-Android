@@ -119,6 +119,7 @@ public interface YepDataStore {
         String NICKNAME = "nickname";
         String INTRODUCTION = "introduction";
         String AVATAR_URL = "avatar_url";
+        String AVATAR_THUMB_URL = "avatar_thumb_url";
         String MOBILE = "mobile";
         String PHONE_CODE = "phone_code";
         String CONTACT_NAME = "contact_name";
@@ -127,10 +128,10 @@ public interface YepDataStore {
         String PROVIDERS = "providers";
 
         String[] COLUMNS = {_ID, ACCOUNT_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
-                PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS};
+                PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS, AVATAR_THUMB_URL};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
+                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
 
     }
 

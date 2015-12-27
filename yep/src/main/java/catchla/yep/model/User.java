@@ -10,16 +10,22 @@ import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
+import org.mariotaku.library.objectcursor.annotation.CursorField;
+import org.mariotaku.library.objectcursor.annotation.CursorObject;
+import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
+
 import java.util.List;
 
 import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
+import catchla.yep.provider.YepDataStore.Users;
 
 /**
  * Created by mariotaku on 15/5/8.
  */
 @ParcelablePlease
 @JsonObject
+@CursorObject(valuesCreator = true)
 public class User implements Parcelable {
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -36,39 +42,50 @@ public class User implements Parcelable {
 
     @ParcelableThisPlease
     @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
+    @CursorField(Users.MASTER_SKILLS)
     List<Skill> masterSkills;
     @ParcelableThisPlease
     @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
+    @CursorField(Users.LEARNING_SKILLS)
     List<Skill> learningSkills;
     @ParcelableThisPlease
     @JsonField(name = "id")
+    @CursorField(Users.FRIEND_ID)
     String id;
     @ParcelableThisPlease
     @JsonField(name = "username")
+    @CursorField(Users.USERNAME)
     String username;
     @ParcelableThisPlease
     @JsonField(name = "nickname")
+    @CursorField(Users.NICKNAME)
     String nickname;
     @ParcelableThisPlease
     @JsonField(name = "introduction")
+    @CursorField(Users.INTRODUCTION)
     String introduction;
     @ParcelableThisPlease
     @JsonField(name = "avatar_url")
+    @CursorField(Users.AVATAR_URL)
     String avatarUrl;
     @ParcelableThisPlease
     @JsonField(name = "avatar")
     Avatar avatar;
     @ParcelableThisPlease
     @JsonField(name = "mobile")
+    @CursorField(Users.MOBILE)
     String mobile;
     @ParcelableThisPlease
     @JsonField(name = "phone_code")
+    @CursorField(Users.PHONE_CODE)
     String phoneCode;
     @ParcelableThisPlease
     @JsonField(name = "contact_name")
+    @CursorField(Users.CONTACT_NAME)
     String contactName;
     @ParcelableThisPlease
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
+    @CursorField(Users.PROVIDERS)
     List<Provider> providers;
     @ParcelableThisPlease
     @JsonField(name = "latitude")

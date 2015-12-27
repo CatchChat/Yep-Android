@@ -4,9 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
+import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -207,5 +212,24 @@ public class Topic implements Parcelable {
         String LOCATION = "location";
         String IMAGE = "image";
         String TEXT = "text";
+    }
+
+    public static class Converter implements TypeConverter<Topic> {
+        @Override
+        public Topic parse(final JsonParser jsonParser) throws IOException {
+            return LoganSquare.mapperFor(Topic.class).parse(jsonParser);
+        }
+
+        @Override
+        public void serialize(final Topic object, final String fieldName, final boolean writeFieldNameForObject, final JsonGenerator jsonGenerator) throws IOException {
+            if (writeFieldNameForObject) {
+                jsonGenerator.writeFieldName(fieldName);
+            }
+            if (object == null) {
+                jsonGenerator.writeNull();
+            } else {
+                LoganSquare.mapperFor(Topic.class).serialize(object, jsonGenerator, true);
+            }
+        }
     }
 }

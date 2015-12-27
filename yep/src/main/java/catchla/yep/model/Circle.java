@@ -39,7 +39,7 @@ public class Circle implements Parcelable {
     @CursorField(Circles.TOPIC_ID)
     String topicId;
     @ParcelableThisPlease
-    @JsonField(name = "topic")
+    @JsonField(name = "topic", typeConverter = Topic.Converter.class)
     @CursorField(value = Circles.TOPIC, converter = LoganSquareCursorFieldConverter.class)
     Topic topic;
 
