@@ -102,4 +102,6 @@
     <string name="typing">Typing</string>
     <string name="distance">Distance</string>
     <string name="time">Time</string>
+    <string name="unable_to_create_topic">Unable to create topic</string>
+    <string name="unable_to_update_profile">Unable to update profile</string>
 </resources>

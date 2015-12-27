@@ -11,10 +11,9 @@ import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 
+import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.ResponseCode;
 import retrofit.Converter;
 
@@ -24,25 +23,18 @@ import retrofit.Converter;
 public class LoganSquareConverterFactory extends Converter.Factory {
 
     private static final SimpleArrayMap<Type, Converter<ResponseBody, ?>> sResponseConverters = new SimpleArrayMap<>();
+    private static final SimpleArrayMap<Type, Converter<?, RequestBody>> sRequestConverters = new SimpleArrayMap<>();
 
     static {
+        sRequestConverters.put(AttachmentUpload.class, new AttachmentUpload.Converter());
         sResponseConverters.put(ResponseCode.class, new ResponseCode.Converter());
     }
 
     @Override
     public Converter<?, RequestBody> toRequestBody(final Type type, final Annotation[] annotations) {
-        if (type instanceof Class) {
-            return new ObjectSerializeConverter((Class<?>) type);
-        } else if (type instanceof ParameterizedType) {
-//            final Type rawType = ((ParameterizedType) type).getRawType();
-//            if (rawType instanceof Class) {
-//                final Class<?> rawCls = (Class<?>) rawType;
-//                if (List.class.isAssignableFrom(rawCls)) {
-//                    return new ListSerializeConverter(rawCls, ((ParameterizedType) type).getActualTypeArguments()[0]);
-//                }
-//            }
-        }
-        return null;
+        final Converter<?, RequestBody> converter = sRequestConverters.get(type);
+        if (converter != null) return converter;
+        return new ObjectSerializeConverter(type);
     }
 
     @Override
@@ -66,15 +58,15 @@ public class LoganSquareConverterFactory extends Converter.Factory {
     }
 
     private class ObjectSerializeConverter implements Converter<Object, RequestBody> {
-        private final Class<?> type;
+        private final Type type;
 
-        public ObjectSerializeConverter(final Class<?> type) {
+        public ObjectSerializeConverter(final Type type) {
             this.type = type;
         }
 
         @Override
         public RequestBody convert(final Object value) throws IOException {
-            final JsonMapper jsonMapper = LoganSquare.mapperFor(type);
+            final JsonMapper jsonMapper = LoganSquare.mapperFor(ParameterizedTypeTrojan.create(type));
             //noinspection unchecked
             return RequestBody.create(MediaType.parse("application/json"), jsonMapper.serialize(value));
         }

@@ -27,7 +27,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -436,13 +435,10 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
             final Attachment media = mMedia[position];
             final Bundle args = new Bundle();
             args.putParcelable(EXTRA_MEDIA, media);
-            if ("image".equals(media.getKind())) {
-                if (ANIMATED_GIF_SUPPORTED) {
-                    return Fragment.instantiate(mActivity, ImagePageFragment.class.getName(), args);
-                }
-                return Fragment.instantiate(mActivity, BaseImagePageFragment.class.getName(), args);
+            if (ANIMATED_GIF_SUPPORTED) {
+                return Fragment.instantiate(mActivity, ImagePageFragment.class.getName(), args);
             }
-            throw new UnsupportedOperationException("Unsupported attachment kind  " + media.getKind());
+            return Fragment.instantiate(mActivity, BaseImagePageFragment.class.getName(), args);
         }
 
         public void setMedia(Attachment[] media) {

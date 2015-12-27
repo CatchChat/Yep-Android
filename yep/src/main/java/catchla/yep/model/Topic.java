@@ -200,10 +200,12 @@ public class Topic implements Parcelable {
         String TIME = "time";
     }
 
+    @StringDef({Kind.GITHUB, Kind.DRIBBBLE, Kind.LOCATION, Kind.IMAGE, Kind.TEXT})
     public @interface Kind {
         String GITHUB = "github";
         String DRIBBBLE = "dribbble";
         String LOCATION = "location";
         String IMAGE = "image";
+        String TEXT = "text";
     }
 }

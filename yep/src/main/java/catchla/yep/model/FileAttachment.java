@@ -125,6 +125,7 @@ public class FileAttachment extends Attachment implements Parcelable {
         int height;
         @JsonField(name = "blurred_thumbnail_string")
         String blurredThumbnail;
+        String mimeType;
 
         public static ImageMetadata getImageMetadata(final String imagePath) {
             final BitmapFactory.Options o = new BitmapFactory.Options();
@@ -139,6 +140,7 @@ public class FileAttachment extends Attachment implements Parcelable {
             } catch (IOException ignore) {
 
             }
+            metadata.setMimeType(o.outMimeType);
             metadata.setWidth(swapWH ? o.outHeight : o.outWidth);
             metadata.setHeight(swapWH ? o.outWidth : o.outHeight);
             o.inJustDecodeBounds = false;
@@ -157,6 +159,14 @@ public class FileAttachment extends Attachment implements Parcelable {
                 Utils.closeSilently(os);
             }
             return metadata;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(final String mimeType) {
+            this.mimeType = mimeType;
         }
 
         public int getWidth() {

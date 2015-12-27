@@ -30,12 +30,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.desmond.asyncmanager.AsyncManager;
-import com.squareup.okhttp.MediaType;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.ThemedImagePickerActivity;
+import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.IdResponse;
@@ -56,9 +55,7 @@ import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.http.FileRequestBody;
 import catchla.yep.util.task.SendMessageTask;
-import okio.Okio;
 
 /**
  * Input bar component for chat activities
@@ -239,23 +236,21 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             @Override
             public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
-                try {
-                    return yep.uploadAttachment(FileRequestBody.create(new File(path)),
-                            YepAPI.AttachableType.MESSAGE, message.getMetadataValue("metadata", null));
-                } catch (FileNotFoundException e) {
-                    throw new YepException(e);
-                }
+                return yep.uploadAttachment(AttachmentUpload.create(new File(path),
+                        message.getMetadataValue("mime_type", null), YepAPI.AttachableType.MESSAGE,
+                        message.getMetadataValue("metadata", null)));
             }
 
             @Nullable
             @Override
             Message.LocalMetadata[] getLocalMetadata(final NewMessage newMessage) {
-                Message.LocalMetadata[] metadata = new Message.LocalMetadata[2];
+                Message.LocalMetadata[] metadata = new Message.LocalMetadata[3];
                 final String path = imageUri.getPath();
-                final String imageMetadata = JsonSerializer.serialize(FileAttachment.ImageMetadata.getImageMetadata(path),
-                        FileAttachment.ImageMetadata.class);
+                final FileAttachment.ImageMetadata imageMetadata = FileAttachment.ImageMetadata.getImageMetadata(path);
                 metadata[0] = new Message.LocalMetadata("image", imageUri.toString());
-                metadata[1] = new Message.LocalMetadata("metadata", imageMetadata);
+                metadata[1] = new Message.LocalMetadata("mime_type", imageMetadata.getMimeType());
+                metadata[2] = new Message.LocalMetadata("metadata", JsonSerializer.serialize(imageMetadata,
+                        FileAttachment.ImageMetadata.class));
                 return metadata;
             }
 
@@ -492,15 +487,9 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
 
                 @Override
                 public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
-                    try {
-                        final File file = new File(recordPath);
-                        final FileRequestBody body = new FileRequestBody(Okio.source(file),
-                                "audio.m4a", MediaType.parse("audio/mp4"), file.length());
-                        return yep.uploadAttachment(body, YepAPI.AttachableType.MESSAGE,
-                                message.getMetadataValue("metadata", null));
-                    } catch (FileNotFoundException e) {
-                        throw new YepException(e);
-                    }
+                    final File file = new File(recordPath);
+                    return yep.uploadAttachment(AttachmentUpload.create(file, "audio/mp4",
+                            YepAPI.AttachableType.MESSAGE, message.getMetadataValue("metadata", null)));
                 }
 
                 @Override

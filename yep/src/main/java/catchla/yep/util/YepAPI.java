@@ -7,6 +7,7 @@ import com.squareup.okhttp.RequestBody;
 import java.util.ArrayList;
 
 import catchla.yep.model.AccessToken;
+import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.AvatarResponse;
 import catchla.yep.model.Circle;
 import catchla.yep.model.Client;
@@ -93,7 +94,10 @@ public interface YepAPI {
 
     @POST("user/set_avatar")
     @Multipart
-    AvatarResponse setAvatar(@Part("file") RequestBody file) throws YepException;
+    AvatarResponse setAvatar(@Part("avatar") RequestBody file) throws YepException;
+
+    @PATCH("user/set_avatar")
+    AvatarResponse setAvatarRaw(@Body RequestBody file) throws YepException;
 
     @GET("users/{id}")
     User showUser(@Path("id") String userId) throws YepException;
@@ -164,6 +168,9 @@ public interface YepAPI {
     IdResponse uploadAttachment(@Part("file") RequestBody file,
                                 @AttachableType @Part("attachable_type") String attachableType,
                                 @Part("metadata") String metadata) throws YepException;
+
+    @POST("attachments")
+    IdResponse uploadAttachment(@Body AttachmentUpload attachmentUpload) throws YepException;
 
     @POST("contacts/upload")
     @FormUrlEncoded

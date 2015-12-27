@@ -47,6 +47,7 @@ import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.fragment.ProgressDialogFragment;
+import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.IdResponse;
 import catchla.yep.model.NewTopic;
@@ -61,7 +62,6 @@ import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/10/13.
@@ -82,11 +82,23 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
     private SharedPreferences mPreferences;
     private boolean mDraftsSaved;
     private boolean mShouldSkipSaveDrafts;
+    private boolean mFragmentResumed;
+
+    @Override
+    protected void onPause() {
+        mFragmentResumed = false;
+        super.onPause();
+    }
 
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
-        if (mDismissUploadingDialogRunnable != null) {
+        mFragmentResumed = true;
+        invokeFragmentRunnable();
+    }
+
+    private void invokeFragmentRunnable() {
+        if (mFragmentResumed && mDismissUploadingDialogRunnable != null) {
             mDismissUploadingDialogRunnable.run();
         }
     }
@@ -230,15 +242,19 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
                     List<IdResponse> files = new ArrayList<>();
                     for (String mediaItem : media) {
                         final String path = Uri.parse(mediaItem).getPath();
-                        final FileAttachment.ImageMetadata metadata = new FileAttachment.ImageMetadata();
-                        final IdResponse attachmentId = yep.uploadAttachment(FileRequestBody.create(new File(path)),
-                                YepAPI.AttachableType.TOPIC, JsonSerializer.serialize(metadata));
+                        final FileAttachment.ImageMetadata metadata = FileAttachment.ImageMetadata.getImageMetadata(path);
+                        final IdResponse attachmentId = yep.uploadAttachment(AttachmentUpload.create(new File(path),
+                                metadata.getMimeType(), YepAPI.AttachableType.TOPIC, JsonSerializer.serialize(metadata)));
                         files.add(attachmentId);
                     }
                     if (!files.isEmpty()) {
                         newTopic.attachments(files);
+                        newTopic.kind(Topic.Kind.IMAGE);
+                    } else {
+                        newTopic.kind(Topic.Kind.TEXT);
                     }
-                    return TaskResponse.getInstance(yep.postTopic(params));
+                    final Topic topic = yep.postTopic(params);
+                    return TaskResponse.getInstance(topic);
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
                 } catch (Throwable t) {
@@ -252,9 +268,9 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             public void callback(final NewTopicActivity handler, final TaskResponse<Topic> response) {
                 if (response.hasData()) {
                     handler.finishPosting();
-                    Log.d(LOGTAG, String.valueOf(response.getData()));
                 } else {
                     handler.dismissUploadingDialog();
+                    Toast.makeText(handler, R.string.unable_to_create_topic, Toast.LENGTH_SHORT).show();
                     if (response.hasException()) {
                         Log.w(LOGTAG, response.getException());
                     }
@@ -280,6 +296,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
                 }
             }
         };
+        invokeFragmentRunnable();
     }
 
     private void finishPosting() {

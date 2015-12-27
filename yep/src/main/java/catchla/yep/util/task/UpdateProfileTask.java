@@ -7,10 +7,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.widget.Toast;
+
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 
 import java.io.File;
-import java.io.IOException;
 
+import catchla.yep.R;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.ProfileUpdate;
 import catchla.yep.model.TaskResponse;
@@ -45,10 +49,13 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
         final ProfileUpdate profileUpdate = mProfileUpdate;
         if (mProfileImageUri != null) {
             try {
-                yep.setAvatar(FileRequestBody.create(new File(mProfileImageUri.getPath())));
+                final File imageFile = new File(mProfileImageUri.getPath());
+                final String mimeType = Utils.getImageMimeType(imageFile);
+                final MultipartBuilder builder = new MultipartBuilder();
+                builder.addFormDataPart("avatar", Utils.getFilename(imageFile, mimeType),
+                        FileRequestBody.create(MediaType.parse(mimeType), imageFile));
+                yep.setAvatarRaw(builder.build());
             } catch (YepException e) {
-                return TaskResponse.getInstance(e);
-            } catch (IOException e) {
                 return TaskResponse.getInstance(e);
             }
         }
@@ -82,6 +89,8 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
             if (mActivity instanceof Callback) {
                 ((Callback) mActivity).onProfileUpdated(result.getData());
             }
+        } else {
+            Toast.makeText(mActivity, R.string.unable_to_update_profile, Toast.LENGTH_SHORT).show();
         }
         super.onPostExecute(result);
     }

@@ -13,6 +13,8 @@ import catchla.yep.model.iface.JsonBody;
 @JsonObject
 public class NewTopic implements JsonBody {
 
+    @JsonField(name = "kind")
+    String kind;
     @JsonField(name = "body")
     String body;
     @JsonField(name = "skill_id")
@@ -26,6 +28,11 @@ public class NewTopic implements JsonBody {
 
     public NewTopic body(String body) {
         this.body = body;
+        return this;
+    }
+
+    public NewTopic kind(String kind) {
+        this.kind = kind;
         return this;
     }
 

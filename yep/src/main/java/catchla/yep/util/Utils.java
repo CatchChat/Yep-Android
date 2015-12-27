@@ -37,15 +37,16 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
 import com.squareup.otto.Bus;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -158,6 +159,14 @@ public class Utils implements Constants {
     }
 
 
+    public static String getImageMimeType(final File image) {
+        if (image == null) return null;
+        final BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(image.getPath(), o);
+        return o.outMimeType;
+    }
+
     @Nullable
     public static User getAccountUser(Context context, Account account) {
         if (account == null) return null;
@@ -169,6 +178,7 @@ public class Utils implements Constants {
         user.setPhoneCode(am.getUserData(account, USER_DATA_COUNTRY_CODE));
         user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
         user.setIntroduction(am.getUserData(account, USER_DATA_INTRODUCTION));
+        user.setUsername(am.getUserData(account, USER_DATA_USERNAME));
         final String learningJson = am.getUserData(account, USER_DATA_LEARNING_SKILLS);
         user.setLearningSkills(JsonSerializer.parseList(learningJson, Skill.class));
         final String masterJson = am.getUserData(account, USER_DATA_MASTER_SKILLS);
@@ -483,5 +493,15 @@ public class Utils implements Constants {
             jsonParser.nextToken();
         }
         return jsonParser;
+    }
+
+    public static String getFilename(File file, String mimeType) {
+        final String name = file.getName();
+        final int dotIndex = name.indexOf(".");
+        final MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        if (dotIndex < 0) {
+            return name + "." + mimeTypeMap.getExtensionFromMimeType(mimeType);
+        }
+        return name.substring(0, dotIndex + 1) + mimeTypeMap.getExtensionFromMimeType(mimeType);
     }
 }

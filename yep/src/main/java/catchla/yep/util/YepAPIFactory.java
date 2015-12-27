@@ -13,6 +13,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
