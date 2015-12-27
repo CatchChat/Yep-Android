@@ -27,6 +27,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    productFlavors {
+        staging {
+            applicationId "catchla.yep.staging"
+            versionName defaultConfig.versionName + "staging"
+            buildConfigField 'String', 'API_ENDPOINT_REST', '"http://api-staging.soyep.com/v1/"'
+            buildConfigField 'boolean', 'IS_STAGING', 'Boolean.parseBoolean("true")'
+        }
+        production {
+            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://api.soyep.com/v2/"'
+            buildConfigField 'boolean', 'IS_STAGING', 'Boolean.parseBoolean("false")'
+        }
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'

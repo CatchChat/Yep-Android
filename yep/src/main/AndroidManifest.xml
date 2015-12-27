@@ -212,7 +212,7 @@
 
         <provider
             android:name=".provider.YepDataProvider"
-            android:authorities="catchla.yep"
+            android:authorities="${applicationId}"
             android:exported="false"/>
 
         <service android:name=".service.MessageService"/>

@@ -6,14 +6,15 @@ import android.provider.BaseColumns;
 
 import org.mariotaku.sqliteqb.library.DataType;
 
+import catchla.yep.BuildConfig;
+
 /**
  * Created by mariotaku on 15/7/2.
  */
 public interface YepDataStore {
 
-    String AUTHORITY = "catchla.yep";
     Uri BASE_CONTENT_URI = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
-            .authority(AUTHORITY).build();
+            .authority(BuildConfig.APPLICATION_ID).build();
 
     interface Messages extends BaseColumns {
         String ACCOUNT_ID = "account_id";

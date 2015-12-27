@@ -2,7 +2,9 @@ package catchla.yep.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
 
 import com.squareup.okhttp.Interceptor;
@@ -11,12 +13,12 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import retrofit.Retrofit;
 
@@ -27,7 +29,6 @@ public class YepAPIFactory implements Constants {
 
     public static final String API_DOMAIN = "api.soyep.com";
     public static final String API_ENDPOINT_FAYE = "https://faye.catchchatchina.com/faye";
-    public static final String API_ENDPOINT_REST = "https://" + API_DOMAIN + "/";
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
@@ -38,7 +39,7 @@ public class YepAPIFactory implements Constants {
         Retrofit.Builder builder = new Retrofit.Builder();
         final OkHttpClient client = getOkHttpClient(context);
         builder.client(client);
-        builder.baseUrl(API_ENDPOINT_REST);
+        builder.baseUrl(BuildConfig.API_ENDPOINT_REST);
         builder.addCallAdapterFactory(new YepCallAdapterFactory());
         builder.addConverterFactory(new LoganSquareConverterFactory());
 
@@ -58,15 +59,19 @@ public class YepAPIFactory implements Constants {
         return retrofit.create(YepAPI.class);
     }
 
+    @SuppressLint("SSLCertificateSocketFactoryGetInsecure")
     public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient client = new OkHttpClient();
         DebugModeUtils.initForHttpClient(client);
-        client.setHostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(final String hostname, final SSLSession session) {
-                return true;
-            }
-        });
+        if (BuildConfig.IS_STAGING) {
+            client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
+            client.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(final String hostname, final SSLSession session) {
+                    return true;
+                }
+            });
+        }
         return client;
     }
 
