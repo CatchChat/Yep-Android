@@ -8,6 +8,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.Date;
+
 import catchla.yep.R;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.Attachment;
@@ -75,14 +79,17 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public void displayTopic(final Topic topic) {
         final User user = topic.getUser();
-        final String avatarUrl = user.getAvatarUrl();
-        if (!avatarUrl.equals(profileImageView.getTag())) {
+        final String avatarUrl = user.getAvatarThumbUrl();
+        if (ObjectUtils.notEqual(avatarUrl, profileImageView.getTag())) {
             imageLoader.displayProfileImage(avatarUrl, profileImageView);
         }
         profileImageView.setTag(avatarUrl);
         nameView.setText(Utils.getDisplayName(user));
         textView.setText(topic.getBody());
-        timeView.setTime(topic.getCreatedAt().getTime());
+        final Date createdAt = topic.getCreatedAt();
+        if (createdAt != null) {
+            timeView.setTime(createdAt.getTime());
+        }
         final LatLng userLocation = topic.getUser().getLocation();
         if (currentLocation != null && userLocation != null) {
             distanceView.setVisibility(View.VISIBLE);

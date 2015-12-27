@@ -96,18 +96,18 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
     public int getItemViewType(int position) {
         if (position == getTopicsCount()) return ITEM_VIEW_TYPE_LOAD_INDICATOR;
         final Topic topic = getTopic(position);
-        final String topicsKind = topic.getAttachmentKind();
-        if (Attachment.Kind.IMAGE.equals(topicsKind)) {
+        final String kind = topic.getKind();
+        if (Topic.Kind.IMAGE.equals(kind)) {
             if (topic.getAttachments().size() > 1) {
                 return ITEM_VIEW_TYPE_MEDIA_GALLERY;
             } else {
                 return ITEM_VIEW_TYPE_SINGLE_IMAGE;
             }
-        } else if (Attachment.Kind.GITHUB.equals(topicsKind)) {
+        } else if (Topic.Kind.GITHUB.equals(kind)) {
             return ITEM_VIEW_TYPE_GITHUB;
-        } else if (Attachment.Kind.DRIBBBLE.equals(topicsKind)) {
+        } else if (Topic.Kind.DRIBBBLE.equals(kind)) {
             return ITEM_VIEW_TYPE_DRIBBBLE;
-        } else if (Attachment.Kind.LOCATION.equals(topicsKind)) {
+        } else if (Topic.Kind.LOCATION.equals(kind)) {
             return ITEM_VIEW_TYPE_LOCATION;
         }
         return ITEM_VIEW_TYPE_BASIC;

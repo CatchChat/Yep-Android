@@ -1,5 +1,6 @@
 package catchla.yep.util;
 
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -27,7 +28,7 @@ public class ImageLoaderWrapper {
         profileImageOption = piBuilder.build();
     }
 
-    public void displayProfileImage(final String uri, final ImageView view) {
+    public void displayProfileImage(@Nullable final String uri, final ImageView view) {
         imageLoader.displayImage(uri, view, profileImageOption);
     }
 

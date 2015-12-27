@@ -57,7 +57,7 @@ public class AccountInfoPreference extends Preference implements Constants {
             final ImageView profileImageView = (ImageView) view.findViewById(R.id.account_profile_image);
             final TextView nameView = (TextView) view.findViewById(R.id.account_name);
             final TextView introductionView = (TextView) view.findViewById(R.id.account_introduction);
-            mImageLoader.displayProfileImage(mAccountUser.getAvatarUrl(), profileImageView);
+            mImageLoader.displayProfileImage(mAccountUser.getAvatarThumbUrl(), profileImageView);
             nameView.setText(mAccountUser.getNickname());
             introductionView.setText(mAccountUser.getIntroduction());
         }

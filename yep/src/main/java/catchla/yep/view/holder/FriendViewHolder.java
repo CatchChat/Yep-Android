@@ -53,7 +53,7 @@ public class FriendViewHolder extends RecyclerView.ViewHolder implements View.On
 
     public void displayUser(final User user) {
         final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-        imageLoader.displayProfileImage(user.getAvatarUrl(), profileImageView);
+        imageLoader.displayProfileImage(user.getAvatarThumbUrl(), profileImageView);
         nameView.setText(user.getNickname());
 //        timeView.setText();
         descriptionView.setText(user.getIntroduction());

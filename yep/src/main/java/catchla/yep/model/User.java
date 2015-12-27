@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -54,6 +55,9 @@ public class User implements Parcelable {
     @ParcelableThisPlease
     @JsonField(name = "avatar_url")
     String avatarUrl;
+    @ParcelableThisPlease
+    @JsonField(name = "avatar")
+    Avatar avatar;
     @ParcelableThisPlease
     @JsonField(name = "mobile")
     String mobile;
@@ -145,12 +149,25 @@ public class User implements Parcelable {
         this.introduction = introduction;
     }
 
+    @Nullable
     public String getAvatarUrl() {
+        if (avatar != null) return avatar.url;
         return avatarUrl;
     }
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    @Nullable
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    @Nullable
+    public String getAvatarThumbUrl() {
+        if (avatar != null) return avatar.thumbUrl;
+        return avatarUrl;
     }
 
     public String getUsername() {

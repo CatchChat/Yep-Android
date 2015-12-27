@@ -10,7 +10,6 @@ package catchla.yep;
 public interface Constants {
     String YEP_DATABASE_NAME = "yep_data.db";
     int YEP_DATABASE_VERSION = 17;
-    String AUTHORITY_YEP = "catchla.yep";
 
     String LOGTAG = "Yep";
 
@@ -19,7 +18,7 @@ public interface Constants {
     String KEY_CURRENT_ACCOUNT = "current_account";
     String KEY_TOPICS_SORT_ORDER = "topics_sort_order";
 
-    String ACCOUNT_TYPE = "catchla.yep.account";
+    String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     String ACCOUNT_TYPE_PREFIX = ACCOUNT_TYPE + ":";
     String AUTH_TOKEN_TYPE = ACCOUNT_TYPE_PREFIX + "auth_token";
 

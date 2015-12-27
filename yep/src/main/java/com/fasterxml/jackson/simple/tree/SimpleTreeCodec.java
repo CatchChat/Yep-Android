@@ -17,29 +17,32 @@ import java.util.Map;
 
 public class SimpleTreeCodec extends TreeCodec {
 
+    public static final SimpleTreeCodec SINGLETON = new SimpleTreeCodec();
+
     @Override
     public <T extends TreeNode> T readTree(JsonParser jsonParser) throws IOException {
         return nodeFrom(jsonParser);
     }
 
     private <T extends TreeNode> T nodeFrom(JsonParser jsonParser) throws IOException {
-        TreeNode node = null;
-        if (jsonParser.getCurrentToken() == null) {
-            jsonParser.nextToken();
+        JsonToken currentToken = jsonParser.getCurrentToken();
+        if (currentToken == null) {
+            currentToken = jsonParser.nextToken();
         }
-        if (jsonParser.getCurrentToken() == JsonToken.VALUE_TRUE || jsonParser.getCurrentToken() == JsonToken.VALUE_FALSE)
+        TreeNode node;
+        if (currentToken == JsonToken.VALUE_TRUE || currentToken == JsonToken.VALUE_FALSE)
             node = (jsonParser.getValueAsBoolean() ? JsonBoolean.TRUE : JsonBoolean.FALSE);
-        else if (jsonParser.getCurrentToken() == JsonToken.VALUE_NUMBER_INT || jsonParser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT)
+        else if (currentToken == JsonToken.VALUE_NUMBER_INT || currentToken == JsonToken.VALUE_NUMBER_FLOAT)
             node = new JsonNumber(jsonParser.getNumberValue());
-        else if (jsonParser.getCurrentToken() == JsonToken.VALUE_STRING)
+        else if (currentToken == JsonToken.VALUE_STRING)
             node = new JsonString(jsonParser.getValueAsString());
-        else if (jsonParser.getCurrentToken() == JsonToken.START_ARRAY) {
+        else if (currentToken == JsonToken.START_ARRAY) {
             List<TreeNode> values = new ArrayList<>();
             while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                 values.add(nodeFrom(jsonParser));
             }
             node = new JsonArray(values);
-        } else if (jsonParser.getCurrentToken() == JsonToken.START_OBJECT) {
+        } else if (currentToken == JsonToken.START_OBJECT) {
             Map<String, TreeNode> values = new LinkedHashMap<>();
             while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
                 final String currentName = jsonParser.getCurrentName();
@@ -47,6 +50,10 @@ public class SimpleTreeCodec extends TreeCodec {
                 values.put(currentName, nodeFrom(jsonParser));
             }
             node = new JsonObject(values);
+        } else if (currentToken == JsonToken.VALUE_NULL) {
+            node = null;
+        } else {
+            throw new UnsupportedOperationException("Unsupported token " + currentToken);
         }
 
         //noinspection unchecked

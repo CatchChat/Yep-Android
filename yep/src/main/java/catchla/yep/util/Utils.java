@@ -6,6 +6,7 @@ package catchla.yep.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
@@ -38,6 +40,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
 import com.squareup.otto.Bus;
 
 import java.io.Closeable;
@@ -50,6 +55,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
@@ -75,9 +81,9 @@ public class Utils implements Constants {
     private static final SparseArray<String> TABLE_NAMES = new SparseArray<>();
 
     static {
-        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
-        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Messages.CONTENT_PATH, TABLE_ID_MESSAGES);
-        DATABASE_URI_MATCHER.addURI(AUTHORITY_YEP, Conversations.CONTENT_PATH, TABLE_ID_CONVERSATIONS);
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH, TABLE_ID_MESSAGES);
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Conversations.CONTENT_PATH, TABLE_ID_CONVERSATIONS);
         TABLE_NAMES.append(TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME);
         TABLE_NAMES.append(TABLE_ID_MESSAGES, Messages.TABLE_NAME);
         TABLE_NAMES.append(TABLE_ID_CONVERSATIONS, Conversations.TABLE_NAME);
@@ -464,5 +470,18 @@ public class Utils implements Constants {
     public static String emptyIfNull(final CharSequence text) {
         if (text == null) return "";
         return String.valueOf(text);
+    }
+
+    public static String getDefaultAvatarUrl() {
+        return Uri.fromParts(ContentResolver.SCHEME_ANDROID_RESOURCE,
+                "//" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_profile_image_default, null).toString();
+    }
+
+    public static JsonParser getJsonParser(final @NonNull TreeNode treeNode) throws IOException {
+        final JsonParser jsonParser = treeNode.traverse();
+        if (jsonParser.getCurrentToken() == null) {
+            jsonParser.nextToken();
+        }
+        return jsonParser;
     }
 }

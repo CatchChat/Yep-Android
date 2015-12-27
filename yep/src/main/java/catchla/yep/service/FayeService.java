@@ -192,11 +192,10 @@ public class FayeService extends Service implements Constants {
                     final LinkedHashMap<String, TreeNode> data = new LinkedHashMap<>();
                     data.put("message_type", new JsonString(messageType));
                     final JsonGenerator generator = TokenBufferTrojan.createTokenBuffer(null, true);
-                    final SimpleTreeCodec codec = new SimpleTreeCodec();
                     final JsonMapper jsonMapper = LoganSquare.mapperFor(message.getClass());
                     //noinspection unchecked
                     jsonMapper.serialize(message, generator, true);
-                    data.put("message", codec.readTree(TokenBufferTrojan.asParser(generator)));
+                    data.put("message", SimpleTreeCodec.SINGLETON.readTree(TokenBufferTrojan.asParser(generator)));
                     mFayeClient.publish(channel, new FayeClient.Message(new JsonObject(
                             Collections.<String, TreeNode>singletonMap("data", new JsonObject(data)))), null);
                 } catch (IOException e) {

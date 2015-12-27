@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.List;
@@ -64,8 +65,8 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
 
     public void displayUser(final User user) {
         final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
-        final String avatarUrl = user.getAvatarUrl();
-        if (!avatarUrl.equals(profileImageView.getTag()) || profileImageView.getDrawable() == null) {
+        final String avatarUrl = user.getAvatarThumbUrl();
+        if (ObjectUtils.notEqual(avatarUrl, profileImageView.getTag()) || profileImageView.getDrawable() == null) {
             imageLoader.displayProfileImage(avatarUrl, profileImageView);
         }
         profileImageView.setTag(avatarUrl);

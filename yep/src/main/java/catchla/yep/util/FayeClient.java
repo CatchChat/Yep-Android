@@ -223,7 +223,6 @@ public class FayeClient implements Constants {
 
     public static class Message {
 
-        private final static SimpleTreeCodec codec = new SimpleTreeCodec();
         private final Map<String, TreeNode> json;
 
         public Message() {
@@ -250,15 +249,14 @@ public class FayeClient implements Constants {
 
         public static <T> T getAs(TreeNode node, Class<T> cls) {
             try {
-                return LoganSquare.mapperFor(cls).parse(codec.treeAsTokens(node));
+                return LoganSquare.mapperFor(cls).parse(SimpleTreeCodec.SINGLETON.treeAsTokens(node));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
         public static Message[] parse(String str) throws IOException {
-            SimpleTreeCodec codec = new SimpleTreeCodec();
-            TreeNode json = codec.readTree(LoganSquare.JSON_FACTORY.createParser(str));
+            TreeNode json = SimpleTreeCodec.SINGLETON.readTree(LoganSquare.JSON_FACTORY.createParser(str));
             final Message[] message = new Message[json.size()];
             for (int i = 0; i < message.length; i++) {
                 message[i] = new Message(json.get(i));

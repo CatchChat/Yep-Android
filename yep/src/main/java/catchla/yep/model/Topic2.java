@@ -1,41 +1,42 @@
 package catchla.yep.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
-import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
-import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.Date;
 import java.util.List;
 
+import catchla.yep.model.util.VariableTypeAttachmentsConverter;
+import catchla.yep.model.util.YepTimestampDateConverter;
+
 /**
  * Created by mariotaku on 15/10/12.
  */
-@ParcelablePlease
-public class Topic implements Parcelable {
-    @ParcelableThisPlease
+@JsonObject
+public class Topic2 {
+    @JsonField(name = "id")
     String id;
-    @ParcelableThisPlease
+    @JsonField(name = "allow_comment")
     boolean allowComment;
-    @ParcelableThisPlease
+    @JsonField(name = "body")
     String body;
-    @ParcelableThisPlease
+    @JsonField(name = "message_count")
     int messageCount;
-    @ParcelableThisPlease
+    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     Date createdAt;
-    @ParcelableThisPlease
+    @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
     Date updatedAt;
-    @ParcelableThisPlease
+    @JsonField(name = "user")
     User user;
-    @ParcelableThisPlease
+    @JsonField(name = "skill")
     Skill skill;
-    @ParcelableThisPlease
+    @JsonField(name = "circle")
     Circle circle;
-    @ParcelableThisPlease
+    @JsonField(name = "kind")
     String kind;
-    @ParcelableThisPlease
+    @JsonField(name = "attachments", typeConverter = VariableTypeAttachmentsConverter.class)
     List<Attachment> attachments;
 
     @Override
@@ -54,25 +55,9 @@ public class Topic implements Parcelable {
                 '}';
     }
 
-    public Topic() {
+    public Topic2() {
 
     }
-
-    protected Topic(Parcel in) {
-        TopicParcelablePlease.readFromParcel(this, in);
-    }
-
-    public static final Creator<Topic> CREATOR = new Creator<Topic>() {
-        @Override
-        public Topic createFromParcel(Parcel in) {
-            return new Topic(in);
-        }
-
-        @Override
-        public Topic[] newArray(int size) {
-            return new Topic[size];
-        }
-    };
 
     public String getId() {
         return id;
@@ -159,30 +144,19 @@ public class Topic implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final Topic topic = (Topic) o;
+        final Topic2 topic = (Topic2) o;
 
         return !(id != null ? !id.equals(topic.id) : topic.id != null);
 
     }
 
     public String getKind() {
-        if (kind == null) return getAttachmentKind();
         return kind;
     }
 
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        TopicParcelablePlease.writeToParcel(this, dest, flags);
     }
 
     public String getAttachmentKind() {
@@ -198,12 +172,5 @@ public class Topic implements Parcelable {
     public @interface SortOrder {
         String DISTANCE = "distance";
         String TIME = "time";
-    }
-
-    public @interface Kind {
-        String GITHUB = "github";
-        String DRIBBBLE = "dribbble";
-        String LOCATION = "location";
-        String IMAGE = "image";
     }
 }

@@ -144,4 +144,8 @@ public class Circle implements Parcelable {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
+    public @interface Kind {
+        String TOPIC_CIRCLE = "TopicCircle";
+    }
 }

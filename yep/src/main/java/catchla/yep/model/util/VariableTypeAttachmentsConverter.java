@@ -58,37 +58,34 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
                     continue;
                 }
                 final String kind = kindNode.getValue();
-                Attachment instance;
-                switch (kind) {
-                    case "dribbble":
-                        instance = LoganSquare.mapperFor(DribbbleAttachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                    case "github":
-                        instance = LoganSquare.mapperFor(GithubAttachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                    case "location":
-                        instance = LoganSquare.mapperFor(LocationAttachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                    case "apple_music":
-                    case "apple_movie":
-                    case "apple_ebook":
-                        instance = LoganSquare.mapperFor(AppleMediaAttachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                    case "image":
-                    case "video":
-                    case "audio":
-                        instance = LoganSquare.mapperFor(FileAttachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                    default:
-                        instance = LoganSquare.mapperFor(Attachment.class).parse(codec.treeAsTokens(child));
-                        break;
-                }
-                if (instance != null) {
-                    list.add(instance);
+                JsonMapper<? extends Attachment> mapper = getMapperForKind(kind);
+                if (mapper != null) {
+                    list.add(mapper.parse(codec.treeAsTokens(child)));
                 }
             }
         }
         return list;
+    }
+
+    public static JsonMapper<? extends Attachment> getMapperForKind(final String kind) {
+        switch (kind) {
+            case "dribbble":
+                return LoganSquare.mapperFor(DribbbleAttachment.class);
+            case "github":
+                return LoganSquare.mapperFor(GithubAttachment.class);
+            case "location":
+                return LoganSquare.mapperFor(LocationAttachment.class);
+            case "apple_music":
+            case "apple_movie":
+            case "apple_ebook":
+                return LoganSquare.mapperFor(AppleMediaAttachment.class);
+            case "image":
+            case "video":
+            case "audio":
+                return LoganSquare.mapperFor(FileAttachment.class);
+            default:
+                return LoganSquare.mapperFor(Attachment.class);
+        }
     }
 
     @Override
