@@ -5,11 +5,12 @@ import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.simple.tree.JsonArray;
-import com.fasterxml.jackson.simple.tree.JsonBoolean;
-import com.fasterxml.jackson.simple.tree.JsonNumber;
-import com.fasterxml.jackson.simple.tree.JsonString;
-import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JacksonJrValue;
+import com.fasterxml.jackson.jr.tree.JsonArray;
+import com.fasterxml.jackson.jr.tree.JsonBoolean;
+import com.fasterxml.jackson.jr.tree.JsonNumber;
+import com.fasterxml.jackson.jr.tree.JsonString;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -249,14 +250,14 @@ public class FayeClient implements Constants {
 
         public static <T> T getAs(TreeNode node, Class<T> cls) {
             try {
-                return LoganSquare.mapperFor(cls).parse(SimpleTreeCodec.SINGLETON.treeAsTokens(node));
+                return LoganSquare.mapperFor(cls).parse(JacksonJrSimpleTreeCodec.SINGLETON.treeAsTokens(node));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
         public static Message[] parse(String str) throws IOException {
-            TreeNode json = SimpleTreeCodec.SINGLETON.readTree(LoganSquare.JSON_FACTORY.createParser(str));
+            TreeNode json = JacksonJrSimpleTreeCodec.SINGLETON.readTree(LoganSquare.JSON_FACTORY.createParser(str));
             final Message[] message = new Message[json.size()];
             for (int i = 0; i < message.length; i++) {
                 message[i] = new Message(json.get(i));
@@ -313,7 +314,7 @@ public class FayeClient implements Constants {
         }
 
         void setSupportedConnectionTypes(final String[] supportedConnectionTypes) {
-            final List<TreeNode> values = new LinkedList<>();
+            final List<JacksonJrValue> values = new LinkedList<>();
             for (final String supportedConnectionType : supportedConnectionTypes) {
                 values.add(new JsonString(supportedConnectionType));
             }

@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 /**
  * Created by mariotaku on 15/12/13.
  */
-public class ParameterizedTypeTrojan {
+public class ParameterizedTypeAccessor {
 
     public static <T> ParameterizedType<T> create(Type type) {
         return new ParameterizedType.ConcreteParameterizedType<>(type);

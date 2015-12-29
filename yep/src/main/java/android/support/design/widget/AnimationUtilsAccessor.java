@@ -5,7 +5,7 @@ import android.view.animation.Interpolator;
 /**
  * Created by mariotaku on 15/10/14.
  */
-public class AnimationUtilsTrojan {
+public class AnimationUtilsAccessor {
 
 
     public static final Interpolator LINEAR_INTERPOLATOR = AnimationUtils.LINEAR_INTERPOLATOR;

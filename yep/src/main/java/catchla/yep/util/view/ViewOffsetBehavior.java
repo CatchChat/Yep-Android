@@ -18,16 +18,16 @@ package catchla.yep.util.view;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TrojanViewOffsetHelper;
+import android.support.design.widget.AccessorViewOffsetHelper;
 import android.util.AttributeSet;
 import android.view.View;
 
 /**
- * Behavior will automatically sets up a {@link TrojanViewOffsetHelper} on a {@link View}.
+ * Behavior will automatically sets up a {@link AccessorViewOffsetHelper} on a {@link View}.
  */
 public class ViewOffsetBehavior<V extends View> extends CoordinatorLayout.Behavior<V> {
 
-    private TrojanViewOffsetHelper mViewOffsetHelper;
+    private AccessorViewOffsetHelper mViewOffsetHelper;
 
     private int mTempTopBottomOffset = 0;
     private int mTempLeftRightOffset = 0;
@@ -51,7 +51,7 @@ public class ViewOffsetBehavior<V extends View> extends CoordinatorLayout.Behavi
 
     protected void onLayoutChildHelper(final V child) {
         if (mViewOffsetHelper == null) {
-            mViewOffsetHelper = new TrojanViewOffsetHelper(child);
+            mViewOffsetHelper = new AccessorViewOffsetHelper(child);
         }
         mViewOffsetHelper.onViewLayout();
 

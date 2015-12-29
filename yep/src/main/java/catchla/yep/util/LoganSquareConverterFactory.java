@@ -4,7 +4,7 @@ import android.support.v4.util.SimpleArrayMap;
 
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.bluelinelabs.logansquare.ParameterizedTypeTrojan;
+import com.bluelinelabs.logansquare.ParameterizedTypeAccessor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.ResponseBody;
@@ -53,7 +53,7 @@ public class LoganSquareConverterFactory extends Converter.Factory {
 
         @Override
         public Object convert(final ResponseBody value) throws IOException {
-            return LoganSquare.parse(value.byteStream(), ParameterizedTypeTrojan.create(type));
+            return LoganSquare.parse(value.byteStream(), ParameterizedTypeAccessor.create(type));
         }
     }
 
@@ -66,7 +66,7 @@ public class LoganSquareConverterFactory extends Converter.Factory {
 
         @Override
         public RequestBody convert(final Object value) throws IOException {
-            final JsonMapper jsonMapper = LoganSquare.mapperFor(ParameterizedTypeTrojan.create(type));
+            final JsonMapper jsonMapper = LoganSquare.mapperFor(ParameterizedTypeAccessor.create(type));
             //noinspection unchecked
             return RequestBody.create(MediaType.parse("application/json"), jsonMapper.serialize(value));
         }

@@ -8,10 +8,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.simple.tree.JsonBoolean;
-import com.fasterxml.jackson.simple.tree.JsonNumber;
-import com.fasterxml.jackson.simple.tree.JsonString;
-import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JsonBoolean;
+import com.fasterxml.jackson.jr.tree.JsonNull;
+import com.fasterxml.jackson.jr.tree.JsonNumber;
+import com.fasterxml.jackson.jr.tree.JsonString;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import catchla.yep.util.Utils;
 /**
  * Created by mariotaku on 15/12/27.
  */
+@SuppressWarnings("unused")
 public class Topic$$JsonObjectMapper extends JsonMapper<Topic> {
     protected static final YepTimestampDateConverter CATCHLA_YEP_MODEL_UTIL_YEPTIMESTAMPDATECONVERTER = new YepTimestampDateConverter();
 
@@ -45,7 +47,7 @@ public class Topic$$JsonObjectMapper extends JsonMapper<Topic> {
             jsonParser.skipChildren();
             return null;
         }
-        final TreeNode tree = SimpleTreeCodec.SINGLETON.readTree(jsonParser);
+        final TreeNode tree = JacksonJrSimpleTreeCodec.SINGLETON.readTree(jsonParser);
         final JsonString kind = (JsonString) tree.get("kind");
         if (kind != null) {
             instance.kind = kind.getValue();
@@ -64,7 +66,7 @@ public class Topic$$JsonObjectMapper extends JsonMapper<Topic> {
     }
 
     public void parseField(final Topic instance, final String fieldName, @Nullable final TreeNode treeNode) throws IOException {
-        if (treeNode == null) return;
+        if (treeNode == null || treeNode instanceof JsonNull) return;
         if ("allow_comment".equals(fieldName)) {
             instance.setAllowComment(treeNode == JsonBoolean.TRUE);
         } else if ("attachments".equals(fieldName)) {

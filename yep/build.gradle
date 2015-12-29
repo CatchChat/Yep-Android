@@ -31,7 +31,7 @@ android {
         staging {
             applicationId "catchla.yep.staging"
             versionName defaultConfig.versionName + ".staging"
-            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://park-staging.catchchatchina.com/api/v1/"'
+            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://park-staging.catchchatchina.com/v1/"'
             buildConfigField 'boolean', 'IS_STAGING', 'Boolean.parseBoolean("true")'
             buildConfigField 'String', 'ACCOUNT_TYPE', '"catchla.yep.staging.account"'
             resValue 'string', 'account_type', 'catchla.yep.staging.account'
@@ -108,7 +108,7 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
     compile 'com.sprylab.android.texturevideoview:texturevideoview:1.0.2'
     compile 'com.pnikosis:materialish-progress:1.7'
-    compile 'com.fasterxml.jackson.jr:jackson-jr-objects:2.6.2'
+    compile 'com.github.mariotaku:jackson-jr-trees:7fe682ee09'
     compile 'org.jdeferred:jdeferred-android-aar:1.2.4'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.github.mariotaku.ObjectCursor:core:0.9.3'

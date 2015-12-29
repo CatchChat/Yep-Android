@@ -42,7 +42,7 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.DisplayImageOptionsTrojan;
+import com.nostra13.universalimageloader.core.DisplayImageOptionsAccessor;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -103,7 +103,7 @@ public final class MediaViewerActivity extends ContentActivity implements Consta
         DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder();
         builder.cacheInMemory(false);
         builder.cacheOnDisk(false);
-        DisplayImageOptionsTrojan.setSyncLoading(builder, true);
+        DisplayImageOptionsAccessor.setSyncLoading(builder, true);
         try {
             mImageLoader.displayImage(((FileAttachment) currentMedia).getFile().getUrl(),
                     mTransitionView, builder.build());

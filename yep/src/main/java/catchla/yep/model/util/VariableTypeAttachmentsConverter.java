@@ -13,8 +13,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.simple.tree.JsonString;
-import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JsonString;
 
 import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
 
@@ -40,7 +40,6 @@ import catchla.yep.util.Utils;
 public class VariableTypeAttachmentsConverter implements TypeConverter<List<Attachment>>,
         CursorFieldConverter<List<Attachment>>, Constants {
 
-    SimpleTreeCodec codec = new SimpleTreeCodec();
 
     @Override
     public List<Attachment> parse(final JsonParser jsonParser) throws IOException {
@@ -49,18 +48,17 @@ public class VariableTypeAttachmentsConverter implements TypeConverter<List<Atta
             jsonParser.nextToken();
         }
         if (jsonParser.getCurrentToken() == JsonToken.START_ARRAY) {
-            TreeNode treeNode = codec.readTree(jsonParser);
+            TreeNode treeNode = JacksonJrSimpleTreeCodec.SINGLETON.readTree(jsonParser);
             for (int i = 0; i < treeNode.size(); i++) {
                 TreeNode child = treeNode.get(i);
                 final JsonString kindNode = (JsonString) child.get("kind");
                 if (kindNode == null) {
-                    codec.writeTree(LoganSquare.JSON_FACTORY.createGenerator(System.err), child);
                     continue;
                 }
                 final String kind = kindNode.getValue();
                 JsonMapper<? extends Attachment> mapper = getMapperForKind(kind);
                 if (mapper != null) {
-                    list.add(mapper.parse(codec.treeAsTokens(child)));
+                    list.add(mapper.parse(JacksonJrSimpleTreeCodec.SINGLETON.treeAsTokens(child)));
                 }
             }
         }

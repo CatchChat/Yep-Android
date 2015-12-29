@@ -7,8 +7,8 @@ import catchla.yep.util.Utils;
 /**
  * Created by mariotaku on 15/10/14.
  */
-public class TrojanValueAnimatorCompat extends ValueAnimatorCompat {
-    TrojanValueAnimatorCompat(final ValueAnimatorCompat delegated) {
+public class AccessorValueAnimatorCompat extends ValueAnimatorCompat {
+    AccessorValueAnimatorCompat(final ValueAnimatorCompat delegated) {
         super(findImpl(delegated));
     }
 
@@ -17,12 +17,12 @@ public class TrojanValueAnimatorCompat extends ValueAnimatorCompat {
     }
 
 
-    public static abstract class TrojanAnimatorUpdateListener implements ValueAnimatorCompat.AnimatorUpdateListener {
+    public static abstract class AccessorAnimatorUpdateListener implements ValueAnimatorCompat.AnimatorUpdateListener {
         @Override
         public void onAnimationUpdate(final ValueAnimatorCompat valueAnimatorCompat) {
-            onAnimationUpdate((TrojanValueAnimatorCompat) valueAnimatorCompat);
+            onAnimationUpdate((AccessorValueAnimatorCompat) valueAnimatorCompat);
         }
 
-        public abstract void onAnimationUpdate(TrojanValueAnimatorCompat var1);
+        public abstract void onAnimationUpdate(AccessorValueAnimatorCompat var1);
     }
 }

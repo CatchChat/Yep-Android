@@ -7,12 +7,12 @@ import android.view.View;
 /**
  * Created by mariotaku on 15/10/14.
  */
-public class TrojanViewOffsetBehavior<V extends View> extends ViewOffsetBehavior<V> {
-    public TrojanViewOffsetBehavior() {
+public class AccessorViewOffsetBehavior<V extends View> extends ViewOffsetBehavior<V> {
+    public AccessorViewOffsetBehavior() {
         super();
     }
 
-    public TrojanViewOffsetBehavior(final Context context, final AttributeSet attrs) {
+    public AccessorViewOffsetBehavior(final Context context, final AttributeSet attrs) {
         super(context, attrs);
     }
 }

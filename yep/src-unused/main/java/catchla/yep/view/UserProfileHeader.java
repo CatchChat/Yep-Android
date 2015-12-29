@@ -6,11 +6,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AnimationUtilsTrojan;
+import android.support.design.widget.AnimationUtilsAccessor;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TrojanValueAnimatorCompat;
-import android.support.design.widget.TrojanViewOffsetBehavior;
-import android.support.design.widget.ViewUtilsTrojan;
+import android.support.design.widget.AccessorValueAnimatorCompat;
+import android.support.design.widget.AccessorViewOffsetBehavior;
+import android.support.design.widget.ViewUtilsAccessor;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ScrollerCompat;
@@ -109,14 +109,14 @@ public class UserProfileHeader extends SquareFrameLayout {
         void onOffsetChanged(UserProfileHeader userProfileHeader, int verticalOffset);
     }
 
-    public static class Behavior extends TrojanViewOffsetBehavior<UserProfileHeader> {
+    public static class Behavior extends AccessorViewOffsetBehavior<UserProfileHeader> {
         private static final int INVALID_POINTER = -1;
         private static final int INVALID_POSITION = -1;
         private int mOffsetDelta;
         private boolean mSkipNestedPreScroll;
         private Runnable mFlingRunnable;
         private ScrollerCompat mScroller;
-        private TrojanValueAnimatorCompat mAnimator;
+        private AccessorValueAnimatorCompat mAnimator;
         private int mOffsetToChildIndexOnLayout = INVALID_POSITION;
         private boolean mOffsetToChildIndexOnLayoutIsMinHeight;
         private float mOffsetToChildIndexOnLayoutPerc;
@@ -330,11 +330,11 @@ public class UserProfileHeader extends SquareFrameLayout {
         private void animateOffsetTo(final CoordinatorLayout coordinatorLayout,
                                      final UserProfileHeader child, int offset) {
             if (mAnimator == null) {
-                mAnimator = ViewUtilsTrojan.createAnimator();
-                mAnimator.setInterpolator(AnimationUtilsTrojan.DECELERATE_INTERPOLATOR);
-                mAnimator.setUpdateListener(new TrojanValueAnimatorCompat.TrojanAnimatorUpdateListener() {
+                mAnimator = ViewUtilsAccessor.createAnimator();
+                mAnimator.setInterpolator(AnimationUtilsAccessor.DECELERATE_INTERPOLATOR);
+                mAnimator.setUpdateListener(new AccessorValueAnimatorCompat.AccessorAnimatorUpdateListener() {
                     @Override
-                    public void onAnimationUpdate(TrojanValueAnimatorCompat animator) {
+                    public void onAnimationUpdate(AccessorValueAnimatorCompat animator) {
                         setAppBarTopBottomOffset(coordinatorLayout, child,
                                 animator.getAnimatedIntValue());
                     }

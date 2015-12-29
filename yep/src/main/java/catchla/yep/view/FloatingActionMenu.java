@@ -3,8 +3,8 @@ package catchla.yep.view;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.support.design.widget.AnimationUtilsTrojan;
-import android.support.design.widget.FloatingActionButtonImplTrojan;
+import android.support.design.widget.AnimationUtilsAccessor;
+import android.support.design.widget.FloatingActionButtonImplAccessor;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -46,8 +46,8 @@ public class FloatingActionMenu extends CardView {
                         .scaleX(1f)
                         .scaleY(1f)
                         .alpha(1f)
-                        .setDuration(FloatingActionButtonImplTrojan.SHOW_HIDE_ANIM_DURATION)
-                        .setInterpolator(AnimationUtilsTrojan.FAST_OUT_SLOW_IN_INTERPOLATOR)
+                        .setDuration(FloatingActionButtonImplAccessor.SHOW_HIDE_ANIM_DURATION)
+                        .setInterpolator(AnimationUtilsAccessor.FAST_OUT_SLOW_IN_INTERPOLATOR)
                         .setListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -93,8 +93,8 @@ public class FloatingActionMenu extends CardView {
                     .scaleX(0f)
                     .scaleY(0f)
                     .alpha(0f)
-                    .setDuration(FloatingActionButtonImplTrojan.SHOW_HIDE_ANIM_DURATION)
-                    .setInterpolator(AnimationUtilsTrojan.FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .setDuration(FloatingActionButtonImplAccessor.SHOW_HIDE_ANIM_DURATION)
+                    .setInterpolator(AnimationUtilsAccessor.FAST_OUT_SLOW_IN_INTERPOLATOR)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {

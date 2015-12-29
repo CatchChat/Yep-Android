@@ -14,12 +14,12 @@ import android.util.Log;
 
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.simple.tree.JsonObject;
-import com.fasterxml.jackson.simple.tree.JsonString;
-import com.fasterxml.jackson.simple.tree.SimpleTreeCodec;
-import com.fasterxml.jackson.simple.tree.TokenBufferTrojan;
+import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
+import com.fasterxml.jackson.jr.tree.JacksonJrValue;
+import com.fasterxml.jackson.jr.tree.JsonObject;
+import com.fasterxml.jackson.jr.tree.JsonString;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.otto.Bus;
@@ -31,6 +31,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -80,7 +81,7 @@ public class FayeService extends Service implements Constants {
 
             @Override
             public void processOutgoing(final FayeClient.Message message) {
-                LinkedHashMap<String, TreeNode> nodes = new LinkedHashMap<>();
+                LinkedHashMap<String, JacksonJrValue> nodes = new LinkedHashMap<>();
                 nodes.put("version", new JsonString("v1"));
                 nodes.put("access_token", new JsonString(authToken));
                 message.put("ext", new JsonObject(nodes));
@@ -189,15 +190,14 @@ public class FayeService extends Service implements Constants {
             @Override
             public void run() {
                 try {
-                    final LinkedHashMap<String, TreeNode> data = new LinkedHashMap<>();
+                    final Map<String, JacksonJrValue> data = new LinkedHashMap<>();
                     data.put("message_type", new JsonString(messageType));
-                    final JsonGenerator generator = TokenBufferTrojan.createTokenBuffer(null, true);
                     final JsonMapper jsonMapper = LoganSquare.mapperFor(message.getClass());
                     //noinspection unchecked
-                    jsonMapper.serialize(message, generator, true);
-                    data.put("message", SimpleTreeCodec.SINGLETON.readTree(TokenBufferTrojan.asParser(generator)));
-                    mFayeClient.publish(channel, new FayeClient.Message(new JsonObject(
-                            Collections.<String, TreeNode>singletonMap("data", new JsonObject(data)))), null);
+                    final JsonParser parser = LoganSquare.JSON_FACTORY.createParser(jsonMapper.serialize(message));
+                    data.put("message", (JacksonJrValue) JacksonJrSimpleTreeCodec.SINGLETON.readTree(parser));
+                    mFayeClient.publish(channel, new FayeClient.Message(new JsonObject(Collections.
+                            <String, JacksonJrValue>singletonMap("data", new JsonObject(data)))), null);
                 } catch (IOException e) {
                     Log.w(LOGTAG, e);
                 }
