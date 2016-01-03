@@ -25,6 +25,7 @@ import android.view.View;
 import java.util.List;
 
 import catchla.yep.R;
+import catchla.yep.activity.LocationPickerActivity;
 import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.activity.NewTopicActivity;
 import catchla.yep.activity.SkillUpdatesActivity;
@@ -257,6 +258,9 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
                             break;
                         }
                         case "location": {
+                            final Intent intent = new Intent(getContext(), LocationPickerActivity.class);
+                            intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                            startActivity(intent);
                             break;
                         }
                     }

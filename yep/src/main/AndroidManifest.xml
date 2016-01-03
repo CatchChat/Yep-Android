@@ -203,6 +203,10 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
+            android:name=".activity.LocationPickerActivity"
+            android:label="@string/location"
+            android:theme="@style/Theme.Yep.Content"/>
+        <activity
             android:name=".activity.ThemedImagePickerActivity"
             android:theme="@style/Theme.Yep.NoDisplay"
             android:windowSoftInputMode="stateAlwaysHidden"/>

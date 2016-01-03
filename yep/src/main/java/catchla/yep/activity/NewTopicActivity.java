@@ -144,7 +144,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         if (mShouldSkipSaveDrafts) return false;
         final String text = ParseUtils.parseString(mEditText.getText());
         NewTopicMediaFragment fragment = getNewTopicMediaFragment();
-        if (TextUtils.isEmpty(text) && fragment.hasMedia()) {
+        if (TextUtils.isEmpty(text) && !fragment.hasMedia()) {
             clearDraft();
             return false;
         }
