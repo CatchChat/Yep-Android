@@ -1,16 +1,21 @@
 package catchla.yep.fragment;
 
 import android.accounts.Account;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -162,9 +167,11 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
 
     @Override
     public void onActionPerformed() {
-        final Intent intent = new Intent(getContext(), NewTopicActivity.class);
-        intent.putExtra(EXTRA_ACCOUNT, getAccount());
-        startActivity(intent);
+        final Bundle args = new Bundle();
+        args.putParcelable(EXTRA_ACCOUNT, getAccount());
+        final NewTopicTypeDialogFragment df = new NewTopicTypeDialogFragment();
+        df.setArguments(args);
+        df.show(getFragmentManager(), "new_topic_type");
     }
 
     @Nullable
@@ -226,5 +233,40 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         loaderArgs.putBoolean(EXTRA_READ_OLD, false);
         getLoaderManager().restartLoader(0, loaderArgs, this);
         showProgress();
+    }
+
+    public static class NewTopicTypeDialogFragment extends DialogFragment {
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(final Bundle savedInstanceState) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            final Resources resources = getResources();
+            final String[] entries = resources.getStringArray(R.array.new_topic_type_entries);
+            final String[] values = resources.getStringArray(R.array.new_topic_type_values);
+            builder.setItems(entries, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int which) {
+                    switch (values[which]) {
+                        case "photos_text": {
+                            final Intent intent = new Intent(getContext(), NewTopicActivity.class);
+                            intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                            startActivity(intent);
+                            break;
+                        }
+                        case "audio": {
+                            break;
+                        }
+                        case "location": {
+                            break;
+                        }
+                    }
+                }
+            });
+            return builder.create();
+        }
+
+        private Account getAccount() {
+            return getArguments().getParcelable(EXTRA_ACCOUNT);
+        }
     }
 }

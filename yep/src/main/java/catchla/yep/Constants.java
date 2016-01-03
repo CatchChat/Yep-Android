@@ -41,6 +41,7 @@ public interface Constants {
     String EXTRA_USER_ID = "user_id";
     String EXTRA_CONVERSATION = "conversation";
     String EXTRA_SKILL = "skill";
+    String EXTRA_NEW_TOPIC_TYPE = "new_topic_type";
     String EXTRA_READ_CACHE = "read_cache";
     String EXTRA_READ_OLD = "read_old";
     String EXTRA_LEARNING = "learning";

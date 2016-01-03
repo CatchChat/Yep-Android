@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="new_topic_type_entries">
+        <item>Photos or text</item>
+        <item>Audio</item>
+        <item>Location</item>
+    </string-array>
+    <string-array name="new_topic_type_values">
+        <item>photos_text</item>
+        <item>audio</item>
+        <item>location</item>
+    </string-array>
+</resources>
