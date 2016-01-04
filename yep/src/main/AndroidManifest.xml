@@ -18,6 +18,10 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
 
+    <!-- Required by AMap -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:name=".app.YepApplication"
         android:allowBackup="true"
@@ -25,6 +29,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Yep">
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="04550678c914793570579723fb35da9a"/>
+
         <activity
             android:name=".activity.MainActivity"
             android:theme="@style/Theme.Yep.NoDisplay">

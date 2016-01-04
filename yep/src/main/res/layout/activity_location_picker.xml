@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <org.osmdroid.views.MapView
+            <com.amap.api.maps2d.MapView
                 android:id="@+id/map_view"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"

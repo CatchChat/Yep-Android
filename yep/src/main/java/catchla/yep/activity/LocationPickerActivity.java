@@ -4,9 +4,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 
+import com.amap.api.maps2d.MapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.osmdroid.views.MapView;
 
 import catchla.yep.R;
 import catchla.yep.view.iface.IExtendedView;
@@ -34,6 +33,7 @@ public class LocationPickerActivity extends ContentActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_picker);
+        mMapView.onCreate(savedInstanceState);
         getMainContent().setOnSizeChangedListener(new IExtendedView.OnSizeChangedListener() {
             @Override
             public void onSizeChanged(final View view, final int w, final int h, final int oldw, final int oldh) {
@@ -55,8 +55,33 @@ public class LocationPickerActivity extends ContentActivity {
 
     @Override
     protected void onDestroy() {
+        mMapView.onDestroy();
         mSlidingLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLowMemory() {
+        mMapView.onLowMemory();
+        super.onLowMemory();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        mMapView.onPause();
+        super.onPause();
     }
 
     @Override
