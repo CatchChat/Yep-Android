@@ -1,5 +1,7 @@
 package catchla.yep.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +12,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
@@ -29,6 +33,7 @@ import catchla.yep.R;
  */
 public class LocationPickerActivity extends ContentActivity implements Constants, LocationListener {
 
+    private static final int REQUEST_LOCATION_PERMISSION = 101;
     // Views
     private SlidingUpPanelLayout mSlidingLayout;
     private MapView mMapView;
@@ -55,6 +60,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
             mOnLocationChangedListener = null;
         }
     };
+    private AMap mMap;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -67,9 +73,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     }
 
     private void setupMap() {
-        final AMap map = mMapView.getMap();
-        map.setMyLocationEnabled(true);
-        map.setLocationSource(mLocationSource);
+        mMap = mMapView.getMap();
         MyLocationStyle style = new MyLocationStyle();
         style.radiusFillColor(0x200079ff);
         style.strokeColor(Color.TRANSPARENT);
@@ -81,11 +85,16 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         final Canvas canvas = new Canvas(bitmap);
         drawable.draw(canvas);
         style.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
-        map.setMyLocationStyle(style);
-        final UiSettings uiSettings = map.getUiSettings();
+        mMap.setMyLocationStyle(style);
+        mMap.setLocationSource(mLocationSource);
+        final UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setScaleControlsEnabled(false);
         uiSettings.setCompassEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
+
+        final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_LOCATION_PERMISSION);
     }
 
     private void updatePanelHeight() {
@@ -114,15 +123,35 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     @Override
     protected void onResume() {
         super.onResume();
-        final Criteria criteria = new Criteria();
-        mLocationManager.requestLocationUpdates(5000L, 0f, criteria, this, Looper.getMainLooper());
         mMapView.onResume();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_PERMISSION: {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    final Criteria criteria = new Criteria();
+                    mLocationManager.requestLocationUpdates(5000L, 0f, criteria, this,
+                            Looper.getMainLooper());
+                    mMap.setMyLocationEnabled(true);
+                } else {
+                    mMap.setMyLocationEnabled(false);
+                }
+                return;
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
     protected void onPause() {
         mMapView.onPause();
-        mLocationManager.removeUpdates(this);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.removeUpdates(this);
+        }
         super.onPause();
     }
 
