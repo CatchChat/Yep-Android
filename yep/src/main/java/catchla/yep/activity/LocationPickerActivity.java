@@ -1,19 +1,25 @@
 package catchla.yep.activity;
 
-import android.graphics.Rect;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.View;
 
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.UiSettings;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import catchla.yep.R;
-import catchla.yep.view.iface.IExtendedView;
 
 /**
  * Created by mariotaku on 16/1/3.
  */
-public class LocationPickerActivity extends ContentActivity {
+public class LocationPickerActivity extends ContentActivity implements LocationListener {
 
     // Views
     private SlidingUpPanelLayout mSlidingLayout;
@@ -28,24 +34,33 @@ public class LocationPickerActivity extends ContentActivity {
             updatePanelHeight();
         }
     };
+    private LocationManager mLocationManager;
+    private LocationSource.OnLocationChangedListener mOnLocationChangedListener;
+    private LocationSource mLocationSource = new LocationSource() {
+        @Override
+        public void activate(final OnLocationChangedListener listener) {
+            mOnLocationChangedListener = listener;
+        }
+
+        @Override
+        public void deactivate() {
+            mOnLocationChangedListener = null;
+        }
+    };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         setContentView(R.layout.activity_location_picker);
         mMapView.onCreate(savedInstanceState);
-        getMainContent().setOnSizeChangedListener(new IExtendedView.OnSizeChangedListener() {
-            @Override
-            public void onSizeChanged(final View view, final int w, final int h, final int oldw, final int oldh) {
-                updatePanelHeight();
-            }
-        });
-        getMainContent().setOnFitSystemWindowsListener(new IExtendedView.OnFitSystemWindowsListener() {
-            @Override
-            public void onFitSystemWindows(final Rect insets) {
-                updatePanelHeight();
-            }
-        });
+        final AMap map = mMapView.getMap();
+        map.setMyLocationEnabled(true);
+        map.setLocationSource(mLocationSource);
+        final UiSettings uiSettings = map.getUiSettings();
+        uiSettings.setScaleControlsEnabled(false);
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
         mSlidingLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
@@ -75,12 +90,15 @@ public class LocationPickerActivity extends ContentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        final Criteria criteria = new Criteria();
+        mLocationManager.requestLocationUpdates(5000L, 0f, criteria, this, Looper.getMainLooper());
         mMapView.onResume();
     }
 
     @Override
     protected void onPause() {
         mMapView.onPause();
+        mLocationManager.removeUpdates(this);
         super.onPause();
     }
 
@@ -89,5 +107,28 @@ public class LocationPickerActivity extends ContentActivity {
         super.onContentChanged();
         mMapView = (MapView) findViewById(R.id.map_view);
         mSlidingLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+    }
+
+
+    @Override
+    public void onLocationChanged(final Location location) {
+        if (mOnLocationChangedListener != null) {
+            mOnLocationChangedListener.onLocationChanged(location);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(final String provider, final int status, final Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(final String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(final String provider) {
+
     }
 }
