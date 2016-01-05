@@ -1,25 +1,34 @@
 package catchla.yep.activity;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.MyLocationStyle;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 
 /**
  * Created by mariotaku on 16/1/3.
  */
-public class LocationPickerActivity extends ContentActivity implements LocationListener {
+public class LocationPickerActivity extends ContentActivity implements Constants, LocationListener {
 
     // Views
     private SlidingUpPanelLayout mSlidingLayout;
@@ -54,14 +63,30 @@ public class LocationPickerActivity extends ContentActivity implements LocationL
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         setContentView(R.layout.activity_location_picker);
         mMapView.onCreate(savedInstanceState);
+        setupMap();
+        mSlidingLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
+    }
+
+    private void setupMap() {
         final AMap map = mMapView.getMap();
         map.setMyLocationEnabled(true);
         map.setLocationSource(mLocationSource);
+        MyLocationStyle style = new MyLocationStyle();
+        style.radiusFillColor(0x200079ff);
+        style.strokeColor(Color.TRANSPARENT);
+        style.strokeWidth(0);
+        final Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_map_marker);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
+        drawable.draw(canvas);
+        style.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+        map.setMyLocationStyle(style);
         final UiSettings uiSettings = map.getUiSettings();
         uiSettings.setScaleControlsEnabled(false);
         uiSettings.setCompassEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
-        mSlidingLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
     private void updatePanelHeight() {
@@ -112,6 +137,7 @@ public class LocationPickerActivity extends ContentActivity implements LocationL
 
     @Override
     public void onLocationChanged(final Location location) {
+        Log.d(LOGTAG, location.toString());
         if (mOnLocationChangedListener != null) {
             mOnLocationChangedListener.onLocationChanged(location);
         }
@@ -119,7 +145,8 @@ public class LocationPickerActivity extends ContentActivity implements LocationL
 
     @Override
     public void onStatusChanged(final String provider, final int status, final Bundle extras) {
-
+//        MyLocationStyle style = new MyLocationStyle();
+//        mMap.setMyLocationStyle(style);
     }
 
     @Override
