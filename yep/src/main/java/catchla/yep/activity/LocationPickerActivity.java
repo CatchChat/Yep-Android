@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 
 import com.amap.api.maps2d.AMap;
@@ -137,7 +136,6 @@ public class LocationPickerActivity extends ContentActivity implements Constants
 
     @Override
     public void onLocationChanged(final Location location) {
-        Log.d(LOGTAG, location.toString());
         if (mOnLocationChangedListener != null) {
             mOnLocationChangedListener.onLocationChanged(location);
         }
@@ -145,8 +143,6 @@ public class LocationPickerActivity extends ContentActivity implements Constants
 
     @Override
     public void onStatusChanged(final String provider, final int status, final Bundle extras) {
-//        MyLocationStyle style = new MyLocationStyle();
-//        mMap.setMyLocationStyle(style);
     }
 
     @Override
