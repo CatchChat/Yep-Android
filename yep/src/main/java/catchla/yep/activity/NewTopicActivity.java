@@ -197,17 +197,17 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             mEditText.setError(getString(R.string.no_content));
             return;
         }
-        if (location == null) {
-            Toast.makeText(this, R.string.unable_to_get_location, Toast.LENGTH_SHORT).show();
-            return;
-        }
         final NewTopic newTopic = new NewTopic();
         newTopic.body(body);
         final Skill skill = (Skill) mTopicSpinner.getSelectedItem();
         if (skill != null && skill.getId() != null) {
             newTopic.skillId(skill.getId());
         }
-        newTopic.location(location.getLatitude(), location.getLongitude());
+        if (location != null) {
+            newTopic.location(location.getLatitude(), location.getLongitude());
+        } else {
+            newTopic.location(0, 0);
+        }
         final TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity> taskRunnable = new TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
             @Override
             public TaskResponse<Topic> doLongOperation(final NewTopic params) throws InterruptedException {

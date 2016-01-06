@@ -48,10 +48,6 @@ public class Attachment implements Parcelable {
         return kind;
     }
 
-    public void setKind(final String kind) {
-        this.kind = kind;
-    }
-
     @Override
     public int describeContents() {
         return 0;

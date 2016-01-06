@@ -3,9 +3,11 @@ package catchla.yep.model;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 import catchla.yep.model.iface.JsonBody;
+import catchla.yep.model.util.SerializeOnlyJsonArrayConverter;
 
 /**
  * Created by mariotaku on 15/10/12.
@@ -19,8 +21,8 @@ public class NewTopic implements JsonBody {
     String body;
     @JsonField(name = "skill_id")
     String skillId;
-    @JsonField(name = "attachments")
-    List<IdResponse> attachments;
+    @JsonField(name = "attachments", typeConverter = SerializeOnlyJsonArrayConverter.class)
+    List<Object> attachments;
     @JsonField(name = "latitude")
     double latitude;
     @JsonField(name = "longitude")
@@ -41,7 +43,11 @@ public class NewTopic implements JsonBody {
         return this;
     }
 
-    public void attachments(final List<IdResponse> attachments) {
+    public void attachments(Object... attachments) {
+        attachments(Arrays.asList(attachments));
+    }
+
+    public void attachments(final List<Object> attachments) {
         if (attachments == null) return;
         this.attachments = attachments;
     }

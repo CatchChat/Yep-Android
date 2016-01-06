@@ -104,4 +104,6 @@
     <string name="time">Time</string>
     <string name="unable_to_create_topic">Unable to create topic</string>
     <string name="unable_to_update_profile">Unable to update profile</string>
+    <string name="my_current_location">My current location</string>
+    <string name="use_location">Use location</string>
 </resources>

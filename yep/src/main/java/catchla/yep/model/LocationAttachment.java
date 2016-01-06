@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 /**
  * Created by mariotaku on 15/11/26.
@@ -25,10 +26,13 @@ public class LocationAttachment extends Attachment implements Parcelable {
             return new LocationAttachment[size];
         }
     };
+    @ParcelableThisPlease
     @JsonField(name = "place")
     String place;
+    @ParcelableThisPlease
     @JsonField(name = "latitude")
     double latitude;
+    @ParcelableThisPlease
     @JsonField(name = "longitude")
     double longitude;
 
@@ -60,6 +64,18 @@ public class LocationAttachment extends Attachment implements Parcelable {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public void setPlace(final String place) {
+        this.place = place;
+    }
+
+    public void setLatitude(final double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(final double longitude) {
+        this.longitude = longitude;
     }
 
     @Override

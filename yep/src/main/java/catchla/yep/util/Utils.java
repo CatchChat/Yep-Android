@@ -14,6 +14,7 @@ import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -503,5 +505,15 @@ public class Utils implements Constants {
             return name + "." + mimeTypeMap.getExtensionFromMimeType(mimeType);
         }
         return name.substring(0, dotIndex + 1) + mimeTypeMap.getExtensionFromMimeType(mimeType);
+    }
+
+    public static Bitmap getMarkerBitmap(final Context context) {
+        final Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_map_marker);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        final Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
+        drawable.draw(canvas);
+        return bitmap;
     }
 }
