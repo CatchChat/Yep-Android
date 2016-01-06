@@ -1,6 +1,7 @@
 package catchla.yep.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,7 +15,11 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 
 import com.amap.api.maps2d.AMap;
@@ -22,7 +27,17 @@ import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.LatLngBounds;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeAddress;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.poisearch.PoiResult;
+import com.amap.api.services.poisearch.PoiSearch;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import catchla.yep.Constants;
@@ -31,9 +46,12 @@ import catchla.yep.R;
 /**
  * Created by mariotaku on 16/1/3.
  */
-public class LocationPickerActivity extends ContentActivity implements Constants, LocationListener {
+public class LocationPickerActivity extends ContentActivity implements Constants, LocationListener,
+        LoaderManager.LoaderCallbacks<PoiResult> {
 
     private static final int REQUEST_LOCATION_PERMISSION = 101;
+    public static final String BOUNDS = "bounds";
+    public static final String POSITION = "position";
     // Views
     private SlidingUpPanelLayout mSlidingLayout;
     private MapView mMapView;
@@ -61,6 +79,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         }
     };
     private AMap mMap;
+    private boolean mLoaderInitialized;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -87,6 +106,17 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         style.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
         mMap.setMyLocationStyle(style);
         mMap.setLocationSource(mLocationSource);
+        mMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(final CameraPosition position) {
+
+            }
+
+            @Override
+            public void onCameraChangeFinish(final CameraPosition position) {
+                searchNearbyPoi(position);
+            }
+        });
         final UiSettings uiSettings = mMap.getUiSettings();
         uiSettings.setScaleControlsEnabled(false);
         uiSettings.setCompassEnabled(false);
@@ -95,6 +125,19 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION};
         ActivityCompat.requestPermissions(this, permissions, REQUEST_LOCATION_PERMISSION);
+    }
+
+    private void searchNearbyPoi(final CameraPosition position) {
+        final LoaderManager lm = getSupportLoaderManager();
+        final Bundle args = new Bundle();
+        args.putParcelable(POSITION, position.target);
+        args.putParcelable(BOUNDS, mMap.getProjection().getVisibleRegion().latLngBounds);
+        if (mLoaderInitialized) {
+            lm.restartLoader(0, args, this);
+        } else {
+            lm.initLoader(0, args, this);
+            mLoaderInitialized = true;
+        }
     }
 
     private void updatePanelHeight() {
@@ -182,5 +225,74 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     @Override
     public void onProviderDisabled(final String provider) {
 
+    }
+
+    @Override
+    public Loader<PoiResult> onCreateLoader(final int id, final Bundle args) {
+        final LatLng position = args.getParcelable(POSITION);
+        final LatLngBounds region = args.getParcelable(BOUNDS);
+        return new NearByPoiLoader(this, position, region);
+    }
+
+    @Override
+    public void onLoadFinished(final Loader<PoiResult> loader, final PoiResult data) {
+        System.identityHashCode(data);
+    }
+
+    @Override
+    public void onLoaderReset(final Loader<PoiResult> loader) {
+
+    }
+
+    public static class NearByPoiLoader extends AsyncTaskLoader<PoiResult> {
+
+        private final LatLng mLatLng;
+        private final LatLngBounds mBounds;
+
+        public NearByPoiLoader(final Context context, LatLng latLng, LatLngBounds bounds) {
+            super(context);
+            mLatLng = latLng;
+            mBounds = bounds;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public PoiResult loadInBackground() {
+            try {
+                GeocodeSearch geocodeSearch = new GeocodeSearch(getContext());
+                RegeocodeAddress address = geocodeSearch.getFromLocation(new RegeocodeQuery(
+                        new LatLonPoint(mLatLng.latitude, mLatLng.longitude), 0, GeocodeSearch.GPS));
+                PoiSearch poiSearch = new PoiSearch(getContext(), new PoiSearch.Query("", "所有POI",
+                        address.getAdCode()));
+                poiSearch.setBound(toSearchBound(mBounds));
+                return poiSearch.searchPOI();
+            } catch (AMapException e) {
+                Log.w(LOGTAG, e);
+                return null;
+            }
+        }
+
+    }
+
+    /**
+     * Fuck AMap
+     *
+     * @param bounds
+     * @return
+     */
+    private static PoiSearch.SearchBound toSearchBound(final LatLngBounds bounds) {
+        // Southwest
+        final LatLonPoint lowerLeft = toLatLonPoint(bounds.southwest);
+        // Northeast
+        final LatLonPoint upperRight = toLatLonPoint(bounds.northeast);
+        return new PoiSearch.SearchBound(lowerLeft, upperRight);
+    }
+
+    private static LatLonPoint toLatLonPoint(final LatLng latLng) {
+        return new LatLonPoint(latLng.latitude, latLng.longitude);
     }
 }

@@ -18,7 +18,7 @@ import catchla.yep.view.iface.PagerIndicator;
 /**
  * Created by mariotaku on 15/5/21.
  */
-public class TabsAdapter extends FragmentStatePagerAdapter implements PagerIndicator.TabProvider, PagerIndicator.TabListener {
+public class TabsAdapter extends SupportFixedFragmentStatePagerAdapter implements PagerIndicator.TabProvider, PagerIndicator.TabListener {
     private final Context mContext;
     private Fragment mPrimaryItem;
     private PagerIndicator.TabListener mTabListener;
