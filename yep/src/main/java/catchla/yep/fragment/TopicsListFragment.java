@@ -1,18 +1,21 @@
 package catchla.yep.fragment;
 
 import android.accounts.Account;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +38,7 @@ import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.LocationAttachment;
 import catchla.yep.model.Paging;
 import catchla.yep.model.Topic;
 import catchla.yep.view.holder.TopicViewHolder;
@@ -45,6 +49,8 @@ import catchla.yep.view.holder.TopicViewHolder;
 public class TopicsListFragment extends AbsContentListRecyclerViewFragment<TopicsAdapter>
         implements LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickListener,
         IActionButtonSupportFragment {
+
+    private static final int REQUEST_NEW_LOCATION_TOPIC = 102;
 
     private String mSortBy;
 
@@ -116,6 +122,30 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
 
     }
 
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        switch (requestCode) {
+            case REQUEST_NEW_LOCATION_TOPIC: {
+                if (resultCode == Activity.RESULT_OK) {
+                    final String name = data.getStringExtra(EXTRA_NAME);
+                    final Location location = data.getParcelableExtra(EXTRA_LOCATION);
+                    final Intent intent = new Intent(getContext(), NewTopicActivity.class);
+                    final LocationAttachment attachment = new LocationAttachment();
+                    attachment.setPlace(name);
+                    attachment.setLatitude(location.getLatitude());
+                    attachment.setLongitude(location.getLongitude());
+                    intent.putExtra(EXTRA_NEW_TOPIC_TYPE, NewTopicActivity.TYPE_LOCATION);
+                    intent.putExtra(EXTRA_ATTACHMENT, attachment);
+                    intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                    startActivity(intent);
+                    return;
+                }
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @NonNull
     @Override
     protected TopicsAdapter onCreateAdapter(Context context) {
@@ -172,7 +202,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         args.putParcelable(EXTRA_ACCOUNT, getAccount());
         final NewTopicTypeDialogFragment df = new NewTopicTypeDialogFragment();
         df.setArguments(args);
-        df.show(getFragmentManager(), "new_topic_type");
+        df.show(getChildFragmentManager(), "new_topic_type");
     }
 
     @Nullable
@@ -237,6 +267,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     public static class NewTopicTypeDialogFragment extends DialogFragment {
+
         @NonNull
         @Override
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
@@ -258,9 +289,10 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
                             break;
                         }
                         case "location": {
+                            final Fragment parent = getParentFragment();
                             final Intent intent = new Intent(getContext(), LocationPickerActivity.class);
                             intent.putExtra(EXTRA_ACCOUNT, getAccount());
-                            startActivity(intent);
+                            parent.startActivityForResult(intent, REQUEST_NEW_LOCATION_TOPIC);
                             break;
                         }
                     }

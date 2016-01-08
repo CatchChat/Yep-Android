@@ -68,8 +68,6 @@ import catchla.yep.util.Utils;
 public class LocationPickerActivity extends ContentActivity implements Constants, LocationListener,
         LoaderManager.LoaderCallbacks<PoiResult> {
 
-    public static final String BOUNDS = "bounds";
-    public static final String POSITION = "position";
     private static final int REQUEST_LOCATION_PERMISSION = 101;
     // Views
     private SlidingUpPanelLayout mSlidingLayout;
@@ -127,18 +125,24 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.use_location: {
-                final Location location = mMap.getMyLocation();
+                final Location myLocation = mMap.getMyLocation();
                 final Intent data = new Intent();
                 if (mMarker != null) {
-
-                } else if (location != null) {
-
+                    final Location location = new Location("");
+                    final LatLng position = mMarker.getPosition();
+                    location.setLatitude(position.latitude);
+                    location.setLongitude(position.longitude);
+                    data.putExtra(EXTRA_LOCATION, location);
+                    data.putExtra(EXTRA_NAME, mMarker.getTitle());
+                } else if (myLocation != null) {
+                    data.putExtra(EXTRA_LOCATION, myLocation);
                 } else {
                     setResult(RESULT_CANCELED);
                     finish();
                     return true;
                 }
                 setResult(RESULT_OK, data);
+                finish();
                 return true;
             }
         }
@@ -158,7 +162,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         mMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(final LatLng latLng) {
-                showMarker(latLng, false);
+                showMarker(latLng, "Pin on map", false);
             }
         });
         mMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
@@ -321,17 +325,18 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     private void notifyCurrentLocationClick() {
         final Location myLocation = mMap.getMyLocation();
         if (myLocation == null) return;
-        showMarker(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), true);
+        final LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        showMarker(latLng, "My location", true);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     private void notifyPoiItemClick(final PoiItem item) {
         final LatLng latLng = AMapModelUtils.toLatLng(item.getLatLonPoint());
-        showMarker(latLng, true);
+        showMarker(latLng, item.getTitle(), true);
         mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
-    private void showMarker(final LatLng latLng, final boolean center) {
+    private void showMarker(final LatLng latLng, final String name, final boolean center) {
         if (mMarker != null) {
             mMarker.remove();
             mMarker.destroy();
@@ -341,6 +346,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         final MarkerOptions options = new MarkerOptions();
         options.draggable(false);
         options.position(latLng);
+        options.title(name);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_pin));
         mMarker = mMap.addMarker(options);
         if (center) {

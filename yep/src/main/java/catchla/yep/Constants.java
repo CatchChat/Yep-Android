@@ -55,6 +55,11 @@ public interface Constants {
     String EXTRA_CACHING_ENABLED = "caching_enabled";
     String EXTRA_MAX_ID = "max_id";
     String EXTRA_SNAPSHOT = "snapshot";
+    String EXTRA_LOCATION = "location";
+    String EXTRA_NAME = "name";
+    String BOUNDS = "bounds";
+    String EXTRA_ATTACHMENT = "attachment";
+    String POSITION = "position";
 
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;

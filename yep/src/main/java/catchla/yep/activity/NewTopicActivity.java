@@ -29,6 +29,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.fragment.NewTopicGalleryFragment;
+import catchla.yep.fragment.NewTopicLocationFragment;
 import catchla.yep.fragment.NewTopicMediaFragment;
 import catchla.yep.fragment.ProgressDialogFragment;
 import catchla.yep.model.NewTopic;
@@ -46,6 +47,10 @@ import catchla.yep.util.YepAPIFactory;
  * Created by mariotaku on 15/10/13.
  */
 public class NewTopicActivity extends SwipeBackContentActivity implements Constants {
+
+    public static final String TYPE_PHOTOS_TEXT = "photos_text";
+    public static final String TYPE_AUDIO = "audio";
+    public static final String TYPE_LOCATION = "location";
 
     private static final String FRAGMENT_TAG_POSTING_TOPIC = "posting_topic";
     private static final String KEY_TOPIC_DRAFTS_TEXT = "topic_drafts_text";
@@ -98,22 +103,30 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         final Skill skill = intent.getParcelableExtra(EXTRA_SKILL);
         String newTopicsType = intent.getStringExtra(EXTRA_NEW_TOPIC_TYPE);
         if (newTopicsType == null) {
-            newTopicsType = "photos_text";
+            newTopicsType = TYPE_PHOTOS_TEXT;
         }
         switch (newTopicsType) {
-            case "photos_text": {
+            case TYPE_PHOTOS_TEXT: {
                 final FragmentManager fm = getSupportFragmentManager();
                 final FragmentTransaction ft = fm.beginTransaction();
                 ft.replace(R.id.new_topic_media, new NewTopicGalleryFragment());
                 ft.commit();
                 break;
             }
-//            case "audio": {
-//                break;
-//            }
-//            case "location": {
-//                break;
-//            }
+            case TYPE_AUDIO: {
+                break;
+            }
+            case TYPE_LOCATION: {
+                final FragmentManager fm = getSupportFragmentManager();
+                final FragmentTransaction ft = fm.beginTransaction();
+                final NewTopicLocationFragment fragment = new NewTopicLocationFragment();
+                final Bundle args = new Bundle();
+                args.putParcelable(EXTRA_ATTACHMENT, intent.getParcelableExtra(EXTRA_ATTACHMENT));
+                fragment.setArguments(args);
+                ft.replace(R.id.new_topic_media, fragment);
+                ft.commit();
+                break;
+            }
             default: {
                 throw new UnsupportedOperationException(newTopicsType);
             }
