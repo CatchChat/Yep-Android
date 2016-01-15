@@ -30,17 +30,19 @@ android {
     productFlavors {
         staging {
             applicationId "catchla.yep.staging"
-            versionName defaultConfig.versionName + ".staging"
-            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://park-staging.catchchatchina.com/v1/"'
+            versionName = defaultConfig.versionName + ".staging"
+            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://park-staging.catchchatchina.com/api/v1/"'
             buildConfigField 'boolean', 'IS_STAGING', 'Boolean.parseBoolean("true")'
             buildConfigField 'String', 'ACCOUNT_TYPE', '"catchla.yep.staging.account"'
             resValue 'string', 'account_type', 'catchla.yep.staging.account'
+            manifestPlaceholders = [AMAP_API_KEY: '04550678c914793570579723fb35da9a']
         }
         production {
-            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://api.soyep.com/v2/"'
+            buildConfigField 'String', 'API_ENDPOINT_REST', '"https://api.soyep.com/v1/"'
             buildConfigField 'boolean', 'IS_STAGING', 'Boolean.parseBoolean("false")'
             buildConfigField 'String', 'ACCOUNT_TYPE', '"catchla.yep.account"'
             resValue 'string', 'account_type', 'catchla.yep.account'
+            manifestPlaceholders = [AMAP_API_KEY: '14db11cf0587ed432ea63761c60d937a']
         }
     }
 

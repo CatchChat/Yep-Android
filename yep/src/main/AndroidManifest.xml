@@ -32,7 +32,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="04550678c914793570579723fb35da9a"/>
+            android:value="${AMAP_API_KEY}"/>
 
         <activity
             android:name=".activity.MainActivity"

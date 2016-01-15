@@ -157,6 +157,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         style.strokeWidth(0);
         final Bitmap bitmap = Utils.getMarkerBitmap(this);
         style.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
+        style.anchor(.5f, .5f);
         mMap.setMyLocationStyle(style);
         mMap.setLocationSource(mLocationSource);
         mMap.setOnMapClickListener(new AMap.OnMapClickListener() {
@@ -348,6 +349,7 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         options.position(latLng);
         options.title(name);
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_pin));
+        options.anchor(0.5f, 1f);
         mMarker = mMap.addMarker(options);
         if (center) {
             mMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
