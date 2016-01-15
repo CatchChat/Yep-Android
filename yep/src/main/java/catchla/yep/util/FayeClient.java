@@ -4,6 +4,7 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
 import com.fasterxml.jackson.jr.tree.JacksonJrValue;
@@ -22,9 +23,9 @@ import com.squareup.okhttp.ws.WebSocketListener;
 
 import org.jdeferred.DoneCallback;
 import org.jdeferred.impl.DeferredObject;
-import org.json.JSONArray;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -158,7 +159,8 @@ public class FayeClient implements Constants {
             }
             callbacks.put(idStr, callback);
         }
-        final RequestBody body = RequestBody.create(WebSocket.TEXT, Message.toJson(messages));
+        final String jsonString = Message.toJson(messages);
+        final RequestBody body = RequestBody.create(WebSocket.TEXT, jsonString);
         try {
             webSocket.sendMessage(body);
         } catch (IOException e) {
@@ -325,16 +327,31 @@ public class FayeClient implements Constants {
             put("clientId", clientId);
         }
 
-        public static String toJson(final Message[] messages) {
-            final JSONArray json = new JSONArray();
+        public static String toJson(final Message[] messages) throws IOException {
+            StringWriter w = new StringWriter();
+            JsonGenerator g = LoganSquare.JSON_FACTORY.createGenerator(w);
+            g.writeStartArray();
             for (final Message message : messages) {
-                json.put(message.json);
+                message.write(g);
             }
-            return json.toString();
+            g.writeEndArray();
+            g.flush();
+            w.flush();
+            return w.toString();
         }
 
         public Advice getAdvice() {
             return new Advice(json.get("advice"));
+        }
+
+        public void write(JsonGenerator g) throws IOException {
+            final JacksonJrSimpleTreeCodec codec = JacksonJrSimpleTreeCodec.SINGLETON;
+            g.writeStartObject();
+            for (final Map.Entry<String, TreeNode> entry : json.entrySet()) {
+                g.writeFieldName(entry.getKey());
+                codec.writeTree(g, entry.getValue());
+            }
+            g.writeEndObject();
         }
 
 

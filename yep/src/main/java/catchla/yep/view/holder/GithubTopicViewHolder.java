@@ -1,6 +1,8 @@
 package catchla.yep.view.holder;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,6 +25,19 @@ public class GithubTopicViewHolder extends TopicViewHolder {
         super(topicsAdapter, itemView, context, imageLoader, listener);
         repoName = (TextView) itemView.findViewById(R.id.repo_name);
         repoDescription = (TextView) itemView.findViewById(R.id.repo_description);
+        itemView.findViewById(R.id.attachment_view).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(final View v) {
+        switch (v.getId()) {
+            case R.id.attachment_view: {
+                GithubAttachment attachment = (GithubAttachment) adapter.getTopic(getLayoutPosition()).getAttachments().get(0);
+                adapter.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(attachment.getUrl())));
+                return;
+            }
+        }
+        super.onClick(v);
     }
 
     @Override
