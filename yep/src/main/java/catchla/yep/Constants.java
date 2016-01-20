@@ -64,4 +64,5 @@ public interface Constants {
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;
     int TABLE_ID_CONVERSATIONS = 12;
+    String AUTHORITY_YEP_CACHE = BuildConfig.APPLICATION_ID + ".cache";
 }

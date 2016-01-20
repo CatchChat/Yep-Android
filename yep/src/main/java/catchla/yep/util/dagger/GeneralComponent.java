@@ -3,11 +3,13 @@ package catchla.yep.util.dagger;
 import javax.inject.Singleton;
 
 import catchla.yep.activity.ContentActivity;
+import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.fragment.BaseFragment;
 import catchla.yep.loader.TileImageLoader;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.preference.AccountInfoPreference;
+import catchla.yep.provider.CacheProvider;
 import catchla.yep.service.FayeService;
 import catchla.yep.service.MessageService;
 import catchla.yep.view.StaticMapView;
@@ -38,4 +40,8 @@ public interface GeneralComponent {
     void inject(StaticMapView view);
 
     void inject(TileImageLoader loader);
+
+    void inject(MediaViewerActivity activity);
+
+    void inject(CacheProvider provider);
 }

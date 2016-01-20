@@ -227,6 +227,10 @@
             android:name=".provider.YepDataProvider"
             android:authorities="${applicationId}"
             android:exported="false"/>
+        <provider
+            android:name=".provider.CacheProvider"
+            android:authorities="${applicationId}.cache"
+            android:exported="false"/>
 
         <service android:name=".service.MessageService"/>
         <service android:name=".service.FayeService"/>

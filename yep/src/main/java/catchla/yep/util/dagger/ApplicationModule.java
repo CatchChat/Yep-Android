@@ -16,6 +16,9 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
+import org.mariotaku.mediaviewer.library.FileCache;
+import org.mariotaku.mediaviewer.library.MediaDownloader;
+
 import java.io.IOException;
 
 import javax.inject.Singleton;
@@ -24,6 +27,8 @@ import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.app.YepApplication;
 import catchla.yep.util.ImageLoaderWrapper;
+import catchla.yep.util.OkMediaDownloader;
+import catchla.yep.util.UILFileCache;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepImageDownloader;
 import dagger.Module;
@@ -55,6 +60,18 @@ public class ApplicationModule implements Constants {
     @Singleton
     public ImageDownloader imageDownloader() {
         return createImageDownloader(application);
+    }
+
+    @Provides
+    @Singleton
+    public FileCache fileCache(DiskCache cache) {
+        return new UILFileCache(cache);
+    }
+
+    @Provides
+    @Singleton
+    public MediaDownloader mediaDownloader(OkHttpClient client) {
+        return new OkMediaDownloader(client);
     }
 
     private YepImageDownloader createImageDownloader(final YepApplication application) {
