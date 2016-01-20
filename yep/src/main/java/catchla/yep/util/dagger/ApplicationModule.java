@@ -12,15 +12,19 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
 import java.io.IOException;
 
+import javax.inject.Singleton;
+
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.app.YepApplication;
 import catchla.yep.util.ImageLoaderWrapper;
+import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepImageDownloader;
 import dagger.Module;
 import dagger.Provides;
@@ -31,35 +35,26 @@ import dagger.Provides;
 @Module
 public class ApplicationModule implements Constants {
 
-    private final Bus bus;
-    private final ImageLoader imageLoader;
     private final YepApplication application;
-    private final ImageLoaderWrapper imageLoaderWrapper;
-    private final YepImageDownloader imageDownloader;
-    private final DiskCache diskCache;
-    private final SharedPreferences sharedPreferences;
 
     public ApplicationModule(YepApplication application) {
         this.application = application;
-        bus = new Bus(ThreadEnforcer.MAIN);
-        imageDownloader = createImageDownloader(application);
-        diskCache = createDiskCache();
-        final DisplayImageOptions defaultDisplayImageOptions = createDefaultDisplayImageOptions();
-        imageLoader = createImageLoader(imageDownloader, diskCache, defaultDisplayImageOptions);
-        imageLoaderWrapper = new ImageLoaderWrapper(imageLoader, defaultDisplayImageOptions);
-        sharedPreferences = application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     public static ApplicationModule get(final Context context) {
         return ((YepApplication) context.getApplicationContext()).getApplicationModule();
     }
 
+    @Provides
+    @Singleton
     public DiskCache getDiskCache() {
-        return diskCache;
+        return createDiskCache();
     }
 
-    public YepImageDownloader getImageDownloader() {
-        return imageDownloader;
+    @Provides
+    @Singleton
+    public ImageDownloader imageDownloader() {
+        return createImageDownloader(application);
     }
 
     private YepImageDownloader createImageDownloader(final YepApplication application) {
@@ -67,13 +62,16 @@ public class ApplicationModule implements Constants {
     }
 
     @Provides
+    @Singleton
     public SharedPreferences getSharedPreferences() {
-        return sharedPreferences;
+        return application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
     @Provides
-    public ImageLoaderWrapper getImageLoaderWrapper() {
-        return imageLoaderWrapper;
+    @Singleton
+    public ImageLoaderWrapper getImageLoaderWrapper(final ImageLoader imageLoader) {
+        final DisplayImageOptions defaultDisplayImageOptions = createDefaultDisplayImageOptions();
+        return new ImageLoaderWrapper(imageLoader, defaultDisplayImageOptions);
     }
 
     private DiskCache createDiskCache() {
@@ -107,12 +105,20 @@ public class ApplicationModule implements Constants {
     }
 
     @Provides
-    public ImageLoader getImageLoader() {
-        return imageLoader;
+    @Singleton
+    public ImageLoader getImageLoader(final ImageDownloader imageDownloader, final DiskCache diskCache) {
+        return createImageLoader(imageDownloader, diskCache, createDefaultDisplayImageOptions());
     }
 
     @Provides
+    @Singleton
     public Bus getBus() {
-        return bus;
+        return new Bus(ThreadEnforcer.MAIN);
+    }
+
+    @Provides
+    @Singleton
+    public OkHttpClient okHttpClient() {
+        return YepAPIFactory.getOkHttpClient(application);
     }
 }

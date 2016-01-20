@@ -23,6 +23,7 @@ import catchla.yep.fragment.iface.IBaseFragment;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 
 public class BaseFragment extends Fragment implements IBaseFragment, Constants {
@@ -55,7 +56,7 @@ public class BaseFragment extends Fragment implements IBaseFragment, Constants {
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+        GeneralComponentHelper.build(context).inject(this);
     }
 
     @Override

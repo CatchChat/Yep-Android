@@ -33,6 +33,7 @@ import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/5/4.
@@ -216,7 +217,7 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
 
         public HeadersAdapter(final Context context) {
             super(context);
-            DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+            GeneralComponentHelper.build(context).inject(this);
         }
 
         public void setAccount(Account account) {

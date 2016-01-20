@@ -13,8 +13,7 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 import catchla.yep.view.TintedStatusFrameLayout;
 
 public class ContentActivity extends AppCompatActivity {
@@ -28,7 +27,7 @@ public class ContentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
+        GeneralComponentHelper.build(this).inject(this);
     }
 
     @Override

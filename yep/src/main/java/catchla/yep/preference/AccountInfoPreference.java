@@ -21,6 +21,7 @@ import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.Utils;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/5/11.
@@ -35,7 +36,7 @@ public class AccountInfoPreference extends Preference implements Constants {
 
     public AccountInfoPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+        GeneralComponentHelper.build(context).inject(this);
         setLayoutResource(R.layout.layout_preference_account_info);
         mAccountManager = AccountManager.get(context);
         mAccount = Utils.getCurrentAccount(context);

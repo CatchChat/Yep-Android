@@ -52,8 +52,7 @@ import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -75,7 +74,7 @@ public class MessageService extends Service implements Constants {
     @Override
     public void onCreate() {
         super.onCreate();
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
+        GeneralComponentHelper.build(this).inject(this);
     }
 
     @Override

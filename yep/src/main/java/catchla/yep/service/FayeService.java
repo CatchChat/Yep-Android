@@ -45,8 +45,7 @@ import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.FayeClient;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 public class FayeService extends Service implements Constants {
 
@@ -59,7 +58,7 @@ public class FayeService extends Service implements Constants {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler(Looper.getMainLooper());
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(this)).build().inject(this);
+        GeneralComponentHelper.build(this).inject(this);
     }
 
     @Override

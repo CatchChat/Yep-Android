@@ -38,27 +38,30 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 import catchla.yep.util.BitmapUtils;
 import catchla.yep.util.ImageValidator;
-import catchla.yep.util.dagger.ApplicationModule;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 public class TileImageLoader extends AsyncTaskLoader<TileImageLoader.Result> {
 
     private final Uri mUri;
     private final Handler mHandler;
     private final DownloadListener mListener;
-    private final ImageDownloader mDownloader;
-    private final DiskCache mDiskCache;
+    @Inject
+    ImageDownloader mDownloader;
+    @Inject
+    DiskCache mDiskCache;
 
     private final float mFallbackSize;
 
     public TileImageLoader(final Context context, final DownloadListener listener, final Uri uri) {
         super(context);
         mHandler = new Handler();
+        GeneralComponentHelper.build(context).inject(this);
         mUri = uri;
         mListener = listener;
-        mDownloader = ApplicationModule.get(context).getImageDownloader();
-        mDiskCache = ApplicationModule.get(context).getDiskCache();
         final Resources res = context.getResources();
         final DisplayMetrics dm = res.getDisplayMetrics();
         mFallbackSize = Math.max(dm.heightPixels, dm.widthPixels);

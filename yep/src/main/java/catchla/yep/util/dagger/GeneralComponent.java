@@ -1,8 +1,11 @@
 package catchla.yep.util.dagger;
 
+import javax.inject.Singleton;
+
 import catchla.yep.activity.ContentActivity;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.fragment.BaseFragment;
+import catchla.yep.loader.TileImageLoader;
 import catchla.yep.menu.HomeMenuActionProvider;
 import catchla.yep.preference.AccountInfoPreference;
 import catchla.yep.service.FayeService;
@@ -14,6 +17,7 @@ import dagger.Component;
  * Created by mariotaku on 15/10/8.
  */
 @Component(modules = ApplicationModule.class)
+@Singleton
 public interface GeneralComponent {
     void inject(final ContentActivity activity);
 
@@ -32,4 +36,6 @@ public interface GeneralComponent {
     void inject(FayeService service);
 
     void inject(StaticMapView view);
+
+    void inject(TileImageLoader loader);
 }

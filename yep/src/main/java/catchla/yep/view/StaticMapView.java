@@ -13,6 +13,7 @@ import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.StaticMapUrlGenerator;
 import catchla.yep.util.dagger.ApplicationModule;
 import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/12/9.
@@ -47,7 +48,7 @@ public class StaticMapView extends ImageView {
     }
 
     private void init(Context context) {
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+        GeneralComponentHelper.build(context).inject(this);
         setScaleType(ScaleType.CENTER_CROP);
     }
 

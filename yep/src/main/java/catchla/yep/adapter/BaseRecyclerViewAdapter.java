@@ -6,8 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import javax.inject.Inject;
 
 import catchla.yep.util.ImageLoaderWrapper;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/10/13.
@@ -19,7 +18,7 @@ public abstract class BaseRecyclerViewAdapter extends RecyclerView.Adapter<Recyc
     protected ImageLoaderWrapper mImageLoader;
 
     public BaseRecyclerViewAdapter(Context context) {
-        DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build().inject(this);
+        GeneralComponentHelper.build(context).inject(this);
         this.context = context;
     }
 
