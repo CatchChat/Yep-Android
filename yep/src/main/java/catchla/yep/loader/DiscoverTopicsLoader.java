@@ -12,8 +12,8 @@ import catchla.yep.Constants;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ResponseList;
 import catchla.yep.model.Topic;
-import catchla.yep.util.YepAPI;
 import catchla.yep.model.YepException;
+import catchla.yep.util.YepAPI;
 
 /**
  * Created by mariotaku on 15/5/27.
@@ -38,7 +38,7 @@ public class DiscoverTopicsLoader extends CachedYepListLoader<Topic> implements 
     @NonNull
     @Override
     protected String getCacheFileName() {
-        return "discover_topics_cache_" + getAccount().name;
+        return "discover_topics_cache_" + getAccount().name + "_sort_by_" + mSortBy;
     }
 
     @Override

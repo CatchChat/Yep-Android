@@ -6,10 +6,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import org.mariotaku.mediaviewer.library.FileCache;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.inject.Inject;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
@@ -17,12 +24,15 @@ import catchla.yep.model.YepException;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
+import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
  * Created by mariotaku on 15/6/3.
  */
 public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements Constants {
 
+    @Inject
+    FileCache mFileCache;
     private final Account mAccount;
     private final T mOldData;
     private final boolean mReadCache, mWriteCache;
@@ -30,6 +40,8 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
 
     public CachedYepLoader(Context context, Account account, T oldData, boolean readCache, boolean writeCache) {
         super(context);
+        //noinspection unchecked
+        GeneralComponentHelper.build(context).inject((CachedYepLoader<Object>) this);
         mAccount = account;
         mOldData = oldData;
         mReadCache = readCache;
@@ -44,13 +56,15 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
     public T loadInBackground() {
         final YepAPI yep = YepAPIFactory.getInstance(getContext(), mAccount);
         try {
-            final File cacheFile = new File(getContext().getCacheDir(), getCacheFileName());
             if (mReadCache) {
                 FileInputStream is = null;
                 try {
-                    is = new FileInputStream(cacheFile);
-                    T cached = deserialize(is);
-                    if (cached != null) return cached;
+                    File cacheFile = mFileCache.get(getCacheFileName());
+                    if (cacheFile != null) {
+                        is = new FileInputStream(cacheFile);
+                        T cached = deserialize(is);
+                        if (cached != null) return cached;
+                    }
                 } catch (IOException e) {
                     // Ignore
                 } finally {
@@ -59,12 +73,11 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
             }
             final T data = requestData(yep, mOldData);
             if (mWriteCache) {
-                FileOutputStream os = null;
+                ByteArrayOutputStream os = null;
                 try {
-                    os = new FileOutputStream(cacheFile);
+                    os = new ByteArrayOutputStream();
                     serialize(data, os);
-                    os.flush();
-                    os.close();
+                    mFileCache.save(getCacheFileName(), new ByteArrayInputStream(os.toByteArray()), null);
                 } catch (IOException e) {
                     // Ignore
                 } finally {
@@ -86,9 +99,9 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
         forceLoad();
     }
 
-    protected abstract void serialize(final T data, final FileOutputStream os) throws IOException;
+    protected abstract void serialize(final T data, final OutputStream os) throws IOException;
 
-    protected abstract T deserialize(final FileInputStream is) throws IOException;
+    protected abstract T deserialize(final InputStream is) throws IOException;
 
     @NonNull
     protected abstract String getCacheFileName();

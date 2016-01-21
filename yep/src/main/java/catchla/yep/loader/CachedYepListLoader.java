@@ -5,9 +5,9 @@ import android.content.Context;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -24,12 +24,12 @@ public abstract class CachedYepListLoader<E> extends CachedYepLoader<List<E>> {
     }
 
     @Override
-    protected void serialize(final List<E> data, final FileOutputStream os) throws IOException {
+    protected void serialize(final List<E> data, final OutputStream os) throws IOException {
         LoganSquare.serialize(data, os, mObjectClass);
     }
 
     @Override
-    protected List<E> deserialize(final FileInputStream is) throws IOException {
+    protected List<E> deserialize(final InputStream is) throws IOException {
         return LoganSquare.parseList(is, mObjectClass);
     }
 }

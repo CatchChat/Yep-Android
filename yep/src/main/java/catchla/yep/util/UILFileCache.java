@@ -38,7 +38,7 @@ public class UILFileCache implements FileCache {
         cache.save(key, is, new IoUtils.CopyListener() {
             @Override
             public boolean onBytesCopied(final int current, final int total) {
-                return listener.onCopied(current);
+                return listener == null || listener.onCopied(current);
             }
         });
     }
