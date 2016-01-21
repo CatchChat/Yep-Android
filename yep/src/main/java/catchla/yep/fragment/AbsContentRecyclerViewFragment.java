@@ -67,9 +67,9 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
 
     private long mStartTime = -1;
 
-    private boolean mPostedHide = false;
+    private boolean mPostedShowContent = false;
 
-    private boolean mPostedShow = false;
+    private boolean mPostedShowProgress = false;
 
     private boolean mDismissed = false;
 
@@ -77,7 +77,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
 
         @Override
         public void run() {
-            mPostedHide = false;
+            mPostedShowContent = false;
             mStartTime = -1;
             showContentInternal(true);
         }
@@ -87,7 +87,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
 
         @Override
         public void run() {
-            mPostedShow = false;
+            mPostedShowProgress = false;
             if (!mDismissed) {
                 mStartTime = System.currentTimeMillis();
                 showProgressInternal(true);
@@ -304,6 +304,11 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
     @NonNull
     protected abstract A onCreateAdapter(Context context);
 
+    @Override
+    public void onDestroyView() {
+        mHandler.removeCallbacks(null);
+        super.onDestroyView();
+    }
 
     /**
      * Hide the progress view if it is visible. The progress view will not be
@@ -323,9 +328,9 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
             // The progress spinner is shown, but not long enough,
             // so put a delayed message in to hide it when its been
             // shown long enough.
-            if (!mPostedHide) {
+            if (!mPostedShowContent) {
                 mHandler.postDelayed(mDelayedShowContent, MIN_SHOW_TIME - diff);
-                mPostedHide = true;
+                mPostedShowContent = true;
             }
         }
     }
@@ -339,9 +344,9 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         mStartTime = -1;
         mDismissed = false;
         mHandler.removeCallbacks(mDelayedShowContent);
-        if (!mPostedShow) {
+        if (!mPostedShowProgress) {
             mHandler.postDelayed(mDelayedShowProgress, MIN_DELAY);
-            mPostedShow = true;
+            mPostedShowProgress = true;
         }
     }
 
