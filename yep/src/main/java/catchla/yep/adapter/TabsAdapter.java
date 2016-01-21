@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
 
@@ -90,4 +89,5 @@ public class TabsAdapter extends SupportFixedFragmentStatePagerAdapter implement
         if (mTabListener == null) return;
         mTabListener.onPageSelected(position);
     }
+
 }

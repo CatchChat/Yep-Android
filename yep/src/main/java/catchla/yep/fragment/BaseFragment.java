@@ -21,8 +21,6 @@ import javax.inject.Inject;
 import catchla.yep.Constants;
 import catchla.yep.fragment.iface.IBaseFragment;
 import catchla.yep.util.ImageLoaderWrapper;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 
 
@@ -45,13 +43,6 @@ public class BaseFragment extends Fragment implements IBaseFragment, Constants {
     public BaseFragment() {
 
     }
-
-    public void invalidateOptionsMenu() {
-        final FragmentActivity activity = getActivity();
-        if (activity == null) return;
-        activity.supportInvalidateOptionsMenu();
-    }
-
 
     @Override
     public void onAttach(final Context context) {

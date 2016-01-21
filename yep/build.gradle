@@ -89,7 +89,6 @@ dependencies {
     compile 'com.commonsware.cwac:merge:1.1.1'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile 'org.jraf:android-switch-backport:2.0.1'
-    compile 'com.github.techfreak:wizardpager:1.0.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.okhttp:okhttp:2.7.0'

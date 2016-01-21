@@ -44,8 +44,6 @@ public class FriendsListFragment extends AbsContentListRecyclerViewFragment<Frie
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        getLoaderManager().initLoader(0, null, this);
-        showContent();
         getAdapter().setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
@@ -56,6 +54,8 @@ public class FriendsListFragment extends AbsContentListRecyclerViewFragment<Frie
                 startActivity(intent);
             }
         });
+        getLoaderManager().initLoader(0, null, this);
+        showProgress();
     }
 
     private Account getAccount() {
@@ -99,6 +99,7 @@ public class FriendsListFragment extends AbsContentListRecyclerViewFragment<Frie
     @Override
     public void onLoadFinished(final Loader<List<Friendship>> loader, final List<Friendship> data) {
         getAdapter().setData(data);
+        showContent();
     }
 
     @Override

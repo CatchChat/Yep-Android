@@ -22,6 +22,7 @@ package catchla.yep.fragment;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -31,8 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import catchla.yep.R;
 import catchla.yep.activity.iface.IControlBarActivity;
@@ -52,12 +51,12 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         RefreshScrollTopInterface, IControlBarActivity.ControlBarOffsetListener,
         ContentListScrollListener.ContentListSupport {
 
+    private static final int MIN_SHOW_TIME = 500; // ms
+    private static final int MIN_DELAY = 500; // ms
+
     private View mProgressContainer;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    private View mErrorContainer;
-    private ImageView mErrorIconView;
-    private TextView mErrorTextView;
 
     private L mLayoutManager;
     private A mAdapter;
@@ -66,8 +65,40 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
     private SimpleDrawerCallback mDrawerCallback;
     private ContentListScrollListener mScrollListener;
 
+    private long mStartTime = -1;
+
+    private boolean mPostedHide = false;
+
+    private boolean mPostedShow = false;
+
+    private boolean mDismissed = false;
+
+    private final Runnable mDelayedShowContent = new Runnable() {
+
+        @Override
+        public void run() {
+            mPostedHide = false;
+            mStartTime = -1;
+            showContentInternal(true);
+        }
+    };
+
+    private final Runnable mDelayedShowProgress = new Runnable() {
+
+        @Override
+        public void run() {
+            mPostedShow = false;
+            if (!mDismissed) {
+                mStartTime = System.currentTimeMillis();
+                showProgressInternal(true);
+            }
+        }
+    };
+
     // Data fields
     private Rect mSystemWindowsInsets = new Rect();
+
+    private Handler mHandler = new Handler();
 
     @Override
     public boolean canScroll(float dy) {
@@ -231,9 +262,6 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         mProgressContainer = view.findViewById(R.id.progress_container);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_layout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mErrorContainer = view.findViewById(R.id.error_container);
-        mErrorIconView = (ImageView) view.findViewById(R.id.error_icon);
-        mErrorTextView = (TextView) view.findViewById(R.id.error_text);
     }
 
     @Override
@@ -255,7 +283,6 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         final Rect extraPadding = getExtraContentPadding();
         mRecyclerView.setPadding(insets.left + extraPadding.left, insets.top + extraPadding.top,
                 insets.right + extraPadding.right, insets.bottom + extraPadding.bottom);
-        mErrorContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         mProgressContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         mSystemWindowsInsets.set(insets);
         updateRefreshProgressOffset();
@@ -277,33 +304,65 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
     @NonNull
     protected abstract A onCreateAdapter(Context context);
 
-    protected final void showContent() {
-        mErrorContainer.setVisibility(View.GONE);
+
+    /**
+     * Hide the progress view if it is visible. The progress view will not be
+     * hidden until it has been shown for at least a minimum show time. If the
+     * progress view was not yet visible, cancels showing the progress view.
+     */
+    public void showContent() {
+        mDismissed = true;
+        mHandler.removeCallbacks(mDelayedShowProgress);
+        long diff = System.currentTimeMillis() - mStartTime;
+        if (diff >= MIN_SHOW_TIME || mStartTime == -1) {
+            // The progress spinner has been shown long enough
+            // OR was not shown yet. If it wasn't shown yet,
+            // it will just never be shown.
+            showContentInternal(false);
+        } else {
+            // The progress spinner is shown, but not long enough,
+            // so put a delayed message in to hide it when its been
+            // shown long enough.
+            if (!mPostedHide) {
+                mHandler.postDelayed(mDelayedShowContent, MIN_SHOW_TIME - diff);
+                mPostedHide = true;
+            }
+        }
+    }
+
+    /**
+     * Show the progress view after waiting for a minimum delay. If
+     * during that time, hide() is called, the view is never made visible.
+     */
+    protected void showProgress() {
+        // Reset the start time.
+        mStartTime = -1;
+        mDismissed = false;
+        mHandler.removeCallbacks(mDelayedShowContent);
+        if (!mPostedShow) {
+            mHandler.postDelayed(mDelayedShowProgress, MIN_DELAY);
+            mPostedShow = true;
+        }
+    }
+
+    private void showContentInternal(boolean animate) {
+        if (animate) {
+            mProgressContainer.animate().alpha(0).setDuration(200).start();
+            mSwipeRefreshLayout.animate().alpha(1).setDuration(200).start();
+        }
         mProgressContainer.setVisibility(View.GONE);
         mSwipeRefreshLayout.setVisibility(View.VISIBLE);
     }
 
-    protected final void showProgress() {
-        mErrorContainer.setVisibility(View.GONE);
+    private void showProgressInternal(boolean animate) {
+        if (animate) {
+            mProgressContainer.animate().alpha(1).setDuration(200).start();
+            mSwipeRefreshLayout.animate().alpha(0).setDuration(200).start();
+        }
         mProgressContainer.setVisibility(View.VISIBLE);
         mSwipeRefreshLayout.setVisibility(View.GONE);
     }
 
-    protected final void showError(int icon, CharSequence text) {
-        mErrorContainer.setVisibility(View.VISIBLE);
-        mProgressContainer.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setVisibility(View.GONE);
-        mErrorIconView.setImageResource(icon);
-        mErrorTextView.setText(text);
-    }
-
-    protected final void showEmpty(int icon, CharSequence text) {
-        mErrorContainer.setVisibility(View.VISIBLE);
-        mProgressContainer.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setVisibility(View.VISIBLE);
-        mErrorIconView.setImageResource(icon);
-        mErrorTextView.setText(text);
-    }
 
     protected void updateRefreshProgressOffset() {
         final FragmentActivity activity = getActivity();
