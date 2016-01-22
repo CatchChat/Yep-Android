@@ -5,46 +5,49 @@ import android.support.v4.util.SimpleArrayMap;
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.bluelinelabs.logansquare.ParameterizedTypeAccessor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.ResponseBody;
+
+import org.mariotaku.restfu.RestConverter;
+import org.mariotaku.restfu.http.ContentType;
+import org.mariotaku.restfu.http.HttpResponse;
+import org.mariotaku.restfu.http.mime.Body;
+import org.mariotaku.restfu.http.mime.StringBody;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.ResponseCode;
-import retrofit.Converter;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/12/1.
  */
-public class LoganSquareConverterFactory extends Converter.Factory {
+public class LoganSquareConverterFactory extends RestConverter.SimpleFactory<YepException> {
 
-    private static final SimpleArrayMap<Type, Converter<ResponseBody, ?>> sResponseConverters = new SimpleArrayMap<>();
-    private static final SimpleArrayMap<Type, Converter<?, RequestBody>> sRequestConverters = new SimpleArrayMap<>();
+    private static final SimpleArrayMap<Type, RestConverter<HttpResponse, ?, YepException>> sResponseConverters = new SimpleArrayMap<>();
+    private static final SimpleArrayMap<Type, RestConverter<?, Body, YepException>> sRequestConverters = new SimpleArrayMap<>();
 
     static {
         sRequestConverters.put(AttachmentUpload.class, new AttachmentUpload.Converter());
         sResponseConverters.put(ResponseCode.class, new ResponseCode.Converter());
     }
 
+
     @Override
-    public Converter<?, RequestBody> toRequestBody(final Type type, final Annotation[] annotations) {
-        final Converter<?, RequestBody> converter = sRequestConverters.get(type);
+    public RestConverter<HttpResponse, ?, YepException> forResponse(final Type toType) {
+        final RestConverter<HttpResponse, ?, YepException> converter = sResponseConverters.get(toType);
         if (converter != null) return converter;
-        return new ObjectSerializeConverter(type);
+        return new ObjectParseConverter(toType);
     }
 
     @Override
-    public Converter<ResponseBody, ?> fromResponseBody(final Type type, final Annotation[] annotations) {
-        final Converter<ResponseBody, ?> converter = sResponseConverters.get(type);
+    public RestConverter<?, Body, YepException> forRequest(final Type fromType) {
+        final RestConverter<?, Body, YepException> converter = sRequestConverters.get(fromType);
         if (converter != null) return converter;
-        return new ObjectParseConverter(type);
+        return super.forRequest(fromType);
     }
 
-    private class ObjectParseConverter implements Converter<ResponseBody, Object> {
+    private class ObjectParseConverter implements RestConverter<HttpResponse, Object, YepException> {
         private final Type type;
 
         public ObjectParseConverter(final Type type) {
@@ -52,12 +55,12 @@ public class LoganSquareConverterFactory extends Converter.Factory {
         }
 
         @Override
-        public Object convert(final ResponseBody value) throws IOException {
-            return LoganSquare.parse(value.byteStream(), ParameterizedTypeAccessor.create(type));
+        public Object convert(final HttpResponse response) throws ConvertException, IOException, YepException {
+            return LoganSquare.parse(response.getBody().stream(), ParameterizedTypeAccessor.create(type));
         }
     }
 
-    private class ObjectSerializeConverter implements Converter<Object, RequestBody> {
+    private class ObjectSerializeConverter implements RestConverter<Object, Body, YepException> {
         private final Type type;
 
         public ObjectSerializeConverter(final Type type) {
@@ -65,10 +68,10 @@ public class LoganSquareConverterFactory extends Converter.Factory {
         }
 
         @Override
-        public RequestBody convert(final Object value) throws IOException {
+        public Body convert(final Object value) throws IOException {
             final JsonMapper jsonMapper = LoganSquare.mapperFor(ParameterizedTypeAccessor.create(type));
             //noinspection unchecked
-            return RequestBody.create(MediaType.parse("application/json"), jsonMapper.serialize(value));
+            return new StringBody(jsonMapper.serialize(value), ContentType.parse("application/json"));
         }
     }
 }

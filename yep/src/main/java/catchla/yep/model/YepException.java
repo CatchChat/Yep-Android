@@ -2,18 +2,19 @@ package catchla.yep.model;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+
+import org.mariotaku.restfu.http.HttpRequest;
+import org.mariotaku.restfu.http.HttpResponse;
 
 
 /**
  * Created by mariotaku on 15/5/23.
  */
 @JsonObject
-public class YepException extends RuntimeException {
+public class YepException extends Exception {
 
-    private Request request;
-    private Response response;
+    private HttpRequest request;
+    private HttpResponse response;
 
     @JsonField(name = "error")
     String error;
@@ -34,19 +35,19 @@ public class YepException extends RuntimeException {
         super(cause);
     }
 
-    public void setRequest(final Request request) {
+    public void setRequest(final HttpRequest request) {
         this.request = request;
     }
 
-    public Request getRequest() {
+    public HttpRequest getRequest() {
         return request;
     }
 
-    public void setResponse(final Response response) {
+    public void setResponse(final HttpResponse response) {
         this.response = response;
     }
 
-    public Response getResponse() {
+    public HttpResponse getResponse() {
         return response;
     }
 }

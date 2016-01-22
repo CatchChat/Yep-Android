@@ -1,15 +1,20 @@
 package catchla.yep.model;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
+import org.mariotaku.restfu.RestConverter;
+import org.mariotaku.restfu.http.ContentType;
+import org.mariotaku.restfu.http.mime.Body;
+import org.mariotaku.restfu.http.mime.FileBody;
+import org.mariotaku.restfu.http.mime.MultipartBody;
+import org.mariotaku.restfu.http.mime.StringBody;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
-import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/12/27.
@@ -33,20 +38,21 @@ public class AttachmentUpload {
         return new AttachmentUpload(file, mimeType, kind, metadata);
     }
 
-    public static class Converter implements retrofit.Converter<AttachmentUpload, RequestBody> {
+    public static class Converter implements RestConverter<AttachmentUpload, Body, YepException> {
+
         @Override
-        public RequestBody convert(final AttachmentUpload value) throws IOException {
-            return value.toRequestBody();
+        public Body convert(final AttachmentUpload from) throws ConvertException, IOException, YepException {
+            return from.toRequestBody();
         }
     }
 
-    private RequestBody toRequestBody() {
-        final MultipartBuilder builder = new MultipartBuilder();
-        builder.addFormDataPart("file", Utils.getFilename(file, mimeType),
-                FileRequestBody.create(MediaType.parse(mimeType), file));
-        builder.addFormDataPart("attachable_type", kind);
-        builder.addFormDataPart("metadata", metadata);
-        return builder.build();
+    private MultipartBody toRequestBody() throws FileNotFoundException {
+        final MultipartBody body = new MultipartBody();
+        body.add("file", new FileBody(new FileInputStream(file), Utils.getFilename(file, mimeType),
+                file.length(), ContentType.parse(mimeType)));
+        body.add("attachable_type", new StringBody(kind, Charset.defaultCharset()));
+        body.add("metadata", new StringBody(metadata, Charset.defaultCharset()));
+        return body;
     }
 
 }

@@ -12,9 +12,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.mariotaku.restfu.RestAPIFactory;
+import org.mariotaku.restfu.RestRequest;
+import org.mariotaku.restfu.http.Authorization;
+import org.mariotaku.restfu.http.Endpoint;
+import org.mariotaku.restfu.okhttp.OkHttpRestClient;
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
@@ -22,7 +26,7 @@ import javax.net.ssl.SSLSession;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
-import retrofit.Retrofit;
+import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/5/23.
@@ -38,12 +42,22 @@ public class YepAPIFactory implements Constants {
     }
 
     public static YepAPI getInstanceWithToken(final Context context, final String accessToken) {
-        Retrofit.Builder builder = new Retrofit.Builder();
+        RestAPIFactory<YepException> factory = new RestAPIFactory<>();
         final OkHttpClient client = getOkHttpClient(context);
-        builder.client(client);
-        builder.baseUrl(BuildConfig.API_ENDPOINT_REST);
-        builder.addCallAdapterFactory(new YepCallAdapterFactory());
-        builder.addConverterFactory(new LoganSquareConverterFactory());
+        factory.setHttpClient(new OkHttpRestClient(client));
+        factory.setEndpoint(new Endpoint(BuildConfig.API_ENDPOINT_REST));
+        factory.setRestConverterFactory(new LoganSquareConverterFactory());
+        factory.setAuthorization(new Authorization() {
+            @Override
+            public String getHeader(final Endpoint endpoint, final RestRequest info) {
+                return getAuthorizationHeaderValue(accessToken);
+            }
+
+            @Override
+            public boolean hasAuthorization() {
+                return accessToken != null;
+            }
+        });
 
         client.interceptors().add(new Interceptor() {
             @Override
@@ -51,14 +65,10 @@ public class YepAPIFactory implements Constants {
                 Request.Builder builder = chain.request().newBuilder();
                 builder.header("Accept", "application/json");
                 builder.header("Accept-Language", Locale.getDefault().toString());
-                if (accessToken != null) {
-                    builder.header("Authorization", getAuthorizationHeaderValue(accessToken));
-                }
                 return chain.proceed(builder.build());
             }
         });
-        final Retrofit retrofit = builder.build();
-        return retrofit.create(YepAPI.class);
+        return factory.build(YepAPI.class);
     }
 
     @SuppressLint("SSLCertificateSocketFactoryGetInsecure")

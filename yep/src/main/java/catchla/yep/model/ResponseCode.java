@@ -1,12 +1,9 @@
 package catchla.yep.model;
 
-import com.squareup.okhttp.ResponseBody;
+import org.mariotaku.restfu.RestConverter;
+import org.mariotaku.restfu.http.HttpResponse;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-
-import retrofit.Call;
-import retrofit.Response;
 
 /**
  * Created by mariotaku on 15/12/2.
@@ -23,30 +20,15 @@ public class ResponseCode {
         this.code = code;
     }
 
-    public static class Converter implements retrofit.Converter<ResponseBody, ResponseCode> {
-        @Override
-        public ResponseCode convert(final ResponseBody value) throws IOException {
-            return new ResponseCode(0);
-        }
+    public boolean isSuccessful() {
+        return code >= 200 && code < 300;
     }
 
-    public static class CallAdapter implements retrofit.CallAdapter<ResponseCode> {
-        @Override
-        public Type responseType() {
-            return ResponseCode.class;
-        }
+    public static class Converter implements RestConverter<HttpResponse, ResponseCode, YepException> {
 
         @Override
-        public <R> ResponseCode adapt(final Call<R> call) throws YepException {
-            try {
-                final Response<R> execute = call.execute();
-                if (execute.isSuccess()) {
-                    return new ResponseCode(execute.code());
-                }
-                throw new YepException(execute.message());
-            } catch (IOException e) {
-                throw new YepException(e);
-            }
+        public ResponseCode convert(final HttpResponse from) throws ConvertException, IOException, YepException {
+            return new ResponseCode(from.getStatus());
         }
     }
 }

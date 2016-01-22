@@ -19,9 +19,9 @@ import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.activity.SignInActivity;
 import catchla.yep.activity.WelcomeActivity;
+import catchla.yep.model.YepException;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 
 public class AccountService extends Service implements Constants {
 
@@ -122,16 +122,21 @@ public class AccountService extends Service implements Constants {
         public Bundle getAccountRemovalAllowed(final AccountAuthenticatorResponse response, final Account account)
                 throws NetworkErrorException {
             final String accountId = mAccountManager.getUserData(account, USER_DATA_ID);
+            final String token = mAccountManager.peekAuthToken(account, AUTH_TOKEN_TYPE);
             final Bundle result = super.getAccountRemovalAllowed(response, account);
             if (result.containsKey(AccountManager.KEY_BOOLEAN_RESULT) && !result.containsKey(AccountManager.KEY_INTENT)) {
                 final boolean removalAllowed = result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT);
                 if (removalAllowed) {
-//                    JPushInterface.setAlias(mContext.getApplicationContext(), "", new TagAliasCallback() {
-//                        @Override
-//                        public void gotResult(int statusCode, String s, Set<String> strings) {
-//
-//                        }
-//                    });
+                    YepAPI yepAPI = YepAPIFactory.getInstanceWithToken(mContext, token);
+                    try {
+                        if (!yepAPI.logout().isSuccessful()) {
+                            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+                            return result;
+                        }
+                    } catch (YepException e) {
+                        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+                        return result;
+                    }
                     if (BuildConfig.DEBUG) {
                         Log.d(LOGTAG, String.format("account %s removed, id: %s", account, accountId));
                     }
