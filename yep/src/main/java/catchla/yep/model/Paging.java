@@ -1,11 +1,11 @@
 package catchla.yep.model;
 
-import android.support.v4.util.ArrayMap;
+import org.mariotaku.restfu.http.SimpleValueMap;
 
 /**
  * Created by mariotaku on 15/5/28.
  */
-public class Paging extends ArrayMap<String, String> {
+public class Paging extends SimpleValueMap {
 
     public Paging perPage(int perPage) {
         put("per_page", String.valueOf(perPage));

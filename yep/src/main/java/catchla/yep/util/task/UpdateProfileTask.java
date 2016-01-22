@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.File;
 
 import catchla.yep.R;
@@ -60,7 +62,7 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
             }
         }
         try {
-            if (!profileUpdate.isEmpty()) {
+            if (!ArrayUtils.isEmpty(profileUpdate.keys())) {
                 yep.updateProfile(profileUpdate);
             }
             final User data = yep.getUser();

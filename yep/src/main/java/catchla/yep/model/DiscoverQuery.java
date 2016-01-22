@@ -1,11 +1,11 @@
 package catchla.yep.model;
 
-import android.support.v4.util.ArrayMap;
+import org.mariotaku.restfu.http.SimpleValueMap;
 
 /**
  * Created by mariotaku on 15/5/27.
  */
-public class DiscoverQuery extends ArrayMap<String, Object> {
+public class DiscoverQuery extends SimpleValueMap {
 
     public DiscoverQuery page(int page) {
         put("page", page);

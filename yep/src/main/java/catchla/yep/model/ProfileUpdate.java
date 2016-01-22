@@ -1,12 +1,11 @@
 package catchla.yep.model;
 
-import android.net.Uri;
-import android.support.v4.util.ArrayMap;
+import org.mariotaku.restfu.http.SimpleValueMap;
 
 /**
  * Created by mariotaku on 15/5/23.
  */
-public class ProfileUpdate extends ArrayMap<String, String> {
+public class ProfileUpdate extends SimpleValueMap {
 
     public void setNickname(String nickname) {
         put("nickname", nickname);
