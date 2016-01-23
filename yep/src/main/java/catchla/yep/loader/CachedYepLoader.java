@@ -8,13 +8,13 @@ import android.util.Log;
 
 import org.mariotaku.mediaviewer.library.FileCache;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 import javax.inject.Inject;
 
@@ -73,15 +73,18 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
             }
             final T data = requestData(yep, mOldData);
             if (mWriteCache) {
-                ByteArrayOutputStream os = null;
+                PipedOutputStream pos = null;
+                PipedInputStream pis = null;
                 try {
-                    os = new ByteArrayOutputStream();
-                    serialize(data, os);
-                    mFileCache.save(getCacheFileName(), new ByteArrayInputStream(os.toByteArray()), null);
+                    pos = new PipedOutputStream();
+                    pis = new PipedInputStream(pos);
+                    serializeThreaded(data, pos);
+                    mFileCache.save(getCacheFileName(), pis, null);
                 } catch (IOException e) {
                     // Ignore
                 } finally {
-                    Utils.closeSilently(os);
+                    Utils.closeSilently(pos);
+                    Utils.closeSilently(pis);
                 }
             }
             return data;
@@ -92,6 +95,19 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
             mException = e;
             return null;
         }
+    }
+
+    private void serializeThreaded(final T data, final PipedOutputStream pos) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    serialize(data, pos);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
