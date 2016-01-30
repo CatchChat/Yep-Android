@@ -24,7 +24,7 @@ public class OkMediaDownloader implements MediaDownloader {
 
     @NonNull
     @Override
-    public CacheDownloadLoader.DownloadResult get(final String url) throws IOException {
+    public CacheDownloadLoader.DownloadResult get(@NonNull final String url, final Object extra) throws IOException {
         final Request.Builder builder = new Request.Builder();
         builder.url(url);
         Response response = client.newCall(builder.build()).execute();

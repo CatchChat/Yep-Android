@@ -3,10 +3,10 @@
        xmlns:tools="http://schemas.android.com/tools"
        tools:showIn="@layout/layout_topic_attachment_location">
 
-    <FrameLayout
+    <catchla.yep.view.LocationContainerFrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="128dp">
+        android:layout_height="wrap_content">
 
         <catchla.yep.view.StaticMapView
             android:id="@+id/map_view"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_map_marker"/>
-    </FrameLayout>
+    </catchla.yep.view.LocationContainerFrameLayout>
 
     <TextView
         android:id="@+id/place"

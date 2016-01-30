@@ -51,7 +51,7 @@ public class NewTopicLocationFragment extends NewTopicMediaFragment {
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mMapView.setProvider(new StaticMapUrlGenerator.OpenStreetMapProvider(StaticMapUrlGenerator.OpenStreetMapProvider.MapType.MAPNIK));
+        mMapView.setProvider(new StaticMapUrlGenerator.AMapProvider(AMAP_WEB_API_KEY));
         mMapView.setScaleToDensity(true);
 
         LocationAttachment attachment = getAttachment();

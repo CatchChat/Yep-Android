@@ -11,8 +11,6 @@ import javax.inject.Inject;
 
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.StaticMapUrlGenerator;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
@@ -48,7 +46,9 @@ public class StaticMapView extends ImageView {
     }
 
     private void init(Context context) {
-        GeneralComponentHelper.build(context).inject(this);
+        if (!isInEditMode()) {
+            GeneralComponentHelper.build(context).inject(this);
+        }
         setScaleType(ScaleType.CENTER_CROP);
     }
 
@@ -71,7 +71,7 @@ public class StaticMapView extends ImageView {
     }
 
     private void loadImage() {
-        if (mLocation == null || !mGenerator.hasSize()) return;
+        if (mLocation == null || !mGenerator.hasSize() || isInEditMode()) return;
         mImageLoader.displayImage(mGenerator.generate(mLocation, mZoomLevel), this);
     }
 

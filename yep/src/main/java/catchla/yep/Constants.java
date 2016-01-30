@@ -65,4 +65,5 @@ public interface Constants {
     int TABLE_ID_MESSAGES = 11;
     int TABLE_ID_CONVERSATIONS = 12;
     String AUTHORITY_YEP_CACHE = BuildConfig.APPLICATION_ID + ".cache";
+    String AMAP_WEB_API_KEY = "be626270524e0af680685beabc7c65af";
 }

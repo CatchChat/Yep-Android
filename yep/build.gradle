@@ -87,6 +87,7 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.apmem.tools:layouts:1.9@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'
+    compile 'com.commonsware.cwac:layouts:0.4.2'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile 'org.jraf:android-switch-backport:2.0.1'
     compile 'org.apache.commons:commons-lang3:3.4'

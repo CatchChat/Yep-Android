@@ -39,6 +39,28 @@ public class StaticMapUrlGenerator {
                                         final float scale, final int zoomLevel);
     }
 
+    public static class AMapProvider extends Provider {
+
+        private final String apiKey;
+
+        public AMapProvider(String apiKey) {
+            this.apiKey = apiKey;
+        }
+
+        @Override
+        public String generate(final Location location, final int width, final int height, final float scale, final int zoomLevel) {
+            final Uri.Builder builder = Uri.parse("https://restapi.amap.com/v3/staticmap").buildUpon();
+            builder.appendQueryParameter("location", location.getLongitude() + "," + location.getLatitude());
+            builder.appendQueryParameter("zoom", String.valueOf(zoomLevel));
+            final int scaleInt = Math.min((int) Math.floor(scale), 2);
+            builder.appendQueryParameter("scale", String.valueOf(scaleInt));
+            builder.appendQueryParameter("size", Math.round(width / scale) + "*" + Math.round(height / scale));
+            builder.appendQueryParameter("key", apiKey);
+            final Uri build = builder.build();
+            return build.toString();
+        }
+    }
+
     public static class OpenStreetMapProvider extends Provider {
         private final MapType mapType;
 
@@ -48,7 +70,7 @@ public class StaticMapUrlGenerator {
 
         @Override
         public String generate(final Location location, final int width, final int height, final float scale, final int zoomLevel) {
-            Uri.Builder builder = Uri.parse("http://staticmap.openstreetmap.de/staticmap.php").buildUpon();
+            final Uri.Builder builder = Uri.parse("http://staticmap.openstreetmap.de/staticmap.php").buildUpon();
             builder.appendQueryParameter("zoom", String.valueOf(zoomLevel));
             builder.appendQueryParameter("center", location.getLatitude() + "," + location.getLongitude());
             builder.appendQueryParameter("maptype", mapType.value);

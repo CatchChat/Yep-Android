@@ -5,6 +5,7 @@ import android.location.Location;
 import android.view.View;
 import android.widget.TextView;
 
+import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.TopicsAdapter;
 import catchla.yep.model.LocationAttachment;
@@ -27,7 +28,7 @@ public class LocationTopicViewHolder extends TopicViewHolder {
         super(topicsAdapter, itemView, context, imageLoader, listener);
         mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
         placeView = (TextView) itemView.findViewById(R.id.place);
-        mapView.setProvider(new StaticMapUrlGenerator.OpenStreetMapProvider(StaticMapUrlGenerator.OpenStreetMapProvider.MapType.MAPNIK));
+        mapView.setProvider(new StaticMapUrlGenerator.AMapProvider(Constants.AMAP_WEB_API_KEY));
         mapView.setScaleToDensity(true);
     }
 
