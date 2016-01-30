@@ -1,6 +1,8 @@
 package catchla.yep.view.holder;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,6 +25,7 @@ public class DribbbleTopicViewHolder extends TopicViewHolder {
                                    final ImageLoaderWrapper imageLoader,
                                    final TopicsAdapter.TopicClickListener listener) {
         super(topicsAdapter, itemView, context, imageLoader, listener);
+        itemView.findViewById(R.id.attachment_view).setOnClickListener(this);
         mediaPreviewView = (ImageView) itemView.findViewById(R.id.media_preview);
         titleView = (TextView) itemView.findViewById(R.id.title);
     }
@@ -30,8 +33,18 @@ public class DribbbleTopicViewHolder extends TopicViewHolder {
     @Override
     public void displayTopic(final Topic topic) {
         super.displayTopic(topic);
-        DribbbleAttachment attachment = (DribbbleAttachment) topic.getAttachments().get(0);
+        DribbbleAttachment attachment = getDribbbleAttachment(topic);
         getImageLoader().displayImage(attachment.getMediaUrl(), mediaPreviewView);
         titleView.setText(attachment.getTitle());
+    }
+
+    private DribbbleAttachment getDribbbleAttachment(final Topic topic) {
+        return (DribbbleAttachment) topic.getAttachments().get(0);
+    }
+
+    @Override
+    protected void onAttachmentClick() {
+        final DribbbleAttachment attachment = getDribbbleAttachment(adapter.getTopic(getLayoutPosition()));
+        adapter.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(attachment.getUrl())));
     }
 }
