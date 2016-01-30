@@ -1,7 +1,10 @@
 package catchla.yep.view.holder;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +29,7 @@ public class LocationTopicViewHolder extends TopicViewHolder {
                                    final ImageLoaderWrapper imageLoader,
                                    final TopicsAdapter.TopicClickListener listener) {
         super(topicsAdapter, itemView, context, imageLoader, listener);
+        itemView.findViewById(R.id.attachment_view).setOnClickListener(this);
         mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
         placeView = (TextView) itemView.findViewById(R.id.place);
         mapView.setProvider(new StaticMapUrlGenerator.AMapProvider(Constants.AMAP_WEB_API_KEY));
@@ -35,11 +39,27 @@ public class LocationTopicViewHolder extends TopicViewHolder {
     @Override
     public void displayTopic(final Topic topic) {
         super.displayTopic(topic);
-        LocationAttachment attachment = (LocationAttachment) topic.getAttachments().get(0);
+        LocationAttachment attachment = getLocationAttachment(topic);
         placeView.setText(attachment.getPlace());
         final Location location = new Location("");
         location.setLatitude(attachment.getLatitude());
         location.setLongitude(attachment.getLongitude());
         mapView.display(location, 12);
+    }
+
+    private LocationAttachment getLocationAttachment(final Topic topic) {
+        return (LocationAttachment) topic.getAttachments().get(0);
+    }
+
+    @Override
+    protected void onAttachmentClick() {
+        final LocationAttachment attachment = getLocationAttachment(adapter.getTopic(getLayoutPosition()));
+        final Uri geoUri = Uri.parse("geo:" + attachment.getLatitude() + "," + attachment.getLongitude());
+        final Context context = adapter.getContext();
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, geoUri));
+        } catch (ActivityNotFoundException e) {
+            // Ignore
+        }
     }
 }

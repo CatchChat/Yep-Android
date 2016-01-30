@@ -139,7 +139,14 @@ public class TopicViewHolder extends RecyclerView.ViewHolder implements View.OnC
             case R.id.name: {
                 listener.onUserClick(getLayoutPosition(), this);
             }
+            case R.id.attachment_view: {
+                onAttachmentClick();
+            }
         }
+    }
+
+    protected void onAttachmentClick() {
+
     }
 
     public void setReplyButtonVisible(final boolean visible) {
