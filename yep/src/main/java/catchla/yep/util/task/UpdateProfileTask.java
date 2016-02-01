@@ -9,12 +9,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-
 import org.apache.commons.lang3.ArrayUtils;
+import org.mariotaku.restfu.http.ContentType;
+import org.mariotaku.restfu.http.mime.Body;
+import org.mariotaku.restfu.http.mime.FileBody;
+import org.mariotaku.restfu.http.mime.MultipartBody;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import catchla.yep.R;
 import catchla.yep.fragment.ProgressDialogFragment;
@@ -25,7 +28,6 @@ import catchla.yep.model.YepException;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.util.http.FileRequestBody;
 
 /**
  * Created by mariotaku on 15/11/1.
@@ -50,15 +52,21 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
         final YepAPI yep = YepAPIFactory.getInstance(mActivity, mAccount);
         final ProfileUpdate profileUpdate = mProfileUpdate;
         if (mProfileImageUri != null) {
+            FileInputStream is = null;
             try {
                 final File imageFile = new File(mProfileImageUri.getPath());
                 final String mimeType = Utils.getImageMimeType(imageFile);
-                final MultipartBuilder builder = new MultipartBuilder();
-                builder.addFormDataPart("avatar", Utils.getFilename(imageFile, mimeType),
-                        FileRequestBody.create(MediaType.parse(mimeType), imageFile));
-                yep.setAvatarRaw(builder.build());
+                final MultipartBody body = new MultipartBody();
+                is = new FileInputStream(imageFile);
+                body.add("avatar", new FileBody(is, Utils.getFilename(imageFile, mimeType),
+                        imageFile.length(), ContentType.parse(mimeType)));
+                yep.setAvatarRaw(body);
             } catch (YepException e) {
                 return TaskResponse.getInstance(e);
+            } catch (IOException e) {
+                return TaskResponse.getInstance(e);
+            } finally {
+                Utils.closeSilently(is);
             }
         }
         try {
@@ -72,6 +80,7 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
             return TaskResponse.getInstance(e);
         }
     }
+
 
     @Override
     protected void onPreExecute() {

@@ -2,8 +2,6 @@ package catchla.yep.util;
 
 import android.support.annotation.StringDef;
 
-import com.squareup.okhttp.RequestBody;
-
 import org.mariotaku.restfu.annotation.method.DELETE;
 import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.annotation.method.PATCH;
@@ -13,6 +11,7 @@ import org.mariotaku.restfu.annotation.param.Param;
 import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
 import org.mariotaku.restfu.annotation.param.Raw;
+import org.mariotaku.restfu.http.mime.Body;
 
 import java.util.ArrayList;
 
@@ -84,10 +83,10 @@ public interface YepAPI {
     User getUser() throws YepException;
 
     @POST("user/set_avatar")
-    AvatarResponse setAvatar(@Param("avatar") RequestBody file) throws YepException;
+    AvatarResponse setAvatar(@Param("avatar") Body file) throws YepException;
 
     @PATCH("user/set_avatar")
-    AvatarResponse setAvatarRaw(@Raw RequestBody file) throws YepException;
+    AvatarResponse setAvatarRaw(@Raw Body file) throws YepException;
 
     @GET("users/{id}")
     User showUser(@Path("id") String userId) throws YepException;
@@ -150,7 +149,7 @@ public interface YepAPI {
     S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
 
     @POST("attachments")
-    IdResponse uploadAttachment(@Param("file") RequestBody file,
+    IdResponse uploadAttachment(@Param("file") Body file,
                                 @AttachableType @Param("attachable_type") String attachableType,
                                 @Param("metadata") String metadata) throws YepException;
 

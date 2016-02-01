@@ -10,6 +10,7 @@ import org.mariotaku.restfu.RestConverter;
 import org.mariotaku.restfu.http.ContentType;
 import org.mariotaku.restfu.http.HttpResponse;
 import org.mariotaku.restfu.http.mime.Body;
+import org.mariotaku.restfu.http.mime.SimpleBody;
 import org.mariotaku.restfu.http.mime.StringBody;
 
 import java.io.IOException;
@@ -43,11 +44,12 @@ public class YepConverterFactory extends RestConverter.SimpleFactory<YepExceptio
     @Override
     public RestConverter<?, Body, YepException> forRequest(final Type fromType) {
         final RestConverter<?, Body, YepException> converter = sRequestConverters.get(fromType);
+        if (converter != null) return converter;
+        if (SimpleBody.supports(fromType)) return new SimpleBodyConverter<>(fromType);
         if (LoganSquare.supports(ParameterizedTypeAccessor.create(fromType))) {
             return new ObjectSerializeConverter(fromType);
         }
-        if (converter != null) return converter;
-        return super.forRequest(fromType);
+        throw new RestConverter.UnsupportedTypeException(fromType);
     }
 
 

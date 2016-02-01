@@ -1,5 +1,6 @@
 package catchla.yep.activity;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -8,12 +9,16 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
@@ -31,6 +36,7 @@ import catchla.yep.util.task.UpdateProfileTask;
 public class ProfileEditorActivity extends ContentActivity implements UpdateProfileTask.Callback, Constants {
 
     private static final int REQUEST_PICK_IMAGE = 101;
+    private static final int REQUEST_REQUEST_PICK_IMAGE_PERMISSION = 201;
 
     // Views
     private ImageView mProfileImageView;
@@ -75,11 +81,37 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mProfileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Intent intent = ThemedImagePickerActivity.withThemed(ProfileEditorActivity.this).aspectRatio(1, 1).maximumSize(512, 512).build();
-                intent.setClass(ProfileEditorActivity.this, ThemedImagePickerActivity.class);
-                startActivityForResult(intent, REQUEST_PICK_IMAGE);
+                if (ContextCompat.checkSelfPermission(ProfileEditorActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    pickProfileImage();
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    final String[] permissions;
+                    permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+                    ActivityCompat.requestPermissions(ProfileEditorActivity.this, permissions,
+                            REQUEST_REQUEST_PICK_IMAGE_PERMISSION);
+                } else {
+                    pickProfileImage();
+                }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_REQUEST_PICK_IMAGE_PERMISSION: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickProfileImage();
+                }
+                break;
+            }
+        }
+    }
+
+    private void pickProfileImage() {
+        final Intent intent = ThemedImagePickerActivity.withThemed(ProfileEditorActivity.this).aspectRatio(1, 1).maximumSize(512, 512).build();
+        intent.setClass(ProfileEditorActivity.this, ThemedImagePickerActivity.class);
+        startActivityForResult(intent, REQUEST_PICK_IMAGE);
     }
 
     private void loadUser() {
