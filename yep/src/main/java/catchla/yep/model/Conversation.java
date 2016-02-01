@@ -24,7 +24,7 @@ import catchla.yep.provider.YepDataStore.Conversations;
  */
 @ParcelablePlease
 @JsonObject
-@CursorObject
+@CursorObject(valuesCreator = true)
 public class Conversation implements Parcelable {
 
     public static final Creator<Conversation> CREATOR = new Creator<Conversation>() {
@@ -206,4 +206,10 @@ public class Conversation implements Parcelable {
         ConversationParcelablePlease.writeToParcel(this, dest, flags);
     }
 
+    public boolean isValid() {
+        if (id == null) return false;
+        if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) return circle != null;
+        if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) return user != null;
+        return true;
+    }
 }

@@ -16,6 +16,8 @@ import org.mariotaku.sqliteqb.library.Expression;
 
 import catchla.yep.Constants;
 import catchla.yep.model.Attachment;
+import catchla.yep.model.Conversation;
+import catchla.yep.model.ConversationValuesCreator;
 import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
@@ -24,7 +26,6 @@ import catchla.yep.model.User;
 import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
@@ -125,7 +126,8 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
                     new String[]{accountId, newMessage.conversationId()});
         } else {
             // Insert new conversation entry
-            cr.insert(Conversations.CONTENT_URI, ContentValuesCreator.fromNewMessage(newMessage, accountId));
+            final Conversation conversation = newMessage.toConversation();
+            cr.insert(Conversations.CONTENT_URI, ConversationValuesCreator.create(conversation));
         }
         cursor.close();
         assert inserted != null;

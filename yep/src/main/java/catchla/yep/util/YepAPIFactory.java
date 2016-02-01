@@ -46,7 +46,7 @@ public class YepAPIFactory implements Constants {
         final OkHttpClient client = getOkHttpClient(context);
         factory.setHttpClient(new OkHttpRestClient(client));
         factory.setEndpoint(new Endpoint(BuildConfig.API_ENDPOINT_REST));
-        factory.setRestConverterFactory(new LoganSquareConverterFactory());
+        factory.setRestConverterFactory(new YepConverterFactory());
         factory.setAuthorization(new Authorization() {
             @Override
             public String getHeader(final Endpoint endpoint, final RestRequest info) {

@@ -128,26 +128,34 @@ public class FayeService extends Service implements Constants {
                 }
                 final TreeNode data = message.getJson("data");
                 final String msgType = ((JsonString) data.get("message_type")).getValue();
-                if ("message".equals(msgType)) {
-                    Message imMessage = FayeClient.Message.getAs(data.get("message"), Message.class);
-                    MessageService.insertMessages(FayeService.this, Collections.singleton(imMessage), accountId);
-                } else if ("mark_as_read".equals(msgType)) {
-                    MarkAsReadMessage markAsRead = FayeClient.Message.getAs(data.get("message"), MarkAsReadMessage.class);
-                    if (markAsRead != null) {
-                        final ContentValues values = new ContentValues();
-                        values.put(Messages.STATE, Messages.MessageState.READ);
-                        final Expression where = Expression.and(
-                                Expression.equalsArgs(Messages.RECIPIENT_ID),
-                                Expression.equalsArgs(Messages.RECIPIENT_TYPE),
-                                Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
-                        );
-                        final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
-                        getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                switch (msgType) {
+                    case "message": {
+                        Message imMessage = FayeClient.Message.getAs(data.get("message"), Message.class);
+                        MessageService.insertMessages(FayeService.this, Collections.singleton(imMessage), accountId);
+                        break;
                     }
-                } else if ("instant_state".equals(msgType)) {
-                    InstantStateMessage instantState = FayeClient.Message.getAs(data.get("message"), InstantStateMessage.class);
-                    if (instantState != null) {
-                        postMessage(instantState);
+                    case "mark_as_read": {
+                        MarkAsReadMessage markAsRead = FayeClient.Message.getAs(data.get("message"), MarkAsReadMessage.class);
+                        if (markAsRead != null) {
+                            final ContentValues values = new ContentValues();
+                            values.put(Messages.STATE, Messages.MessageState.READ);
+                            final Expression where = Expression.and(
+                                    Expression.equalsArgs(Messages.RECIPIENT_ID),
+                                    Expression.equalsArgs(Messages.RECIPIENT_TYPE),
+                                    Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
+                            );
+                            final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
+                            getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                        }
+                        break;
+                    }
+                    case "instant_state": {
+                        final InstantStateMessage instantState = FayeClient.Message.getAs(data.get("message"),
+                                InstantStateMessage.class);
+                        if (instantState != null) {
+                            postMessage(instantState);
+                        }
+                        break;
                     }
                 }
             }

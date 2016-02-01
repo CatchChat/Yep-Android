@@ -385,12 +385,14 @@ public class Utils implements Constants {
                 return circle.getTopic().getBody();
             }
         } else if (Message.RecipientType.USER.equals(recipientType)) {
-            return getDisplayName(conversation.getUser());
+            final User user = conversation.getUser();
+            if (user == null) return "User";
+            return getDisplayName(user);
         }
         throw new UnsupportedOperationException("Unknown recipientType " + recipientType);
     }
 
-    public static String getDisplayName(final User user) {
+    public static String getDisplayName(@NonNull final User user) {
         if (!TextUtils.isEmpty(user.getNickname())) return user.getNickname();
         else if (!TextUtils.isEmpty(user.getContactName())) return user.getContactName();
         else return user.getUsername();

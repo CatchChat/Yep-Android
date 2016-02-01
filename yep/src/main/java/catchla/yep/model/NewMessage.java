@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import java.util.Date;
+
 import catchla.yep.model.iface.JsonBody;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
@@ -20,6 +22,7 @@ public class NewMessage implements JsonBody {
     long createdAt;
     Circle circle;
     User sender;
+    User user;
     Message.LocalMetadata[] localMetadata;
     String accountId;
 
@@ -77,6 +80,15 @@ public class NewMessage implements JsonBody {
         this.latitude = latitude;
         this.longitude = longitude;
         return this;
+    }
+
+    public NewMessage user(User user) {
+        this.user = user;
+        return this;
+    }
+
+    public User user() {
+        return user;
     }
 
     public String conversationId() {
@@ -180,5 +192,18 @@ public class NewMessage implements JsonBody {
         return Message.LocalMetadata.get(localMetadata, key, def);
     }
 
+    public Conversation toConversation() {
+        Conversation conversation = new Conversation();
+        conversation.setAccountId(accountId());
+        conversation.setCircle(circle());
+        conversation.setId(conversationId());
+        conversation.setUpdatedAt(new Date(createdAt()));
+        conversation.setMediaType(mediaType());
+        conversation.setRecipientType(recipientType());
+        conversation.setSender(sender());
+        conversation.setTextContent(textContent());
+        conversation.setUser(user());
+        return conversation;
+    }
 }
 

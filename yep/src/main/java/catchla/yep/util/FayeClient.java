@@ -87,9 +87,12 @@ public class FayeClient implements Constants {
                     for (FayeExtension extension : extensions) {
                         extension.processIncoming(item);
                     }
-                    final Callback callback = callbacks.remove(item.getId());
-                    if (callback != null) {
-                        callback.callback(item);
+                    final String id = item.getId();
+                    if (id != null) {
+                        final Callback callback = callbacks.remove(id);
+                        if (callback != null) {
+                            callback.callback(item);
+                        }
                     }
                     final String channel = item.getChannel();
                     final Callback channelCallback = subscriptions.get(channel);
@@ -281,7 +284,7 @@ public class FayeClient implements Constants {
         }
 
         public boolean isSuccessful() {
-            return getJson("successful") == JsonBoolean.TRUE;
+            return getJson("successful") != JsonBoolean.FALSE;
         }
 
         public TreeNode getJson(String key) {
@@ -297,7 +300,9 @@ public class FayeClient implements Constants {
         }
 
         private String getString(String name) {
-            return ((JsonString) json.get(name)).getValue();
+            final TreeNode node = json.get(name);
+            if (node == null) return null;
+            return ((JsonString) node).getValue();
         }
 
         void setChannel(final String id) {

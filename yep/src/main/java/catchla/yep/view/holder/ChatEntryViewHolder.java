@@ -48,6 +48,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayConversation(final Conversation conversation) {
+        if (!conversation.isValid()) return;
         nameView.setText(Utils.getConversationName(conversation));
         final ImageLoaderWrapper imageLoader = adapter.getImageLoader();
         imageLoader.displayProfileImage(Utils.getConversationAvatarUrl(conversation), profileImageView);

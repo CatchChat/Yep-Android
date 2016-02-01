@@ -22,7 +22,7 @@ import catchla.yep.model.YepException;
 /**
  * Created by mariotaku on 15/12/1.
  */
-public class LoganSquareConverterFactory extends RestConverter.SimpleFactory<YepException> {
+public class YepConverterFactory extends RestConverter.SimpleFactory<YepException> {
 
     private static final SimpleArrayMap<Type, RestConverter<HttpResponse, ?, YepException>> sResponseConverters = new SimpleArrayMap<>();
     private static final SimpleArrayMap<Type, RestConverter<?, Body, YepException>> sRequestConverters = new SimpleArrayMap<>();
@@ -43,9 +43,13 @@ public class LoganSquareConverterFactory extends RestConverter.SimpleFactory<Yep
     @Override
     public RestConverter<?, Body, YepException> forRequest(final Type fromType) {
         final RestConverter<?, Body, YepException> converter = sRequestConverters.get(fromType);
+        if (LoganSquare.supports(ParameterizedTypeAccessor.create(fromType))) {
+            return new ObjectSerializeConverter(fromType);
+        }
         if (converter != null) return converter;
         return super.forRequest(fromType);
     }
+
 
     private class ObjectParseConverter implements RestConverter<HttpResponse, Object, YepException> {
         private final Type type;
