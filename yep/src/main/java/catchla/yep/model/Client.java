@@ -1,20 +1,15 @@
 package catchla.yep.model;
 
+import android.support.annotation.IntDef;
+
 /**
  * Created by mariotaku on 15/5/23.
  */
-public enum Client {
+@IntDef({Client.OFFICIAL, Client.COMPANY, Client.LOCAL})
+public @interface Client {
 
-    OFFICIAL("0"), COMPANY("1"), LOCAL("2");
+    int OFFICIAL = 0;
+    int COMPANY = 1;
+    int LOCAL = 2;
 
-    private final String value;
-
-    Client(final String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return value;
-    }
 }

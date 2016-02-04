@@ -61,20 +61,20 @@ public interface YepAPI {
     AccessToken updateRegistration(@Param("mobile") String mobile,
                                    @Param("phone_code") String phoneCode,
                                    @Param("token") String token,
-                                   @Param("client") Client client,
+                                   @Param("client") @Client int client,
                                    @Param("expiring") long expiringInSeconds) throws YepException;
 
     @POST("auth/token_by_mobile")
     AccessToken tokenByMobile(@Param("mobile") String mobile,
                               @Param("phone_code") String phoneCode,
                               @Param("verify_code") String verifyCode,
-                              @Param("client") Client client,
+                              @Param("client") @Client int client,
                               @Param("expiring") long expiringInSeconds) throws YepException;
 
     @POST("sms_verification_codes")
     ResponseCode sendVerifyCode(@Param("mobile") String mobile,
                                 @Param("phone_code") String phoneCode,
-                                @Param("method") VerificationMethod method) throws YepException;
+                                @Param("method") @VerificationMethod String method) throws YepException;
 
     @PATCH("user")
     User updateProfile(@Param ProfileUpdate profileUpdate) throws YepException;
