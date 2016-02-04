@@ -80,6 +80,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private TextView mIntroductionView;
     private FlowLayout mMasterSkills, mLearningSkills;
     private LinearLayout mProvidersContainer;
+    private View mProvidersDivider;
     private User mCurrentUser;
     private View mUserScrollContent;
     private View mUserScrollView;
@@ -100,6 +101,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mMasterSkills = (FlowLayout) findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) findViewById(R.id.learning_skills);
         mProvidersContainer = (LinearLayout) findViewById(R.id.providers_container);
+        mProvidersDivider = findViewById(R.id.providers_divider);
         mUserScrollContent = findViewById(R.id.user_scroll_content);
         mUserScrollView = findViewById(R.id.user_scroll_view);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
@@ -318,6 +320,11 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                     mProvidersContainer.addView(view);
                 }
             }
+        }
+        if (mProvidersContainer.getChildCount() > 0) {
+            mProvidersDivider.setVisibility(View.VISIBLE);
+        } else {
+            mProvidersDivider.setVisibility(View.GONE);
         }
     }
 

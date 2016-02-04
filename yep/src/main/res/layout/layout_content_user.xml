@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"/>
 
     <View
+        android:id="@+id/providers_divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/element_spacing_normal"
@@ -59,14 +60,15 @@
         android:orientation="vertical"/>
 
     <View
+        android:id="@+id/topics_divider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/element_spacing_normal"
         android:background="?dividerVertical"/>
 
     <RelativeLayout
-        android:layout_width="match_parent"
         android:id="@+id/user_topics"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:minHeight="?listPreferredItemHeight">
