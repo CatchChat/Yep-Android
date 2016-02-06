@@ -11,7 +11,6 @@ public class ResponseList<T> extends ArrayList<T> {
     int perPage;
     int count;
 
-
     public int getCurrentPage() {
         return currentPage;
     }

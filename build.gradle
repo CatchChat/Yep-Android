@@ -80,3 +80,7 @@ def loadSigningConfig(def cfg, def file) {
     cfg.setKeyAlias((String) signingProp.get('keyAlias'))
     cfg.setKeyPassword((String) signingProp.get('keyPassword'))
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.9'
+}
