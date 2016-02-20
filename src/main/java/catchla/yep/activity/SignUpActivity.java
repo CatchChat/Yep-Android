@@ -44,11 +44,12 @@ import catchla.yep.model.AccessToken;
 import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
+import me.philio.pinentry.PinEntryView;
 
 public class SignUpActivity extends ContentActivity implements Constants, ViewPager.OnPageChangeListener,
         View.OnClickListener {
@@ -165,6 +166,10 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
                     } else {
                         Toast.makeText(handler, error, Toast.LENGTH_SHORT).show();
                     }
+                    final Fragment fragment = handler.getCurrentFragment();
+                    if (fragment instanceof VerifyPhoneNumberFragment) {
+                        ((VerifyPhoneNumberFragment) fragment).clearPin();
+                    }
                 }
             }
 
@@ -172,6 +177,10 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
         task.setParams(new String[]{mName, phoneNumber, countryCode});
         task.setResultHandler(this);
         AsyncManager.runBackgroundTask(task);
+    }
+
+    private Fragment getCurrentFragment() {
+        return (Fragment) mAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem());
     }
 
     private void verifyPhoneNumber(final String verifyCode) {
@@ -376,7 +385,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
 
     public static class VerifyPhoneNumberFragment extends AbsSignUpPageFragment {
 
-        private EditText mEditVerifyCode;
+        private PinEntryView mEditVerifyCode;
 
         @Nullable
         @Override
@@ -387,7 +396,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
         @Override
         public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            mEditVerifyCode = (EditText) view.findViewById(R.id.edit_verify_code);
+            mEditVerifyCode = (PinEntryView) view.findViewById(R.id.edit_verify_code);
         }
 
         @Override
@@ -402,6 +411,9 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
                 @Override
                 public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                     updateNextButton();
+                    if (verifyPin()) {
+                        onNextPage();
+                    }
                 }
 
                 @Override
@@ -417,7 +429,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
             final SignUpActivity signUpActivity = getSignUpActivity();
             if (signUpActivity == null || mEditVerifyCode == null)
                 return;
-            signUpActivity.setNextEnabled(mEditVerifyCode.length() > 0);
+            signUpActivity.setNextEnabled(verifyPin());
         }
 
         @Override
@@ -425,6 +437,15 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
             final String verifyCode = ParseUtils.parseString(mEditVerifyCode.getText());
             getSignUpActivity().verifyPhoneNumber(verifyCode);
 
+        }
+
+        private boolean verifyPin() {
+            return mEditVerifyCode.getText().length() == 4;
+        }
+
+
+        public void clearPin() {
+            mEditVerifyCode.clearText();
         }
     }
 

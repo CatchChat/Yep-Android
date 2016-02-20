@@ -152,6 +152,7 @@ dependencies {
     compile 'com.github.mariotaku.ObjectCursor:core:0.9.3'
     compile 'com.sothree.slidinguppanel:library:3.2.1'
     compile 'com.hannesdorfmann:adapterdelegates:1.1.0'
+    compile 'me.philio:pinentryview:1.0.6'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
     debugCompile 'com.facebook.stetho:stetho-okhttp:1.1.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
