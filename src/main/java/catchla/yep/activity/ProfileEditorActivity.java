@@ -136,7 +136,9 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mPhoneNumberView.setText(user.getMobile());
         mEditNickname.setText(user.getNickname());
         mEditUsername.setText(user.getUsername());
-        mEditUsername.setEnabled(TextUtils.isEmpty(user.getUsername()));
+        final boolean canEditUsername = TextUtils.isEmpty(user.getUsername());
+        mEditUsername.setEnabled(canEditUsername);
+        mEditUsername.setFocusable(canEditUsername);
         mEditIntroduction.setText(user.getIntroduction());
     }
 

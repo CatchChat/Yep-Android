@@ -12,10 +12,13 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.mariotaku.restfu.ExceptionFactory;
 import org.mariotaku.restfu.RestAPIFactory;
 import org.mariotaku.restfu.RestRequest;
 import org.mariotaku.restfu.http.Authorization;
 import org.mariotaku.restfu.http.Endpoint;
+import org.mariotaku.restfu.http.HttpRequest;
+import org.mariotaku.restfu.http.HttpResponse;
 import org.mariotaku.restfu.okhttp.OkHttpRestClient;
 
 import java.io.IOException;
@@ -47,6 +50,20 @@ public class YepAPIFactory implements Constants {
         factory.setHttpClient(new OkHttpRestClient(client));
         factory.setEndpoint(new Endpoint(BuildConfig.API_ENDPOINT_REST));
         factory.setRestConverterFactory(new YepConverterFactory());
+        factory.setExceptionFactory(new ExceptionFactory<YepException>() {
+            @Override
+            public YepException newException(final Throwable cause, final HttpRequest request, final HttpResponse response) {
+                YepException exception;
+                if (cause != null) {
+                    exception = new YepException(cause);
+                } else {
+                    exception = new YepException();
+                }
+                exception.setRequest(request);
+                exception.setResponse(response);
+                return exception;
+            }
+        });
         factory.setAuthorization(new Authorization() {
             @Override
             public String getHeader(final Endpoint endpoint, final RestRequest info) {

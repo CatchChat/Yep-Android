@@ -223,9 +223,13 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             }
         };
 
-        final boolean isMySelf = StringUtils.equals(user.getId(), accountId);
+        final boolean isMySelf = Utils.isMySelf(this, getAccount(), user);
 
-        mActionButton.setVisibility(isMySelf ? View.GONE : View.VISIBLE);
+        if (isMySelf) {
+            mActionButton.setImageResource(R.drawable.ic_action_edit);
+        } else {
+            mActionButton.setImageResource(R.drawable.ic_action_chat);
+        }
 
         final LayoutInflater inflater = UserActivity.this.getLayoutInflater();
 
@@ -332,9 +336,16 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.fab: {
-                final Intent intent = new Intent(this, ChatActivity.class);
-                intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(getCurrentUser(), Utils.getAccountId(this, getAccount())));
-                startActivity(intent);
+                if (Utils.isMySelf(this, getAccount(), getCurrentUser())) {
+                    final Intent intent = new Intent(this, ProfileEditorActivity.class);
+                    intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                    startActivity(intent);
+                } else {
+                    final Intent intent = new Intent(this, ChatActivity.class);
+                    intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(getCurrentUser(),
+                            Utils.getAccountId(this, getAccount())));
+                    startActivity(intent);
+                }
                 break;
             }
             case R.id.user_topics: {

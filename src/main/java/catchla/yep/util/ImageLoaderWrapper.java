@@ -20,10 +20,12 @@ public class ImageLoaderWrapper {
 
     public ImageLoaderWrapper(final ImageLoader imageLoader, final DisplayImageOptions defaultDisplayImageOptions) {
         this.imageLoader = imageLoader;
-        DisplayImageOptions.Builder piBuilder = new DisplayImageOptions.Builder();
+        final DisplayImageOptions.Builder piBuilder = new DisplayImageOptions.Builder();
         piBuilder.cloneFrom(defaultDisplayImageOptions);
         piBuilder.imageScaleType(ImageScaleType.IN_SAMPLE_INT);
         piBuilder.showImageOnLoading(R.drawable.ic_profile_image_default);
+        piBuilder.showImageForEmptyUri(R.drawable.ic_profile_image_default);
+        piBuilder.showImageOnFail(R.drawable.ic_profile_image_default);
         piBuilder.resetViewBeforeLoading(true);
         profileImageOption = piBuilder.build();
     }
