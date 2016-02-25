@@ -41,7 +41,7 @@ android {
         applicationId "catchla.yep"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 3
+        versionCode 4
         versionName "0.9.1"
     }
     productFlavors {
