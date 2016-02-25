@@ -22,15 +22,16 @@ package catchla.yep.util;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.facebook.stetho.okhttp.StethoInterceptor;
-import com.squareup.okhttp.OkHttpClient;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Created by mariotaku on 15/5/27.
  */
 public class DebugModeUtils {
 
-    public static void initForHttpClient(final OkHttpClient client) {
+    public static void initForHttpClient(final OkHttpClient.Builder client) {
         client.networkInterceptors().add(new StethoInterceptor());
     }
 

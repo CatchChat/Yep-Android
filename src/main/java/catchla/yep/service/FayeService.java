@@ -20,8 +20,6 @@ import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
 import com.fasterxml.jackson.jr.tree.JacksonJrValue;
 import com.fasterxml.jackson.jr.tree.JsonObject;
 import com.fasterxml.jackson.jr.tree.JsonString;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 import com.squareup.otto.Bus;
 
 import org.mariotaku.sqliteqb.library.Expression;
@@ -46,6 +44,8 @@ import catchla.yep.util.FayeClient;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.dagger.GeneralComponentHelper;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 public class FayeService extends Service implements Constants {
 

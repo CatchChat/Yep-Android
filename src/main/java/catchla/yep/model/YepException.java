@@ -50,4 +50,13 @@ public class YepException extends Exception {
     public HttpResponse getResponse() {
         return response;
     }
+
+    @Override
+    public String toString() {
+        return "YepException{" +
+                "request=" + request +
+                ", response=" + response +
+                ", error='" + error + '\'' +
+                "} " + super.toString();
+    }
 }

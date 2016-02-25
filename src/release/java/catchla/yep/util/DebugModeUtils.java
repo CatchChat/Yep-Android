@@ -21,14 +21,14 @@ package catchla.yep.util;
 
 import android.app.Application;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by mariotaku on 15/5/27.
  */
 public class DebugModeUtils {
 
-    public static void initForHttpClient(final OkHttpClient client) {
+    public static void initForHttpClient(final OkHttpClient.Builder client) {
     }
 
     public static void initForApplication(final Application application) {

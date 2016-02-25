@@ -22,9 +22,6 @@ import android.widget.TextView;
 
 import com.desmond.asyncmanager.AsyncManager;
 import com.desmond.asyncmanager.TaskRunnable;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.util.List;
@@ -43,6 +40,9 @@ import catchla.yep.util.Utils;
 import catchla.yep.view.AudioSampleView;
 import catchla.yep.view.MediaSizeImageView;
 import catchla.yep.view.StaticMapView;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 

@@ -12,14 +12,6 @@ import com.fasterxml.jackson.jr.tree.JsonArray;
 import com.fasterxml.jackson.jr.tree.JsonBoolean;
 import com.fasterxml.jackson.jr.tree.JsonNumber;
 import com.fasterxml.jackson.jr.tree.JsonString;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.ws.WebSocket;
-import com.squareup.okhttp.ws.WebSocketCall;
-import com.squareup.okhttp.ws.WebSocketListener;
 
 import org.jdeferred.DoneCallback;
 import org.jdeferred.impl.DeferredObject;
@@ -34,10 +26,17 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.ws.WebSocket;
+import okhttp3.ws.WebSocketCall;
+import okhttp3.ws.WebSocketListener;
 import okio.Buffer;
 
 /**
@@ -58,8 +57,6 @@ public class FayeClient implements Constants {
     }
 
     public static FayeClient create(final OkHttpClient client, final Request request) {
-        client.setReadTimeout(0, TimeUnit.MILLISECONDS);
-        client.setWriteTimeout(0, TimeUnit.MILLISECONDS);
         return new FayeClient(WebSocketCall.create(client, request));
     }
 
@@ -151,6 +148,7 @@ public class FayeClient implements Constants {
     }
 
     private void emit(Message[] messages, final Callback callback) throws IOException {
+        if (webSocket == null) return;
         for (final Message message : messages) {
             final String idStr = Long.toHexString(++this.id);
             message.setId(idStr);

@@ -7,6 +7,8 @@ import org.mariotaku.restfu.annotation.method.GET;
 import org.mariotaku.restfu.annotation.method.PATCH;
 import org.mariotaku.restfu.annotation.method.POST;
 import org.mariotaku.restfu.annotation.method.PUT;
+import org.mariotaku.restfu.annotation.param.Headers;
+import org.mariotaku.restfu.annotation.param.KeyValue;
 import org.mariotaku.restfu.annotation.param.Param;
 import org.mariotaku.restfu.annotation.param.Path;
 import org.mariotaku.restfu.annotation.param.Query;
@@ -48,6 +50,10 @@ import catchla.yep.model.YepException;
 /**
  * Created by mariotaku on 15/5/12.
  */
+@Headers({
+        @KeyValue(key = "Accept", value = "application/json"),
+        @KeyValue(key = "Accept-Language", valueKey = "accept_language")
+})
 public interface YepAPI {
 
     @POST("registration/create")
@@ -92,7 +98,7 @@ public interface YepAPI {
     User showUser(@Path("id") String userId) throws YepException;
 
     @GET("user/discover")
-    ResponseList<User> getDiscover(@Query DiscoverQuery query, @Query Paging paging) throws YepException;
+    ResponseList<User> getDiscover(@Query(arrayDelimiter = ',') DiscoverQuery query, @Query Paging paging) throws YepException;
 
     @GET("skill_categories")
     ResponseList<SkillCategory> getSkillCategories() throws YepException;

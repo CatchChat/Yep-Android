@@ -22,7 +22,6 @@ package catchla.yep.fragment;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -51,9 +50,6 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         RefreshScrollTopInterface, IControlBarActivity.ControlBarOffsetListener,
         ContentListScrollListener.ContentListSupport {
 
-    private static final int MIN_SHOW_TIME = 500; // ms
-    private static final int MIN_DELAY = 500; // ms
-
     private View mProgressContainer;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -65,40 +61,8 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
     private SimpleDrawerCallback mDrawerCallback;
     private ContentListScrollListener mScrollListener;
 
-    private long mStartTime = -1;
-
-    private boolean mPostedShowContent = false;
-
-    private boolean mPostedShowProgress = false;
-
-    private boolean mDismissed = false;
-
-    private final Runnable mDelayedShowContent = new Runnable() {
-
-        @Override
-        public void run() {
-            mPostedShowContent = false;
-            mStartTime = -1;
-            showContentInternal(true);
-        }
-    };
-
-    private final Runnable mDelayedShowProgress = new Runnable() {
-
-        @Override
-        public void run() {
-            mPostedShowProgress = false;
-            if (!mDismissed) {
-                mStartTime = System.currentTimeMillis();
-                showProgressInternal(true);
-            }
-        }
-    };
-
     // Data fields
     private Rect mSystemWindowsInsets = new Rect();
-
-    private Handler mHandler = new Handler();
 
     @Override
     public boolean canScroll(float dy) {
@@ -306,7 +270,6 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
 
     @Override
     public void onDestroyView() {
-        mHandler.removeCallbacks(null);
         super.onDestroyView();
     }
 
@@ -316,23 +279,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
      * progress view was not yet visible, cancels showing the progress view.
      */
     public void showContent() {
-        mDismissed = true;
-        mHandler.removeCallbacks(mDelayedShowProgress);
-        long diff = System.currentTimeMillis() - mStartTime;
-        if (diff >= MIN_SHOW_TIME || mStartTime == -1) {
-            // The progress spinner has been shown long enough
-            // OR was not shown yet. If it wasn't shown yet,
-            // it will just never be shown.
-            showContentInternal(false);
-        } else {
-            // The progress spinner is shown, but not long enough,
-            // so put a delayed message in to hide it when its been
-            // shown long enough.
-            if (!mPostedShowContent) {
-                mHandler.postDelayed(mDelayedShowContent, MIN_SHOW_TIME - diff);
-                mPostedShowContent = true;
-            }
-        }
+        showContentInternal(true);
     }
 
     /**
@@ -341,13 +288,7 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
      */
     protected void showProgress() {
         // Reset the start time.
-        mStartTime = -1;
-        mDismissed = false;
-        mHandler.removeCallbacks(mDelayedShowContent);
-        if (!mPostedShowProgress) {
-            mHandler.postDelayed(mDelayedShowProgress, MIN_DELAY);
-            mPostedShowProgress = true;
-        }
+        showProgressInternal(true);
     }
 
     private void showContentInternal(boolean animate) {

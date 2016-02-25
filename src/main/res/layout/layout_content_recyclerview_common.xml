@@ -30,7 +30,8 @@
             android:clipToPadding="false"
             android:focusable="true"
             android:focusableInTouchMode="false"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:visibility="visible"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 </merge>

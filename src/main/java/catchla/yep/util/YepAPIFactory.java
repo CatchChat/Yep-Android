@@ -4,13 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.net.SSLCertificateSocketFactory;
 import android.net.Uri;
-
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import org.mariotaku.restfu.ExceptionFactory;
 import org.mariotaku.restfu.RestAPIFactory;
@@ -19,17 +13,15 @@ import org.mariotaku.restfu.http.Authorization;
 import org.mariotaku.restfu.http.Endpoint;
 import org.mariotaku.restfu.http.HttpRequest;
 import org.mariotaku.restfu.http.HttpResponse;
-import org.mariotaku.restfu.okhttp.OkHttpRestClient;
+import org.mariotaku.restfu.http.SimpleValueMap;
+import org.mariotaku.restfu.okhttp3.OkHttpRestClient;
 
-import java.io.IOException;
 import java.util.Locale;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.model.YepException;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by mariotaku on 15/5/23.
@@ -75,33 +67,18 @@ public class YepAPIFactory implements Constants {
                 return accessToken != null;
             }
         });
+        SimpleValueMap constantPool = new SimpleValueMap();
+        constantPool.put("accept_language", Locale.getDefault().toString());
+        factory.setConstantPool(constantPool);
 
-        client.interceptors().add(new Interceptor() {
-            @Override
-            public Response intercept(final Chain chain) throws IOException {
-                Request.Builder builder = chain.request().newBuilder();
-                builder.header("Accept", "application/json");
-                builder.header("Accept-Language", Locale.getDefault().toString());
-                return chain.proceed(builder.build());
-            }
-        });
         return factory.build(YepAPI.class);
     }
 
     @SuppressLint("SSLCertificateSocketFactoryGetInsecure")
     public static OkHttpClient getOkHttpClient(Context context) {
-        final OkHttpClient client = new OkHttpClient();
-        DebugModeUtils.initForHttpClient(client);
-        if (BuildConfig.IS_STAGING) {
-            client.setSslSocketFactory(SSLCertificateSocketFactory.getInsecure(0, null));
-            client.setHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(final String hostname, final SSLSession session) {
-                    return true;
-                }
-            });
-        }
-        return client;
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        DebugModeUtils.initForHttpClient(builder);
+        return builder.build();
     }
 
     public static String getProviderOAuthUrl(final String providerName) {

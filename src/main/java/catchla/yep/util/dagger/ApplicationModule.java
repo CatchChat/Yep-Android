@@ -12,7 +12,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
@@ -33,6 +32,7 @@ import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.YepImageDownloader;
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by mariotaku on 15/10/8.
@@ -58,8 +58,8 @@ public class ApplicationModule implements Constants {
 
     @Provides
     @Singleton
-    public ImageDownloader imageDownloader() {
-        return createImageDownloader(application);
+    public ImageDownloader imageDownloader(final MediaDownloader downloader) {
+        return new YepImageDownloader(application, downloader);
     }
 
     @Provides
@@ -72,10 +72,6 @@ public class ApplicationModule implements Constants {
     @Singleton
     public MediaDownloader mediaDownloader(OkHttpClient client) {
         return new OkMediaDownloader(client);
-    }
-
-    private YepImageDownloader createImageDownloader(final YepApplication application) {
-        return new YepImageDownloader(application);
     }
 
     @Provides

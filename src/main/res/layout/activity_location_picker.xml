@@ -7,16 +7,14 @@
     android:layout_height="match_parent"
     app:setPadding="true">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        android:id="@+id/sliding_layout"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
-        app:umanoShadowHeight="4dp">
+        android:layout_height="match_parent">
 
         <FrameLayout
+            android:id="@+id/map_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <com.amap.api.maps2d.MapView
                 android:id="@+id/map_view"
@@ -25,9 +23,24 @@
                 android:layout_gravity="top"/>
         </FrameLayout>
 
-        <RelativeLayout
+        <View
+            android:id="@+id/view_shadow"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="@dimen/element_spacing_xsmall"
+            android:background="@drawable/shadow_top"
+            app:layout_anchor="@+id/design_bottom_sheet"
+            app:layout_anchorGravity="top"/>
+
+        <RelativeLayout
+            android:id="@+id/design_bottom_sheet"
+            style="?attr/bottomSheetStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:windowBackground"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="50dp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
+
 
             <android.support.v7.widget.CardView
                 android:id="@+id/edit_query_container"
@@ -57,5 +70,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@+id/edit_query_container"/>
         </RelativeLayout>
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+
 </catchla.yep.view.TintedStatusFrameLayout>

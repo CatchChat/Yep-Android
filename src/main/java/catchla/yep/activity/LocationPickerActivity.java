@@ -52,7 +52,6 @@ import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.hannesdorfmann.adapterdelegates.AdapterDelegate;
 import com.hannesdorfmann.adapterdelegates.ListDelegationAdapter;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,18 +69,8 @@ public class LocationPickerActivity extends ContentActivity implements Constants
 
     private static final int REQUEST_LOCATION_PERMISSION = 101;
     // Views
-    private SlidingUpPanelLayout mSlidingLayout;
     private MapView mMapView;
 
-    // Listeners
-    private View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener() {
-        @Override
-        public void onLayoutChange(final View v, final int left, final int top, final int right,
-                                   final int bottom, final int oldLeft, final int oldTop,
-                                   final int oldRight, final int oldBottom) {
-            updatePanelHeight();
-        }
-    };
     private LocationManager mLocationManager;
     private LocationSource.OnLocationChangedListener mOnLocationChangedListener;
     private LocationSource mLocationSource = new LocationSource() {
@@ -116,8 +105,6 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         mAdapter = new LocationAdapter(this);
         mPlacesList.setAdapter(mAdapter);
         mPlacesList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mSlidingLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
-        mSlidingLayout.setScrollableView(mPlacesList);
         setupMap();
     }
 
@@ -178,8 +165,8 @@ public class LocationPickerActivity extends ContentActivity implements Constants
             }
         });
         final UiSettings uiSettings = mMap.getUiSettings();
-        uiSettings.setScaleControlsEnabled(false);
         uiSettings.setCompassEnabled(false);
+        uiSettings.setMyLocationButtonEnabled(false);
         uiSettings.setZoomControlsEnabled(false);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -205,14 +192,9 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         }
     }
 
-    private void updatePanelHeight() {
-        mSlidingLayout.setPanelHeight(mSlidingLayout.getHeight() - mMapView.getHeight());
-    }
-
     @Override
     protected void onDestroy() {
         mMapView.onDestroy();
-        mSlidingLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
         super.onDestroy();
     }
 
@@ -273,7 +255,6 @@ public class LocationPickerActivity extends ContentActivity implements Constants
     public void onContentChanged() {
         super.onContentChanged();
         mMapView = (MapView) findViewById(R.id.map_view);
-        mSlidingLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mPlacesList = (RecyclerView) findViewById(R.id.places_list);
     }
 
@@ -328,13 +309,11 @@ public class LocationPickerActivity extends ContentActivity implements Constants
         if (myLocation == null) return;
         final LatLng latLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
         showMarker(latLng, "My location", true);
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     private void notifyPoiItemClick(final PoiItem item) {
         final LatLng latLng = AMapModelUtils.toLatLng(item.getLatLonPoint());
         showMarker(latLng, item.getTitle(), true);
-        mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     private void showMarker(final LatLng latLng, final String name, final boolean center) {
