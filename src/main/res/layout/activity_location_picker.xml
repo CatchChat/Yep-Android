@@ -14,13 +14,12 @@
         <FrameLayout
             android:id="@+id/map_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="240dp">
 
             <com.amap.api.maps2d.MapView
                 android:id="@+id/map_view"
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:layout_gravity="top"/>
+                android:layout_height="match_parent"/>
         </FrameLayout>
 
         <View
@@ -33,13 +32,11 @@
 
         <RelativeLayout
             android:id="@+id/design_bottom_sheet"
-            style="?attr/bottomSheetStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?android:windowBackground"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="50dp"
-            app:layout_behavior="@string/bottom_sheet_behavior">
+            app:layout_anchor="@+id/map_container"
+            app:layout_anchorGravity="bottom">
 
 
             <android.support.v7.widget.CardView

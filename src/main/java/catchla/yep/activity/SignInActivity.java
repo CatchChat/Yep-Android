@@ -49,7 +49,6 @@ import catchla.yep.model.ResponseCode;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.VerificationMethod;
 import catchla.yep.model.YepException;
-import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -403,7 +402,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
     private void finishAddAddAccount(final AccessToken token) {
         final Intent data = new Intent();
-        data.putExtra(EXTRA_TOKEN, JsonSerializer.serialize(token, AccessToken.class));
+        data.putExtra(EXTRA_TOKEN, token);
         setResult(RESULT_OK, data);
         finish();
     }

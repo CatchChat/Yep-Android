@@ -478,7 +478,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
     private void finishAddAddAccount() {
         if (mAccessToken == null) return;
         final Intent data = new Intent();
-        data.putExtra(EXTRA_TOKEN, JsonSerializer.serialize(mAccessToken, AccessToken.class));
+        data.putExtra(EXTRA_TOKEN, mAccessToken);
         setResult(RESULT_OK, data);
         finish();
     }
