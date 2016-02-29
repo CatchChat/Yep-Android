@@ -61,6 +61,7 @@ public class MessageService extends Service implements Constants {
 
     public static final String ACTION_PREFIX = BuildConfig.APPLICATION_ID + ".";
     public static final String ACTION_REFRESH_MESSAGES = ACTION_PREFIX + "REFRESH_MESSAGES";
+    public static final String ACTION_REFRESH_USER_INFO = ACTION_PREFIX + "REFRESH_USER_INFO";
     public static final String ACTION_REFRESH_FRIENDSHIPS = ACTION_PREFIX + "REFRESH_FRIENDSHIPS";
 
     @Inject
@@ -93,8 +94,39 @@ public class MessageService extends Service implements Constants {
                 refreshMessages();
                 break;
             }
+            case ACTION_REFRESH_USER_INFO: {
+                final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
+                refreshUserInfo(account);
+                break;
+            }
         }
         return START_STICKY;
+    }
+
+    private void refreshUserInfo(final Account account) {
+        if (account == null) return;
+
+        final TaskRunnable<Account, TaskResponse<User>, MessageService>
+                task = new PersistedTaskRunnable<Account, TaskResponse<User>, MessageService>() {
+
+            @Override
+            public TaskResponse<User> doLongOperation(final Account account) throws InterruptedException {
+                YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
+                try {
+                    return TaskResponse.getInstance(yep.getUser());
+                } catch (YepException e) {
+                    return TaskResponse.getInstance(e);
+                }
+            }
+
+            @Override
+            public void callback(final MessageService handler, final TaskResponse<User> result) {
+                if (result.hasData()) {
+                    Utils.saveUserInfo(handler, account, result.getData());
+                }
+            }
+        };
+        AsyncManager.runBackgroundTask(task);
     }
 
     private void refreshFriendships(final Account account) {

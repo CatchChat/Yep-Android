@@ -32,6 +32,7 @@ import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.menu.HomeMenuActionProvider;
+import catchla.yep.service.MessageService;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.view.FloatingActionMenu;
@@ -127,7 +128,8 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
 
         final Bundle args = new Bundle();
         args.putBoolean(EXTRA_CACHING_ENABLED, true);
-        args.putParcelable(EXTRA_ACCOUNT, getAccount());
+        final Account account = getAccount();
+        args.putParcelable(EXTRA_ACCOUNT, account);
 
         mAdapter.addTab(ConversationsListFragment.class, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args);
         mAdapter.addTab(FriendsListFragment.class, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args);
@@ -137,6 +139,11 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         mPagerIndicator.updateAppearance();
 
         updateActionButton();
+
+        final Intent intent = new Intent(this, MessageService.class);
+        intent.setAction(MessageService.ACTION_REFRESH_FRIENDSHIPS);
+        intent.putExtra(EXTRA_ACCOUNT, account);
+        startService(intent);
     }
 
     @Override
