@@ -72,6 +72,7 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
         profileImageView.setTag(avatarUrl);
         nameView.setText(user.getNickname());
         descriptionView.setText(user.getIntroduction());
+        descriptionView.setVisibility(descriptionView.length() > 0 ? View.VISIBLE : View.GONE);
         userSkills.removeAllViews();
         final List<Skill> skills = ListUtils.nonNullList(user.getMasterSkills());
         final LayoutInflater inflater = LayoutInflater.from(adapter.getContext());
@@ -84,6 +85,7 @@ public class FriendGridViewHolder extends RecyclerView.ViewHolder implements Vie
             textView.setOnClickListener(this);
             userSkills.addView(textView);
         }
+        userSkills.setVisibility(userSkills.getChildCount() > 0 ? View.VISIBLE : View.GONE);
     }
 
 }

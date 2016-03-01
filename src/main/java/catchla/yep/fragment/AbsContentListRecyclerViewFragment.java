@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 
 import catchla.yep.adapter.LoadMoreSupportAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition;
 
 
 /**
@@ -44,13 +45,13 @@ public abstract class AbsContentListRecyclerViewFragment<A extends LoadMoreSuppo
         recyclerView.addItemDecoration(mItemDecoration);
     }
 
-    @Override
-    public void setLoadMoreIndicatorVisible(boolean visible) {
+    public void setLoadMoreIndicatorPosition(@IndicatorPosition int position) {
         if (mItemDecoration != null) {
-            mItemDecoration.setDecorationEndOffset(visible ? 1 : 0);
+            mItemDecoration.setDecorationEndOffset(position == IndicatorPosition.END ? 1 : 0);
         }
-        super.setLoadMoreIndicatorVisible(visible);
+        super.setLoadMoreIndicatorPosition(position);
     }
+
 
     @Override
     protected void onScrollToPositionWithOffset(final LinearLayoutManager layoutManager, int position, int offset) {
@@ -61,6 +62,16 @@ public abstract class AbsContentListRecyclerViewFragment<A extends LoadMoreSuppo
     @Override
     protected LinearLayoutManager onCreateLayoutManager(Context context) {
         return new FixedLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+    }
+
+    @Override
+    public boolean isReachingEnd() {
+        return getLayoutManager().findLastCompletelyVisibleItemPosition() >= getLayoutManager().getItemCount() - 1;
+    }
+
+    @Override
+    public boolean isReachingStart() {
+        return getLayoutManager().findFirstCompletelyVisibleItemPosition() <= 0;
     }
 
 }

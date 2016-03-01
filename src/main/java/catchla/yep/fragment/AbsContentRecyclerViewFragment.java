@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import catchla.yep.R;
 import catchla.yep.activity.iface.IControlBarActivity;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
 import catchla.yep.util.ContentListScrollListener;
 import catchla.yep.util.SimpleDrawerCallback;
@@ -155,14 +156,19 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
             updateRefreshProgressOffset();
         }
         if (refreshing == currentRefreshing) return;
-        final boolean layoutRefreshing = refreshing && !mAdapter.isLoadMoreIndicatorVisible();
+        final boolean layoutRefreshing = refreshing && mAdapter.getLoadMoreIndicatorPosition()
+                != IndicatorPosition.NONE;
         mSwipeRefreshLayout.setRefreshing(layoutRefreshing);
     }
 
     @Override
-    public void onLoadMoreContents() {
-        setLoadMoreIndicatorVisible(true);
-        setRefreshEnabled(false);
+    public void onLoadMoreContents(@IndicatorPosition final int position) {
+        setLoadMoreIndicatorPosition(position);
+        setRefreshEnabled(position == IndicatorPosition.NONE);
+    }
+
+    public void setLoadMoreIndicatorPosition(@IndicatorPosition int position) {
+        mAdapter.setLoadMoreIndicatorPosition(position);
     }
 
     public final RecyclerView getRecyclerView() {
@@ -199,7 +205,8 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         setupRecyclerView(context, mRecyclerView, mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        mScrollListener = new ContentListScrollListener(this);
+        mScrollListener = new ContentListScrollListener(this,
+                new ContentListScrollListener.RecyclerViewCallback(mRecyclerView));
         mScrollListener.setTouchSlop(ViewConfiguration.get(context).getScaledTouchSlop());
     }
 
@@ -250,10 +257,6 @@ public abstract class AbsContentRecyclerViewFragment<A extends LoadMoreSupportAd
         mProgressContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom);
         mSystemWindowsInsets.set(insets);
         updateRefreshProgressOffset();
-    }
-
-    public void setLoadMoreIndicatorVisible(boolean visible) {
-        mAdapter.setLoadMoreIndicatorVisible(visible);
     }
 
     public void setRefreshEnabled(boolean enabled) {

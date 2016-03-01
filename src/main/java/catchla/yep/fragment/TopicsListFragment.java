@@ -35,6 +35,7 @@ import catchla.yep.activity.SkillUpdatesActivity;
 import catchla.yep.activity.TopicChatActivity;
 import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.TopicsAdapter;
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.loader.DiscoverTopicsLoader;
 import catchla.yep.model.Attachment;
@@ -110,11 +111,11 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     public void onLoadFinished(final Loader<List<Topic>> loader, final List<Topic> data) {
         final TopicsAdapter adapter = getAdapter();
         adapter.setData(data);
-        adapter.setLoadMoreSupported(data != null && !data.isEmpty());
+        adapter.setLoadMoreSupportedPosition(data != null && !data.isEmpty() ? IndicatorPosition.END : IndicatorPosition.NONE);
         showContent();
         setRefreshing(false);
         setRefreshEnabled(true);
-        setLoadMoreIndicatorVisible(false);
+        setLoadMoreIndicatorPosition(IndicatorPosition.NONE);
     }
 
     @Override
@@ -212,8 +213,10 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
     }
 
     @Override
-    public void onLoadMoreContents() {
-        super.onLoadMoreContents();
+    public void onLoadMoreContents(@IndicatorPosition final int position) {
+        // Only supports load from end, skip START flag
+        if ((position & IndicatorPosition.START) != 0) return;
+        super.onLoadMoreContents(position);
         final Bundle loaderArgs = new Bundle();
         loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
         loaderArgs.putBoolean(EXTRA_READ_OLD, true);

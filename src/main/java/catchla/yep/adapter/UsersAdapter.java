@@ -99,7 +99,16 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public int getItemCount() {
-        return (isLoadMoreIndicatorVisible() ? 1 : 0) + getUsersCount();
+        final int position = getLoadMoreIndicatorPosition();
+        int count = 0;
+        if ((position & IndicatorPosition.START) != 0) {
+            count += 1;
+        }
+        count += getUsersCount();
+        if ((position & IndicatorPosition.END) != 0) {
+            count += 1;
+        }
+        return count;
     }
 
     public void setData(final List<User> data) {

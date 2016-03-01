@@ -1,5 +1,7 @@
 package catchla.yep.util.dagger;
 
+import android.support.v7.widget.RecyclerView;
+
 import javax.inject.Singleton;
 
 import catchla.yep.activity.ContentActivity;
@@ -33,8 +35,7 @@ public interface GeneralComponent {
 
     void inject(AccountInfoPreference preference);
 
-
-    void inject(BaseRecyclerViewAdapter adapter);
+    void inject(BaseRecyclerViewAdapter<RecyclerView.ViewHolder> adapter);
 
     void inject(FayeService service);
 

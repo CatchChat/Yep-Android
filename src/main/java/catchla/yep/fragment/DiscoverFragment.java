@@ -16,6 +16,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.UsersAdapter;
 import catchla.yep.adapter.UsersGridAdapter;
 import catchla.yep.adapter.decorator.DividerItemDecoration;
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition;
 import catchla.yep.loader.DiscoverUsersLoader;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.Paging;
@@ -87,7 +89,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     @NonNull
     @Override
     protected RecyclerView.LayoutManager onCreateLayoutManager(final Context context) {
-        return new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+        return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
     }
 
     @Override
@@ -122,11 +124,11 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     public void onLoadFinished(final Loader<List<User>> loader, final List<User> data) {
         final UsersAdapter adapter = getAdapter();
         adapter.setData(data);
-        adapter.setLoadMoreSupported(data != null && !data.isEmpty());
+        adapter.setLoadMoreSupportedPosition(data != null && !data.isEmpty() ? IndicatorPosition.END : IndicatorPosition.NONE);
         showContent();
         setRefreshing(false);
         setRefreshEnabled(true);
-        setLoadMoreIndicatorVisible(false);
+        setLoadMoreIndicatorPosition(IndicatorPosition.NONE);
     }
 
     @Override
@@ -158,13 +160,41 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
     }
 
     @Override
-    public void onLoadMoreContents() {
-        super.onLoadMoreContents();
+    public void onLoadMoreContents(@IndicatorPosition final int position) {
+        // Only supports load from end, skip START flag
+        if ((position & IndicatorPosition.START) != 0) return;
+        super.onLoadMoreContents(position);
         final Bundle loaderArgs = new Bundle();
         loaderArgs.putBoolean(EXTRA_READ_CACHE, false);
         loaderArgs.putBoolean(EXTRA_READ_OLD, true);
         loaderArgs.putInt(EXTRA_PAGE, ++mPage);
         getLoaderManager().restartLoader(0, loaderArgs, this);
+    }
+
+    @Override
+    public boolean isReachingEnd() {
+        final RecyclerView.LayoutManager lm = getLayoutManager();
+        if (lm instanceof LinearLayoutManager) {
+            return ((LinearLayoutManager) lm).findFirstCompletelyVisibleItemPosition() >= getLayoutManager().getItemCount() - 1;
+        } else if (lm instanceof StaggeredGridLayoutManager) {
+            for (final int position : ((StaggeredGridLayoutManager) lm).findFirstCompletelyVisibleItemPositions(null)) {
+                if (position >= getLayoutManager().getItemCount() - 1) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isReachingStart() {
+        final RecyclerView.LayoutManager lm = getLayoutManager();
+        if (lm instanceof LinearLayoutManager) {
+            return ((LinearLayoutManager) lm).findFirstCompletelyVisibleItemPosition() <= 0;
+        } else if (lm instanceof StaggeredGridLayoutManager) {
+            for (final int position : ((StaggeredGridLayoutManager) lm).findFirstCompletelyVisibleItemPositions(null)) {
+                if (position <= 0) return true;
+            }
+        }
+        return false;
     }
 
     @Override

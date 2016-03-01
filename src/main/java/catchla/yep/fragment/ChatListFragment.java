@@ -195,6 +195,16 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
         });
     }
 
+    @Override
+    public boolean isReachingEnd() {
+        return getLayoutManager().findLastCompletelyVisibleItemPosition() >= getLayoutManager().getItemCount() - 1;
+    }
+
+    @Override
+    public boolean isReachingStart() {
+        return getLayoutManager().findFirstCompletelyVisibleItemPosition() <= 0;
+    }
+
     public static class ChatAdapter extends LoadMoreSupportAdapter {
 
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;

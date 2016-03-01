@@ -135,7 +135,16 @@ public class TopicsAdapter extends LoadMoreSupportAdapter {
 
     @Override
     public int getItemCount() {
-        return (isLoadMoreIndicatorVisible() ? 1 : 0) + getTopicsCount();
+        final int position = getLoadMoreIndicatorPosition();
+        int count = 0;
+        if ((position & IndicatorPosition.START) != 0) {
+            count += 1;
+        }
+        count += getTopicsCount();
+        if ((position & IndicatorPosition.END) != 0) {
+            count += 1;
+        }
+        return count;
     }
 
     public int getTopicsCount() {
