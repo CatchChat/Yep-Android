@@ -36,35 +36,34 @@ public class ContentResolverUtils {
     public static final int MAX_BULK_COUNT = 128;
 
     public static <T> int bulkDelete(final ContentResolver resolver, final Uri uri, final String inColumn,
-                                     final Collection<T> colValues, final String extraWhere, final boolean valuesIsString) {
+                                     final Collection<T> colValues, final String extraWhere,
+                                     final String[] extraWereArgs) {
         if (colValues == null) return 0;
-        return bulkDelete(resolver, uri, inColumn, colValues.toArray(), extraWhere, valuesIsString);
+        return bulkDelete(resolver, uri, inColumn, colValues.toArray(), extraWhere, extraWereArgs);
     }
 
     public static <T> int bulkDelete(final ContentResolver resolver, final Uri uri, final String inColumn,
-                                     final T[] colValues, final String extraWhere, final boolean valuesIsString) {
+                                     final T[] colValues, final String extraWhere, final String[] extraWereArgs) {
         if (resolver == null || uri == null || isEmpty(inColumn) || colValues == null || colValues.length == 0)
             return 0;
-        final int col_values_length = colValues.length, blocks_count = col_values_length / MAX_BULK_COUNT + 1;
+        final int colValuesLength = colValues.length, blocks_count = colValuesLength / MAX_BULK_COUNT + 1;
         int rows_deleted = 0;
         for (int i = 0; i < blocks_count; i++) {
-            final int start = i * MAX_BULK_COUNT, end = Math.min(start + MAX_BULK_COUNT, col_values_length);
+            final int start = i * MAX_BULK_COUNT, end = Math.min(start + MAX_BULK_COUNT, colValuesLength);
             final String[] block = YepArrayUtils.toStringArray(YepArrayUtils.subArray(colValues, start, end));
-            if (valuesIsString) {
-                final StringBuilder where = new StringBuilder(inColumn + " IN(" + YepArrayUtils.toStringForSQL(block)
-                        + ")");
-                if (!isEmpty(extraWhere)) {
-                    where.append("AND ").append(extraWhere);
-                }
-                rows_deleted += resolver.delete(uri, where.toString(), block);
+            final String[] whereArgs;
+            if (extraWereArgs != null) {
+                whereArgs = new String[block.length + extraWereArgs.length];
+                System.arraycopy(block, 0, whereArgs, 0, block.length);
+                System.arraycopy(extraWereArgs, 0, whereArgs, block.length, extraWereArgs.length);
             } else {
-                final StringBuilder where = new StringBuilder(inColumn + " IN("
-                        + YepArrayUtils.toString(block, ',', true) + ")");
-                if (!isEmpty(extraWhere)) {
-                    where.append("AND ").append(extraWhere);
-                }
-                rows_deleted += resolver.delete(uri, where.toString(), null);
+                whereArgs = block;
             }
+            final StringBuilder where = new StringBuilder(inColumn + " IN(" + YepArrayUtils.toStringForSQL(block) + ")");
+            if (!isEmpty(extraWhere)) {
+                where.append(" AND ").append(extraWhere);
+            }
+            rows_deleted += resolver.delete(uri, where.toString(), whereArgs);
         }
         return rows_deleted;
     }

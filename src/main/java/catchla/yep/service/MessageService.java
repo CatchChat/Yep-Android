@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.desmond.asyncmanager.AsyncManager;
@@ -15,12 +16,11 @@ import com.desmond.asyncmanager.PersistedTaskRunnable;
 import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
-import org.mariotaku.sqliteqb.library.ArgsArray;
-import org.mariotaku.sqliteqb.library.Columns;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +35,8 @@ import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Circle;
 import catchla.yep.model.CircleCursorIndices;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.ConversationValuesCreator;
+import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
 import catchla.yep.model.Paging;
@@ -48,7 +50,6 @@ import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.ContentResolverUtils;
 import catchla.yep.util.ContentValuesCreator;
-import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -187,9 +188,11 @@ public class MessageService extends Service implements Constants {
             public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
-                    ResponseList<Message> messages = yep.getUnreadMessages();
-                    final String accountId = accountUser.getId();
-                    insertMessages(MessageService.this, messages, accountId);
+                    Paging paging = new Paging();
+                    paging.limit(30);
+                    ConversationsResponse conversations = yep.getConversations(paging);
+                    insertConversations(MessageService.this, conversations, accountUser.getId());
+                    System.identityHashCode(conversations);
                     return TaskResponse.getInstance(true);
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);
@@ -264,66 +267,79 @@ public class MessageService extends Service implements Constants {
         ContentResolverUtils.bulkInsert(cr, Circles.CONTENT_URI, contentValues);
     }
 
-    public static void insertMessages(final Context context, final Collection<Message> messages, final String accountId) {
-        HashMap<String, ContentValues> conversations = new HashMap<>();
+    public static void insertConversations(final Context context, final ConversationsResponse conversations,
+                                           final String accountId) {
+        HashMap<String, Conversation> conversationsMap = new HashMap<>();
         final ContentResolver cr = context.getContentResolver();
         final Set<String> ids = new HashSet<>();
-        for (Message message : messages) {
-            ids.add(message.getId());
+        for (final Message message : conversations.getMessages()) {
             final String recipientType = message.getRecipientType();
             final String conversationId = Conversation.generateId(message);
+            ids.add(conversationId);
             message.setConversationId(conversationId);
             message.setOutgoing(false);
 
-            ContentValues conversation = conversations.get(conversationId);
+            Conversation conversation = conversationsMap.get(conversationId);
             final boolean newConversation = conversation == null;
             if (conversation == null) {
-                conversation = new ContentValues();
-                conversation.put(Conversations.ACCOUNT_ID, accountId);
-                conversation.put(Conversations.CONVERSATION_ID, conversationId);
+                conversation = new Conversation();
+                conversation.setAccountId(accountId);
+                conversation.setId(conversationId);
             }
-            final long createdAt = Utils.getTime(message.getCreatedAt());
-            if (newConversation || createdAt > conversation.getAsLong(Conversations.UPDATED_AT)) {
-                conversation.put(Conversations.TEXT_CONTENT, message.getTextContent());
-                final String senderString = JsonSerializer.serialize(message.getSender(), User.class);
-                conversation.put(Conversations.USER, senderString);
-                conversation.put(Conversations.SENDER, senderString);
-                conversation.put(Conversations.CIRCLE, getMessageCircle(context, message, accountId));
-                conversation.put(Conversations.UPDATED_AT, createdAt);
-                conversation.put(Conversations.RECIPIENT_TYPE, recipientType);
-                conversation.put(Conversations.MEDIA_TYPE, message.getMediaType());
+            final Date createdAt = message.getCreatedAt();
+            if (newConversation || greaterThen(createdAt, conversation.getUpdatedAt())) {
+                conversation.setTextContent(message.getTextContent());
+                final User sender = message.getSender();
+                conversation.setUser(sender);
+                conversation.setSender(sender);
+                conversation.setCircle(getMessageCircle(context, message, conversations, accountId));
+                conversation.setUpdatedAt(createdAt);
+                conversation.setRecipientType(recipientType);
+                conversation.setMediaType(message.getMediaType());
             }
             if (newConversation) {
-                conversations.put(conversationId, conversation);
+                conversationsMap.put(conversationId, conversation);
             }
         }
 
-        final int idsSize = ids.size();
-        final String[] selectionArgs = new String[idsSize + 1];
-        selectionArgs[0] = accountId;
-        System.arraycopy(ids.toArray(new String[idsSize]), 0, selectionArgs, 1, idsSize);
-        cr.delete(Messages.CONTENT_URI, Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
-                        Expression.in(new Columns.Column(Messages.MESSAGE_ID), new ArgsArray(idsSize))).getSQL(),
-                selectionArgs);
-        final ArrayList<ContentValues> messagesValues = new ArrayList<>();
-        for (Message message : messages) {
-            messagesValues.add(ContentValuesCreator.fromMessage(message, accountId));
+        ContentResolverUtils.bulkDelete(cr, Conversations.CONTENT_URI, Messages.CONVERSATION_ID, ids,
+                Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
+        List<ContentValues> values = new ArrayList<>();
+        for (final Conversation conversation : conversationsMap.values()) {
+            values.add(ConversationValuesCreator.create(conversation));
         }
-        ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messagesValues);
-        ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversations.values());
+        ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, values);
     }
 
-    private static String getMessageCircle(final Context context, final Message message, final String accountId) {
+    private static boolean greaterThen(final Date createdAt, final Date updatedAt) {
+        if (updatedAt == null) return createdAt != null;
+        return createdAt != null && createdAt.compareTo(updatedAt) > 0;
+    }
+
+    private static Circle getMessageCircle(final Context context, final Message message,
+                                           final ConversationsResponse conversations,
+                                           final String accountId) {
         if (!Message.RecipientType.CIRCLE.equals(message.getRecipientType())) return null;
         Circle circle = message.getCircle();
-        // First try to load from database
+        // First try find in conversations
+        if (conversations != null) {
+            final List<Circle> circles = conversations.getCircles();
+            if (circles != null) {
+                for (final Circle item : circles) {
+                    if (TextUtils.equals(item.getId(), message.getRecipientId())) {
+                        return item;
+                    }
+                }
+            }
+        }
+        // Then try to load from database
         final String circleId;
         if (circle == null) {
             circleId = message.getRecipientId();
         } else if (circle.getTopic() == null) {
             circleId = circle.getId();
         } else {
-            return JsonSerializer.serialize(circle, Circle.class);
+            return circle;
         }
         final String where = Expression.and(Expression.equalsArgs(Circles.ACCOUNT_ID),
                 Expression.equalsArgs(Circles.CIRCLE_ID)).getSQL();
@@ -338,6 +354,6 @@ public class MessageService extends Service implements Constants {
         } finally {
             Utils.closeSilently(c);
         }
-        return JsonSerializer.serialize(circle, Circle.class);
+        return circle;
     }
 }

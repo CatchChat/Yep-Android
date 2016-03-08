@@ -23,6 +23,7 @@ import catchla.yep.model.AvatarResponse;
 import catchla.yep.model.Circle;
 import catchla.yep.model.Client;
 import catchla.yep.model.ContactUpload;
+import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
@@ -216,6 +217,9 @@ public interface YepAPI {
 
     @GET("circles")
     ResponseList<Circle> getCircles(@Query Paging paging) throws YepException;
+
+    @GET("dialogs")
+    ConversationsResponse getConversations(@Query({"offset", "limit"}) Paging paging) throws YepException;
 
 
     @DELETE("auth/logout")
