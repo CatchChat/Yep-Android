@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     app:setPadding="true">
 
-    <android.support.design.widget.CoordinatorLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/map_container"
@@ -20,23 +21,16 @@
                 android:id="@+id/map_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-        </FrameLayout>
 
-        <View
-            android:id="@+id/view_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/element_spacing_xsmall"
-            android:background="@drawable/shadow_top"
-            app:layout_anchor="@+id/design_bottom_sheet"
-            app:layout_anchorGravity="top"/>
+        </FrameLayout>
 
         <RelativeLayout
             android:id="@+id/design_bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?android:windowBackground"
-            app:layout_anchor="@+id/map_container"
-            app:layout_anchorGravity="bottom">
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/map_container"
+            android:background="?android:windowBackground">
 
 
             <android.support.v7.widget.CardView
@@ -65,9 +59,18 @@
                 android:id="@+id/places_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
                 android:layout_below="@+id/edit_query_container"/>
         </RelativeLayout>
 
-    </android.support.design.widget.CoordinatorLayout>
+
+        <View
+            android:id="@+id/view_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/element_spacing_xsmall"
+            android:layout_below="@+id/map_container"
+            android:background="@drawable/shadow_top"/>
+
+    </RelativeLayout>
 
 </catchla.yep.view.TintedStatusFrameLayout>

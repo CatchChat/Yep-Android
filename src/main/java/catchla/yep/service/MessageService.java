@@ -269,7 +269,7 @@ public class MessageService extends Service implements Constants {
 
     public static void insertConversations(final Context context, final ConversationsResponse conversations,
                                            final String accountId) {
-        HashMap<String, Conversation> conversationsMap = new HashMap<>();
+        final HashMap<String, Conversation> conversationsMap = new HashMap<>();
         final ContentResolver cr = context.getContentResolver();
         final Set<String> ids = new HashSet<>();
         for (final Message message : conversations.getMessages()) {
