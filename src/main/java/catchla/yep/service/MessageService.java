@@ -189,7 +189,7 @@ public class MessageService extends Service implements Constants {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     Paging paging = new Paging();
-                    paging.limit(30);
+                    paging.perPage(30);
                     ConversationsResponse conversations = yep.getConversations(paging);
                     insertConversations(MessageService.this, conversations, accountUser.getId());
                     System.identityHashCode(conversations);

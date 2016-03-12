@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="@dimen/element_spacing_normal">
@@ -22,11 +22,11 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/followers_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:id="@+id/followers_container"
             android:orientation="vertical">
 
             <TextView
@@ -47,10 +47,10 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/stars_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:id="@+id/stars_container"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -71,11 +71,11 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/following_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:id="@+id/following_container"
             android:orientation="vertical">
 
             <TextView

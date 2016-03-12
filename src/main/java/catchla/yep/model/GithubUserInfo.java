@@ -5,8 +5,6 @@ import com.bluelinelabs.logansquare.annotation.JsonObject;
 
 import java.util.List;
 
-import catchla.yep.model.util.GithubRepoListConverter;
-
 /**
  * Created by mariotaku on 15/6/4.
  */
@@ -18,7 +16,7 @@ public class GithubUserInfo {
     @JsonField(name = "user")
     private GithubUser user;
 
-    @JsonField(name = "repos", typeConverter = GithubRepoListConverter.class)
+    @JsonField(name = "repos")
     private List<GithubRepo> repos;
 
     public String getYepUserId() {

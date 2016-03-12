@@ -218,8 +218,8 @@ public interface YepAPI {
     @GET("circles")
     ResponseList<Circle> getCircles(@Query Paging paging) throws YepException;
 
-    @GET("dialogs")
-    ConversationsResponse getConversations(@Query({"offset", "limit"}) Paging paging) throws YepException;
+    @GET("conversations")
+    ConversationsResponse getConversations(@Query({"max_id", "per_page"}) Paging paging) throws YepException;
 
 
     @DELETE("auth/logout")

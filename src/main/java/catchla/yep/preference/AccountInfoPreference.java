@@ -1,7 +1,6 @@
 package catchla.yep.preference;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.Preference;
@@ -19,8 +18,6 @@ import catchla.yep.activity.ProfileEditorActivity;
 import catchla.yep.model.User;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.Utils;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
@@ -28,7 +25,6 @@ import catchla.yep.util.dagger.GeneralComponentHelper;
  */
 public class AccountInfoPreference extends Preference implements Constants {
 
-    private final AccountManager mAccountManager;
     private final Account mAccount;
     private final User mAccountUser;
     @Inject
@@ -38,7 +34,6 @@ public class AccountInfoPreference extends Preference implements Constants {
         super(context, attrs, defStyleAttr);
         GeneralComponentHelper.build(context).inject(this);
         setLayoutResource(R.layout.layout_preference_account_info);
-        mAccountManager = AccountManager.get(context);
         mAccount = Utils.getCurrentAccount(context);
         mAccountUser = Utils.getCurrentAccountUser(context);
     }

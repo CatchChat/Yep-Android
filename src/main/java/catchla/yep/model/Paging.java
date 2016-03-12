@@ -17,11 +17,6 @@ public class Paging extends SimpleValueMap {
         return this;
     }
 
-    public Paging limit(int limit) {
-        put("limit", String.valueOf(limit));
-        return this;
-    }
-
     public Paging minId(String minId) {
         put("min_id", minId);
         return this;
@@ -32,10 +27,5 @@ public class Paging extends SimpleValueMap {
         return this;
     }
 
-
-    public Paging offset(String offset) {
-        put("offset", offset);
-        return this;
-    }
 
 }

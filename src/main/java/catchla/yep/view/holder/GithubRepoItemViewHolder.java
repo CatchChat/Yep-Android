@@ -43,7 +43,7 @@ public class GithubRepoItemViewHolder extends RecyclerView.ViewHolder implements
 
     public void displayRepo(final GithubRepo repo) {
         repoNameView.setText(repo.getName());
-        starCountView.setText(String.valueOf(repo.getStargazersCount()));
+        starCountView.setText(String.format("%d \u2605", repo.getStargazersCount()));
         descriptionView.setText(repo.getDescription());
         descriptionView.setVisibility(TextUtils.isEmpty(repo.getDescription()) ? View.GONE : View.VISIBLE);
     }
