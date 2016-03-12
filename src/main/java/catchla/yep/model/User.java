@@ -15,6 +15,7 @@ import org.mariotaku.library.objectcursor.annotation.CursorObject;
 
 import java.util.List;
 
+import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
 import catchla.yep.provider.YepDataStore.Users;
@@ -88,7 +89,7 @@ public class User implements Parcelable {
     String contactName;
     @ParcelableThisPlease
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
-    @CursorField(Users.PROVIDERS)
+    @CursorField(value = Users.PROVIDERS, converter = LoganSquareCursorFieldConverter.class)
     List<Provider> providers;
     @ParcelableThisPlease
     @JsonField(name = "latitude")
