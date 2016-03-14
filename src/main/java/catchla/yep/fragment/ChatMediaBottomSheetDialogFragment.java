@@ -19,8 +19,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import catchla.yep.R;
+import catchla.yep.adapter.BaseRecyclerViewAdapter;
 
 /**
  * Created by mariotaku on 16/3/14.
@@ -40,7 +42,9 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
         mGalleryAdapter = new GalleryAdapter(context);
         mMediaGallery = (RecyclerView) dialog.findViewById(R.id.media_gallery);
         assert mMediaGallery != null;
-        mMediaGallery.setLayoutManager(new LinearLayoutManager(context));
+        final LinearLayoutManager layout = new LinearLayoutManager(context);
+        layout.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mMediaGallery.setLayoutManager(layout);
         mMediaGallery.setAdapter(mGalleryAdapter);
         final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
         requestPermissions(permissions, REQUEST_REQUEST_STORAGE_PERMISSION);
@@ -66,7 +70,7 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
     public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
         final Uri uri = Images.Media.EXTERNAL_CONTENT_URI;
         final String sortOrder = Images.Media.DATE_ADDED + " DESC";
-        final String[] projection = {Images.Media.DATA};
+        final String[] projection = {Images.Media._ID};
         return new CursorLoader(getContext(), uri, projection, null, null, sortOrder);
     }
 
@@ -80,12 +84,13 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
         mGalleryAdapter.setCursor(null);
     }
 
-    class GalleryAdapter extends RecyclerView.Adapter<GalleryViewHolder> {
+    static class GalleryAdapter extends BaseRecyclerViewAdapter<GalleryViewHolder> {
 
         private final LayoutInflater mInflater;
         private Cursor mCursor;
 
         public GalleryAdapter(Context context) {
+            super(context);
             mInflater = LayoutInflater.from(context);
         }
 
@@ -96,13 +101,13 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
 
         @Override
         public GalleryViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            return new GalleryViewHolder(mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false));
+            return new GalleryViewHolder(this, mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(final GalleryViewHolder holder, final int position) {
             mCursor.moveToPosition(position);
-            holder.display(mCursor.getString(0));
+            holder.display(mCursor.getLong(0));
         }
 
         @Override
@@ -112,17 +117,20 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
         }
     }
 
-    class GalleryViewHolder extends RecyclerView.ViewHolder {
+    static class GalleryViewHolder extends RecyclerView.ViewHolder {
 
-        private final View imageView;
+        private final ImageView imageView;
+        private final GalleryAdapter adapter;
 
-        public GalleryViewHolder(final View itemView) {
+        public GalleryViewHolder(GalleryAdapter adapter, final View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.media_preview);
+            this.adapter = adapter;
+            itemView.findViewById(R.id.media_remove).setVisibility(View.GONE);
+            imageView = (ImageView) itemView.findViewById(R.id.media_preview);
         }
 
-        public void display(final String string) {
-
+        public void display(final long id) {
+            adapter.getImageLoader().displayImage("media-thumb://" + id, imageView);
         }
     }
 }

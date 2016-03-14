@@ -8,6 +8,7 @@ import catchla.yep.activity.ContentActivity;
 import catchla.yep.activity.MediaViewerActivity;
 import catchla.yep.adapter.BaseRecyclerViewAdapter;
 import catchla.yep.fragment.BaseFragment;
+import catchla.yep.fragment.ChatMediaBottomSheetDialogFragment;
 import catchla.yep.loader.CachedYepLoader;
 import catchla.yep.loader.TileImageLoader;
 import catchla.yep.menu.HomeMenuActionProvider;
@@ -48,4 +49,5 @@ public interface GeneralComponent {
     void inject(CacheProvider provider);
 
     void inject(CachedYepLoader<Object> loader);
+
 }
