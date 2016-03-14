@@ -101,6 +101,8 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
         values.put(Messages.STATE, Messages.MessageState.UNREAD);
         values.put(Messages.MESSAGE_ID, message.getId());
         values.put(Messages.CREATED_AT, message.getCreatedAt().getTime());
+        values.put(Messages.LATITUDE, message.getLatitude());
+        values.put(Messages.LONGITUDE, message.getLongitude());
         cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, draftId).getSQL(), null);
     }
 

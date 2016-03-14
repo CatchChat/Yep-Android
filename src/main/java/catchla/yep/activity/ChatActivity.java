@@ -5,6 +5,8 @@
 package catchla.yep.activity;
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -30,6 +32,8 @@ import com.squareup.otto.Subscribe;
 import org.mariotaku.sqliteqb.library.Expression;
 import org.mariotaku.sqliteqb.library.OrderBy;
 
+import java.util.Date;
+
 import catchla.yep.Constants;
 import catchla.yep.IFayeService;
 import catchla.yep.R;
@@ -38,6 +42,7 @@ import catchla.yep.fragment.ChatListFragment;
 import catchla.yep.fragment.ConversationChatListFragment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.InstantStateMessage;
+import catchla.yep.model.LastReadResponse;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
@@ -94,6 +99,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
 
         final Bundle fragmentArgs = new Bundle();
         fragmentArgs.putParcelable(EXTRA_CONVERSATION, conversation);
+        fragmentArgs.putParcelable(EXTRA_ACCOUNT, getAccount());
         final Fragment chatListFragment = Fragment.instantiate(this,
                 ConversationChatListFragment.class.getName(), fragmentArgs);
         final ChatInputBarFragment chatInputBarFragment =
@@ -106,6 +112,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         ft.replace(R.id.list_container, chatListFragment);
         ft.replace(R.id.input_panel, chatInputBarFragment);
         ft.commit();
+
+        if (savedInstanceState == null) {
+            markAsRead(conversation);
+        }
     }
 
     private Conversation getConversation() {
@@ -117,15 +127,16 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
             @Override
             public Object doLongOperation(final Object o) throws InterruptedException {
                 final String[] projection = {Messages.MESSAGE_ID};
-                final Expression where = Expression.and(
+                final Expression incomingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
                         Expression.equalsArgs(Messages.CONVERSATION_ID),
                         Expression.isNot(Messages.OUTGOING, 1)
                 );
                 final String[] whereArgs = {conversation.getAccountId(), conversation.getId()};
                 final OrderBy orderBy = new OrderBy(Messages.CREATED_AT, false);
-                final Cursor incoming = getContentResolver().query(Messages.CONTENT_URI, projection,
-                        where.getSQL(), whereArgs, orderBy.getSQL());
+                final ContentResolver cr = getContentResolver();
+                final Cursor incoming = cr.query(Messages.CONTENT_URI, projection,
+                        incomingWhere.getSQL(), whereArgs, orderBy.getSQL());
                 assert incoming != null;
                 final String lastId;
                 try {
@@ -137,10 +148,39 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 final YepAPI yep = YepAPIFactory.getInstance(ChatActivity.this, Utils.getCurrentAccount(ChatActivity.this));
                 try {
                     final String recipientType = conversation.getRecipientType();
-                    if (Message.RecipientType.CIRCLE.equals(recipientType)) {
-                        yep.batchMarkAsRead(YepAPI.PathRecipientType.CIRCLES, conversation.getRecipientId(), lastId);
-                    } else if (Message.RecipientType.USER.equals(recipientType)) {
-                        yep.batchMarkAsRead(YepAPI.PathRecipientType.USERS, conversation.getRecipientId(), lastId);
+                    final String recipientId = conversation.getRecipientId();
+                    final LastReadResponse lastReadResponse;
+                    switch (recipientType) {
+                        case Message.RecipientType.CIRCLE: {
+                            lastReadResponse = yep.getSentLastRead(YepAPI.PathRecipientType.CIRCLES, recipientId);
+                            yep.batchMarkAsRead(YepAPI.PathRecipientType.CIRCLES, recipientId, lastId);
+                            break;
+                        }
+                        case Message.RecipientType.USER: {
+                            lastReadResponse = yep.getSentLastRead(YepAPI.PathRecipientType.USERS, recipientId);
+                            yep.batchMarkAsRead(YepAPI.PathRecipientType.USERS, recipientId, lastId);
+                            break;
+                        }
+                        default: {
+                            throw new UnsupportedOperationException(recipientType);
+                        }
+                    }
+                    final Date lastReadAt = lastReadResponse.getLastReadAt();
+                    if (lastReadAt != null) {
+                        final ContentValues values = new ContentValues();
+                        values.put(Messages.STATE, Messages.MessageState.READ);
+                        final Expression outgoingWhere = Expression.and(
+                                Expression.equalsArgs(Messages.ACCOUNT_ID),
+                                Expression.equalsArgs(Messages.CONVERSATION_ID),
+                                Expression.equalsArgs(Messages.STATE),
+                                Expression.lesserEqualsArgs(Messages.CREATED_AT),
+                                Expression.equalsArgs(Messages.OUTGOING)
+                        );
+                        final String[] outgoingWhereArgs = {conversation.getAccountId(),
+                                conversation.getId(), Messages.MessageState.UNREAD,
+                                String.valueOf(lastReadAt.getTime()), "1"};
+                        cr.update(Messages.CONTENT_URI, values, outgoingWhere.getSQL(),
+                                outgoingWhereArgs);
                     }
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);

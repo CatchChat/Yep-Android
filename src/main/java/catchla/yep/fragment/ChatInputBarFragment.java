@@ -38,6 +38,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
+import catchla.yep.activity.LocationPickerActivity;
+import catchla.yep.activity.ThemedImagePickerActivity;
 import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
@@ -58,11 +60,13 @@ import catchla.yep.util.task.SendMessageTask;
  * Input bar component for chat activities
  * Created by mariotaku on 15/11/16.
  */
-public class ChatInputBarFragment extends BaseFragment implements Constants {
+public class ChatInputBarFragment extends BaseFragment implements Constants,
+        ChatMediaBottomSheetDialogFragment.Callback {
 
     private static final int REQUEST_PICK_IMAGE = 101;
     private static final int REQUEST_TAKE_PHOTO = 102;
-    private static final int REQUEST_REQUEST_RECORD_PERMISSION = 103;
+    private static final int REQUEST_PICK_LOCATION = 103;
+    private static final int REQUEST_REQUEST_RECORD_PERMISSION = 104;
 
     private ImageView mAttachSendButton;
     private EditText mEditText;
@@ -137,26 +141,6 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             }
         });
 
-//        mAttachPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(final MenuItem item) {
-//                switch (item.getItemId()) {
-//                    case R.id.gallery: {
-//                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).pickImage().build(), REQUEST_PICK_IMAGE);
-//                        return true;
-//                    }
-//                    case R.id.camera: {
-//                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).takePhoto().build(), REQUEST_TAKE_PHOTO);
-//                        return true;
-//                    }
-//                    case R.id.location: {
-//                        sendLocation();
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
         mVoiceToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -186,6 +170,12 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 sendImage(data.getData());
                 return;
             }
+            case REQUEST_PICK_LOCATION: {
+                if (resultCode != Activity.RESULT_OK) return;
+                final Location location = data.getParcelableExtra(EXTRA_LOCATION);
+                sendLocation(location);
+                return;
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -202,17 +192,17 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
     }
 
     private void openAttachmentMenu() {
-
         ChatMediaBottomSheetDialogFragment df = new ChatMediaBottomSheetDialogFragment();
+        df.setTargetFragment(this, 0);
         df.show(getFragmentManager(), "pick_media");
     }
 
-    private void sendLocation() {
+    private void sendLocation(final Location location) {
+        if (location == null) return;
+        // Show error if location is null
         sendMessage(new SendMessageHandler() {
             @Override
             public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
-                final Location location = Utils.getCachedLocation(getContext());
-                if (location == null) return null;
                 message.location(location.getLatitude(), location.getLongitude());
                 return null;
             }
@@ -306,6 +296,38 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
 
     private Conversation getConversation() {
         return getArguments().getParcelable(EXTRA_CONVERSATION);
+    }
+
+    private Account getAccount() {
+        return getArguments().getParcelable(EXTRA_ACCOUNT);
+    }
+
+    @Override
+    public void onButtonClick(final int id) {
+        switch (id) {
+            case R.id.gallery: {
+                startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).pickImage().build(),
+                        REQUEST_PICK_IMAGE);
+                break;
+            }
+            case R.id.location: {
+                final Intent intent = new Intent(getContext(), LocationPickerActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                startActivityForResult(intent, REQUEST_PICK_LOCATION);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onCameraClick() {
+        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).takePhoto().build(),
+                REQUEST_TAKE_PHOTO);
+    }
+
+    @Override
+    public void onMediaClick(final long id, final String data) {
+        sendImage(Uri.parse("file://" + data));
     }
 
     static abstract class SendMessageHandler {

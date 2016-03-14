@@ -31,7 +31,7 @@ import catchla.yep.model.Friendship;
 import catchla.yep.model.GithubUserInfo;
 import catchla.yep.model.IdResponse;
 import catchla.yep.model.InstagramMediaList;
-import catchla.yep.model.MarkAsReadResult;
+import catchla.yep.model.LastReadResponse;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.NewTopic;
@@ -170,9 +170,13 @@ public interface YepAPI {
     ResponseList<User> searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
 
     @PATCH("{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
-    MarkAsReadResult batchMarkAsRead(@PathRecipientType @Path("recipient_type") String recipientType,
+    LastReadResponse batchMarkAsRead(@PathRecipientType @Path("recipient_type") String recipientType,
                                      @Path("recipient_id") String recipientId,
                                      @Param("max_id") String maxId) throws YepException;
+
+    @GET("/{recipient_type}/{recipient_id}/messages/sent_last_read_at")
+    LastReadResponse getSentLastRead(@PathRecipientType @Path("recipient_type") String recipientType,
+                                     @Path("recipient_id") String recipientId) throws YepException;
 
     @GET("blocked_users")
     ResponseList<User> getBlockedUsers(@Query Paging paging) throws YepException;

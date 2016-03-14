@@ -369,7 +369,7 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             public LocationChatViewHolder(final View itemView, final boolean outgoing, final ChatAdapter adapter) {
                 super(itemView, outgoing, adapter);
                 mapView = (StaticMapView) itemView.findViewById(R.id.map_view);
-                mapView.setProvider(new StaticMapUrlGenerator.OpenStreetMapProvider(StaticMapUrlGenerator.OpenStreetMapProvider.MapType.MAPNIK));
+                mapView.setProvider(new StaticMapUrlGenerator.AMapProvider(AMAP_WEB_API_KEY));
                 mapView.setScaleToDensity(true);
             }
 

@@ -11,16 +11,19 @@
         android:layout_height="96dp"/>
 
     <Button
+        android:id="@+id/gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pnc__source_gallery"/>
 
     <Button
+        android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/location"/>
 
     <Button
+        android:id="@+id/cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@android:string/cancel"/>
