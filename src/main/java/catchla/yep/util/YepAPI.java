@@ -170,7 +170,8 @@ public interface YepAPI {
     ResponseList<User> searchUsers(@Query("q") String query, @Query Paging paging) throws YepException;
 
     @PATCH("{recipient_type}/{recipient_id}/messages/batch_mark_as_read")
-    MarkAsReadResult batchMarkAsRead(@PathRecipientType @Path("recipient_type") String recipientType, @Path("recipient_id") String recipientId,
+    MarkAsReadResult batchMarkAsRead(@PathRecipientType @Path("recipient_type") String recipientType,
+                                     @Path("recipient_id") String recipientId,
                                      @Param("max_id") String maxId) throws YepException;
 
     @GET("blocked_users")

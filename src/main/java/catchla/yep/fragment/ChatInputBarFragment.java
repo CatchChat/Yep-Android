@@ -15,12 +15,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.activity.ThemedImagePickerActivity;
 import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
@@ -166,7 +163,6 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 final boolean newState = mVoiceRecordButton.getVisibility() != View.VISIBLE;
                 mVoiceRecordButton.setVisibility(newState ? View.VISIBLE : View.GONE);
                 mEditTextContainer.setVisibility(newState ? View.GONE : View.VISIBLE);
-                mAttachSendButton.setVisibility(newState ? View.GONE : View.VISIBLE);
             }
         });
         final GestureViewHelper helper = new GestureViewHelper(getContext());

@@ -1,10 +1,11 @@
 package catchla.yep.model;
 
-import android.database.Cursor;
-import android.support.annotation.NonNull;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
@@ -12,22 +13,33 @@ import org.mariotaku.library.objectcursor.annotation.CursorObject;
 import java.util.Date;
 import java.util.List;
 
-import catchla.yep.model.util.NaNIfNullDoubleConverter;
-import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.NaNDoubleConverter;
+import catchla.yep.model.util.NaNIfNullDoubleConverter;
+import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.VariableTypeAttachmentsConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/5/12.
  */
+@ParcelablePlease
 @JsonObject
 @CursorObject(valuesCreator = true)
-public class Message {
+public class Message implements Parcelable {
 
+    public static final Creator<Message> CREATOR = new Creator<Message>() {
+        public Message createFromParcel(Parcel source) {
+            Message target = new Message();
+            MessageParcelablePlease.readFromParcel(target, source);
+            return target;
+        }
+
+        public Message[] newArray(int size) {
+            return new Message[size];
+        }
+    };
     @JsonField(name = "latitude", typeConverter = NaNDoubleConverter.class)
     @CursorField(value = Messages.LATITUDE, converter = NaNIfNullDoubleConverter.class)
     double latitude = Double.NaN;
@@ -76,6 +88,16 @@ public class Message {
     @JsonField(name = "local_metadata")
     @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)
     List<LocalMetadata> localMetadata;
+    @CursorField(value = Messages.ACCOUNT_ID)
+    String accountId;
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(final String accountId) {
+        this.accountId = accountId;
+    }
 
     public List<LocalMetadata> getLocalMetadata() {
         return localMetadata;
@@ -205,6 +227,38 @@ public class Message {
         this.state = state;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", id='" + id + '\'' +
+                ", recipientId='" + recipientId + '\'' +
+                ", parentId='" + parentId + '\'' +
+                ", textContent='" + textContent + '\'' +
+                ", createdAt=" + createdAt +
+                ", sender=" + sender +
+                ", recipientType='" + recipientType + '\'' +
+                ", mediaType='" + mediaType + '\'' +
+                ", circle=" + circle +
+                ", conversationId='" + conversationId + '\'' +
+                ", outgoing=" + outgoing +
+                ", state='" + state + '\'' +
+                ", attachments=" + attachments +
+                ", localMetadata=" + localMetadata +
+                '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        MessageParcelablePlease.writeToParcel(this, dest, flags);
+    }
+
     public interface RecipientType {
         String USER = "User";
         String CIRCLE = "Circle";
@@ -217,9 +271,20 @@ public class Message {
         String AUDIO = "audio";
     }
 
-
+    @ParcelablePlease
     @JsonObject
-    public static class LocalMetadata {
+    public static class LocalMetadata implements Parcelable {
+        public static final Creator<LocalMetadata> CREATOR = new Creator<LocalMetadata>() {
+            public LocalMetadata createFromParcel(Parcel source) {
+                LocalMetadata target = new LocalMetadata();
+                Message$LocalMetadataParcelablePlease.readFromParcel(target, source);
+                return target;
+            }
+
+            public LocalMetadata[] newArray(int size) {
+                return new LocalMetadata[size];
+            }
+        };
         @JsonField(name = "name")
         String name;
         @JsonField(name = "value")
@@ -252,27 +317,15 @@ public class Message {
             }
             return null;
         }
-    }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", id='" + id + '\'' +
-                ", recipientId='" + recipientId + '\'' +
-                ", parentId='" + parentId + '\'' +
-                ", textContent='" + textContent + '\'' +
-                ", createdAt=" + createdAt +
-                ", sender=" + sender +
-                ", recipientType='" + recipientType + '\'' +
-                ", mediaType='" + mediaType + '\'' +
-                ", circle=" + circle +
-                ", conversationId='" + conversationId + '\'' +
-                ", outgoing=" + outgoing +
-                ", state='" + state + '\'' +
-                ", attachments=" + attachments +
-                ", localMetadata=" + localMetadata +
-                '}';
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            Message$LocalMetadataParcelablePlease.writeToParcel(this, dest, flags);
+        }
     }
 }

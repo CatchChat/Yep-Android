@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:showIn="@layout/activity_chat">
+    android:layout_height="wrap_content">
 
     <catchla.yep.view.ActionIconView
         android:id="@+id/voice_toggle"
@@ -23,11 +22,14 @@
         android:id="@+id/voice_record"
         android:layout_width="match_parent"
         android:layout_height="@dimen/element_size_normal"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_toEndOf="@id/voice_toggle"
+        android:layout_toLeftOf="@+id/attachment_send"
         android:layout_toRightOf="@id/voice_toggle"
-        android:visibility="gone"/>
+        android:layout_toStartOf="@+id/attachment_send"
+        android:gravity="center"
+        android:text="@string/ptt_hint"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <catchla.yep.view.ActionIconView
         android:id="@+id/attachment_send"
@@ -56,7 +58,8 @@
         app:caretHeight="8dp"
         app:caretPosition="topRight"
         app:caretWidth="8dp"
-        app:cornerRadius="2dp">
+        app:cornerRadius="2dp"
+        tools:visibility="gone">
 
         <FrameLayout
             android:layout_width="match_parent"

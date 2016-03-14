@@ -84,8 +84,10 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
         mGalleryAdapter.setCursor(null);
     }
 
-    static class GalleryAdapter extends BaseRecyclerViewAdapter<GalleryViewHolder> {
+    static class GalleryAdapter extends BaseRecyclerViewAdapter<RecyclerView.ViewHolder> {
 
+        private static final int VIEW_TYPE_CAMERA_ENTRY = 1;
+        private static final int VIEW_TYPE_MEDIA_ITEM = 2;
         private final LayoutInflater mInflater;
         private Cursor mCursor;
 
@@ -100,20 +102,42 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
         }
 
         @Override
-        public GalleryViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            return new GalleryViewHolder(this, mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false));
+        public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+            switch (viewType) {
+                case VIEW_TYPE_CAMERA_ENTRY: {
+                    return new CameraEntryViewHolder(this, mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false));
+                }
+                case VIEW_TYPE_MEDIA_ITEM: {
+                    return new GalleryViewHolder(this, mInflater.inflate(R.layout.adapter_item_topic_media_item, parent, false));
+                }
+            }
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public void onBindViewHolder(final GalleryViewHolder holder, final int position) {
-            mCursor.moveToPosition(position);
-            holder.display(mCursor.getLong(0));
+        public int getItemViewType(final int position) {
+            if (position == 0) return VIEW_TYPE_CAMERA_ENTRY;
+            return VIEW_TYPE_MEDIA_ITEM;
+        }
+
+        @Override
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+            switch (getItemViewType(position)) {
+                case VIEW_TYPE_CAMERA_ENTRY: {
+                    break;
+                }
+                case VIEW_TYPE_MEDIA_ITEM: {
+                    mCursor.moveToPosition(position - 1);
+                    ((GalleryViewHolder) holder).display(mCursor.getLong(0));
+                    break;
+                }
+            }
         }
 
         @Override
         public int getItemCount() {
-            if (mCursor == null) return 0;
-            return mCursor.getCount();
+            if (mCursor == null) return 1;
+            return mCursor.getCount() + 1;
         }
     }
 
@@ -127,6 +151,24 @@ public class ChatMediaBottomSheetDialogFragment extends BottomSheetDialogFragmen
             this.adapter = adapter;
             itemView.findViewById(R.id.media_remove).setVisibility(View.GONE);
             imageView = (ImageView) itemView.findViewById(R.id.media_preview);
+        }
+
+        public void display(final long id) {
+            adapter.getImageLoader().displayImage("media-thumb://" + id, imageView);
+        }
+    }
+
+    static class CameraEntryViewHolder extends RecyclerView.ViewHolder {
+
+        private final ImageView imageView;
+        private final GalleryAdapter adapter;
+
+        public CameraEntryViewHolder(GalleryAdapter adapter, final View itemView) {
+            super(itemView);
+            this.adapter = adapter;
+            itemView.findViewById(R.id.media_remove).setVisibility(View.GONE);
+            imageView = (ImageView) itemView.findViewById(R.id.media_preview);
+            imageView.setImageResource(R.drawable.ic_pick_source_camera);
         }
 
         public void display(final long id) {

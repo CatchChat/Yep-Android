@@ -39,6 +39,7 @@ import catchla.yep.model.ConversationValuesCreator;
 import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.Message;
+import catchla.yep.model.MessageValuesCreator;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ResponseList;
 import catchla.yep.model.TaskResponse;
@@ -271,13 +272,19 @@ public class MessageService extends Service implements Constants {
                                            final String accountId) {
         final HashMap<String, Conversation> conversationsMap = new HashMap<>();
         final ContentResolver cr = context.getContentResolver();
-        final Set<String> ids = new HashSet<>();
+        final Set<String> conversationIds = new HashSet<>();
+        final Set<String> messageIds = new HashSet<>();
+        final List<ContentValues> messageValues = new ArrayList<>();
         for (final Message message : conversations.getMessages()) {
             final String recipientType = message.getRecipientType();
             final String conversationId = Conversation.generateId(message);
-            ids.add(conversationId);
+            conversationIds.add(conversationId);
+            message.setAccountId(accountId);
             message.setConversationId(conversationId);
             message.setOutgoing(false);
+
+            messageIds.add(message.getId());
+            messageValues.add(MessageValuesCreator.create(message));
 
             Conversation conversation = conversationsMap.get(conversationId);
             final boolean newConversation = conversation == null;
@@ -302,13 +309,17 @@ public class MessageService extends Service implements Constants {
             }
         }
 
-        ContentResolverUtils.bulkDelete(cr, Conversations.CONTENT_URI, Messages.CONVERSATION_ID, ids,
-                Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
+        ContentResolverUtils.bulkDelete(cr, Conversations.CONTENT_URI, Conversations.CONVERSATION_ID,
+                conversationIds, Expression.equalsArgs(Conversations.ACCOUNT_ID).getSQL(), new String[]{accountId});
         List<ContentValues> values = new ArrayList<>();
         for (final Conversation conversation : conversationsMap.values()) {
             values.add(ConversationValuesCreator.create(conversation));
         }
         ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, values);
+
+        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.CONVERSATION_ID,
+                messageIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
+        ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messageValues);
     }
 
     private static boolean greaterThen(final Date createdAt, final Date updatedAt) {
