@@ -69,7 +69,6 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
 
     private ImageView mAttachSendButton;
     private EditText mEditText;
-    private PopupMenu mAttachPopupMenu;
     private View mVoiceToggle;
     private View mEditTextContainer;
     private Button mVoiceRecordButton;
@@ -141,27 +140,26 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
             }
         });
 
-        mAttachPopupMenu = new PopupMenu(mAttachSendButton.getContext(), mAttachSendButton);
-        mAttachPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.gallery: {
-                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).pickImage().build(), REQUEST_PICK_IMAGE);
-                        return true;
-                    }
-                    case R.id.camera: {
-                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).takePhoto().build(), REQUEST_TAKE_PHOTO);
-                        return true;
-                    }
-                    case R.id.location: {
-                        sendLocation();
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+//        mAttachPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(final MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.gallery: {
+//                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).pickImage().build(), REQUEST_PICK_IMAGE);
+//                        return true;
+//                    }
+//                    case R.id.camera: {
+//                        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).takePhoto().build(), REQUEST_TAKE_PHOTO);
+//                        return true;
+//                    }
+//                    case R.id.location: {
+//                        sendLocation();
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
         mVoiceToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -180,8 +178,6 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
                 return false;
             }
         });
-
-        mAttachPopupMenu.inflate(R.menu.action_attach_send);
 
     }
 
@@ -210,7 +206,9 @@ public class ChatInputBarFragment extends BaseFragment implements Constants {
     }
 
     private void openAttachmentMenu() {
-        mAttachPopupMenu.show();
+
+        ChatMediaBottomSheetDialogFragment df = new ChatMediaBottomSheetDialogFragment();
+        df.show(getFragmentManager(), "pick_media");
     }
 
     private void sendLocation() {
