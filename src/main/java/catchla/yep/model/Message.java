@@ -86,7 +86,7 @@ public class Message implements Parcelable {
     @CursorField(value = Messages.ATTACHMENTS, converter = VariableTypeAttachmentsConverter.class)
     List<Attachment> attachments;
     @JsonField(name = "local_metadata")
-    @CursorField(value = Messages.ATTACHMENTS, converter = LoganSquareCursorFieldConverter.class)
+    @CursorField(value = Messages.LOCAL_METADATA, converter = LoganSquareCursorFieldConverter.class)
     List<LocalMetadata> localMetadata;
     @CursorField(value = Messages.ACCOUNT_ID)
     String accountId;

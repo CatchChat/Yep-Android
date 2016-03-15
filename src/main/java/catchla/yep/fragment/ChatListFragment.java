@@ -324,12 +324,18 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             private final TextView text1;
             private final ImageView stateView;
 
-            public MessageViewHolder(final View itemView, boolean outgoing, ChatAdapter adapter) {
+            public MessageViewHolder(final View itemView, boolean outgoing, final ChatAdapter adapter) {
                 super(itemView);
                 this.adapter = adapter;
                 text1 = (TextView) itemView.findViewById(android.R.id.text1);
                 stateView = (ImageView) itemView.findViewById(R.id.state);
                 profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
+                stateView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        adapter.notifyStateClicked(getLayoutPosition());
+                    }
+                });
             }
 
             public void displayMessage(Message message) {
@@ -361,6 +367,10 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
                     }
                 }
             }
+        }
+
+        private void notifyStateClicked(final int position) {
+            mActivity.onStateClicked(getMessage(position));
         }
 
         private static class LocationChatViewHolder extends MessageViewHolder {
@@ -466,5 +476,11 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
         }
 
 
+    }
+
+    private void onStateClicked(final Message message) {
+        if (MessageState.FAILED.equals(message.getState())) {
+            // TODO resend message
+        }
     }
 }

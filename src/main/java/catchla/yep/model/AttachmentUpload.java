@@ -25,7 +25,9 @@ public class AttachmentUpload {
     private final String kind;
     private final String metadata;
 
-    public AttachmentUpload(final File file, final String mimeType, final String kind, final String metadata) {
+    public AttachmentUpload(final File file, final String mimeType,
+                            @YepAPI.AttachableType final String kind,
+                            final String metadata) {
         this.file = file;
         this.mimeType = mimeType;
         this.kind = kind;

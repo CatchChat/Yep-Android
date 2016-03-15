@@ -83,6 +83,10 @@ public class Conversation implements Parcelable {
     @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
     @CursorField(value = Conversations.UPDATED_AT, converter = TimestampToDateConverter.class)
     Date updatedAt;
+    @ParcelableThisPlease
+    @JsonField(name = "last_seen_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Conversations.UPDATED_AT, converter = TimestampToDateConverter.class)
+    Date lastSeenAt;
 
     protected Conversation(Parcel in) {
         ConversationParcelablePlease.readFromParcel(this, in);
@@ -194,6 +198,14 @@ public class Conversation implements Parcelable {
 
     public void setAccountId(final String accountId) {
         this.accountId = accountId;
+    }
+
+    public Date getLastSeenAt() {
+        return lastSeenAt;
+    }
+
+    public void setLastSeenAt(final Date lastSeenAt) {
+        this.lastSeenAt = lastSeenAt;
     }
 
     @Override

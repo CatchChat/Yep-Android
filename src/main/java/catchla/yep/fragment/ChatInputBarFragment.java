@@ -220,9 +220,10 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
             @Override
             public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
-                return yep.uploadAttachment(AttachmentUpload.create(new File(path),
-                        message.getMetadataValue("mime_type", null), YepAPI.AttachableType.MESSAGE,
-                        message.getMetadataValue("metadata", null)));
+                final String mimeType = message.getMetadataValue("mime_type", null);
+                final String metadata = message.getMetadataValue("metadata", null);
+                return yep.uploadAttachment(AttachmentUpload.create(new File(path), mimeType,
+                        YepAPI.AttachableType.MESSAGE, metadata));
             }
 
             @Nullable

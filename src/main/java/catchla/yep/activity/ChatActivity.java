@@ -47,6 +47,7 @@ import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.YepException;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.service.FayeService;
 import catchla.yep.util.ThemeUtils;
@@ -167,8 +168,8 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     }
                     final Date lastReadAt = lastReadResponse.getLastReadAt();
                     if (lastReadAt != null) {
-                        final ContentValues values = new ContentValues();
-                        values.put(Messages.STATE, Messages.MessageState.READ);
+                        final ContentValues markAsReadValues = new ContentValues();
+                        markAsReadValues.put(Messages.STATE, Messages.MessageState.READ);
                         final Expression outgoingWhere = Expression.and(
                                 Expression.equalsArgs(Messages.ACCOUNT_ID),
                                 Expression.equalsArgs(Messages.CONVERSATION_ID),
@@ -179,8 +180,20 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                         final String[] outgoingWhereArgs = {conversation.getAccountId(),
                                 conversation.getId(), Messages.MessageState.UNREAD,
                                 String.valueOf(lastReadAt.getTime()), "1"};
-                        cr.update(Messages.CONTENT_URI, values, outgoingWhere.getSQL(),
+                        cr.update(Messages.CONTENT_URI, markAsReadValues, outgoingWhere.getSQL(),
                                 outgoingWhereArgs);
+
+                        final Expression conversationWhere = Expression.and(
+                                Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                                Expression.equalsArgs(Conversations.CONVERSATION_ID)
+                        );
+
+                        final String[] conversationWhereArgs = {conversation.getAccountId(),
+                                conversation.getId()};
+                        final ContentValues lastSeenValues = new ContentValues();
+                        lastSeenValues.put(Conversations.LAST_SEEN_AT, lastReadAt.getTime());
+                        cr.update(Messages.CONTENT_URI, markAsReadValues, conversationWhere.getSQL(),
+                                conversationWhereArgs);
                     }
                 } catch (YepException e) {
                     Log.w(LOGTAG, e);

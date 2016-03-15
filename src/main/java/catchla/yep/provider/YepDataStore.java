@@ -69,15 +69,16 @@ public interface YepDataStore {
         String USER = "user";
         String CIRCLE = "circle";
         String UPDATED_AT = "updated_at";
+        String LAST_SEEN_AT = "last_seen_at";
         String RECIPIENT_TYPE = "recipient_type";
         String MEDIA_TYPE = "media_type";
         String SENDER = "sender";
 
         String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, USER, CIRCLE,
-                RECIPIENT_TYPE, UPDATED_AT, MEDIA_TYPE, SENDER};
+                RECIPIENT_TYPE, UPDATED_AT, MEDIA_TYPE, SENDER, LAST_SEEN_AT};
         String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
                 DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER,
-                DataType.TEXT, DataType.TEXT};
+                DataType.TEXT, DataType.TEXT, DataType.INTEGER};
     }
 
     interface Friendships extends Users {
