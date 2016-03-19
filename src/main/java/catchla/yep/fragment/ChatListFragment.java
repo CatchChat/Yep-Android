@@ -330,12 +330,14 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
                 text1 = (TextView) itemView.findViewById(android.R.id.text1);
                 stateView = (ImageView) itemView.findViewById(R.id.state);
                 profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
-                stateView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        adapter.notifyStateClicked(getLayoutPosition());
-                    }
-                });
+                if (stateView != null) {
+                    stateView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(final View v) {
+                            adapter.notifyStateClicked(getLayoutPosition());
+                        }
+                    });
+                }
             }
 
             public void displayMessage(Message message) {
