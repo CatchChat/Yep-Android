@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -82,10 +83,12 @@ public class Conversation implements Parcelable {
     @ParcelableThisPlease
     @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
     @CursorField(value = Conversations.UPDATED_AT, converter = TimestampToDateConverter.class)
+    @Nullable
     Date updatedAt;
     @ParcelableThisPlease
     @JsonField(name = "last_seen_at", typeConverter = YepTimestampDateConverter.class)
-    @CursorField(value = Conversations.UPDATED_AT, converter = TimestampToDateConverter.class)
+    @CursorField(value = Conversations.LAST_SEEN_AT, converter = TimestampToDateConverter.class)
+    @Nullable
     Date lastSeenAt;
 
     protected Conversation(Parcel in) {
@@ -184,14 +187,6 @@ public class Conversation implements Parcelable {
         throw new UnsupportedOperationException();
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(final Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public String getAccountId() {
         return accountId;
     }
@@ -200,11 +195,21 @@ public class Conversation implements Parcelable {
         this.accountId = accountId;
     }
 
+    @Nullable
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(@Nullable final Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Nullable
     public Date getLastSeenAt() {
         return lastSeenAt;
     }
 
-    public void setLastSeenAt(final Date lastSeenAt) {
+    public void setLastSeenAt(@Nullable final Date lastSeenAt) {
         this.lastSeenAt = lastSeenAt;
     }
 

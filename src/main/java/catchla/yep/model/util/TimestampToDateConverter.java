@@ -14,11 +14,17 @@ import java.util.Date;
 public class TimestampToDateConverter implements CursorFieldConverter<Date> {
     @Override
     public Date parseField(final Cursor cursor, final int columnIndex, final ParameterizedType fieldType) {
-        return new Date(cursor.getLong(columnIndex));
+        final long ms = cursor.getLong(columnIndex);
+        if (ms > 0) return new Date(ms);
+        return null;
     }
 
     @Override
     public void writeField(final ContentValues values, final Date object, final String columnName, final ParameterizedType fieldType) {
-        values.put(columnName, object.getTime());
+        if (object == null) {
+            values.putNull(columnName);
+        } else {
+            values.put(columnName, object.getTime());
+        }
     }
 }
