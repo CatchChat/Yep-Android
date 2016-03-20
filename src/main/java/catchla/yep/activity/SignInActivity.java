@@ -195,8 +195,10 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             public TaskResponse<AccessToken> doLongOperation(final String[] args) throws InterruptedException {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
-                    return TaskResponse.getInstance(yep.tokenByMobile(args[0], args[1], args[2],
-                            Client.OFFICIAL, 0));
+                    final AccessToken token = yep.tokenByMobile(args[0], args[1], args[2],
+                            Client.OFFICIAL, 0);
+                    token.setUser(yep.getUser());
+                    return TaskResponse.getInstance(token);
                 } catch (YepException e) {
                     return TaskResponse.getInstance(e);
                 }
