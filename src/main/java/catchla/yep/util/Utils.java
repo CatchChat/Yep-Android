@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -209,6 +210,11 @@ public class Utils implements Constants {
             is.close();
         } catch (IOException ignored) {
         }
+    }
+
+    public static void closeSilently(final Cursor is) {
+        if (is == null) return;
+        is.close();
     }
 
     public static String formatSameDayTime(final Context context, final long timestamp) {
