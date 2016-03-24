@@ -131,6 +131,7 @@ public class FayeService extends Service implements Constants {
                 switch (msgType) {
                     case "message": {
                         Message imMessage = FayeClient.Message.getAs(data.get("message"), Message.class);
+                        Log.d(LOGTAG, String.valueOf(imMessage));
 //                        MessageService.insertConversations(FayeService.this, Collections.singleton(imMessage), accountId);
                         break;
                     }

@@ -34,11 +34,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apmem.tools.layouts.FlowLayout;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.ArrayList;
@@ -377,9 +376,9 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             if (StringUtils.equals(user.getId(), accountId)) {
                 Utils.saveUserInfo(UserActivity.this, account, user);
             } else {
-                AsyncManager.runBackgroundTask(new TaskRunnable() {
+                TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
                     @Override
-                    public Object doLongOperation(final Object o) throws InterruptedException {
+                    public Object doLongOperation(final Object o) {
                         final ContentValues values = ContentValuesCreator.friendshipFromUser(user, accountId);
                         final ContentResolver cr = getContentResolver();
                         final String where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
@@ -428,9 +427,9 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                 return true;
             }
             case R.id.block_user: {
-                AsyncManager.runBackgroundTask(new TaskRunnable() {
+                TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
                     @Override
-                    public Object doLongOperation(final Object o) throws InterruptedException {
+                    public Object doLongOperation(final Object o) {
                         final Account currentAccount = getAccount();
                         final YepAPI yep = YepAPIFactory.getInstance(UserActivity.this, currentAccount);
                         assert yep != null;

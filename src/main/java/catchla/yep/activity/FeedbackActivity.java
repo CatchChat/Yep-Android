@@ -7,14 +7,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import catchla.yep.R;
 import catchla.yep.model.TaskResponse;
+import catchla.yep.model.YepException;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
-import catchla.yep.model.YepException;
 
 /**
  * Created by mariotaku on 15/10/10.
@@ -49,11 +49,11 @@ public class FeedbackActivity extends SwipeBackContentActivity {
     }
 
     private void sendFeedback(final String content) {
-        final TaskRunnable<String, TaskResponse<Boolean>, FeedbackActivity> task
-                = new TaskRunnable<String, TaskResponse<Boolean>, FeedbackActivity>() {
+        final AbstractTask<String, TaskResponse<Boolean>, FeedbackActivity> task
+                = new AbstractTask<String, TaskResponse<Boolean>, FeedbackActivity>() {
 
             @Override
-            public TaskResponse<Boolean> doLongOperation(final String params) throws InterruptedException {
+            public TaskResponse<Boolean> doLongOperation(final String params) {
                 final YepAPI yepAPI = YepAPIFactory.getInstance(FeedbackActivity.this, getAccount());
                 final String deviceInfo = getResources().getConfiguration().toString();
                 try {
@@ -65,13 +65,13 @@ public class FeedbackActivity extends SwipeBackContentActivity {
             }
 
             @Override
-            public void callback(final FeedbackActivity handler, final TaskResponse<Boolean> result) {
+            public void afterExecute(final FeedbackActivity handler, final TaskResponse<Boolean> result) {
                 handler.finish();
             }
         };
         task.setParams(content);
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     @Override

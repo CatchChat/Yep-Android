@@ -11,11 +11,10 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.PersistedTaskRunnable;
-import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Bus;
 
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.ArrayList;
@@ -108,11 +107,11 @@ public class MessageService extends Service implements Constants {
     private void refreshUserInfo(final Account account) {
         if (account == null) return;
 
-        final TaskRunnable<Account, TaskResponse<User>, MessageService>
-                task = new PersistedTaskRunnable<Account, TaskResponse<User>, MessageService>() {
+        final AbstractTask<Account, TaskResponse<User>, MessageService>
+                task = new AbstractTask<Account, TaskResponse<User>, MessageService>() {
 
             @Override
-            public TaskResponse<User> doLongOperation(final Account account) throws InterruptedException {
+            public TaskResponse<User> doLongOperation(final Account account) {
                 YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     return TaskResponse.getInstance(yep.getUser());
@@ -122,21 +121,21 @@ public class MessageService extends Service implements Constants {
             }
 
             @Override
-            public void callback(final MessageService handler, final TaskResponse<User> result) {
+            public void afterExecute(final MessageService handler, final TaskResponse<User> result) {
                 if (result.hasData()) {
                     Utils.saveUserInfo(handler, account, result.getData());
                 }
             }
         };
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private void refreshFriendships(final Account account) {
         if (account == null) return;
-        final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
-                task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
+        final AbstractTask<Account, TaskResponse<Boolean>, MessageService>
+                task = new AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
-            public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
+            public TaskResponse<Boolean> doLongOperation(final Account account) {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     ResponseList<Friendship> friendships;
@@ -164,18 +163,18 @@ public class MessageService extends Service implements Constants {
             }
 
             @Override
-            public void callback(final TaskResponse<Boolean> response) {
+            public void afterExecute(final TaskResponse<Boolean> response) {
                 mBus.post(new FriendshipsRefreshedEvent());
             }
 
             @Override
-            public void callback(final MessageService messageService, final TaskResponse<Boolean> response) {
-                callback(response);
+            public void afterExecute(final MessageService messageService, final TaskResponse<Boolean> response) {
+                afterExecute(response);
             }
         };
         task.setParams(account);
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private void refreshMessages() {
@@ -183,10 +182,10 @@ public class MessageService extends Service implements Constants {
         if (account == null) return;
         final User accountUser = Utils.getAccountUser(this, account);
         if (accountUser == null) return;
-        final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
-                task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
+        final AbstractTask<Account, TaskResponse<Boolean>, MessageService>
+                task = new AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
-            public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
+            public TaskResponse<Boolean> doLongOperation(final Account account) {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     Paging paging = new Paging();
@@ -206,18 +205,18 @@ public class MessageService extends Service implements Constants {
             }
 
             @Override
-            public void callback(final TaskResponse<Boolean> response) {
+            public void afterExecute(final TaskResponse<Boolean> response) {
                 mBus.post(new MessageRefreshedEvent());
             }
 
             @Override
-            public void callback(final MessageService messageService, final TaskResponse<Boolean> response) {
-                callback(response);
+            public void afterExecute(final MessageService messageService, final TaskResponse<Boolean> response) {
+                afterExecute(response);
             }
         };
         task.setParams(account);
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private void refreshCircles() {
@@ -225,10 +224,10 @@ public class MessageService extends Service implements Constants {
         if (account == null) return;
         final User accountUser = Utils.getAccountUser(this, account);
         if (accountUser == null) return;
-        final TaskRunnable<Account, TaskResponse<Boolean>, MessageService>
-                task = new PersistedTaskRunnable<Account, TaskResponse<Boolean>, MessageService>() {
+        final AbstractTask<Account, TaskResponse<Boolean>, MessageService>
+                task = new AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
             @Override
-            public TaskResponse<Boolean> doLongOperation(final Account account) throws InterruptedException {
+            public TaskResponse<Boolean> doLongOperation(final Account account) {
                 final YepAPI yep = YepAPIFactory.getInstance(getApplication(), account);
                 try {
                     Paging paging = new Paging();
@@ -244,18 +243,18 @@ public class MessageService extends Service implements Constants {
             }
 
             @Override
-            public void callback(final TaskResponse<Boolean> response) {
+            public void afterExecute(final TaskResponse<Boolean> response) {
                 mBus.post(new MessageRefreshedEvent());
             }
 
             @Override
-            public void callback(final MessageService messageService, final TaskResponse<Boolean> response) {
-                callback(response);
+            public void afterExecute(final MessageService messageService, final TaskResponse<Boolean> response) {
+                afterExecute(response);
             }
         };
         task.setParams(account);
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     public static void insertCircles(final Context context, final Collection<Circle> circles, final String accountId) {

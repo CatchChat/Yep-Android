@@ -33,9 +33,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import java.util.Locale;
 
@@ -138,11 +139,11 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
     private void sendVerifyCode(final String phoneNumber, final String countryCode) {
         ProgressDialogFragment.show(this, "send_verify");
-        final TaskRunnable<String[], TaskResponse<Pair<String, String>>, SignInActivity> task
-                = new TaskRunnable<String[], TaskResponse<Pair<String, String>>, SignInActivity>() {
+        final AbstractTask<String[], TaskResponse<Pair<String, String>>, SignInActivity> task
+                = new AbstractTask<String[], TaskResponse<Pair<String, String>>, SignInActivity>() {
 
             @Override
-            public TaskResponse<Pair<String, String>> doLongOperation(final String[] args) throws InterruptedException {
+            public TaskResponse<Pair<String, String>> doLongOperation(final String[] args) {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
                     ResponseCode code = yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS);
@@ -154,7 +155,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             }
 
             @Override
-            public void callback(final SignInActivity handler, final TaskResponse<Pair<String, String>> result) {
+            protected void afterExecute(final SignInActivity handler, final TaskResponse<Pair<String, String>> result) {
                 final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("send_verify");
                 if (f instanceof DialogFragment) {
                     ((DialogFragment) f).dismiss();
@@ -178,7 +179,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
         };
         task.setParams(new String[]{phoneNumber, countryCode});
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private void setPhoneNumber(final String phoneNumber, final String countryCode) {
@@ -188,11 +189,11 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
 
     private void verifyPhoneNumber(final String verifyCode) {
         ProgressDialogFragment.show(this, TAG_VERIFY_PHONE);
-        final TaskRunnable<String[], TaskResponse<AccessToken>, SignInActivity> task
-                = new TaskRunnable<String[], TaskResponse<AccessToken>, SignInActivity>() {
+        final AbstractTask<String[], TaskResponse<AccessToken>, SignInActivity> task
+                = new AbstractTask<String[], TaskResponse<AccessToken>, SignInActivity>() {
 
             @Override
-            public TaskResponse<AccessToken> doLongOperation(final String[] args) throws InterruptedException {
+            public TaskResponse<AccessToken> doLongOperation(final String[] args) {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignInActivity.this, null);
                 try {
                     final AccessToken token = yep.tokenByMobile(args[0], args[1], args[2],
@@ -205,7 +206,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
             }
 
             @Override
-            public void callback(final SignInActivity handler, final TaskResponse<AccessToken> result) {
+            public void afterExecute(final SignInActivity handler, final TaskResponse<AccessToken> result) {
                 final Fragment f = handler.getSupportFragmentManager().findFragmentByTag(TAG_VERIFY_PHONE);
                 if (f instanceof DialogFragment) {
                     ((DialogFragment) f).dismiss();
@@ -232,7 +233,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
         };
         task.setParams(new String[]{mPhoneNumber, mCountryCode, verifyCode});
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private Fragment getCurrentFragment() {

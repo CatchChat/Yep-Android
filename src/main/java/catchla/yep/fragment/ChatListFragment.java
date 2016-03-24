@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import java.io.File;
 import java.util.List;
@@ -180,9 +180,9 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             mMediaPlayer.stop();
             mBus.post(AudioPlayEvent.end(attachment));
         }
-        AsyncManager.runBackgroundTask(new TaskRunnable() {
+        TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
             @Override
-            public Object doLongOperation(final Object o) throws InterruptedException {
+            public Object doLongOperation(final Object o) {
                 BufferedSink sink = null;
                 File tempFile = null;
                 try {
@@ -212,7 +212,7 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             }
 
             @Override
-            public void callback(final Object o) {
+            public void afterExecute(final Object o) {
                 if (mMediaPlayer == null) return;
                 mMediaPlayer.start();
                 mBus.post(AudioPlayEvent.start(attachment));

@@ -10,8 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.desmond.asyncmanager.TaskRunnable;
-
+import org.mariotaku.abstask.library.AbstractTask;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import catchla.yep.Constants;
@@ -35,7 +34,7 @@ import catchla.yep.util.YepAPIFactory;
 /**
  * Created by mariotaku on 15/9/12.
  */
-public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskResponse<Message>, H> implements Constants {
+public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskResponse<Message>, H> implements Constants {
 
     private final Context context;
     private final Account account;
@@ -61,7 +60,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
     }
 
     @Override
-    public final TaskResponse<Message> doLongOperation(final NewMessage newMessage) throws InterruptedException {
+    public final TaskResponse<Message> doLongOperation(final NewMessage newMessage) {
         final YepAPI yep = YepAPIFactory.getInstance(context, account);
         long draftId = -1;
         try {
@@ -124,7 +123,7 @@ public abstract class SendMessageTask<H> extends TaskRunnable<NewMessage, TaskRe
             entryValues.put(Conversations.UPDATED_AT, newMessage.createdAt());
             entryValues.put(Conversations.TEXT_CONTENT, newMessage.textContent());
             cr.update(Conversations.CONTENT_URI, entryValues, Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID),
-                            Expression.equalsArgs(Conversations.CONVERSATION_ID)).getSQL(),
+                    Expression.equalsArgs(Conversations.CONVERSATION_ID)).getSQL(),
                     new String[]{accountId, newMessage.conversationId()});
         } else {
             // Insert new conversation entry

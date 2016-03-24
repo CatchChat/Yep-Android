@@ -20,15 +20,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
 import com.squareup.otto.Subscribe;
 
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 import org.mariotaku.sqliteqb.library.Expression;
 import org.mariotaku.sqliteqb.library.OrderBy;
 
@@ -124,6 +125,12 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         if (savedInstanceState == null) {
             markAsRead(conversation);
         }
+        final Date lastSeenAt = conversation.getLastSeenAt();
+        if (lastSeenAt != null) {
+            actionBar.setSubtitle(DateUtils.getRelativeTimeSpanString(lastSeenAt.getTime()));
+        } else {
+            actionBar.setSubtitle(null);
+        }
     }
 
     private Conversation getConversation() {
@@ -131,9 +138,9 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
     }
 
     private void markAsRead(final Conversation conversation) {
-        AsyncManager.runBackgroundTask(new TaskRunnable() {
+        TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
             @Override
-            public Object doLongOperation(final Object o) throws InterruptedException {
+            public Object doLongOperation(final Object o) {
                 final String[] projection = {Messages.MESSAGE_ID};
                 final Expression incomingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
@@ -199,7 +206,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                                 conversation.getId()};
                         final ContentValues lastSeenValues = new ContentValues();
                         lastSeenValues.put(Conversations.LAST_SEEN_AT, lastReadAt.getTime());
-                        cr.update(Messages.CONTENT_URI, markAsReadValues, conversationWhere.getSQL(),
+                        cr.update(Conversations.CONTENT_URI, lastSeenValues, conversationWhere.getSQL(),
                                 conversationWhereArgs);
                     }
                 } catch (YepException e) {

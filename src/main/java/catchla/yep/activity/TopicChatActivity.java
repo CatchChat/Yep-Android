@@ -6,10 +6,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -56,10 +55,10 @@ public class TopicChatActivity extends SwipeBackContentActivity implements Const
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share: {
-                AsyncManager.runBackgroundTask(new TaskRunnable<Object, TaskResponse<UrlResponse>,
+                TaskStarter.execute(new AbstractTask<Object, TaskResponse<UrlResponse>,
                         TopicChatActivity>() {
                     @Override
-                    public TaskResponse<UrlResponse> doLongOperation(final Object o) throws InterruptedException {
+                    public TaskResponse<UrlResponse> doLongOperation(final Object o) {
                         YepAPI yep = YepAPIFactory.getInstance(TopicChatActivity.this, getAccount());
                         try {
                             return TaskResponse.getInstance(yep.getCircleShareUrl(getTopic().getCircle().getId()));

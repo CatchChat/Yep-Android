@@ -33,8 +33,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -45,7 +45,6 @@ import catchla.yep.model.Client;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.YepException;
-import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.ParseUtils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -135,11 +134,11 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
 
     private void sendVerifyCode(final String phoneNumber, final String countryCode) {
         ProgressDialogFragment.show(this, "create_registration");
-        final TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity> task
-                = new TaskRunnable<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity>() {
+        final AbstractTask<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity> task
+                = new AbstractTask<String[], TaskResponse<CreateRegistrationResult>, SignUpActivity>() {
 
             @Override
-            public TaskResponse<CreateRegistrationResult> doLongOperation(final String[] args) throws InterruptedException {
+            public TaskResponse<CreateRegistrationResult> doLongOperation(final String[] args) {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignUpActivity.this, null);
                 try {
                     return TaskResponse.getInstance(yep.createRegistration(args[1], args[2], args[0], 0, 0));
@@ -149,7 +148,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
             }
 
             @Override
-            public void callback(final SignUpActivity handler, final TaskResponse<CreateRegistrationResult> result) {
+            public void afterExecute(final SignUpActivity handler, final TaskResponse<CreateRegistrationResult> result) {
                 final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("create_registration");
                 if (f instanceof DialogFragment) {
                     ((DialogFragment) f).dismiss();
@@ -176,7 +175,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
         };
         task.setParams(new String[]{mName, phoneNumber, countryCode});
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private Fragment getCurrentFragment() {
@@ -185,11 +184,11 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
 
     private void verifyPhoneNumber(final String verifyCode) {
         ProgressDialogFragment.show(this, "update_registration");
-        final TaskRunnable<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity> task
-                = new TaskRunnable<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity>() {
+        final AbstractTask<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity> task
+                = new AbstractTask<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity>() {
 
             @Override
-            public TaskResponse<AccessToken> doLongOperation(final Pair<CreateRegistrationResult, String> args) throws InterruptedException {
+            public TaskResponse<AccessToken> doLongOperation(final Pair<CreateRegistrationResult, String> args) {
                 final YepAPI yep = YepAPIFactory.getInstanceWithToken(SignUpActivity.this, null);
                 try {
                     final CreateRegistrationResult result = args.first;
@@ -202,7 +201,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
             }
 
             @Override
-            public void callback(final SignUpActivity handler, final TaskResponse<AccessToken> result) {
+            public void afterExecute(final SignUpActivity handler, final TaskResponse<AccessToken> result) {
                 final Fragment f = handler.getSupportFragmentManager().findFragmentByTag("update_registration");
                 if (f instanceof DialogFragment) {
                     ((DialogFragment) f).dismiss();
@@ -225,7 +224,7 @@ public class SignUpActivity extends ContentActivity implements Constants, ViewPa
         };
         task.setParams(Pair.create(mCreateRegistrationResult, verifyCode));
         task.setResultHandler(this);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
     }
 
     private void setUpdateRegistrationResult(final AccessToken result) {

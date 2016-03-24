@@ -20,10 +20,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
-
 import org.apache.commons.lang3.StringUtils;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
@@ -221,9 +220,9 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         } else {
             newTopic.location(0, 0);
         }
-        final TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity> taskRunnable = new TaskRunnable<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
+        final AbstractTask<NewTopic, TaskResponse<Topic>, NewTopicActivity> taskRunnable = new AbstractTask<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
             @Override
-            public TaskResponse<Topic> doLongOperation(final NewTopic params) throws InterruptedException {
+            public TaskResponse<Topic> doLongOperation(final NewTopic params) {
                 final YepAPI yep = YepAPIFactory.getInstance(NewTopicActivity.this, getAccount());
                 try {
                     NewTopicMediaFragment fragment = getNewTopicMediaFragment();
@@ -241,7 +240,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
             }
 
             @Override
-            public void callback(final NewTopicActivity handler, final TaskResponse<Topic> response) {
+            public void afterExecute(final NewTopicActivity handler, final TaskResponse<Topic> response) {
                 if (response.hasData()) {
                     handler.finishPosting();
                 } else {
@@ -255,7 +254,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
         };
         taskRunnable.setResultHandler(this);
         taskRunnable.setParams(newTopic);
-        AsyncManager.runBackgroundTask(taskRunnable);
+        TaskStarter.execute(taskRunnable);
         ProgressDialogFragment df = new ProgressDialogFragment();
         df.setCancelable(false);
         df.show(getSupportFragmentManager(), FRAGMENT_TAG_POSTING_TOPIC);

@@ -20,8 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.desmond.asyncmanager.AsyncManager;
-import com.desmond.asyncmanager.TaskRunnable;
+import org.mariotaku.abstask.library.AbstractTask;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -165,9 +165,9 @@ public class NewTopicGalleryFragment extends NewTopicMediaFragment implements Co
 
     private void removeMedia(final String media) {
         mTopicMediaAdapter.removeMedia(media);
-        AsyncManager.runBackgroundTask(new TaskRunnable() {
+        TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
             @Override
-            public Object doLongOperation(final Object o) throws InterruptedException {
+            public Object doLongOperation(final Object o) {
                 final Uri uri = Uri.parse(media);
                 return new File(uri.getPath()).delete();
             }

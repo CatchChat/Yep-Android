@@ -27,9 +27,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.desmond.asyncmanager.AsyncManager;
-
 import org.apache.commons.lang3.ArrayUtils;
+import org.mariotaku.abstask.library.TaskStarter;
 
 import java.io.File;
 import java.io.IOException;
@@ -254,12 +253,11 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
         if (account == null || conversation == null) return;
         final SendMessageTask<ChatInputBarFragment> task = new SendMessageTask<ChatInputBarFragment>(getContext(), account) {
             @Override
-            public void callback(final ChatInputBarFragment handler, final TaskResponse<Message> result) {
+            protected void afterExecute(final ChatInputBarFragment handler, final TaskResponse<Message> result) {
                 if (result.hasData()) {
                     handler.mListener.onMessageSentFinished(result);
                     // TODO Reload messages
                 }
-                super.callback(handler, result);
             }
 
             @Override
@@ -291,7 +289,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
         task.setParams(newMessage);
         task.setResultHandler(this);
         mListener.onMessageSentStarted(newMessage);
-        AsyncManager.runBackgroundTask(task);
+        TaskStarter.execute(task);
         mEditText.setText("");
     }
 
