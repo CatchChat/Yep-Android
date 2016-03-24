@@ -25,6 +25,7 @@ import com.desmond.asyncmanager.TaskRunnable;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 import catchla.yep.R;
 import catchla.yep.adapter.LoadMoreSupportAdapter;
@@ -32,6 +33,7 @@ import catchla.yep.message.AudioPlayEvent;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
+import catchla.yep.model.Topic;
 import catchla.yep.provider.YepDataStore.Messages.MessageState;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.JsonSerializer;
@@ -55,6 +57,9 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
 
     private MediaPlayer mMediaPlayer;
     private boolean mJumpToLast;
+    private TextView mTopicTitle;
+    private TextView mTopicSummary;
+    private View mChatTopic;
 
     @Override
     protected void onScrollToPositionWithOffset(final LinearLayoutManager layoutManager, final int position, final int offset) {
@@ -64,6 +69,14 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_chat_list, container, false);
+    }
+
+    @Override
+    public void onBaseViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
+        super.onBaseViewCreated(view, savedInstanceState);
+        mChatTopic = view.findViewById(R.id.chat_topic);
+        mTopicTitle = (TextView) view.findViewById(R.id.topic_title);
+        mTopicSummary = (TextView) view.findViewById(R.id.topic_summary);
     }
 
     @Override
@@ -103,8 +116,20 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Topic topic = getTopic();
+        if (topic != null) {
+            mChatTopic.setVisibility(View.VISIBLE);
+            mTopicTitle.setText(Utils.getDisplayName(topic.getUser()));
+            mTopicSummary.setText(topic.getBody());
+        } else {
+            mChatTopic.setVisibility(View.GONE);
+        }
         getLoaderManager().initLoader(0, null, this);
         showProgress();
+    }
+
+    private Topic getTopic() {
+        return getArguments().getParcelable(EXTRA_TOPIC);
     }
 
     @Override
@@ -205,6 +230,12 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
         return getLayoutManager().findFirstCompletelyVisibleItemPosition() <= 0;
     }
 
+    private void onStateClicked(final Message message) {
+        if (MessageState.FAILED.equals(message.getState())) {
+            // TODO resend message
+        }
+    }
+
     public static class ChatAdapter extends LoadMoreSupportAdapter {
 
         private static final int FLAG_MESSAGE_OUTGOING = 0xF0000000;
@@ -285,11 +316,6 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             return getMessagesCount();
         }
 
-        public void setData(final List<Message> data) {
-            mData = data;
-            notifyDataSetChanged();
-        }
-
         public Message getMessage(final int position) {
             if (mData == null) return null;
             return mData.get(position);
@@ -314,6 +340,15 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
 
         public List<Message> getData() {
             return mData;
+        }
+
+        public void setData(final List<Message> data) {
+            mData = data;
+            notifyDataSetChanged();
+        }
+
+        private void notifyStateClicked(final int position) {
+            mActivity.onStateClicked(getMessage(position));
         }
 
         private static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -369,10 +404,6 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
                     }
                 }
             }
-        }
-
-        private void notifyStateClicked(final int position) {
-            mActivity.onStateClicked(getMessage(position));
         }
 
         private static class LocationChatViewHolder extends MessageViewHolder {
@@ -450,7 +481,7 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
                 super.displayMessage(message);
                 final FileAttachment.AudioMetadata metadata = getAudioMetadata(message);
                 if (metadata != null) {
-                    audioLengthView.setText(String.format("%.1f", metadata.getDuration()));
+                    audioLengthView.setText(String.format(Locale.ROOT, "%.1f", metadata.getDuration()));
                     sampleView.setSamples(metadata.getSamples());
                 }
             }
@@ -478,11 +509,5 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
         }
 
 
-    }
-
-    private void onStateClicked(final Message message) {
-        if (MessageState.FAILED.equals(message.getState())) {
-            // TODO resend message
-        }
     }
 }

@@ -63,12 +63,14 @@ import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.activity.SettingsActivity;
 import catchla.yep.fragment.SettingsDetailsFragment;
+import catchla.yep.model.Attachment;
 import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Message;
 import catchla.yep.model.Provider;
 import catchla.yep.model.Skill;
+import catchla.yep.model.Topic;
 import catchla.yep.model.User;
 import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
@@ -474,11 +476,30 @@ public class Utils implements Constants {
     public static String getConversationAvatarUrl(final Conversation conversation) {
         final String recipientType = conversation.getRecipientType();
         if (Message.RecipientType.CIRCLE.equals(recipientType)) {
+            final Circle circle = conversation.getCircle();
+            if (circle != null) {
+                final Topic topic = circle.getTopic();
+                if (topic != null) {
+                    return getAttachmentThumb(topic.getAttachments(), topic.getAttachmentKind());
+                }
+            }
             return null;
         } else if (Message.RecipientType.USER.equals(recipientType)) {
             return conversation.getUser().getAvatarUrl();
         }
         throw new UnsupportedOperationException("Unknown recipientType " + recipientType);
+    }
+
+    private static String getAttachmentThumb(final List<Attachment> attachments, final String attachmentKind) {
+        if (attachments == null || attachmentKind == null) return null;
+        for (final Attachment attachment : attachments) {
+            if (attachment instanceof FileAttachment) {
+                if (Attachment.Kind.IMAGE.equals(attachmentKind)) {
+                    return ((FileAttachment) attachment).getFile().getUrl();
+                }
+            }
+        }
+        return null;
     }
 
     public static String emptyIfNull(final CharSequence text) {

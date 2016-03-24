@@ -20,8 +20,47 @@
 <FrameLayout
     android:id="@+id/fragment_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include layout="@layout/layout_content_recyclerview_common"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chat_topic"
+        android:background="?android:colorBackground"
+        android:elevation="8dp">
+
+        <ImageView
+            android:id="@+id/topic_icon"
+            android:layout_width="@dimen/element_size_normal"
+            android:layout_height="@dimen/element_size_normal"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/topic_icon"
+            android:layout_toRightOf="@+id/topic_icon"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/topic_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Title"/>
+
+            <TextView
+                android:id="@+id/topic_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Summary"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
 </FrameLayout>

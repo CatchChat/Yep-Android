@@ -35,6 +35,7 @@ public class ChatEntryViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.adapter = adapter;
         profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
+
         nameView = (TextView) itemView.findViewById(R.id.name);
         timeView = (ShortTimeView) itemView.findViewById(R.id.update_time);
         messageView = (TextView) itemView.findViewById(R.id.message);

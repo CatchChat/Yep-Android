@@ -40,6 +40,7 @@ import catchla.yep.R;
 import catchla.yep.fragment.ChatInputBarFragment;
 import catchla.yep.fragment.ChatListFragment;
 import catchla.yep.fragment.ConversationChatListFragment;
+import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.LastReadResponse;
@@ -99,8 +100,14 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         setTitle(Utils.getConversationName(conversation));
 
         final Bundle fragmentArgs = new Bundle();
+
+        final Circle circle = conversation.getCircle();
+
         fragmentArgs.putParcelable(EXTRA_CONVERSATION, conversation);
         fragmentArgs.putParcelable(EXTRA_ACCOUNT, getAccount());
+        if (circle != null) {
+            fragmentArgs.putParcelable(EXTRA_TOPIC, circle.getTopic());
+        }
         final Fragment chatListFragment = Fragment.instantiate(this,
                 ConversationChatListFragment.class.getName(), fragmentArgs);
         final ChatInputBarFragment chatInputBarFragment =

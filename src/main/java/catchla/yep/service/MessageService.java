@@ -317,7 +317,7 @@ public class MessageService extends Service implements Constants {
         }
         ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, values);
 
-        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.CONVERSATION_ID,
+        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.MESSAGE_ID,
                 messageIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
         ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messageValues);
     }
