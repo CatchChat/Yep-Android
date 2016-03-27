@@ -14,44 +14,46 @@ import android.util.Log;
 
 import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.jr.tree.JacksonJrSimpleTreeCodec;
-import com.fasterxml.jackson.jr.tree.JacksonJrValue;
-import com.fasterxml.jackson.jr.tree.JsonObject;
-import com.fasterxml.jackson.jr.tree.JsonString;
 import com.squareup.otto.Bus;
 
+import org.mariotaku.okfaye.Extension;
+import org.mariotaku.okfaye.Faye;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.inject.Inject;
 
+import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.IFayeService;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
+import catchla.yep.model.MessageType;
 import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.FayeClient;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.ws.WebSocketCall;
 
 public class FayeService extends Service implements Constants {
 
     @Inject
     Bus mBus;
-    private FayeClient mFayeClient;
+
+    private Faye mFayeClient;
     private Handler mHandler;
 
     @Override
@@ -61,83 +63,56 @@ public class FayeService extends Service implements Constants {
         GeneralComponentHelper.build(this).inject(this);
     }
 
+    @JsonObject
+    public static class YepFayeExtension extends Extension {
+        @JsonField(name = "version")
+        String version;
+        @JsonField(name = "access_token")
+        String accessToken;
+
+        public void setVersion(final String version) {
+            this.version = version;
+        }
+
+        public void setAccessToken(final String accessToken) {
+            this.accessToken = accessToken;
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_NOT_STICKY;
         final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
         final OkHttpClient client = YepAPIFactory.getOkHttpClient(this);
         final Request.Builder builder = new Request.Builder();
-        builder.url(YepAPIFactory.API_ENDPOINT_FAYE);
+        builder.url(BuildConfig.API_ENDPOINT_FAYE);
         final String authToken = YepAPIFactory.getAuthToken(this, account);
         final String accountId = Utils.getAccountId(this, account);
 
-        mFayeClient = FayeClient.create(client, builder.build());
-        mFayeClient.addExtension(new FayeClient.FayeExtension() {
-
-            @Override
-            public void processIncoming(final FayeClient.Message message) {
-            }
-
-            @Override
-            public void processOutgoing(final FayeClient.Message message) {
-                LinkedHashMap<String, JacksonJrValue> nodes = new LinkedHashMap<>();
-                nodes.put("version", new JsonString("v1"));
-                nodes.put("access_token", new JsonString(authToken));
-                message.put("ext", new JsonObject(nodes));
-            }
-        });
+        mFayeClient = Faye.create(client, WebSocketCall.create(client, builder.build()));
+        YepFayeExtension extension = new YepFayeExtension();
+        extension.setVersion("v1");
+        extension.setAccessToken(authToken);
+        mFayeClient.setExtension(extension);
         final String userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId);
-        mFayeClient.establish(new FayeClient.ConnectionListener() {
-            @Override
-            public void onConnected() {
-                Log.d(LOGTAG, "Connected");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (mFayeClient.isConnected()) {
-                            mFayeClient.ping();
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
-            }
+        mFayeClient.subscribe(userChannel, new Faye.Callback<String>() {
 
             @Override
-            public void onFailure(final IOException e) {
-                Log.w(LOGTAG, e);
-            }
-
-            @Override
-            public void onClose(final int code, final String reason) {
-                Log.d(LOGTAG, "Closed " + code);
-            }
-        }).handshake(new FayeClient.Callback() {
-            @Override
-            public void callback(final FayeClient.Message message) {
-            }
-        }).subscribe(userChannel, new FayeClient.Callback() {
-            @Override
-            public void callback(final FayeClient.Message message) {
-                if (!message.isSuccessful()) {
-                    Log.w(LOGTAG, "Received error from faye, " + message.toString());
-                    return;
-                }
-                final TreeNode data = message.getJson("data");
-                final String msgType = ((JsonString) data.get("message_type")).getValue();
-                switch (msgType) {
+            public void callback(final String json) {
+                Log.d(LOGTAG, json);
+                final MessageType parse = JsonSerializer.parse(json, MessageType.class);
+                if (parse == null) return;
+                switch (parse.getMessageType()) {
                     case "message": {
-                        Message imMessage = FayeClient.Message.getAs(data.get("message"), Message.class);
-                        Log.d(LOGTAG, String.valueOf(imMessage));
+                        final ImMessage message = JsonSerializer.parse(json, ImMessage.class);
+                        if (message == null) return;
 //                        MessageService.insertConversations(FayeService.this, Collections.singleton(imMessage), accountId);
                         break;
                     }
                     case "mark_as_read": {
-                        MarkAsReadMessage markAsRead = FayeClient.Message.getAs(data.get("message"), MarkAsReadMessage.class);
-                        if (markAsRead != null) {
+                        MarkAsRead message = JsonSerializer.parse(json, MarkAsRead.class);
+                        if (message != null && message.markAsRead != null) {
+                            final MarkAsReadMessage markAsRead = message.markAsRead;
                             final ContentValues values = new ContentValues();
                             values.put(Messages.STATE, Messages.MessageState.READ);
                             final Expression where = Expression.and(
@@ -151,10 +126,9 @@ public class FayeService extends Service implements Constants {
                         break;
                     }
                     case "instant_state": {
-                        final InstantStateMessage instantState = FayeClient.Message.getAs(data.get("message"),
-                                InstantStateMessage.class);
-                        if (instantState != null) {
-                            postMessage(instantState);
+                        InstantState message = JsonSerializer.parse(json, InstantState.class);
+                        if (message != null && message.instantState != null) {
+                            postMessage(message.instantState);
                         }
                         break;
                     }
@@ -193,22 +167,14 @@ public class FayeService extends Service implements Constants {
     }
 
     private boolean sendMessage(final String messageType, final String channel, final Object message) {
-        if (mFayeClient == null || !mFayeClient.isConnected()) return false;
+        if (mFayeClient == null || mFayeClient.getState() != Faye.CONNECTED) return false;
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    final Map<String, JacksonJrValue> data = new LinkedHashMap<>();
-                    data.put("message_type", new JsonString(messageType));
-                    final JsonMapper jsonMapper = LoganSquare.mapperFor(message.getClass());
-                    //noinspection unchecked
-                    final JsonParser parser = LoganSquare.JSON_FACTORY.createParser(jsonMapper.serialize(message));
-                    data.put("message", (JacksonJrValue) JacksonJrSimpleTreeCodec.SINGLETON.readTree(parser));
-                    mFayeClient.publish(channel, new FayeClient.Message(new JsonObject(Collections.
-                            <String, JacksonJrValue>singletonMap("data", new JsonObject(data)))), null);
-                } catch (IOException e) {
-                    Log.w(LOGTAG, e);
-                }
+                FayeSend fayeSend = new FayeSend();
+                fayeSend.messageType = messageType;
+                fayeSend.message = message;
+                mFayeClient.publish(channel, JsonSerializer.serialize(fayeSend), null);
             }
         });
         return true;
@@ -231,4 +197,50 @@ public class FayeService extends Service implements Constants {
         }
     }
 
+    @JsonObject
+    static class ImMessage {
+        @JsonField(name = "message")
+        Message message;
+    }
+
+    @JsonObject
+    static class MarkAsRead {
+        @JsonField(name = "message")
+        MarkAsReadMessage markAsRead;
+    }
+
+    @JsonObject
+    static class InstantState {
+        @JsonField(name = "message")
+        InstantStateMessage instantState;
+    }
+
+    @JsonObject
+    static class FayeSend {
+        @JsonField(name = "message_type")
+        String messageType;
+        @JsonField(name = "message", typeConverter = MessageSerializer.class)
+        Object message;
+    }
+
+
+    static class MessageSerializer implements TypeConverter<Object> {
+        MessageSerializer() {
+        }
+
+        public Object parse(JsonParser jsonParser) throws IOException {
+            return null;
+        }
+
+        public void serialize(Object object, String fieldName, boolean writeFieldNameForObject,
+                              JsonGenerator jsonGenerator) throws IOException {
+            if (object == null) return;
+            if (writeFieldNameForObject) {
+                jsonGenerator.writeFieldName(fieldName);
+            }
+            //noinspection unchecked
+            JsonMapper<Object> mapper = (JsonMapper<Object>) LoganSquare.mapperFor(object.getClass());
+            mapper.serialize(object, jsonGenerator, true);
+        }
+    }
 }

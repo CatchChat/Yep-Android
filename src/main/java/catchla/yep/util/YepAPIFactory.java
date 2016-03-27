@@ -29,7 +29,6 @@ import okhttp3.OkHttpClient;
 public class YepAPIFactory implements Constants {
 
     public static final String API_DOMAIN = "api.soyep.com";
-    public static final String API_ENDPOINT_FAYE = "https://faye.catchchatchina.com/faye";
 
     public static YepAPI getInstance(Context context, Account account) {
         if (account == null) return null;
