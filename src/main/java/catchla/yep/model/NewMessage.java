@@ -40,9 +40,16 @@ public class NewMessage implements JsonBody {
     String mediaType;
     @JsonField(name = "attachment_id")
     String attachmentId;
+    @JsonField(name = "random_id")
+    String randomId;
 
     public NewMessage recipientId(String recipientId) {
         this.recipientId = recipientId;
+        return this;
+    }
+
+    public NewMessage randomId(String randomId) {
+        this.randomId = randomId;
         return this;
     }
 
@@ -175,11 +182,12 @@ public class NewMessage implements JsonBody {
         values.put(Messages.PARENT_ID, parentId);
         values.put(Messages.CONVERSATION_ID, conversationId);
         values.put(Messages.STATE, Messages.MessageState.SENDING);
-        values.put(Messages.OUTGOING, true);
         values.put(Messages.LATITUDE, latitude);
         values.put(Messages.LONGITUDE, longitude);
         values.put(Messages.MEDIA_TYPE, mediaType);
-        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata, Message.LocalMetadata.class));
+        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata,
+                Message.LocalMetadata.class));
+        values.put(Messages.RANDOM_ID, randomId);
         return values;
     }
 
@@ -190,6 +198,10 @@ public class NewMessage implements JsonBody {
     public String getMetadataValue(@NonNull final String key, final String def) {
         if (localMetadata == null) return def;
         return Message.LocalMetadata.get(localMetadata, key, def);
+    }
+
+    public String randomId() {
+        return randomId;
     }
 
     public Conversation toConversation() {

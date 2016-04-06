@@ -38,7 +38,7 @@ public class UsersAdapter extends LoadMoreSupportAdapter {
         return mClickListener;
     }
 
-    public void setClickListener(final ItemClickListener listener) {
+    public void setItemClickListener(final ItemClickListener listener) {
         this.mClickListener = listener;
     }
 

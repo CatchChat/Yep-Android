@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,6 +78,7 @@ import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
+import okio.ByteString;
 
 /**
  * Created by mariotaku on 15/5/5.
@@ -85,6 +87,7 @@ public class Utils implements Constants {
 
     private static final UriMatcher DATABASE_URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
     private static final SparseArray<String> TABLE_NAMES = new SparseArray<>();
+    private static final Random sRandom = new Random();
 
     static {
         DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
@@ -544,5 +547,11 @@ public class Utils implements Constants {
         final Canvas canvas = new Canvas(bitmap);
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public static String generateRandomId(int length) {
+        final byte[] buf = new byte[length];
+        sRandom.nextBytes(buf);
+        return ByteString.of(buf).hex();
     }
 }

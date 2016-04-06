@@ -16,6 +16,7 @@ import org.mariotaku.restfu.http.HttpResponse;
 import org.mariotaku.restfu.http.SimpleValueMap;
 import org.mariotaku.restfu.okhttp3.OkHttpRestClient;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import catchla.yep.BuildConfig;
@@ -44,11 +45,20 @@ public class YepAPIFactory implements Constants {
         factory.setExceptionFactory(new ExceptionFactory<YepException>() {
             @Override
             public YepException newException(final Throwable cause, final HttpRequest request, final HttpResponse response) {
-                YepException exception;
-                if (cause != null) {
-                    exception = new YepException(cause);
-                } else {
+                YepException exception = null;
+                if (response != null) {
+                    try {
+                        exception = JsonSerializer.parse(response.getBody().stream(),
+                                YepException.class);
+                    } catch (IOException e) {
+                        // Ignore
+                    }
+                }
+                if (exception == null) {
                     exception = new YepException();
+                }
+                if (cause != null) {
+                    exception.initCause(cause);
                 }
                 exception.setRequest(request);
                 exception.setResponse(response);

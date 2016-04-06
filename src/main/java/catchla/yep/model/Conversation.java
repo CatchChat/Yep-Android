@@ -1,8 +1,11 @@
 package catchla.yep.model;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -11,6 +14,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
+import org.mariotaku.sqliteqb.library.Expression;
 
 import java.util.Date;
 import java.util.Locale;
@@ -108,17 +112,22 @@ public class Conversation implements Parcelable {
         return conversation;
     }
 
-    public static String generateId(Message message) {
+    public static String generateId(Message message, String accountId) {
         final String recipientType = message.getRecipientType();
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             return generateId(recipientType, message.getRecipientId());
         } else if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) {
-            return generateId(recipientType, message.getSender().getId());
+            final String senderId = message.getSender().getId();
+            if (TextUtils.equals(accountId, senderId)) {
+                // This is an outgoing message
+                return generateId(recipientType, message.getRecipientId());
+            }
+            return generateId(recipientType, senderId);
         }
         throw new UnsupportedOperationException();
     }
 
-    static String generateId(final String recipientType, final String id) {
+    public static String generateId(final String recipientType, final String id) {
         return recipientType.toLowerCase(Locale.US) + ":" + id;
     }
 
@@ -228,5 +237,21 @@ public class Conversation implements Parcelable {
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) return circle != null;
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) return user != null;
         return true;
+    }
+
+    public static Conversation query(final ContentResolver cr, final String accountId, final String conversationId) {
+        final String selection = Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                Expression.equalsArgs(Conversations.CONVERSATION_ID)).getSQL();
+        final String[] selectionArgs = {accountId, conversationId};
+        Cursor cursor = cr.query(Conversations.CONTENT_URI, Conversations.COLUMNS, selection, selectionArgs, null);
+        if (cursor == null) return null;
+        try {
+            if (cursor.moveToFirst()) {
+                return new ConversationCursorIndices(cursor).newObject(cursor);
+            }
+        } finally {
+            cursor.close();
+        }
+        return null;
     }
 }

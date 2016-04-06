@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -19,6 +20,7 @@ import catchla.yep.model.util.NaNIfNullDoubleConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.VariableTypeAttachmentsConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
+import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Messages;
 
 /**
@@ -26,7 +28,7 @@ import catchla.yep.provider.YepDataStore.Messages;
  */
 @ParcelablePlease
 @JsonObject
-@CursorObject(valuesCreator = true)
+@CursorObject(valuesCreator = true, tableInfo = true)
 public class Message implements Parcelable {
 
     public static final Creator<Message> CREATOR = new Creator<Message>() {
@@ -40,6 +42,10 @@ public class Message implements Parcelable {
             return new Message[size];
         }
     };
+
+    @CursorField(value = Messages._ID, type = YepDataStore.TYPE_PRIMARY_KEY, excludeWrite = true)
+    long _id;
+
     @JsonField(name = "latitude", typeConverter = NaNDoubleConverter.class)
     @CursorField(value = Messages.LATITUDE, converter = NaNIfNullDoubleConverter.class)
     double latitude = Double.NaN;
@@ -76,9 +82,6 @@ public class Message implements Parcelable {
     @JsonField(name = "conversation_id")
     @CursorField(Messages.CONVERSATION_ID)
     String conversationId;
-    @JsonField(name = "outgoing")
-    @CursorField(Messages.OUTGOING)
-    boolean outgoing;
     @JsonField(name = "state")
     @CursorField(Messages.STATE)
     String state;
@@ -90,6 +93,13 @@ public class Message implements Parcelable {
     List<LocalMetadata> localMetadata;
     @CursorField(value = Messages.ACCOUNT_ID)
     String accountId;
+    @JsonField(name = "random_id")
+    @CursorField(value = Messages.RANDOM_ID)
+    String randomId;
+
+    public String getRandomId() {
+        return randomId;
+    }
 
     public String getAccountId() {
         return accountId;
@@ -212,11 +222,8 @@ public class Message implements Parcelable {
     }
 
     public boolean isOutgoing() {
-        return outgoing;
-    }
-
-    public void setOutgoing(final boolean outgoing) {
-        this.outgoing = outgoing;
+        if (sender == null) return false;
+        return TextUtils.equals(accountId, sender.getId());
     }
 
     public String getState() {
@@ -242,7 +249,6 @@ public class Message implements Parcelable {
                 ", mediaType='" + mediaType + '\'' +
                 ", circle=" + circle +
                 ", conversationId='" + conversationId + '\'' +
-                ", outgoing=" + outgoing +
                 ", state='" + state + '\'' +
                 ", attachments=" + attachments +
                 ", localMetadata=" + localMetadata +

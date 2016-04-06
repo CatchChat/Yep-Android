@@ -40,8 +40,8 @@ public class UsersGridAdapter extends UsersAdapter {
     }
 
     @Override
-    public void setClickListener(final ItemClickListener listener) {
-        super.setClickListener(listener);
+    public void setItemClickListener(final ItemClickListener listener) {
+        super.setItemClickListener(listener);
     }
 
     @Override

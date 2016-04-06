@@ -2,15 +2,19 @@ package catchla.yep.fragment;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import catchla.yep.activity.UserActivity;
 import catchla.yep.adapter.UsersAdapter;
+import catchla.yep.adapter.iface.ItemClickListener;
 import catchla.yep.loader.SearchUsersLoader;
 import catchla.yep.model.User;
 
@@ -30,6 +34,16 @@ public class SearchUsersFragment extends AbsContentListRecyclerViewFragment<User
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        getAdapter().setItemClickListener(new ItemClickListener() {
+            @Override
+            public void onItemClick(final int position, final RecyclerView.ViewHolder holder) {
+                final User user = getAdapter().getUser(position);
+                final Intent intent = new Intent(getActivity(), UserActivity.class);
+                intent.putExtra(EXTRA_ACCOUNT, getAccount());
+                intent.putExtra(EXTRA_USER, user);
+                startActivity(intent);
+            }
+        });
         final Bundle loaderArgs = getArguments();
         getLoaderManager().initLoader(0, loaderArgs, this);
     }

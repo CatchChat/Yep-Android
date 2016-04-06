@@ -60,7 +60,7 @@ public class DiscoverFragment extends AbsContentRecyclerViewFragment<UsersAdapte
             loaderArgs.putBoolean(EXTRA_READ_CACHE, true);
         }
         getLoaderManager().initLoader(0, loaderArgs, this);
-        getAdapter().setClickListener(this);
+        getAdapter().setItemClickListener(this);
         showProgress();
     }
 

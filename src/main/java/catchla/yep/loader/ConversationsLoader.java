@@ -9,6 +9,9 @@ import android.database.MergeCursor;
 import org.mariotaku.sqliteqb.library.Expression;
 import org.mariotaku.sqliteqb.library.OrderBy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ConversationCursorIndices;
 import catchla.yep.model.Message;
@@ -27,19 +30,19 @@ public class ConversationsLoader extends ObjectCursorLoader<Conversation> {
         super(context, ConversationCursorIndices.class, Conversations.CONTENT_URI, Conversations.COLUMNS,
                 null, null, new OrderBy(Conversations.UPDATED_AT, false).getSQL());
         mDisplayCircleEntry = displayCircleEntry;
-        final Expression where;
-        final String[] whereArgs;
         mAccountId = Utils.getAccountId(context, account);
+        List<Expression> whereConditions = new ArrayList<>();
+        List<String> whereArgs = new ArrayList<>();
+        whereConditions.add(Expression.equalsArgs(Conversations.ACCOUNT_ID));
+        whereConditions.add(Expression.notEqualsArgs(Conversations.CONVERSATION_ID));
+        whereArgs.add(mAccountId);
+        whereArgs.add(Conversation.generateId(Message.RecipientType.USER, mAccountId));
         if (recipientType != null) {
-            where = Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID),
-                    Expression.equalsArgs(Conversations.RECIPIENT_TYPE));
-            whereArgs = new String[]{mAccountId, recipientType};
-        } else {
-            where = Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID));
-            whereArgs = new String[]{mAccountId};
+            whereConditions.add(Expression.equalsArgs(Conversations.RECIPIENT_TYPE));
+            whereArgs.add(recipientType);
         }
-        setSelection(where.getSQL());
-        setSelectionArgs(whereArgs);
+        setSelection(Expression.and(whereConditions.toArray(new Expression[whereConditions.size()])).getSQL());
+        setSelectionArgs(whereArgs.toArray(new String[whereArgs.size()]));
     }
 
     @Override

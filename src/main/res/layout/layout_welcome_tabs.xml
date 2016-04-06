@@ -2,7 +2,8 @@
   ~ Copyright (c) 2015. Catch Inc,
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,12 +11,12 @@
 
     <catchla.yep.view.TabPagerIndicator
         android:id="@+id/pager_indicator"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:tabDisplayOption="label"
         app:tabExpandEnabled="true"
         app:tabHorizontalPadding="@dimen/element_spacing_mlarge"
         app:tabLabelColor="?android:textColorPrimary"
         app:tabShowDivider="false"
-        app:tabStripColor="?android:colorForeground" />
+        app:tabStripColor="?android:colorForeground"/>
 </LinearLayout>

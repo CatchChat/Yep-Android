@@ -42,11 +42,11 @@ public class User implements Parcelable {
 
     @ParcelableThisPlease
     @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
-    @CursorField(Users.MASTER_SKILLS)
+    @CursorField(value = Users.MASTER_SKILLS, converter = LoganSquareCursorFieldConverter.class)
     List<Skill> masterSkills;
     @ParcelableThisPlease
     @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
-    @CursorField(Users.LEARNING_SKILLS)
+    @CursorField(value = Users.LEARNING_SKILLS, converter = LoganSquareCursorFieldConverter.class)
     List<Skill> learningSkills;
     @ParcelableThisPlease
     @JsonField(name = "id")

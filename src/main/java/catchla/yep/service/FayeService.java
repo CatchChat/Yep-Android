@@ -4,7 +4,6 @@ import android.accounts.Account;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -30,6 +29,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,7 @@ public class FayeService extends Service implements Constants {
 
     @Inject
     Bus mBus;
+    Executor mExecutor = Executors.newSingleThreadExecutor();
 
     private Faye mFayeClient;
     private Handler mHandler;
@@ -99,12 +101,22 @@ public class FayeService extends Service implements Constants {
         extension.setVersion("v1");
         extension.setAccessToken(authToken);
         mFayeClient.setExtension(extension);
+        mFayeClient.setErrorListener(new Faye.ErrorListener() {
+            @Override
+            public void error(final IOException e, final int code, final String message) {
+                if (e != null) {
+                    Log.w(LOGTAG, String.format(Locale.ROOT, "%d: %s", code, message), e);
+                } else {
+                    Log.w(LOGTAG, String.format(Locale.ROOT, "%d: %s", code, message));
+                }
+            }
+        });
         final String userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId);
         mFayeClient.subscribe(userChannel, new Faye.Callback<String>() {
 
             @Override
             public void callback(final String json) {
-                Log.d(LOGTAG, json);
+                Log.d(LOGTAG, String.valueOf(json));
                 consumeMessage(json, MessageType.class, new MessageConsumer<MessageType>() {
                     @Override
                     public void consume(@NonNull final MessageType messageType) {
@@ -177,12 +189,12 @@ public class FayeService extends Service implements Constants {
     @Override
     public void onDestroy() {
         if (mFayeClient != null) {
-            new Thread(new Runnable() {
+            mExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     mFayeClient.disconnect();
                 }
-            }).start();
+            });
         }
         super.onDestroy();
     }
@@ -204,7 +216,7 @@ public class FayeService extends Service implements Constants {
 
     private boolean sendMessage(final String messageType, final String channel, final Object message) {
         if (mFayeClient == null || mFayeClient.getState() != Faye.CONNECTED) return false;
-        AsyncTask.execute(new Runnable() {
+        mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 FayeSend fayeSend = new FayeSend();

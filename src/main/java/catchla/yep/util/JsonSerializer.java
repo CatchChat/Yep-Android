@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.bluelinelabs.logansquare.LoganSquare;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +71,16 @@ public class JsonSerializer {
         if (string == null) return null;
         try {
             return LoganSquare.mapperFor(cls).parse(string);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static <T> T parse(@Nullable final InputStream stream, final Class<T> cls) {
+        if (stream == null) return null;
+        try {
+            return LoganSquare.mapperFor(cls).parse(stream);
         } catch (IOException e) {
             return null;
         }

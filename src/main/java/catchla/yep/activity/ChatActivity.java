@@ -145,9 +145,10 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 final Expression incomingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
                         Expression.equalsArgs(Messages.CONVERSATION_ID),
-                        Expression.isNot(Messages.OUTGOING, 1)
+                        Expression.isNotArgs(Messages.RECIPIENT_ID)
                 );
-                final String[] whereArgs = {conversation.getAccountId(), conversation.getId()};
+                final String[] whereArgs = {conversation.getAccountId(), conversation.getId(),
+                        conversation.getAccountId()};
                 final OrderBy orderBy = new OrderBy(Messages.CREATED_AT, false);
                 final ContentResolver cr = getContentResolver();
                 final Cursor incoming = cr.query(Messages.CONTENT_URI, projection,
@@ -189,11 +190,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                                 Expression.equalsArgs(Messages.CONVERSATION_ID),
                                 Expression.equalsArgs(Messages.STATE),
                                 Expression.lesserEqualsArgs(Messages.CREATED_AT),
-                                Expression.equalsArgs(Messages.OUTGOING)
+                                Expression.isNotArgs(Messages.RECIPIENT_ID)
                         );
                         final String[] outgoingWhereArgs = {conversation.getAccountId(),
                                 conversation.getId(), Messages.MessageState.UNREAD,
-                                String.valueOf(lastReadAt.getTime()), "1"};
+                                String.valueOf(lastReadAt.getTime()), conversation.getAccountId()};
                         cr.update(Messages.CONTENT_URI, markAsReadValues, outgoingWhere.getSQL(),
                                 outgoingWhereArgs);
 

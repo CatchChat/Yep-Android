@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -272,50 +273,78 @@ public class MessageService extends Service implements Constants {
         final HashMap<String, Conversation> conversationsMap = new HashMap<>();
         final ContentResolver cr = context.getContentResolver();
         final Set<String> conversationIds = new HashSet<>();
-        final Set<String> messageIds = new HashSet<>();
-        final List<ContentValues> messageValues = new ArrayList<>();
-        for (final Message message : conversations.getMessages()) {
+        final List<Message> messages = conversations.getMessages();
+        final Map<String, User> users = new HashMap<>();
+        for (final User user : conversations.getUsers()) {
+            users.put(user.getId(), user);
+        }
+        final ContentValues[] messageValues = new ContentValues[messages.size()];
+        final String[] messageIds = new String[messages.size()];
+        final List<String> randomIds = new ArrayList<>();
+        for (int i = 0, j = messages.size(); i < j; i++) {
+            final Message message = messages.get(i);
             final String recipientType = message.getRecipientType();
-            final String conversationId = Conversation.generateId(message);
-            conversationIds.add(conversationId);
+            final String conversationId = Conversation.generateId(message, accountId);
             message.setAccountId(accountId);
             message.setConversationId(conversationId);
-            message.setOutgoing(false);
 
-            messageIds.add(message.getId());
-            messageValues.add(MessageValuesCreator.create(message));
+            final ContentValues values = MessageValuesCreator.create(message);
+            messageValues[i] = values;
+            messageIds[i] = message.getId();
+            final String randomId = message.getRandomId();
+            if (randomId != null) {
+                randomIds.add(randomId);
+            }
 
             Conversation conversation = conversationsMap.get(conversationId);
             final boolean newConversation = conversation == null;
             if (conversation == null) {
-                conversation = new Conversation();
-                conversation.setAccountId(accountId);
-                conversation.setId(conversationId);
+                conversation = Conversation.query(cr, accountId, conversationId);
+                if (conversation == null) {
+                    conversation = new Conversation();
+                    conversation.setAccountId(accountId);
+                    conversation.setId(conversationId);
+                }
             }
             final Date createdAt = message.getCreatedAt();
             if (newConversation || greaterThen(createdAt, conversation.getUpdatedAt())) {
                 conversation.setTextContent(message.getTextContent());
                 final User sender = message.getSender();
-                conversation.setUser(sender);
+                if (Message.RecipientType.USER.equals(recipientType)) {
+                    // Outgoing
+                    if (!TextUtils.equals(accountId, sender.getId())) {
+                        conversation.setUser(sender);
+                    } else {
+                        final User user = users.get(message.getRecipientId());
+                        if (user != null) {
+                            conversation.setUser(user);
+                        }
+                    }
+                } else {
+                    conversation.setUser(sender);
+                }
                 conversation.setSender(sender);
                 conversation.setCircle(getMessageCircle(context, message, conversations, accountId));
                 conversation.setUpdatedAt(createdAt);
                 conversation.setRecipientType(recipientType);
                 conversation.setMediaType(message.getMediaType());
             }
-            if (newConversation) {
+            if (newConversation && conversation.getUser() != null) {
+                conversationIds.add(conversationId);
                 conversationsMap.put(conversationId, conversation);
             }
         }
 
         ContentResolverUtils.bulkDelete(cr, Conversations.CONTENT_URI, Conversations.CONVERSATION_ID,
                 conversationIds, Expression.equalsArgs(Conversations.ACCOUNT_ID).getSQL(), new String[]{accountId});
-        List<ContentValues> values = new ArrayList<>();
+        List<ContentValues> conversationValues = new ArrayList<>();
         for (final Conversation conversation : conversationsMap.values()) {
-            values.add(ConversationValuesCreator.create(conversation));
+            conversationValues.add(ConversationValuesCreator.create(conversation));
         }
-        ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, values);
+        ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversationValues);
 
+        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.RANDOM_ID,
+                randomIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
         ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.MESSAGE_ID,
                 messageIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
         ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messageValues);

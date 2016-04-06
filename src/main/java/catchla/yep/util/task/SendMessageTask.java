@@ -62,10 +62,9 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
     @Override
     public final TaskResponse<Message> doLongOperation(final NewMessage newMessage) {
         final YepAPI yep = YepAPIFactory.getInstance(context, account);
-        long draftId = -1;
+        String draftId = newMessage.randomId();
         try {
             newMessage.mediaType(getMediaType());
-            draftId = saveUnsentMessage(newMessage);
             final IdResponse attachment = uploadAttachment(yep, newMessage);
             if (attachment != null) {
                 newMessage.attachmentId(attachment.getId());
@@ -76,12 +75,12 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
             return TaskResponse.getInstance(message);
         } catch (YepException e) {
             Log.w(LOGTAG, e);
-            if (draftId != -1) {
-                final ContentResolver cr = context.getContentResolver();
-                final ContentValues values = new ContentValues();
-                values.put(Messages.STATE, Messages.MessageState.FAILED);
-                cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, draftId).getSQL(), null);
-            }
+            final ContentResolver cr = context.getContentResolver();
+            final ContentValues values = new ContentValues();
+            values.put(Messages.STATE, Messages.MessageState.FAILED);
+            final String where = Expression.equalsArgs(Messages.RANDOM_ID).getSQL();
+            final String[] whereArgs = {draftId};
+            cr.update(Messages.CONTENT_URI, values, where, whereArgs);
             return TaskResponse.getInstance(e);
         } catch (Throwable t) {
             Log.wtf(LOGTAG, t);
@@ -92,7 +91,7 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
     @NonNull
     protected abstract String getMediaType();
 
-    private void updateSentMessage(final long draftId, final Message message) {
+    private void updateSentMessage(final String draftId, final Message message) {
         final ContentResolver cr = context.getContentResolver();
         final ContentValues values = new ContentValues();
         values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.getAttachments(),
@@ -102,7 +101,9 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
         values.put(Messages.CREATED_AT, message.getCreatedAt().getTime());
         values.put(Messages.LATITUDE, message.getLatitude());
         values.put(Messages.LONGITUDE, message.getLongitude());
-        cr.update(Messages.CONTENT_URI, values, Expression.equals(Messages._ID, draftId).getSQL(), null);
+        final String where = Expression.equalsArgs(Messages.RANDOM_ID).getSQL();
+        final String[] whereArgs = {draftId};
+        cr.update(Messages.CONTENT_URI, values, where, whereArgs);
     }
 
     private long saveUnsentMessage(final NewMessage newMessage) {

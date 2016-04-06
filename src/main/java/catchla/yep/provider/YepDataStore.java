@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
 import org.mariotaku.sqliteqb.library.DataType;
 
 import catchla.yep.BuildConfig;
+import catchla.yep.model.MessageTableInfo;
 
 /**
  * Created by mariotaku on 15/7/2.
@@ -15,6 +16,7 @@ public interface YepDataStore {
 
     Uri BASE_CONTENT_URI = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
             .authority(BuildConfig.APPLICATION_ID).build();
+    String TYPE_PRIMARY_KEY = "INTEGER PRIMARY KEY AUTOINCREMENT";
 
     interface Messages extends BaseColumns {
         String ACCOUNT_ID = "account_id";
@@ -28,7 +30,7 @@ public interface YepDataStore {
         String PARENT_ID = "parent_id";
         String CONVERSATION_ID = "conversation_id";
         String STATE = "state";
-        String OUTGOING = "outgoing";
+        String RANDOM_ID = "random_id";
         String LATITUDE = "latitude";
         String LONGITUDE = "longitude";
         String MEDIA_TYPE = "media_type";
@@ -40,13 +42,8 @@ public interface YepDataStore {
 
         String TABLE_NAME = "messages";
 
-        String[] COLUMNS = {_ID, ACCOUNT_ID, MESSAGE_ID, RECIPIENT_ID, TEXT_CONTENT, CREATED_AT,
-                SENDER, RECIPIENT_TYPE, CIRCLE, PARENT_ID, CONVERSATION_ID, STATE, OUTGOING,
-                LATITUDE, LONGITUDE, MEDIA_TYPE, ATTACHMENTS, LOCAL_METADATA};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.INTEGER, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.INTEGER, DataType.REAL, DataType.REAL, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT};
+        String[] COLUMNS = MessageTableInfo.COLUMNS;
+        String[] TYPES = MessageTableInfo.TYPES;
 
         interface MessageState {
             String READ = "read";

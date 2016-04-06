@@ -31,6 +31,7 @@ public class OkMediaDownloader implements MediaDownloader {
         builder.url(url);
         Response response = client.newCall(builder.build()).execute();
         if (!response.isSuccessful()) {
+            response.body().close();
             throw new IOException("Unable to get " + url + ": " + response.code());
         }
         final ResponseBody body = response.body();

@@ -22,4 +22,11 @@ public class MessageType {
     void checkDataValidity() throws IOException {
         if (messageType == null) throw new IOException("Invalid message type");
     }
+
+    @Override
+    public String toString() {
+        return "MessageType{" +
+                "messageType='" + messageType + '\'' +
+                '}';
+    }
 }
