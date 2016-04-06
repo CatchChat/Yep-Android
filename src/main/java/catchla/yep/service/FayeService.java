@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -27,6 +28,7 @@ import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -34,11 +36,14 @@ import javax.inject.Inject;
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.IFayeService;
+import catchla.yep.model.Circle;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.InstantStateMessage;
 import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
 import catchla.yep.model.MessageType;
+import catchla.yep.model.User;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
@@ -100,42 +105,73 @@ public class FayeService extends Service implements Constants {
             @Override
             public void callback(final String json) {
                 Log.d(LOGTAG, json);
-                final MessageType parse = JsonSerializer.parse(json, MessageType.class);
-                if (parse == null) return;
-                switch (parse.getMessageType()) {
-                    case "message": {
-                        final ImMessage message = JsonSerializer.parse(json, ImMessage.class);
-                        if (message == null) return;
-//                        MessageService.insertConversations(FayeService.this, Collections.singleton(imMessage), accountId);
-                        break;
-                    }
-                    case "mark_as_read": {
-                        MarkAsRead message = JsonSerializer.parse(json, MarkAsRead.class);
-                        if (message != null && message.markAsRead != null) {
-                            final MarkAsReadMessage markAsRead = message.markAsRead;
-                            final ContentValues values = new ContentValues();
-                            values.put(Messages.STATE, Messages.MessageState.READ);
-                            final Expression where = Expression.and(
-                                    Expression.equalsArgs(Messages.RECIPIENT_ID),
-                                    Expression.equalsArgs(Messages.RECIPIENT_TYPE),
-                                    Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
-                            );
-                            final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
-                            getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                consumeMessage(json, MessageType.class, new MessageConsumer<MessageType>() {
+                    @Override
+                    public void consume(@NonNull final MessageType messageType) {
+                        switch (messageType.getMessageType()) {
+                            case "message": {
+                                consumeMessage(json, ImMessage.class, new MessageConsumer<ImMessage>() {
+                                    @Override
+                                    public void consume(@NonNull final ImMessage message) {
+                                        ConversationsResponse response = new ConversationsResponse();
+                                        final User sender = message.message.getSender();
+                                        if (sender != null) {
+                                            response.setUsers(Collections.singletonList(sender));
+                                        }
+                                        final Circle circle = message.message.getCircle();
+                                        if (circle != null) {
+                                            response.setCircles(Collections.singletonList(circle));
+                                        }
+                                        response.setMessages(Collections.singletonList(message.message));
+                                        MessageService.insertConversations(FayeService.this, response, accountId);
+                                    }
+                                });
+                                break;
+                            }
+                            case "mark_as_read": {
+                                consumeMessage(json, MarkAsRead.class, new MessageConsumer<MarkAsRead>() {
+                                    @Override
+                                    public void consume(@NonNull final MarkAsRead parsed) {
+                                        final MarkAsReadMessage markAsRead = parsed.markAsRead;
+                                        final ContentValues values = new ContentValues();
+                                        values.put(Messages.STATE, Messages.MessageState.READ);
+                                        final Expression where = Expression.and(
+                                                Expression.equalsArgs(Messages.RECIPIENT_ID),
+                                                Expression.equalsArgs(Messages.RECIPIENT_TYPE),
+                                                Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
+                                        );
+                                        final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
+                                        getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                                    }
+                                });
+                                break;
+                            }
+                            case "instant_state": {
+                                consumeMessage(json, InstantState.class, new MessageConsumer<InstantState>() {
+                                    @Override
+                                    public void consume(@NonNull final InstantState parsed) {
+                                        postMessage(parsed.instantState);
+                                    }
+                                });
+                                break;
+                            }
                         }
-                        break;
                     }
-                    case "instant_state": {
-                        InstantState message = JsonSerializer.parse(json, InstantState.class);
-                        if (message != null && message.instantState != null) {
-                            postMessage(message.instantState);
-                        }
-                        break;
-                    }
-                }
+                });
             }
         });
         return START_REDELIVER_INTENT;
+    }
+
+    private static <T> void consumeMessage(@Nullable String json, @NonNull Class<T> type,
+                                           @NonNull MessageConsumer<T> consumer) {
+        final T parsed = JsonSerializer.parse(json, type);
+        if (parsed == null) return;
+        consumer.consume(parsed);
+    }
+
+    interface MessageConsumer<T> {
+        void consume(@NonNull T parsed);
     }
 
     @Override

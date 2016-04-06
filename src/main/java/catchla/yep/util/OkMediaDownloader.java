@@ -71,5 +71,11 @@ public class OkMediaDownloader implements MediaDownloader {
             if (serialize == null) return null;
             return serialize.getBytes();
         }
+
+        @Override
+        protected void finalize() throws Throwable {
+            close();
+            super.finalize();
+        }
     }
 }

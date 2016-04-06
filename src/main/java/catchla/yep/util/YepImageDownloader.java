@@ -1,5 +1,6 @@
 package catchla.yep.util;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -13,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import catchla.yep.app.YepApplication;
-
 /**
  * Created by mariotaku on 15/10/15.
  */
@@ -26,8 +25,8 @@ public class YepImageDownloader extends BaseImageDownloader {
         return downloader.get(imageUri, extra).getStream();
     }
 
-    public YepImageDownloader(final YepApplication application, final MediaDownloader downloader) {
-        super(application);
+    public YepImageDownloader(final Context context, final MediaDownloader downloader) {
+        super(context);
         this.downloader = downloader;
     }
 

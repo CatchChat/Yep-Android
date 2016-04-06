@@ -1,5 +1,6 @@
 package catchla.yep.util.dagger;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -24,7 +25,6 @@ import javax.inject.Singleton;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
-import catchla.yep.app.YepApplication;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.OkMediaDownloader;
 import catchla.yep.util.UILFileCache;
@@ -40,14 +40,17 @@ import okhttp3.OkHttpClient;
 @Module
 public class ApplicationModule implements Constants {
 
-    private final YepApplication application;
+    private static ApplicationModule sInstance;
 
-    public ApplicationModule(YepApplication application) {
+    private final Application application;
+
+    ApplicationModule(Application application) {
         this.application = application;
     }
 
     public static ApplicationModule get(final Context context) {
-        return ((YepApplication) context.getApplicationContext()).getApplicationModule();
+        if (sInstance != null) return sInstance;
+        return sInstance = new ApplicationModule((Application) context.getApplicationContext());
     }
 
     @Provides

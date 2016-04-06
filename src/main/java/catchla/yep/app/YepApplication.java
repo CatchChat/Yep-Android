@@ -8,14 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import catchla.yep.Constants;
 import catchla.yep.activity.iface.IAccountActivity;
 import catchla.yep.service.FayeService;
 import catchla.yep.util.DebugModeUtils;
 import catchla.yep.util.dagger.ApplicationModule;
-
-import com.crashlytics.android.Crashlytics;
-
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -23,13 +22,11 @@ import io.fabric.sdk.android.Fabric;
  */
 public class YepApplication extends Application implements Constants {
 
-    private ApplicationModule mApplicationModule;
-
     @Override
     public void onCreate() {
         super.onCreate();
+        ApplicationModule.get(this);
         Fabric.with(this, new Crashlytics());
-        getApplicationModule();
         DebugModeUtils.initForApplication(this);
 
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
@@ -85,8 +82,4 @@ public class YepApplication extends Application implements Constants {
         });
     }
 
-    public ApplicationModule getApplicationModule() {
-        if (mApplicationModule != null) return mApplicationModule;
-        return mApplicationModule = new ApplicationModule(this);
-    }
 }
