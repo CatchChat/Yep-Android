@@ -16,6 +16,7 @@ import org.mariotaku.sqliteqb.library.Expression;
 import catchla.yep.Constants;
 import catchla.yep.model.Attachment;
 import catchla.yep.model.Conversation;
+import catchla.yep.model.ConversationTableInfo;
 import catchla.yep.model.ConversationValuesCreator;
 import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
@@ -112,7 +113,7 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
         final ContentValues values = newMessage.toDraftValues();
         //TODO update conversation entry
         final Uri inserted = cr.insert(Messages.CONTENT_URI, values);
-        final Cursor cursor = cr.query(Conversations.CONTENT_URI, Conversations.COLUMNS,
+        final Cursor cursor = cr.query(Conversations.CONTENT_URI, ConversationTableInfo.COLUMNS,
                 Expression.equalsArgs(Conversations.CONVERSATION_ID).getSQL(),
                 new String[]{newMessage.conversationId()}, null);
         final String accountId = accountUser.getId();

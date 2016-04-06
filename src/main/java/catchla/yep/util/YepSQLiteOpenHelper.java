@@ -11,6 +11,10 @@ import org.mariotaku.sqliteqb.library.OnConflict;
 import org.mariotaku.sqliteqb.library.SQLQueryBuilder;
 
 import catchla.yep.Constants;
+import catchla.yep.model.CircleTableInfo;
+import catchla.yep.model.ConversationTableInfo;
+import catchla.yep.model.MessageTableInfo;
+import catchla.yep.model.UserTableInfo;
 import catchla.yep.provider.YepDataStore.Circles;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
@@ -27,14 +31,23 @@ public class YepSQLiteOpenHelper extends SQLiteOpenHelper implements Constants {
     @Override
     public void onCreate(final SQLiteDatabase db) {
         db.beginTransaction();
-        db.execSQL(createTable(Friendships.TABLE_NAME, Friendships.COLUMNS, Friendships.TYPES, true));
-        db.execSQL(createTable(Messages.TABLE_NAME, Messages.COLUMNS, Messages.TYPES, true));
-        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true,
-                Constraint.unique(new Columns(Conversations.CONVERSATION_ID), OnConflict.REPLACE)));
-        db.execSQL(createTable(Circles.TABLE_NAME, Circles.COLUMNS, Circles.TYPES, true,
-                Constraint.unique(new Columns(Circles.CIRCLE_ID), OnConflict.REPLACE)));
+        createTables(db);
         db.setTransactionSuccessful();
         db.endTransaction();
+    }
+
+    private void createTables(final SQLiteDatabase db) {
+        db.execSQL(createTable(Friendships.TABLE_NAME, UserTableInfo.COLUMNS, UserTableInfo.TYPES, true,
+                Constraint.unique(new Columns(Friendships.ACCOUNT_ID, Friendships.FRIEND_ID),
+                        OnConflict.REPLACE)));
+        db.execSQL(createTable(Messages.TABLE_NAME, MessageTableInfo.COLUMNS, MessageTableInfo.TYPES, true,
+                Constraint.unique(new Columns(Messages.ACCOUNT_ID, Messages.MESSAGE_ID),
+                        OnConflict.REPLACE)));
+        db.execSQL(createTable(Conversations.TABLE_NAME, ConversationTableInfo.COLUMNS, ConversationTableInfo.TYPES, true,
+                Constraint.unique(new Columns(Conversations.ACCOUNT_ID, Conversations.CONVERSATION_ID),
+                        OnConflict.REPLACE)));
+        db.execSQL(createTable(Circles.TABLE_NAME, CircleTableInfo.COLUMNS, CircleTableInfo.TYPES, true,
+                Constraint.unique(new Columns(Circles.ACCOUNT_ID, Circles.CIRCLE_ID), OnConflict.REPLACE)));
     }
 
     private String createTable(final String name, final String[] columns, final String[] types, final boolean createIfNotExists, Constraint... constraints) {
@@ -48,12 +61,10 @@ public class YepSQLiteOpenHelper extends SQLiteOpenHelper implements Constants {
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         db.beginTransaction();
         db.execSQL(SQLQueryBuilder.dropTable(true, Friendships.TABLE_NAME).getSQL());
-        db.execSQL(createTable(Friendships.TABLE_NAME, Friendships.COLUMNS, Friendships.TYPES, true));
         db.execSQL(SQLQueryBuilder.dropTable(true, Messages.TABLE_NAME).getSQL());
-        db.execSQL(createTable(Messages.TABLE_NAME, Messages.COLUMNS, Messages.TYPES, true));
         db.execSQL(SQLQueryBuilder.dropTable(true, Conversations.TABLE_NAME).getSQL());
-        db.execSQL(createTable(Conversations.TABLE_NAME, Conversations.COLUMNS, Conversations.TYPES, true,
-                Constraint.unique(new Columns(Conversations.CONVERSATION_ID), OnConflict.REPLACE)));
+        db.execSQL(SQLQueryBuilder.dropTable(true, Circles.TABLE_NAME).getSQL());
+        createTables(db);
         db.setTransactionSuccessful();
         db.endTransaction();
     }

@@ -16,6 +16,7 @@ import java.util.Date;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
+import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Circles;
 
 /**
@@ -23,13 +24,19 @@ import catchla.yep.provider.YepDataStore.Circles;
  */
 @ParcelablePlease
 @JsonObject
-@CursorObject(valuesCreator = true)
+@CursorObject(valuesCreator = true, tableInfo = true)
 public class Circle implements Parcelable {
+
+    @CursorField(value = Circles._ID, type = YepDataStore.TYPE_PRIMARY_KEY, excludeWrite = true)
+    long _id;
 
     @ParcelableThisPlease
     @JsonField(name = "id")
     @CursorField(Circles.CIRCLE_ID)
     String id;
+    @ParcelableThisPlease
+    @CursorField(Circles.ACCOUNT_ID)
+    String accountId;
     @ParcelableThisPlease
     @JsonField(name = "name")
     @CursorField(Circles.NAME)
@@ -53,11 +60,11 @@ public class Circle implements Parcelable {
     boolean active;
     @ParcelableThisPlease
     @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
-    @CursorField(value = Circles.CREATED_AT, converter = TimestampToDateConverter.class)
+    @CursorField(value = Circles.CREATED_AT, converter = TimestampToDateConverter.class, type = CursorField.INTEGER)
     Date createdAt;
     @ParcelableThisPlease
     @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
-    @CursorField(value = Circles.UPDATED_AT, converter = TimestampToDateConverter.class)
+    @CursorField(value = Circles.UPDATED_AT, converter = TimestampToDateConverter.class, type = CursorField.INTEGER)
     Date updatedAt;
 
     public Circle() {
@@ -119,6 +126,10 @@ public class Circle implements Parcelable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getAccountId() {
+        return accountId;
     }
 
     @Override

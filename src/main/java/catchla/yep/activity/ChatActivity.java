@@ -125,12 +125,25 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         if (savedInstanceState == null) {
             markAsRead(conversation);
         }
+        setTitle(Utils.getConversationName(conversation));
+        displayLastSeen();
+    }
+
+    private void displayLastSeen() {
+        final Conversation conversation = getConversation();
+        if (conversation == null) return;
         final Date lastSeenAt = conversation.getLastSeenAt();
         if (lastSeenAt != null) {
-            actionBar.setSubtitle(DateUtils.getRelativeTimeSpanString(lastSeenAt.getTime()));
+            setSubtitle(DateUtils.getRelativeTimeSpanString(lastSeenAt.getTime()));
         } else {
-            actionBar.setSubtitle(null);
+            setSubtitle(null);
         }
+    }
+
+    private void setSubtitle(CharSequence subtitle) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) return;
+        actionBar.setSubtitle(subtitle);
     }
 
     private Conversation getConversation() {
@@ -275,11 +288,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         final Conversation conversation = getConversation();
         if (Message.RecipientType.USER.equals(conversation.getRecipientType())) {
             if (TextUtils.equals(conversation.getUser().getId(), message.getUser().getId())) {
-                setTitle(R.string.typing);
+                setSubtitle(getString(R.string.typing));
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        setTitle(Utils.getConversationName(conversation));
+                        displayLastSeen();
                     }
                 }, 2000);
             }

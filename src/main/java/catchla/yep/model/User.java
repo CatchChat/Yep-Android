@@ -18,6 +18,7 @@ import java.util.List;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
+import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Users;
 
 /**
@@ -25,7 +26,7 @@ import catchla.yep.provider.YepDataStore.Users;
  */
 @ParcelablePlease
 @JsonObject
-@CursorObject(valuesCreator = true)
+@CursorObject(valuesCreator = true, tableInfo = true)
 public class User implements Parcelable {
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -40,6 +41,9 @@ public class User implements Parcelable {
         }
     };
 
+    @CursorField(value = Users._ID, type = YepDataStore.TYPE_PRIMARY_KEY, excludeWrite = true)
+    long _id;
+
     @ParcelableThisPlease
     @JsonField(name = "master_skills", typeConverter = SkillListTypeConverter.class)
     @CursorField(value = Users.MASTER_SKILLS, converter = LoganSquareCursorFieldConverter.class)
@@ -48,6 +52,9 @@ public class User implements Parcelable {
     @JsonField(name = "learning_skills", typeConverter = SkillListTypeConverter.class)
     @CursorField(value = Users.LEARNING_SKILLS, converter = LoganSquareCursorFieldConverter.class)
     List<Skill> learningSkills;
+    @ParcelableThisPlease
+    @CursorField(Users.ACCOUNT_ID)
+    String accountId;
     @ParcelableThisPlease
     @JsonField(name = "id")
     @CursorField(Users.FRIEND_ID)
@@ -111,23 +118,8 @@ public class User implements Parcelable {
         UserParcelablePlease.readFromParcel(this, src);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "avatarUrl='" + avatarUrl + '\'' +
-                ", masterSkills=" + masterSkills +
-                ", learningSkills=" + learningSkills +
-                ", id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", introduction='" + introduction + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", phoneCode='" + phoneCode + '\'' +
-                ", contactName='" + contactName + '\'' +
-                ", providers=" + providers +
-                ", badge='" + badge + '\'' +
-                ", location=" + location +
-                '}';
+    public String getAccountId() {
+        return accountId;
     }
 
     public LatLng getLocation() {
@@ -237,6 +229,25 @@ public class User implements Parcelable {
 
     public void setLearningSkills(List<Skill> learningSkills) {
         this.learningSkills = learningSkills;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "avatarUrl='" + avatarUrl + '\'' +
+                ", masterSkills=" + masterSkills +
+                ", learningSkills=" + learningSkills +
+                ", id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", phoneCode='" + phoneCode + '\'' +
+                ", contactName='" + contactName + '\'' +
+                ", providers=" + providers +
+                ", badge='" + badge + '\'' +
+                ", location=" + location +
+                '}';
     }
 
     @OnJsonParseComplete

@@ -22,6 +22,7 @@ import java.util.Locale;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
+import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Conversations;
 
 /**
@@ -29,7 +30,7 @@ import catchla.yep.provider.YepDataStore.Conversations;
  */
 @ParcelablePlease
 @JsonObject
-@CursorObject(valuesCreator = true)
+@CursorObject(valuesCreator = true, tableInfo = true)
 public class Conversation implements Parcelable {
 
     public static final Creator<Conversation> CREATOR = new Creator<Conversation>() {
@@ -43,6 +44,10 @@ public class Conversation implements Parcelable {
             return new Conversation[size];
         }
     };
+
+    @CursorField(value = YepDataStore.Circles._ID, type = YepDataStore.TYPE_PRIMARY_KEY, excludeWrite = true)
+    long _id;
+
     @ParcelableThisPlease
     @JsonField(name = "media_type")
     @CursorField(Conversations.MEDIA_TYPE)
@@ -243,7 +248,7 @@ public class Conversation implements Parcelable {
         final String selection = Expression.and(Expression.equalsArgs(Conversations.ACCOUNT_ID),
                 Expression.equalsArgs(Conversations.CONVERSATION_ID)).getSQL();
         final String[] selectionArgs = {accountId, conversationId};
-        Cursor cursor = cr.query(Conversations.CONTENT_URI, Conversations.COLUMNS, selection, selectionArgs, null);
+        Cursor cursor = cr.query(Conversations.CONTENT_URI, ConversationTableInfo.COLUMNS, selection, selectionArgs, null);
         if (cursor == null) return null;
         try {
             if (cursor.moveToFirst()) {

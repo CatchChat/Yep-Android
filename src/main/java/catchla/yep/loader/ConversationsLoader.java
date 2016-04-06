@@ -14,6 +14,7 @@ import java.util.List;
 
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ConversationCursorIndices;
+import catchla.yep.model.ConversationTableInfo;
 import catchla.yep.model.Message;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.util.Utils;
@@ -27,7 +28,7 @@ public class ConversationsLoader extends ObjectCursorLoader<Conversation> {
     private final boolean mDisplayCircleEntry;
 
     public ConversationsLoader(Context context, Account account, String recipientType, boolean displayCircleEntry) {
-        super(context, ConversationCursorIndices.class, Conversations.CONTENT_URI, Conversations.COLUMNS,
+        super(context, ConversationCursorIndices.class, Conversations.CONTENT_URI, ConversationTableInfo.COLUMNS,
                 null, null, new OrderBy(Conversations.UPDATED_AT, false).getSQL());
         mDisplayCircleEntry = displayCircleEntry;
         mAccountId = Utils.getAccountId(context, account);

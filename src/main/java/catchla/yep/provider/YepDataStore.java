@@ -4,10 +4,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import org.mariotaku.sqliteqb.library.DataType;
-
 import catchla.yep.BuildConfig;
-import catchla.yep.model.MessageTableInfo;
 
 /**
  * Created by mariotaku on 15/7/2.
@@ -42,9 +39,6 @@ public interface YepDataStore {
 
         String TABLE_NAME = "messages";
 
-        String[] COLUMNS = MessageTableInfo.COLUMNS;
-        String[] TYPES = MessageTableInfo.TYPES;
-
         interface MessageState {
             String READ = "read";
             String UNREAD = "unread";
@@ -71,11 +65,6 @@ public interface YepDataStore {
         String MEDIA_TYPE = "media_type";
         String SENDER = "sender";
 
-        String[] COLUMNS = {_ID, ACCOUNT_ID, CONVERSATION_ID, TEXT_CONTENT, USER, CIRCLE,
-                RECIPIENT_TYPE, UPDATED_AT, MEDIA_TYPE, SENDER, LAST_SEEN_AT};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.INTEGER,
-                DataType.TEXT, DataType.TEXT, DataType.INTEGER};
     }
 
     interface Friendships extends Users {
@@ -98,12 +87,6 @@ public interface YepDataStore {
         String ACTIVE = "active";
         String KIND = "kind";
 
-        String[] COLUMNS = {_ID, CIRCLE_ID, NAME, TOPIC_ID, TOPIC, CREATED_AT, UPDATED_AT, ACTIVE,
-                KIND};
-
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.INTEGER, DataType.INTEGER, DataType.INTEGER, DataType.TEXT};
-
         String TABLE_NAME = "circles";
         String CONTENT_PATH = "circles";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
@@ -124,16 +107,6 @@ public interface YepDataStore {
         String LEARNING_SKILLS = "learning_skill";
         String MASTER_SKILLS = "master_skills";
         String PROVIDERS = "providers";
-
-        String[] COLUMNS = {_ID, ACCOUNT_ID, USER_ID, FRIEND_ID, USERNAME, NICKNAME, INTRODUCTION, AVATAR_URL, MOBILE,
-                PHONE_CODE, CONTACT_NAME, LEARNING_SKILLS, MASTER_SKILLS, PROVIDERS, AVATAR_THUMB_URL};
-        String[] TYPES = {DataType.INTEGER_PRIMARY_KEY, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT,
-                DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT, DataType.TEXT};
-
-    }
-
-    interface ContactFriends extends Users {
 
     }
 

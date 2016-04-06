@@ -219,14 +219,14 @@ public class FayeService extends Service implements Constants {
     }
 
     private boolean sendMessage(final String messageType, final String channel, final Object message) {
-        if (mFayeClient == null || mFayeClient.getState() != Faye.CONNECTED) return false;
+        if (mFayeClient == null) return false;
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 FayeSend fayeSend = new FayeSend();
                 fayeSend.messageType = messageType;
                 fayeSend.message = message;
-                mFayeClient.publish(channel, JsonSerializer.serialize(fayeSend), new Faye.Callback<Response>() {
+                mFayeClient.publish(channel, fayeSend, new Faye.Callback<Response>() {
                     @Override
                     public void callback(final Response response) {
                         Log.d(LOGTAG, "Instant message returns " + response);

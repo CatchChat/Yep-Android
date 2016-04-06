@@ -34,6 +34,7 @@ import catchla.yep.message.FriendshipsRefreshedEvent;
 import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Circle;
 import catchla.yep.model.CircleCursorIndices;
+import catchla.yep.model.CircleTableInfo;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ConversationValuesCreator;
 import catchla.yep.model.ConversationsResponse;
@@ -384,7 +385,7 @@ public class MessageService extends Service implements Constants {
                 Expression.equalsArgs(Circles.CIRCLE_ID)).getSQL();
         String[] whereArgs = {accountId, circleId};
         final Cursor c = context.getContentResolver().query(Circles.CONTENT_URI,
-                Circles.COLUMNS, where, whereArgs, null);
+                CircleTableInfo.COLUMNS, where, whereArgs, null);
         try {
             if (c != null && c.moveToFirst()) {
                 final CircleCursorIndices ci = new CircleCursorIndices(c);
