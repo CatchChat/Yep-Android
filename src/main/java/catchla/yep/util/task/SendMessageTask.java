@@ -66,6 +66,7 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
         String draftId = newMessage.randomId();
         try {
             newMessage.mediaType(getMediaType());
+            saveUnsentMessage(newMessage);
             final IdResponse attachment = uploadAttachment(yep, newMessage);
             if (attachment != null) {
                 newMessage.attachmentId(attachment.getId());

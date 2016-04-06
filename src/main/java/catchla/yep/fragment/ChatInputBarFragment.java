@@ -283,7 +283,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
         newMessage.recipientId(conversation.getRecipientId());
         newMessage.recipientType(conversation.getRecipientType());
         newMessage.circle(conversation.getCircle());
-        newMessage.sender(conversation.getSender());
+        newMessage.sender(Utils.getAccountUser(getContext(), account));
         newMessage.user(conversation.getUser());
         newMessage.createdAt(System.currentTimeMillis());
         newMessage.randomId(Utils.generateRandomId(16));

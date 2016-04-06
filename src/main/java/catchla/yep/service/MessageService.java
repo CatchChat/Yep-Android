@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.support.v4.util.SimpleArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,10 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -273,15 +272,13 @@ public class MessageService extends Service implements Constants {
                                            final String accountId) {
         final HashMap<String, Conversation> conversationsMap = new HashMap<>();
         final ContentResolver cr = context.getContentResolver();
-        final Set<String> conversationIds = new HashSet<>();
         final List<Message> messages = conversations.getMessages();
         final Map<String, User> users = new HashMap<>();
         for (final User user : conversations.getUsers()) {
             users.put(user.getId(), user);
         }
         final ContentValues[] messageValues = new ContentValues[messages.size()];
-        final String[] messageIds = new String[messages.size()];
-        final List<String> randomIds = new ArrayList<>();
+        final SimpleArrayMap<String, ContentValues> randomIds = new SimpleArrayMap<>();
         for (int i = 0, j = messages.size(); i < j; i++) {
             final Message message = messages.get(i);
             final String recipientType = message.getRecipientType();
@@ -291,10 +288,9 @@ public class MessageService extends Service implements Constants {
 
             final ContentValues values = MessageValuesCreator.create(message);
             messageValues[i] = values;
-            messageIds[i] = message.getId();
             final String randomId = message.getRandomId();
             if (randomId != null) {
-                randomIds.add(randomId);
+                randomIds.put(randomId, values);
             }
 
             Conversation conversation = conversationsMap.get(conversationId);
@@ -331,23 +327,24 @@ public class MessageService extends Service implements Constants {
                 conversation.setMediaType(message.getMediaType());
             }
             if (newConversation && conversation.getUser() != null) {
-                conversationIds.add(conversationId);
                 conversationsMap.put(conversationId, conversation);
             }
         }
 
-        ContentResolverUtils.bulkDelete(cr, Conversations.CONTENT_URI, Conversations.CONVERSATION_ID,
-                conversationIds, Expression.equalsArgs(Conversations.ACCOUNT_ID).getSQL(), new String[]{accountId});
         List<ContentValues> conversationValues = new ArrayList<>();
         for (final Conversation conversation : conversationsMap.values()) {
             conversationValues.add(ConversationValuesCreator.create(conversation));
         }
         ContentResolverUtils.bulkInsert(cr, Conversations.CONTENT_URI, conversationValues);
 
-        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.RANDOM_ID,
-                randomIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
-        ContentResolverUtils.bulkDelete(cr, Messages.CONTENT_URI, Messages.MESSAGE_ID,
-                messageIds, Expression.equalsArgs(Messages.ACCOUNT_ID).getSQL(), new String[]{accountId});
+        final String updateSentSelection = Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
+                Expression.equalsArgs(Messages.RANDOM_ID)).getSQL();
+        final String[] updateSentSelectionArgs = {accountId, null};
+        for (int i = 0, j = randomIds.size(); i < j; i++) {
+            updateSentSelectionArgs[i] = randomIds.keyAt(i);
+            cr.update(Messages.CONTENT_URI, randomIds.valueAt(i), updateSentSelection,
+                    updateSentSelectionArgs);
+        }
         ContentResolverUtils.bulkInsert(cr, Messages.CONTENT_URI, messageValues);
     }
 
