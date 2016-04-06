@@ -23,6 +23,7 @@ import com.squareup.otto.Bus;
 
 import org.mariotaku.okfaye.Extension;
 import org.mariotaku.okfaye.Faye;
+import org.mariotaku.okfaye.Response;
 import org.mariotaku.sqliteqb.library.Expression;
 
 import java.io.IOException;
@@ -89,6 +90,9 @@ public class FayeService extends Service implements Constants {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_NOT_STICKY;
+        if (mFayeClient != null) {
+            return START_STICKY;
+        }
         final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
         final OkHttpClient client = YepAPIFactory.getOkHttpClient(this);
         final Request.Builder builder = new Request.Builder();
@@ -222,7 +226,12 @@ public class FayeService extends Service implements Constants {
                 FayeSend fayeSend = new FayeSend();
                 fayeSend.messageType = messageType;
                 fayeSend.message = message;
-                mFayeClient.publish(channel, JsonSerializer.serialize(fayeSend), null);
+                mFayeClient.publish(channel, JsonSerializer.serialize(fayeSend), new Faye.Callback<Response>() {
+                    @Override
+                    public void callback(final Response response) {
+                        Log.d(LOGTAG, "Instant message returns " + response);
+                    }
+                });
             }
         });
         return true;
@@ -249,26 +258,56 @@ public class FayeService extends Service implements Constants {
     static class ImMessage {
         @JsonField(name = "message")
         Message message;
+
+        @Override
+        public String toString() {
+            return "ImMessage{" +
+                    "message=" + message +
+                    '}';
+        }
     }
 
     @JsonObject
     static class MarkAsRead {
         @JsonField(name = "message")
         MarkAsReadMessage markAsRead;
+
+        @Override
+        public String toString() {
+            return "MarkAsRead{" +
+                    "markAsRead=" + markAsRead +
+                    '}';
+        }
     }
 
     @JsonObject
     static class InstantState {
         @JsonField(name = "message")
         InstantStateMessage instantState;
+
+        @Override
+        public String toString() {
+            return "InstantState{" +
+                    "instantState=" + instantState +
+                    '}';
+        }
     }
 
     @JsonObject
     static class FayeSend {
         @JsonField(name = "message_type")
         String messageType;
+
         @JsonField(name = "message", typeConverter = MessageSerializer.class)
         Object message;
+
+        @Override
+        public String toString() {
+            return "FayeSend{" +
+                    "messageType='" + messageType + '\'' +
+                    ", message=" + message +
+                    '}';
+        }
     }
 
 
