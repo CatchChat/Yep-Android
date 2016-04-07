@@ -2,6 +2,7 @@ package catchla.yep.service;
 
 import android.accounts.Account;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Handler;
@@ -46,6 +47,7 @@ import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
 import catchla.yep.model.MessageType;
 import catchla.yep.model.User;
+import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.Utils;
@@ -148,16 +150,41 @@ public class FayeService extends Service implements Constants {
                                 consumeMessage(json, MarkAsRead.class, new MessageConsumer<MarkAsRead>() {
                                     @Override
                                     public void consume(@NonNull final MarkAsRead parsed) {
+                                        final ContentResolver cr = getContentResolver();
                                         final MarkAsReadMessage markAsRead = parsed.markAsRead;
-                                        final ContentValues values = new ContentValues();
-                                        values.put(Messages.STATE, Messages.MessageState.READ);
-                                        final Expression where = Expression.and(
+                                        final long lastReadAt = markAsRead.getLastReadAt().getTime();
+
+                                        final ContentValues markReadValues = new ContentValues();
+                                        markReadValues.put(Messages.STATE, Messages.MessageState.READ);
+                                        final String markReadWhere = Expression.and(
                                                 Expression.equalsArgs(Messages.RECIPIENT_ID),
                                                 Expression.equalsArgs(Messages.RECIPIENT_TYPE),
-                                                Expression.lesserEquals(Messages.CREATED_AT, markAsRead.getLastReadAt().getTime())
-                                        );
-                                        final String[] whereArgs = {markAsRead.getRecipientId(), markAsRead.getRecipientType()};
-                                        getContentResolver().update(Messages.CONTENT_URI, values, where.getSQL(), whereArgs);
+                                                Expression.equalsArgs(Messages.STATE),
+                                                Expression.lesserEqualsArgs(Messages.CREATED_AT)
+                                        ).getSQL();
+                                        final String[] markReadWhereArgs = {
+                                                markAsRead.getRecipientId(),
+                                                markAsRead.getRecipientType(),
+                                                Messages.MessageState.UNREAD,
+                                                String.valueOf(lastReadAt)
+                                        };
+                                        cr.update(Messages.CONTENT_URI, markReadValues,
+                                                markReadWhere, markReadWhereArgs);
+
+                                        final ContentValues lastReadValues = new ContentValues();
+                                        lastReadValues.put(Conversations.LAST_SEEN_AT, lastReadAt);
+                                        final String conversationId = Conversation.generateId(markAsRead.getRecipientType(),
+                                                markAsRead.getRecipientId());
+                                        final String lastSeenWhere = Expression.and(
+                                                Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                                                Expression.equalsArgs(Conversations.CONVERSATION_ID)
+                                        ).getSQL();
+                                        final String[] lastSeenWhereArgs = {
+                                                accountId,
+                                                conversationId
+                                        };
+                                        cr.update(Conversations.CONTENT_URI, lastReadValues,
+                                                lastSeenWhere, lastSeenWhereArgs);
                                     }
                                 });
                                 break;
