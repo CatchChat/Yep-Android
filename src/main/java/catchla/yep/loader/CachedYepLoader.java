@@ -79,7 +79,7 @@ public abstract class CachedYepLoader<T> extends AsyncTaskLoader<T> implements C
                     pos = new PipedOutputStream();
                     pis = new PipedInputStream(pos);
                     serializeThreaded(data, pos);
-                    mFileCache.save(getCacheFileName(), pis, null);
+                    mFileCache.save(getCacheFileName(), pis, null, null);
                 } catch (IOException e) {
                     // Ignore
                 } finally {

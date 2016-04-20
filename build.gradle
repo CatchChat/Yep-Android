@@ -17,7 +17,7 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
         classpath 'io.fabric.tools:gradle:1.21.2'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.android.tools.build:gradle:2.0.0-rc2'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath('fr.avianey.androidsvgdrawable:gradle-plugin:3.0.0') {
             // should be excluded to avoid conflict
             exclude group: 'xerces'
@@ -27,7 +27,7 @@ buildscript {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "catchla.yep"
@@ -104,11 +104,11 @@ dependencies {
     apt 'com.hannesdorfmann.parcelableplease:processor:1.0.2'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
     apt 'com.github.mariotaku.ObjectCursor:processor:0.9.7'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:cardview-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:cardview-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.android.support:support-v4:23.3.0'
     compile 'com.pkmmte.view:circularimageview:1.1'
     compile 'com.github.mariotaku:MessageBubbleView:1.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
@@ -126,8 +126,8 @@ dependencies {
     compile 'com.github.mariotaku:PickNCrop:0.9.3'
     compile 'com.github.mariotaku.RestFu:library:0.9.25'
     compile 'com.github.mariotaku.RestFu:okhttp3:0.9.25'
-    compile 'com.github.mariotaku.MediaViewerLibrary:base:0.9.10'
-    compile 'com.github.mariotaku.MediaViewerLibrary:subsample-image-view:0.9.10'
+    compile 'com.github.mariotaku.MediaViewerLibrary:base:0.9.17'
+    compile 'com.github.mariotaku.MediaViewerLibrary:subsample-image-view:0.9.17'
     compile 'com.j256.simplemagic:simplemagic:1.6'
     compile 'com.github.mariotaku:SQLiteQB:0.9.7'
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.9'
@@ -135,7 +135,7 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.12'
     compile 'com.google.dagger:dagger:2.0.1'
     compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.2'
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
     compile 'com.sprylab.android.texturevideoview:texturevideoview:1.0.2'
     compile 'com.pnikosis:materialish-progress:1.7'

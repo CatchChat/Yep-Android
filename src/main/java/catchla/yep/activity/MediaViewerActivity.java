@@ -38,7 +38,6 @@ import catchla.yep.model.Attachment;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 
-
 public final class MediaViewerActivity extends AbsMediaViewerActivity implements Constants, OnPageChangeListener {
 
     @Inject
@@ -53,18 +52,18 @@ public final class MediaViewerActivity extends AbsMediaViewerActivity implements
     }
 
     @Override
-    protected int getInitialPosition() {
+    public int getInitialPosition() {
         final Intent intent = getIntent();
         return ArrayUtils.indexOf(getAttachments(), intent.getParcelableExtra(EXTRA_CURRENT_MEDIA));
     }
 
     @Override
-    protected int getLayoutRes() {
+    public int getLayoutRes() {
         return R.layout.activity_media_viewer;
     }
 
     @Override
-    protected ViewPager findViewPager() {
+    public ViewPager findViewPager() {
         return (ViewPager) findViewById(R.id.view_pager);
     }
 
@@ -89,7 +88,7 @@ public final class MediaViewerActivity extends AbsMediaViewerActivity implements
     }
 
     @Override
-    protected MediaViewerFragment instantiateMediaFragment(final int position) {
+    public MediaViewerFragment instantiateMediaFragment(final int position) {
         final Attachment attachment = (Attachment) getAttachments()[position];
         return SubsampleImageViewerFragment.get(Uri.parse(((FileAttachment) attachment).getFile().getUrl()));
     }
@@ -99,7 +98,22 @@ public final class MediaViewerActivity extends AbsMediaViewerActivity implements
     }
 
     @Override
-    protected int getMediaCount() {
+    public int getMediaCount() {
         return getAttachments().length;
+    }
+
+    @Override
+    public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(final int state) {
+
     }
 }
