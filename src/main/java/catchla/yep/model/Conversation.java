@@ -99,6 +99,11 @@ public class Conversation implements Parcelable {
     @CursorField(value = Conversations.LAST_SEEN_AT, converter = TimestampToDateConverter.class)
     @Nullable
     Date lastSeenAt;
+    @ParcelableThisPlease
+    @JsonField(name = "last_read_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Conversations.LAST_READ_AT, converter = TimestampToDateConverter.class)
+    @Nullable
+    Date lastReadAt;
 
     protected Conversation(Parcel in) {
         ConversationParcelablePlease.readFromParcel(this, in);
@@ -225,6 +230,15 @@ public class Conversation implements Parcelable {
 
     public void setLastSeenAt(@Nullable final Date lastSeenAt) {
         this.lastSeenAt = lastSeenAt;
+    }
+
+    @Nullable
+    public Date getLastReadAt() {
+        return lastReadAt;
+    }
+
+    public void setLastReadAt(@Nullable final Date lastReadAt) {
+        this.lastReadAt = lastReadAt;
     }
 
     @Override

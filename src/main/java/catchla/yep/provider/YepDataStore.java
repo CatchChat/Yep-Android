@@ -61,18 +61,27 @@ public interface YepDataStore {
         String CIRCLE = "circle";
         String UPDATED_AT = "updated_at";
         String LAST_SEEN_AT = "last_seen_at";
+        String LAST_READ_AT = "last_read_at";
         String RECIPIENT_TYPE = "recipient_type";
         String MEDIA_TYPE = "media_type";
         String SENDER = "sender";
 
     }
 
-    interface Friendships extends Users {
+    interface Friendships extends BaseColumns {
 
         String CONTENT_PATH = "friendships";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
         String TABLE_NAME = "friendships";
 
+        String ACCOUNT_ID = "account_id";
+        String FRIENDSHIP_ID = "friendship_id";
+
+        String USER_ID = "user_id";
+        String FRIEND = "friend";
+        String NAME = "name";
+        String REMARKED_NAME = "remarked_name";
+        String CONTACT_NAME = "contact_name";
     }
 
     interface Circles extends BaseColumns {

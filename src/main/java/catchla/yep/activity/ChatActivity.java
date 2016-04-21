@@ -49,6 +49,7 @@ import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.YepException;
+import catchla.yep.model.message.LastSeenMessage;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.service.FayeService;
@@ -154,11 +155,11 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
             @Override
             public Object doLongOperation(final Object o) {
-                final String[] projection = {Messages.MESSAGE_ID};
+                final String[] projection = {Messages.MESSAGE_ID, Messages.TEXT_CONTENT};
                 final Expression incomingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
                         Expression.equalsArgs(Messages.CONVERSATION_ID),
-                        Expression.isNotArgs(Messages.RECIPIENT_ID)
+                        Expression.equalsArgs(Messages.RECIPIENT_ID)
                 );
                 final String[] whereArgs = {conversation.getAccountId(), conversation.getId(),
                         conversation.getAccountId()};
@@ -297,6 +298,15 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                 }, 2000);
             }
         }
+    }
+
+    @Subscribe
+    public void onReceivedLastSeenMessage(LastSeenMessage message) {
+        final Conversation conversation = getConversation();
+        if (conversation == null || !message.isConversation(conversation)) return;
+        conversation.setLastSeenAt(new Date(message.getLastSeen()));
+        getIntent().putExtra(EXTRA_CONVERSATION, conversation);
+        displayLastSeen();
     }
 
     @Override

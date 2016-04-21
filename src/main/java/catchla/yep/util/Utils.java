@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,6 +94,8 @@ public class Utils implements Constants {
         DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS);
         DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH, TABLE_ID_MESSAGES);
         DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Conversations.CONTENT_PATH, TABLE_ID_CONVERSATIONS);
+
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH + "/*/*", TABLE_ID_CONVERSATION_MESSAGES);
         TABLE_NAMES.append(TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME);
         TABLE_NAMES.append(TABLE_ID_MESSAGES, Messages.TABLE_NAME);
         TABLE_NAMES.append(TABLE_ID_CONVERSATIONS, Conversations.TABLE_NAME);
@@ -101,7 +104,6 @@ public class Utils implements Constants {
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");
 
     public static final Pattern PATTERN_RESOURCE_IDENTIFIER = Pattern.compile("@([\\w_]+)/([\\w_]+)");
-    private static Bus sMessageBus;
 
     public static int getInsetsTopWithoutActionBarHeight(Context context, int top) {
         final int actionBarHeight;
@@ -365,7 +367,7 @@ public class Utils implements Constants {
         return TABLE_NAMES.get(id);
     }
 
-    private static int getTableId(final Uri uri) {
+    public static int getTableId(final Uri uri) {
         return DATABASE_URI_MATCHER.match(uri);
     }
 
@@ -423,9 +425,9 @@ public class Utils implements Constants {
 
     public static String getDistanceString(final float distanceMeters) {
         if (distanceMeters < 1000) {
-            return String.format("%.0f m", distanceMeters);
+            return String.format(Locale.US, "%.0f m", distanceMeters);
         }
-        return String.format("%.1f km", distanceMeters / 1000f);
+        return String.format(Locale.US, "%.1f km", distanceMeters / 1000f);
     }
 
     public static <T> Object findFieldOfTypes(T obj, Class<? extends T> cls, Class<?>... checkTypes) {

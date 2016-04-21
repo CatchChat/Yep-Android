@@ -56,6 +56,7 @@ import catchla.yep.model.User;
 import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.util.ContentValuesCreator;
+import catchla.yep.util.JsonSerializer;
 import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.ParseUtils;
@@ -379,10 +380,11 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                 TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
                     @Override
                     public Object doLongOperation(final Object o) {
-                        final ContentValues values = ContentValuesCreator.friendshipFromUser(user, accountId);
+                        final ContentValues values = new ContentValues();
+                        values.put(Friendships.FRIEND, JsonSerializer.serialize(user));
                         final ContentResolver cr = getContentResolver();
                         final String where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
-                                Expression.equalsArgs(Friendships.FRIEND_ID)).getSQL();
+                                Expression.equalsArgs(Friendships.USER_ID)).getSQL();
                         cr.update(Friendships.CONTENT_URI, values, where, new String[]{accountId, user.getId()});
                         return null;
                     }

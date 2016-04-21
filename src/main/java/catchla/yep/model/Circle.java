@@ -156,6 +156,10 @@ public class Circle implements Parcelable {
                 '}';
     }
 
+    public void setAccountId(final String accountId) {
+        this.accountId = accountId;
+    }
+
     public @interface Kind {
         String TOPIC_CIRCLE = "TopicCircle";
     }

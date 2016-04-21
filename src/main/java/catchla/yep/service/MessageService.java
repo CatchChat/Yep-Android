@@ -34,10 +34,12 @@ import catchla.yep.message.MessageRefreshedEvent;
 import catchla.yep.model.Circle;
 import catchla.yep.model.CircleCursorIndices;
 import catchla.yep.model.CircleTableInfo;
+import catchla.yep.model.CircleValuesCreator;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ConversationValuesCreator;
 import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.Friendship;
+import catchla.yep.model.FriendshipValuesCreator;
 import catchla.yep.model.Message;
 import catchla.yep.model.MessageValuesCreator;
 import catchla.yep.model.Paging;
@@ -146,7 +148,8 @@ public class MessageService extends Service implements Constants {
                     final String accountId = Utils.getAccountId(getApplication(), account);
                     while ((friendships = yep.getFriendships(paging)).size() > 0) {
                         for (Friendship friendship : friendships) {
-                            values.add(ContentValuesCreator.fromFriendship(friendship, accountId));
+                            friendship.setAccountId(accountId);
+                            values.add(FriendshipValuesCreator.create(friendship));
                         }
                         paging.page(++page);
                         if (friendships.getCount() < friendships.getPerPage()) break;
@@ -263,7 +266,8 @@ public class MessageService extends Service implements Constants {
         cr.delete(Circles.CONTENT_URI, null, null);
         final List<ContentValues> contentValues = new ArrayList<>();
         for (final Circle circle : circles) {
-            contentValues.add(ContentValuesCreator.fromCircle(circle, accountId));
+            circle.setAccountId(accountId);
+            contentValues.add(CircleValuesCreator.create(circle));
         }
         ContentResolverUtils.bulkInsert(cr, Circles.CONTENT_URI, contentValues);
     }

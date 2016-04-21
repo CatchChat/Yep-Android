@@ -9,7 +9,7 @@ package catchla.yep;
  */
 public interface Constants {
     String YEP_DATABASE_NAME = "yep_data.db";
-    int YEP_DATABASE_VERSION = 21;
+    int YEP_DATABASE_VERSION = 24;
 
     String LOGTAG = "Yep";
 
@@ -65,6 +65,8 @@ public interface Constants {
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;
     int TABLE_ID_CONVERSATIONS = 12;
+
+    int TABLE_ID_CONVERSATION_MESSAGES = 21;
     String AUTHORITY_YEP_CACHE = BuildConfig.APPLICATION_ID + ".cache";
     String AMAP_WEB_API_KEY = "be626270524e0af680685beabc7c65af";
 }

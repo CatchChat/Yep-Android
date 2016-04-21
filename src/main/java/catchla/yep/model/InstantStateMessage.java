@@ -31,6 +31,12 @@ public class InstantStateMessage implements Parcelable {
     @ParcelableThisPlease
     @JsonField(name = "user")
     User user;
+    @ParcelableThisPlease
+    @JsonField(name = "recipient_type")
+    String recipientType;
+    @ParcelableThisPlease
+    @JsonField(name = "recipient_id")
+    String recipientId;
 
     public InstantStateMessage() {
 
@@ -38,6 +44,12 @@ public class InstantStateMessage implements Parcelable {
 
     public InstantStateMessage(Parcel src) {
         InstantStateMessageParcelablePlease.readFromParcel(this, src);
+    }
+
+    public static InstantStateMessage create(final String state) {
+        final InstantStateMessage message = new InstantStateMessage();
+        message.setState(state);
+        return message;
     }
 
     public String getState() {
@@ -56,6 +68,22 @@ public class InstantStateMessage implements Parcelable {
         this.user = user;
     }
 
+    public String getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(final String recipientId) {
+        this.recipientId = recipientId;
+    }
+
+    public String getRecipientType() {
+        return recipientType;
+    }
+
+    public void setRecipientType(final String recipientType) {
+        this.recipientType = recipientType;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -64,11 +92,5 @@ public class InstantStateMessage implements Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         InstantStateMessageParcelablePlease.writeToParcel(this, dest, flags);
-    }
-
-    public static InstantStateMessage create(final String state) {
-        final InstantStateMessage message = new InstantStateMessage();
-        message.setState(state);
-        return message;
     }
 }

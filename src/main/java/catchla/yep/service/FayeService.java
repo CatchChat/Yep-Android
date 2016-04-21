@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -47,6 +50,7 @@ import catchla.yep.model.MarkAsReadMessage;
 import catchla.yep.model.Message;
 import catchla.yep.model.MessageType;
 import catchla.yep.model.User;
+import catchla.yep.model.message.LastSeenMessage;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.JsonSerializer;
@@ -62,9 +66,51 @@ public class FayeService extends Service implements Constants {
     @Inject
     Bus mBus;
     Executor mExecutor = Executors.newSingleThreadExecutor();
+    Timer mTimer = new Timer(true);
+    WeakHashMap<String, TimerTask> mInstantStateTask = new WeakHashMap<>();
 
     private Faye mFayeClient;
     private Handler mHandler;
+
+    private static void updateLastReedLastSeen(final ContentResolver cr,
+                                               final String accountId, final String conversationId,
+                                               final long lastRead, final long lastSeen) {
+        if (lastRead < 0 && lastSeen < 0) return;
+        final ContentValues lastReadValues = new ContentValues();
+        if (lastRead >= 0) {
+            final ContentValues markReadValues = new ContentValues();
+            markReadValues.put(Messages.STATE, Messages.MessageState.READ);
+            final String markReadWhere = Expression.and(
+                    Expression.equalsArgs(Messages.CONVERSATION_ID),
+                    Expression.equalsArgs(Messages.STATE),
+                    Expression.lesserEqualsArgs(Messages.CREATED_AT)
+            ).getSQL();
+            final String[] markReadWhereArgs = {
+                    conversationId,
+                    Messages.MessageState.UNREAD,
+                    String.valueOf(lastRead)
+            };
+            cr.update(Messages.CONTENT_URI, markReadValues,
+                    markReadWhere, markReadWhereArgs);
+
+            lastReadValues.put(Conversations.LAST_READ_AT, lastRead);
+        }
+
+        if (lastSeen >= 0) {
+            lastReadValues.put(Conversations.LAST_SEEN_AT, lastSeen);
+        }
+
+        final String lastSeenWhere = Expression.and(
+                Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                Expression.equalsArgs(Conversations.CONVERSATION_ID)
+        ).getSQL();
+        final String[] lastSeenWhereArgs = {
+                accountId,
+                conversationId
+        };
+        cr.update(Conversations.CONTENT_URI, lastReadValues,
+                lastSeenWhere, lastSeenWhereArgs);
+    }
 
     @Override
     public void onCreate() {
@@ -150,42 +196,21 @@ public class FayeService extends Service implements Constants {
                                 consumeMessage(json, MarkAsRead.class, new MessageConsumer<MarkAsRead>() {
                                     @Override
                                     public void consume(@NonNull final MarkAsRead parsed) {
-                                        final ContentResolver cr = getContentResolver();
                                         final MarkAsReadMessage markAsRead = parsed.markAsRead;
-                                        final long lastReadAt = markAsRead.getLastReadAt().getTime();
+                                        final ContentResolver cr = getContentResolver();
+                                        final String recipientId = markAsRead.getRecipientId();
+                                        final String recipientType = markAsRead.getRecipientType();
+                                        final long lastRead = markAsRead.getLastReadAt().getTime();
+                                        final long lastSeen = System.currentTimeMillis();
+                                        final String conversationId = Conversation.generateId(recipientType,
+                                                recipientId);
 
-                                        final ContentValues markReadValues = new ContentValues();
-                                        markReadValues.put(Messages.STATE, Messages.MessageState.READ);
-                                        final String markReadWhere = Expression.and(
-                                                Expression.equalsArgs(Messages.RECIPIENT_ID),
-                                                Expression.equalsArgs(Messages.RECIPIENT_TYPE),
-                                                Expression.equalsArgs(Messages.STATE),
-                                                Expression.lesserEqualsArgs(Messages.CREATED_AT)
-                                        ).getSQL();
-                                        final String[] markReadWhereArgs = {
-                                                markAsRead.getRecipientId(),
-                                                markAsRead.getRecipientType(),
-                                                Messages.MessageState.UNREAD,
-                                                String.valueOf(lastReadAt)
-                                        };
-                                        cr.update(Messages.CONTENT_URI, markReadValues,
-                                                markReadWhere, markReadWhereArgs);
-
-                                        final ContentValues lastReadValues = new ContentValues();
-                                        lastReadValues.put(Conversations.LAST_SEEN_AT, lastReadAt);
-                                        final String conversationId = Conversation.generateId(markAsRead.getRecipientType(),
-                                                markAsRead.getRecipientId());
-                                        final String lastSeenWhere = Expression.and(
-                                                Expression.equalsArgs(Conversations.ACCOUNT_ID),
-                                                Expression.equalsArgs(Conversations.CONVERSATION_ID)
-                                        ).getSQL();
-                                        final String[] lastSeenWhereArgs = {
-                                                accountId,
-                                                conversationId
-                                        };
-                                        cr.update(Conversations.CONTENT_URI, lastReadValues,
-                                                lastSeenWhere, lastSeenWhereArgs);
+                                        updateLastReedLastSeen(cr, accountId, conversationId,
+                                                lastRead, lastSeen);
+                                        postMessage(new LastSeenMessage(accountId, conversationId,
+                                                lastSeen));
                                     }
+
                                 });
                                 break;
                             }
@@ -193,7 +218,31 @@ public class FayeService extends Service implements Constants {
                                 consumeMessage(json, InstantState.class, new MessageConsumer<InstantState>() {
                                     @Override
                                     public void consume(@NonNull final InstantState parsed) {
-                                        postMessage(parsed.instantState);
+                                        final InstantStateMessage instantState = parsed.instantState;
+                                        final User user = instantState.getUser();
+                                        if (user == null) return;
+                                        postMessage(instantState);
+
+                                        final String recipientType = instantState.getRecipientType();
+                                        final String recipientId = user.getId();
+                                        final String conversationId = Conversation.generateId(recipientType,
+                                                recipientId);
+                                        final String taskKey = accountId + conversationId;
+                                        if (mInstantStateTask.containsKey(taskKey)) return;
+                                        final TimerTask task = new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                final ContentResolver cr = getContentResolver();
+                                                final long lastSeen = System.currentTimeMillis();
+                                                updateLastReedLastSeen(cr, accountId, conversationId,
+                                                        -1, lastSeen);
+                                                postMessage(new LastSeenMessage(accountId, conversationId,
+                                                        lastSeen));
+                                                mInstantStateTask.remove(taskKey);
+                                            }
+                                        };
+                                        mInstantStateTask.put(taskKey, task);
+                                        mTimer.schedule(task, 1000L);
                                     }
                                 });
                                 break;
@@ -276,8 +325,9 @@ public class FayeService extends Service implements Constants {
         public boolean instantState(final Conversation conversation, final String type) throws RemoteException {
             final FayeService service = mReference.get();
             InstantStateMessage message = InstantStateMessage.create(type);
-            final String userChannel = String.format(Locale.ROOT, "/users/%s/messages", conversation.getRecipientId());
-            return service.sendMessage("instant_state", userChannel, message);
+            message.setRecipientId(conversation.getRecipientId());
+            message.setRecipientType(conversation.getRecipientType());
+            return service.sendMessage("instant_state", "/messages", message);
         }
     }
 
