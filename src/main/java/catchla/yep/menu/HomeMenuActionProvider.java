@@ -25,14 +25,13 @@ import com.commonsware.cwac.merge.MergeAdapter;
 
 import javax.inject.Inject;
 
+import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
 import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.LayoutAdapter;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
-import catchla.yep.util.dagger.ApplicationModule;
-import catchla.yep.util.dagger.DaggerGeneralComponent;
 import catchla.yep.util.dagger.GeneralComponentHelper;
 
 /**
@@ -90,6 +89,9 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
 
         mActionsAdapter.add(new Action(popupContext.getString(R.string.settings), R.id.settings));
         mActionsAdapter.add(new Action(popupContext.getString(R.string.about), R.id.about));
+        if (BuildConfig.DEBUG) {
+            mActionsAdapter.add(new Action("Dev settings", R.id.development));
+        }
 
         mOverflowPopup = new ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0);
         mOverflowPopup.setModal(true);

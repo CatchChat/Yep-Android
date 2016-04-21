@@ -13,8 +13,6 @@ public interface Constants {
 
     String LOGTAG = "Yep";
 
-    String SHARED_PREFERENCES_NAME = "preferences";
-
     String KEY_CURRENT_ACCOUNT = "current_account";
     String KEY_TOPICS_SORT_ORDER = "topics_sort_order";
 

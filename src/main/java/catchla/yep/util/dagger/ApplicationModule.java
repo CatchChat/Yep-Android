@@ -3,6 +3,7 @@ package catchla.yep.util.dagger;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
@@ -80,7 +81,7 @@ public class ApplicationModule implements Constants {
     @Provides
     @Singleton
     public SharedPreferences getSharedPreferences() {
-        return application.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
     @Provides

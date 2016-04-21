@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
@@ -50,10 +49,10 @@ public class AttachmentUpload {
 
     private MultipartBody toRequestBody() throws FileNotFoundException {
         final MultipartBody body = new MultipartBody();
+        body.add("attachable_type", new StringBody(kind, (ContentType) null));
+        body.add("metadata", new StringBody(metadata, (ContentType) null));
         body.add("file", new FileBody(new FileInputStream(file), Utils.getFilename(file, mimeType),
                 file.length(), ContentType.parse(mimeType)));
-        body.add("attachable_type", new StringBody(kind, Charset.defaultCharset()));
-        body.add("metadata", new StringBody(metadata, Charset.defaultCharset()));
         return body;
     }
 

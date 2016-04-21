@@ -18,6 +18,7 @@ import catchla.yep.model.Attachment;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ConversationTableInfo;
 import catchla.yep.model.ConversationValuesCreator;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
@@ -56,7 +57,7 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
     }
 
     @Nullable
-    protected IdResponse uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+    protected FileAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
         return null;
     }
 
@@ -67,7 +68,7 @@ public abstract class SendMessageTask<H> extends AbstractTask<NewMessage, TaskRe
         try {
             newMessage.mediaType(getMediaType());
             saveUnsentMessage(newMessage);
-            final IdResponse attachment = uploadAttachment(yep, newMessage);
+            final FileAttachment attachment = uploadAttachment(yep, newMessage);
             if (attachment != null) {
                 newMessage.attachmentId(attachment.getId());
             }

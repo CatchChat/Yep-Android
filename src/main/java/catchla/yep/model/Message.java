@@ -4,21 +4,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableNoThanks;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
+import org.mariotaku.commons.logansquare.JsonStringConverter;
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
+import catchla.yep.model.util.MessageAttachmentsConverter;
 import catchla.yep.model.util.NaNDoubleConverter;
 import catchla.yep.model.util.NaNIfNullDoubleConverter;
 import catchla.yep.model.util.TimestampToDateConverter;
-import catchla.yep.model.util.VariableTypeAttachmentsConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Messages;
@@ -85,8 +90,7 @@ public class Message implements Parcelable {
     @JsonField(name = "state")
     @CursorField(Messages.STATE)
     String state;
-    @JsonField(name = "attachments", typeConverter = VariableTypeAttachmentsConverter.class)
-    @CursorField(value = Messages.ATTACHMENTS, converter = VariableTypeAttachmentsConverter.class)
+    @CursorField(value = Messages.ATTACHMENTS, converter = MessageAttachmentsConverter.class)
     List<Attachment> attachments;
     @JsonField(name = "local_metadata")
     @CursorField(value = Messages.LOCAL_METADATA, converter = LoganSquareCursorFieldConverter.class)
@@ -96,6 +100,10 @@ public class Message implements Parcelable {
     @JsonField(name = "random_id")
     @CursorField(value = Messages.RANDOM_ID)
     String randomId;
+
+    @JsonField(name = "attachments", typeConverter = JsonStringConverter.class)
+    @ParcelableNoThanks
+    String attachmentsJson;
 
     public String getRandomId() {
         return randomId;
@@ -265,6 +273,15 @@ public class Message implements Parcelable {
         MessageParcelablePlease.writeToParcel(this, dest, flags);
     }
 
+    @OnJsonParseComplete
+    void onJsonParseComplete() throws IOException {
+        if (mediaType == null || attachmentsJson == null) return;
+        JsonMapper<? extends Attachment> mapper = MessageAttachmentsConverter.getMapperForKind(mediaType);
+        //noinspection unchecked
+        attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
+    }
+
+
     public interface RecipientType {
         String USER = "User";
         String CIRCLE = "Circle";
@@ -334,4 +351,5 @@ public class Message implements Parcelable {
             Message$LocalMetadataParcelablePlease.writeToParcel(this, dest, flags);
         }
     }
+
 }

@@ -5,4 +5,5 @@
 <resources>
     <item name="settings" type="id" />
     <item name="about" type="id" />
+    <item name="development" type="id" />
 </resources>

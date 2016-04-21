@@ -28,6 +28,7 @@ import catchla.yep.fragment.ConversationsListFragment;
 import catchla.yep.fragment.DiscoverFragment;
 import catchla.yep.fragment.FloatingActionMenuFragment;
 import catchla.yep.fragment.FriendsListFragment;
+import catchla.yep.fragment.SettingsDetailsFragment;
 import catchla.yep.fragment.TopicsListFragment;
 import catchla.yep.fragment.iface.IActionButtonSupportFragment;
 import catchla.yep.fragment.iface.RefreshScrollTopInterface;
@@ -87,6 +88,15 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
                     }
                     case R.id.about: {
                         startActivity(new Intent(HomeActivity.this, AboutActivity.class));
+                        break;
+                    }
+                    case R.id.development: {
+                        final Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
+                        final Bundle args = new Bundle();
+                        args.putInt(EXTRA_RESID, R.xml.pref_dev);
+                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+                        startActivity(intent);
                         break;
                     }
                 }

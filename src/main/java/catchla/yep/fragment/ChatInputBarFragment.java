@@ -42,7 +42,6 @@ import catchla.yep.activity.ThemedImagePickerActivity;
 import catchla.yep.model.AttachmentUpload;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.FileAttachment;
-import catchla.yep.model.IdResponse;
 import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
@@ -201,7 +200,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
         // Show error if location is null
         sendMessage(new SendMessageHandler() {
             @Override
-            public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public FileAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 message.location(location.getLatitude(), location.getLongitude());
                 return null;
             }
@@ -217,7 +216,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
     private void sendImage(final Uri imageUri) {
         sendMessage(new SendMessageHandler() {
             @Override
-            public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+            public FileAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                 final String path = imageUri.getPath();
                 final String mimeType = message.getMetadataValue("mime_type", null);
                 final String metadata = message.getMetadataValue("metadata", null);
@@ -261,7 +260,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
             }
 
             @Override
-            protected IdResponse uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
+            protected FileAttachment uploadAttachment(final YepAPI yep, final NewMessage newMessage) throws YepException {
                 return sendMessageHandler.uploadAttachment(yep, newMessage);
             }
 
@@ -332,7 +331,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
 
     static abstract class SendMessageHandler {
         @Nullable
-        IdResponse uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
+        FileAttachment uploadAttachment(YepAPI yep, NewMessage message) throws YepException {
             return null;
         }
 
@@ -503,7 +502,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
                 }
 
                 @Override
-                public IdResponse uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
+                public FileAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     final File file = new File(recordPath);
                     return yep.uploadAttachment(AttachmentUpload.create(file, "audio/mp4",
                             YepAPI.AttachableType.MESSAGE, message.getMetadataValue("metadata", null)));

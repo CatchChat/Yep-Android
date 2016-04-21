@@ -27,9 +27,9 @@ import catchla.yep.model.ConversationsResponse;
 import catchla.yep.model.CreateRegistrationResult;
 import catchla.yep.model.DiscoverQuery;
 import catchla.yep.model.DribbbleShots;
+import catchla.yep.model.FileAttachment;
 import catchla.yep.model.Friendship;
 import catchla.yep.model.GithubUserInfo;
-import catchla.yep.model.IdResponse;
 import catchla.yep.model.InstagramMediaList;
 import catchla.yep.model.LastReadResponse;
 import catchla.yep.model.Message;
@@ -156,12 +156,12 @@ public interface YepAPI {
     S3UploadToken getS3UploadToken(@Path("kind") String kind) throws YepException;
 
     @POST("attachments")
-    IdResponse uploadAttachment(@Param("file") Body file,
-                                @AttachableType @Param("attachable_type") String attachableType,
-                                @Param("metadata") String metadata) throws YepException;
+    FileAttachment uploadAttachment(@Param("file") Body file,
+                                    @AttachableType @Param("attachable_type") String attachableType,
+                                    @Param("metadata") String metadata) throws YepException;
 
     @POST("attachments")
-    IdResponse uploadAttachment(@Raw AttachmentUpload attachmentUpload) throws YepException;
+    FileAttachment uploadAttachment(@Raw AttachmentUpload attachmentUpload) throws YepException;
 
     @POST("contacts/upload")
     ArrayList<User> uploadContact(@Param("contacts") ContactUpload contactUpload) throws YepException;

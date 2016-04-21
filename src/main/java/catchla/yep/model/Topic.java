@@ -4,73 +4,68 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
+import com.bluelinelabs.logansquare.JsonMapper;
 import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
 import com.bluelinelabs.logansquare.typeconverters.TypeConverter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableNoThanks;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
-import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
+
+import org.mariotaku.commons.logansquare.JsonStringConverter;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import catchla.yep.model.util.MessageAttachmentsConverter;
+import catchla.yep.model.util.YepTimestampDateConverter;
+
 /**
  * Created by mariotaku on 15/10/12.
  */
 @ParcelablePlease
+@JsonObject
 public class Topic implements Parcelable {
-    @ParcelableThisPlease
+    @JsonField(name = "id")
     String id;
-    @ParcelableThisPlease
+    @JsonField(name = "allow_comment")
     boolean allowComment;
-    @ParcelableThisPlease
+    @JsonField(name = "body")
     String body;
-    @ParcelableThisPlease
+    @JsonField(name = "message_count")
     int messageCount;
-    @ParcelableThisPlease
+    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
     Date createdAt;
-    @ParcelableThisPlease
+    @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
     Date updatedAt;
-    @ParcelableThisPlease
+    @JsonField(name = "user")
     User user;
-    @ParcelableThisPlease
+    @JsonField(name = "skill")
     Skill skill;
-    @ParcelableThisPlease
+    @JsonField(name = "circle")
     Circle circle;
-    @ParcelableThisPlease
+    @JsonField(name = "kind")
     String kind;
-    @ParcelableThisPlease
     List<Attachment> attachments;
 
-    @Override
-    public String toString() {
-        return "Topic{" +
-                "id='" + id + '\'' +
-                ", allowComment=" + allowComment +
-                ", body='" + body + '\'' +
-                ", messageCount=" + messageCount +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", user=" + user +
-                ", skill=" + skill +
-                ", circle=" + circle +
-                ", attachments=" + attachments +
-                '}';
-    }
+    @JsonField(name = "attachments", typeConverter = JsonStringConverter.class)
+    @ParcelableNoThanks
+    String attachmentsJson;
 
     public Topic() {
 
     }
 
-    protected Topic(Parcel in) {
-        TopicParcelablePlease.readFromParcel(this, in);
-    }
-
     public static final Creator<Topic> CREATOR = new Creator<Topic>() {
         @Override
         public Topic createFromParcel(Parcel in) {
-            return new Topic(in);
+            final Topic topic = new Topic();
+            TopicParcelablePlease.readFromParcel(topic, in);
+            return topic;
         }
 
         @Override
@@ -159,6 +154,20 @@ public class Topic implements Parcelable {
         this.attachments = attachments;
     }
 
+    public String getKind() {
+        if (kind == null) return getAttachmentKind();
+        return kind;
+    }
+
+    public String getAttachmentKind() {
+        if (attachments == null) return null;
+        //noinspection LoopStatementThatDoesntLoop
+        for (final Attachment attachment : attachments) {
+            return attachment.getKind();
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -170,9 +179,20 @@ public class Topic implements Parcelable {
 
     }
 
-    public String getKind() {
-        if (kind == null) return getAttachmentKind();
-        return kind;
+    @Override
+    public String toString() {
+        return "Topic{" +
+                "id='" + id + '\'' +
+                ", allowComment=" + allowComment +
+                ", body='" + body + '\'' +
+                ", messageCount=" + messageCount +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", user=" + user +
+                ", skill=" + skill +
+                ", circle=" + circle +
+                ", attachments=" + attachments +
+                '}';
     }
 
     @Override
@@ -190,13 +210,12 @@ public class Topic implements Parcelable {
         TopicParcelablePlease.writeToParcel(this, dest, flags);
     }
 
-    public String getAttachmentKind() {
-        if (attachments == null) return null;
-        //noinspection LoopStatementThatDoesntLoop
-        for (final Attachment attachment : attachments) {
-            return attachment.getKind();
-        }
-        return null;
+    @OnJsonParseComplete
+    void onJsonParseComplete() throws IOException {
+        if (kind == null || attachmentsJson == null) return;
+        JsonMapper<? extends Attachment> mapper = MessageAttachmentsConverter.getMapperForKind(kind);
+        //noinspection unchecked
+        attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
     }
 
     @StringDef({SortOrder.DISTANCE, SortOrder.TIME})

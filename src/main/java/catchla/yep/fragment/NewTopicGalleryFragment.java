@@ -103,11 +103,11 @@ public class NewTopicGalleryFragment extends NewTopicMediaFragment implements Co
     @WorkerThread
     public void uploadMedia(final YepAPI yep, final NewTopic newTopic) throws YepException {
         final String[] media = mTopicMediaAdapter.getMedia();
-        List<IdResponse> files = new ArrayList<>();
+        List<FileAttachment> files = new ArrayList<>();
         for (String mediaItem : media) {
             final String path = Uri.parse(mediaItem).getPath();
             final FileAttachment.ImageMetadata metadata = FileAttachment.ImageMetadata.getImageMetadata(path);
-            final IdResponse attachmentId = yep.uploadAttachment(AttachmentUpload.create(new File(path),
+            final FileAttachment attachmentId = yep.uploadAttachment(AttachmentUpload.create(new File(path),
                     metadata.getMimeType(), YepAPI.AttachableType.TOPIC, JsonSerializer.serialize(metadata)));
             files.add(attachmentId);
         }

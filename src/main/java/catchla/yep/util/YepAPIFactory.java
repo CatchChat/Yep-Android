@@ -4,8 +4,12 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.mariotaku.restfu.ExceptionFactory;
 import org.mariotaku.restfu.RestAPIFactory;
 import org.mariotaku.restfu.RestRequest;
@@ -17,6 +21,8 @@ import org.mariotaku.restfu.http.SimpleValueMap;
 import org.mariotaku.restfu.okhttp3.OkHttpRestClient;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Locale;
 
 import catchla.yep.BuildConfig;
@@ -87,6 +93,17 @@ public class YepAPIFactory implements Constants {
     public static OkHttpClient getOkHttpClient(Context context) {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         DebugModeUtils.initForHttpClient(builder);
+        if (BuildConfig.DEBUG) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            if (preferences.getBoolean("proxy", false)) {
+                String host = preferences.getString("proxy_host", null);
+                int port = NumberUtils.toInt(preferences.getString("proxy_port", null), -1);
+                if (!TextUtils.isEmpty(host) && port >= 0 && port < 65536) {
+                    builder.proxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(host,
+                            port)));
+                }
+            }
+        }
         return builder.build();
     }
 

@@ -107,4 +107,7 @@
     <string name="my_current_location">My current location</string>
     <string name="use_location">Use location</string>
     <string name="ptt_hint">Press to talk</string>
+    <string name="proxy">Proxy</string>
+    <string name="proxy_host">Proxy host</string>
+    <string name="proxy_port">Proxy port</string>
 </resources>

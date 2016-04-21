@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -153,7 +154,7 @@ public class Utils implements Constants {
 
     @Nullable
     public static Account getCurrentAccount(Context context) {
-        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final String currentAccountName = prefs.getString(KEY_CURRENT_ACCOUNT, null);
         if (TextUtils.isEmpty(currentAccountName)) return null;
         final AccountManager am = AccountManager.get(context);
@@ -199,7 +200,7 @@ public class Utils implements Constants {
     }
 
     public static void setCurrentAccount(Context context, Account account) {
-        final SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor editor = prefs.edit();
         if (account != null) {
             editor.putString(KEY_CURRENT_ACCOUNT, account.name);

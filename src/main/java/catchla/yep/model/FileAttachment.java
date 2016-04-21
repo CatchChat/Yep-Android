@@ -29,7 +29,9 @@ public class FileAttachment extends Attachment implements Parcelable {
     public static final Creator<FileAttachment> CREATOR = new Creator<FileAttachment>() {
         @Override
         public FileAttachment createFromParcel(Parcel in) {
-            return new FileAttachment(in);
+            final FileAttachment attachment = new FileAttachment();
+            FileAttachmentParcelablePlease.readFromParcel(attachment, in);
+            return attachment;
         }
 
         @Override
@@ -38,18 +40,21 @@ public class FileAttachment extends Attachment implements Parcelable {
         }
     };
     @ParcelableThisPlease
+    @JsonField(name = "id")
+    String id;
+    @ParcelableThisPlease
     @JsonField(name = "metadata")
     String metadata;
     @ParcelableThisPlease
     @JsonField(name = "file")
     AttachmentFile file;
 
-    protected FileAttachment(Parcel in) {
-        FileAttachmentParcelablePlease.readFromParcel(this, in);
-    }
-
     public FileAttachment() {
 
+    }
+
+    public String getId() {
+        return id;
     }
 
     public AttachmentFile getFile() {
