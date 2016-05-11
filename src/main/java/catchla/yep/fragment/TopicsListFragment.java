@@ -53,12 +53,14 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
 
     private static final int REQUEST_NEW_LOCATION_TOPIC = 102;
 
+    @Topic.SortOrder
     private String mSortBy;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mSortBy = mPreferences.getString(KEY_TOPICS_SORT_ORDER, Topic.SortOrder.TIME);
+        //noinspection WrongConstant
+        mSortBy = mPreferences.getString(KEY_TOPICS_SORT_ORDER, Topic.SortOrder.DEFAULT);
         setHasOptionsMenu(true);
         final Bundle fragmentArgs = getArguments();
         final Bundle loaderArgs = new Bundle();
@@ -258,7 +260,7 @@ public class TopicsListFragment extends AbsContentListRecyclerViewFragment<Topic
         ActivityCompat.startActivity(getActivity(), intent, options);
     }
 
-    public void reloadWithSortOrder(final String sortBy) {
+    public void reloadWithSortOrder(@Topic.SortOrder final String sortBy) {
         if (TextUtils.equals(getSortOrder(), sortBy) || hasUserId()) return;
         mSortBy = sortBy;
         mPreferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply();

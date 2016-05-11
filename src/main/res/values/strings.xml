@@ -110,4 +110,5 @@
     <string name="proxy">Proxy</string>
     <string name="proxy_host">Proxy host</string>
     <string name="proxy_port">Proxy port</string>
+    <string name="sort_order_default">Match</string>
 </resources>

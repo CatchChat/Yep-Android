@@ -218,8 +218,9 @@ public class Topic implements Parcelable {
         attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
     }
 
-    @StringDef({SortOrder.DISTANCE, SortOrder.TIME})
+    @StringDef({SortOrder.DEFAULT, SortOrder.DISTANCE, SortOrder.TIME})
     public @interface SortOrder {
+        String DEFAULT = "default";
         String DISTANCE = "distance";
         String TIME = "time";
     }

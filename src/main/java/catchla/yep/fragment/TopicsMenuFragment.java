@@ -22,6 +22,7 @@ public class TopicsMenuFragment extends FloatingActionMenuFragment implements Ad
         super.onActivityCreated(savedInstanceState);
         ArrayAdapter<Entry> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.add(new Entry(Topic.SortOrder.DEFAULT, getString(R.string.sort_order_default)));
         adapter.add(new Entry(Topic.SortOrder.DISTANCE, getString(R.string.distance)));
         adapter.add(new Entry(Topic.SortOrder.TIME, getString(R.string.time)));
         mOrderSpinner.setAdapter(adapter);
