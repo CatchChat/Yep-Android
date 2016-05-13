@@ -27,6 +27,7 @@ public interface Constants {
     String USER_DATA_PHONE_NUMBER = "phone_number";
     String USER_DATA_COUNTRY_CODE = "country_code";
     String USER_DATA_INTRODUCTION = "introduction";
+    String USER_DATA_WEBSITE = "website";
     String USER_DATA_MASTER_SKILLS = "master_skills";
     String USER_DATA_LEARNING_SKILLS = "learning_skills";
     String USER_DATA_PROVIDERS = "providers";

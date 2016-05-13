@@ -46,6 +46,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
     private EditText mEditUsername;
     private EditText mEditNickname;
     private EditText mEditIntroduction;
+    private EditText mEditWebsite;
 
     // Data fields
     private Uri mProfileImageUri;
@@ -140,6 +141,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mEditUsername.setEnabled(canEditUsername);
         mEditUsername.setFocusable(canEditUsername);
         mEditIntroduction.setText(user.getIntroduction());
+        mEditWebsite.setText(user.getWebsiteUrl());
     }
 
     public static class LogoutConfirmDialogFragment extends DialogFragment {
@@ -179,6 +181,7 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
         mEditNickname = (EditText) findViewById(R.id.edit_nickname);
         mEditUsername = (EditText) findViewById(R.id.edit_username);
         mEditIntroduction = (EditText) findViewById(R.id.edit_introduction);
+        mEditWebsite = (EditText) findViewById(R.id.edit_website);
     }
 
     @Override
@@ -192,20 +195,24 @@ public class ProfileEditorActivity extends ContentActivity implements UpdateProf
     public void onBackPressed() {
         if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) return;
         boolean changed = mProfileImageUri != null;
+        final ProfileUpdate update = new ProfileUpdate();
         if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getNickname()), mEditNickname.getText())) {
             changed |= true;
+            update.setNickname(String.valueOf(mEditNickname.getText()));
         }
         if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getIntroduction()), mEditIntroduction.getText())) {
             changed |= true;
+            update.setIntroduction(String.valueOf(mEditIntroduction.getText()));
         }
         if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getUsername()), mEditUsername.getText())) {
             changed |= true;
+            update.setUsername(String.valueOf(mEditUsername.getText()));
+        }
+        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser.getWebsiteUrl()), mEditWebsite.getText())) {
+            changed |= true;
+            update.setWebsite(String.valueOf(mEditWebsite.getText()));
         }
         if (changed) {
-            final ProfileUpdate update = new ProfileUpdate();
-            update.setNickname(String.valueOf(mEditNickname.getText()));
-            update.setIntroduction(String.valueOf(mEditIntroduction.getText()));
-            update.setUsername(String.valueOf(mEditUsername.getText()));
             mTask = new UpdateProfileTask(this, Utils.getCurrentAccount(this), update, mProfileImageUri);
             mTask.execute();
             return;

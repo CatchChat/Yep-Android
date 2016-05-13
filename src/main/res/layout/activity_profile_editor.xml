@@ -109,6 +109,18 @@
                 app:met_floatingLabelAlwaysShown="true"
                 app:met_floatingLabelText="@string/introduction"/>
 
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edit_website"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/element_spacing_large"
+                android:layout_marginRight="@dimen/element_spacing_large"
+                android:gravity="top"
+                android:minLines="4"
+                app:met_floatingLabel="normal"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="@string/blog"/>
+
             <Button
                 android:id="@+id/logout"
                 style="?buttonBarButtonStyle"

@@ -190,6 +190,7 @@ public class Utils implements Constants {
         user.setMobile(am.getUserData(account, USER_DATA_PHONE_NUMBER));
         user.setIntroduction(am.getUserData(account, USER_DATA_INTRODUCTION));
         user.setUsername(am.getUserData(account, USER_DATA_USERNAME));
+        user.setWebsiteUrl(am.getUserData(account, USER_DATA_WEBSITE));
         final String learningJson = am.getUserData(account, USER_DATA_LEARNING_SKILLS);
         user.setLearningSkills(JsonSerializer.parseList(learningJson, Skill.class));
         final String masterJson = am.getUserData(account, USER_DATA_MASTER_SKILLS);
@@ -241,6 +242,7 @@ public class Utils implements Constants {
         userData.putString(USER_DATA_PHONE_NUMBER, user.getMobile());
         userData.putString(USER_DATA_COUNTRY_CODE, user.getPhoneCode());
         userData.putString(USER_DATA_INTRODUCTION, user.getIntroduction());
+        userData.putString(USER_DATA_WEBSITE, user.getWebsiteUrl());
         userData.putString(USER_DATA_LEARNING_SKILLS, JsonSerializer.serialize(user.getLearningSkills(), Skill.class));
         userData.putString(USER_DATA_MASTER_SKILLS, JsonSerializer.serialize(user.getMasterSkills(), Skill.class));
         userData.putString(USER_DATA_PROVIDERS, JsonSerializer.serialize(user.getProviders(), Provider.class));

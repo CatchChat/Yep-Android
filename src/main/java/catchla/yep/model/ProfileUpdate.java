@@ -22,4 +22,8 @@ public class ProfileUpdate extends SimpleValueMap {
     public void setIntroduction(final String introduction) {
         put("introduction", introduction);
     }
+
+    public void setWebsite(final String website) {
+        put("website_url", website);
+    }
 }
