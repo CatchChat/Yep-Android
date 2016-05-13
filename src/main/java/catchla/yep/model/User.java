@@ -108,6 +108,12 @@ public class User implements Parcelable {
     @JsonField(name = "badge")
     String badge;
     @ParcelableThisPlease
+    @JsonField(name = "website_url")
+    String websiteUrl;
+    @ParcelableThisPlease
+    @JsonField(name = "website_title")
+    String websiteTitle;
+    @ParcelableThisPlease
     LatLng location;
 
     public User() {
@@ -231,21 +237,45 @@ public class User implements Parcelable {
         this.learningSkills = learningSkills;
     }
 
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    public void setWebsiteUrl(final String websiteUrl) {
+        this.websiteUrl = websiteUrl;
+    }
+
+    public String getWebsiteTitle() {
+        return websiteTitle;
+    }
+
+    public void setWebsiteTitle(final String websiteTitle) {
+        this.websiteTitle = websiteTitle;
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "avatarUrl='" + avatarUrl + '\'' +
+                "_id=" + _id +
                 ", masterSkills=" + masterSkills +
                 ", learningSkills=" + learningSkills +
+                ", accountId='" + accountId + '\'' +
                 ", id='" + id + '\'' +
                 ", username='" + username + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", introduction='" + introduction + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", avatarThumbUrl='" + avatarThumbUrl + '\'' +
+                ", avatar=" + avatar +
                 ", mobile='" + mobile + '\'' +
                 ", phoneCode='" + phoneCode + '\'' +
                 ", contactName='" + contactName + '\'' +
                 ", providers=" + providers +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 ", badge='" + badge + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                ", websiteTitle='" + websiteTitle + '\'' +
                 ", location=" + location +
                 '}';
     }

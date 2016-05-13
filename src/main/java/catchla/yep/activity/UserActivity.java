@@ -287,14 +287,26 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         }
         final List<Provider> providers = user.getProviders();
         mProvidersContainer.removeAllViews();
+
+        String websiteUrl = user.getWebsiteUrl();
+        final boolean hasWebsite = !TextUtils.isEmpty(websiteUrl);
+
         View.OnClickListener providerOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 final Provider provider = (Provider) v.getTag();
                 final Intent intent;
                 if (provider.isSupported()) {
+                    if (Provider.PROVIDER_BLOG.equals(provider.getName())) {
+                        // TODO open web address
+                        return;
+                    }
                     intent = new Intent(UserActivity.this, ProviderContentActivity.class);
                 } else if (isMySelf) {
+                    if (Provider.PROVIDER_BLOG.equals(provider.getName())) {
+                        // TODO open url editor
+                        return;
+                    }
                     intent = new Intent(UserActivity.this, ProviderOAuthActivity.class);
                 } else {
                     return;
@@ -305,6 +317,14 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                 startActivity(intent);
             }
         };
+        if (hasWebsite || isMySelf) {
+            Provider provider = new Provider("blog", hasWebsite);
+            final View view = Utils.inflateProviderItemView(UserActivity.this,
+                    inflater, provider, mProvidersContainer);
+            view.setTag(provider);
+            view.setOnClickListener(providerOnClickListener);
+            mProvidersContainer.addView(view);
+        }
         if (providers != null) {
             for (Provider provider : providers) {
                 if (!provider.isSupported()) continue;

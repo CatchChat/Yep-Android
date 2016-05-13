@@ -3,6 +3,7 @@ package catchla.yep.model;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
@@ -21,6 +22,8 @@ public class Provider implements Parcelable {
     public static final String PROVIDER_INSTAGRAM = "instagram";
     public static final String PROVIDER_GITHUB = "github";
     public static final String PROVIDER_DRIBBBLE = "dribbble";
+    public static final String PROVIDER_BLOG = "blog";
+
     public static final Creator<Provider> CREATOR = new Creator<Provider>() {
         @Override
         public Provider createFromParcel(Parcel in) {
@@ -52,12 +55,15 @@ public class Provider implements Parcelable {
     }
 
     public static String getProviderName(final Context context, final String name) {
-        if (PROVIDER_DRIBBBLE.equals(name)) {
-            return context.getString(R.string.dribbble);
-        } else if (PROVIDER_GITHUB.equals(name)) {
-            return context.getString(R.string.github);
-        } else if (PROVIDER_INSTAGRAM.equals(name)) {
-            return context.getString(R.string.instagram);
+        switch (name) {
+            case PROVIDER_DRIBBBLE:
+                return context.getString(R.string.dribbble);
+            case PROVIDER_GITHUB:
+                return context.getString(R.string.github);
+            case PROVIDER_INSTAGRAM:
+                return context.getString(R.string.instagram);
+            case PROVIDER_BLOG:
+                return context.getString(R.string.blog);
         }
         return null;
     }
@@ -69,17 +75,21 @@ public class Provider implements Parcelable {
             return R.drawable.ic_provider_github;
         } else if (PROVIDER_INSTAGRAM.equals(name)) {
             return R.drawable.ic_provider_instagram;
+        } else if (PROVIDER_BLOG.equals(name)) {
+            return R.drawable.ic_provider_web;
         }
         return 0;
     }
 
     public static int getProviderColor(final Context context, final String name) {
         if (PROVIDER_DRIBBBLE.equals(name)) {
-            return context.getResources().getColor(R.color.color_dribbble);
+            return ContextCompat.getColor(context, R.color.color_dribbble);
         } else if (PROVIDER_GITHUB.equals(name)) {
-            return context.getResources().getColor(R.color.color_github);
+            return ContextCompat.getColor(context, R.color.color_github);
         } else if (PROVIDER_INSTAGRAM.equals(name)) {
-            return context.getResources().getColor(R.color.color_instagram);
+            return ContextCompat.getColor(context, R.color.color_instagram);
+        } else if (PROVIDER_BLOG.equals(name)) {
+            return ContextCompat.getColor(context, R.color.color_blog);
         }
         return 0;
     }
