@@ -116,7 +116,7 @@
                 android:layout_marginLeft="@dimen/element_spacing_large"
                 android:layout_marginRight="@dimen/element_spacing_large"
                 android:gravity="top"
-                android:minLines="4"
+                android:singleLine="true"
                 app:met_floatingLabel="normal"
                 app:met_floatingLabelAlwaysShown="true"
                 app:met_floatingLabelText="@string/blog"/>
