@@ -7,6 +7,7 @@ package catchla.yep.activity;
 import android.accounts.Account;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -92,10 +93,10 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
                     }
                     case R.id.development: {
                         final Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
+                        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment.class.getName());
                         final Bundle args = new Bundle();
                         args.putInt(EXTRA_RESID, R.xml.pref_dev);
-                        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+                        intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
                         startActivity(intent);
                         break;
                     }

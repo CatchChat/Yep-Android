@@ -21,21 +21,18 @@ package catchla.yep.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceScreen;
 
 import catchla.yep.Constants;
-import catchla.yep.activity.SettingsActivity;
 import catchla.yep.util.Utils;
 
-public class SettingsDetailsFragment extends PreferenceFragment implements Constants, SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsDetailsFragment extends PreferenceFragmentCompat implements Constants, SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         final PreferenceManager preferenceManager = getPreferenceManager();
         final PreferenceScreen defaultScreen = getPreferenceScreen();
         final PreferenceScreen preferenceScreen;
