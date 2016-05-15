@@ -98,9 +98,7 @@ public class WelcomeActivity extends AccountAuthenticatorActivity implements Con
         mAdapter = new TabsAdapter(actionBar.getThemedContext(), getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
-        mMainContent.setDrawColor(true);
-        mMainContent.setDrawShadow(false);
-        mMainContent.setColor(primaryColor);
+        mMainContent.setStatusBarColor(primaryColor);
         mAdapter.addTab(UserSuggestionsFragment.class, getString(R.string.suggestions), 0, null);
         mAdapter.addTab(UserRankFragment.class, getString(R.string.rank), 0, null);
         mPagerIndicator.setViewPager(mViewPager);

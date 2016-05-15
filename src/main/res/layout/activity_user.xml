@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<catchla.yep.view.TintedStatusFrameLayout
-    android:id="@+id/main_content"
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinator_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="catchla.yep.activity.UserActivity">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.Yep.AppBar">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/fab_margin"
-            android:theme="@style/ThemeOverlay.Yep.AppBar">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
             <catchla.yep.view.SquareImageView
                 android:id="@+id/profile_image"
@@ -28,28 +35,37 @@
                 app:layout_scrollFlags="scroll"
                 tools:src="@drawable/ic_profile_image_default"/>
 
-        </android.support.design.widget.AppBarLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/user_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:colorBackground"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:showIn="@layout/activity_user">
+        </android.support.design.widget.CollapsingToolbarLayout>
 
-            <include layout="@layout/layout_content_user"/>
 
-        </android.support.v4.widget.NestedScrollView>
+    </android.support.design.widget.AppBarLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_action_chat"
-            app:layout_anchor="@id/app_bar"
-            app:layout_anchorGravity="bottom|end"/>
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/user_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:colorBackground"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </android.support.design.widget.CoordinatorLayout>
-</catchla.yep.view.TintedStatusFrameLayout>
+        <include layout="@layout/layout_content_user"/>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_action_chat"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="bottom|end"/>
+
+</android.support.design.widget.CoordinatorLayout>

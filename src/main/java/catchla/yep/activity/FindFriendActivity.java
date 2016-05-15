@@ -39,9 +39,6 @@ public class FindFriendActivity extends SwipeBackContentActivity implements Cons
         final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true));
 
-        mMainContent.setDrawColor(true);
-        mMainContent.setDrawShadow(false);
-        mMainContent.setColor(primaryColor);
 
         mAdapter = new MergeAdapter();
         final ArrayAdapter<String> actionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);

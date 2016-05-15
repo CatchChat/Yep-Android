@@ -185,7 +185,7 @@
         <activity
             android:name=".activity.UserActivity"
             android:label="@string/user"
-            android:theme="@style/Theme.Yep.Content">
+            android:theme="@style/Theme.Yep.Content.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.HomeActivity"/>

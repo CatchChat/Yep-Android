@@ -4,35 +4,35 @@ import android.accounts.Account;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apmem.tools.layouts.FlowLayout;
@@ -45,7 +45,6 @@ import java.util.List;
 
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.graphic.ActionBarDrawable;
 import catchla.yep.loader.UserLoader;
 import catchla.yep.model.Conversation;
 import catchla.yep.model.ProfileUpdate;
@@ -55,22 +54,16 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.model.User;
 import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Friendships;
-import catchla.yep.util.ContentValuesCreator;
 import catchla.yep.util.JsonSerializer;
-import catchla.yep.util.MathUtils;
 import catchla.yep.util.MenuUtils;
 import catchla.yep.util.ParseUtils;
-import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
 import catchla.yep.util.task.UpdateProfileTask;
-import catchla.yep.view.TintedStatusFrameLayout;
-import catchla.yep.view.iface.IExtendedView;
 
 public class UserActivity extends SwipeBackContentActivity implements Constants, View.OnClickListener,
-        LoaderManager.LoaderCallbacks<TaskResponse<User>>, AppBarLayout.OnOffsetChangedListener,
-        UpdateProfileTask.Callback {
+        LoaderManager.LoaderCallbacks<TaskResponse<User>>, UpdateProfileTask.Callback {
 
     private static final int REQUEST_SELECT_MASTER_SKILLS = 111;
     private static final int REQUEST_SELECT_LEARNING_SKILLS = 112;
@@ -84,10 +77,10 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private User mCurrentUser;
     private View mUserScrollContent;
     private View mUserScrollView;
-    private ActionBarDrawable mActionBarBackground;
     private AppBarLayout mAppBarLayout;
+    private Toolbar mToolbar;
     private View mTopicsItemView;
-
+    private View mCollapsingToolbar;
 
     private Rect mSystemWindowsInsets = new Rect();
     private UpdateProfileTask mUpdateProfileTask;
@@ -97,6 +90,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         super.onContentChanged();
         mActionButton = (FloatingActionButton) findViewById(R.id.fab);
         mProfileImageView = (ImageView) findViewById(R.id.profile_image);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mIntroductionView = (TextView) findViewById(R.id.introduction);
         mMasterSkills = (FlowLayout) findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) findViewById(R.id.learning_skills);
@@ -106,14 +100,18 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mUserScrollView = findViewById(R.id.user_scroll_view);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         mTopicsItemView = findViewById(R.id.user_topics);
+        mCollapsingToolbar = findViewById(R.id.collapsing_toolbar);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        setupSystemBars();
 
         final User currentUser;
         final Intent intent = getIntent();
@@ -129,82 +127,51 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             finish();
             return;
         }
-        mAppBarLayout.addOnOffsetChangedListener(this);
         mActionButton.setOnClickListener(this);
         mTopicsItemView.setOnClickListener(this);
 
-        fixScrollView();
-
         setTitle(Utils.getDisplayName(currentUser));
-        displayUser(currentUser, Utils.getAccountId(this, account));
+        displayUser(currentUser);
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     protected void onDestroy() {
-        mAppBarLayout.removeOnOffsetChangedListener(this);
         super.onDestroy();
     }
 
-    private void setupSystemBars() {
 
-        final ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
-
-        final Drawable shadow = ResourcesCompat.getDrawable(getResources(), R.drawable.shadow_user_banner_action_bar, null);
-
-        mActionBarBackground = new ActionBarDrawable(shadow);
-        actionBar.setBackgroundDrawable(mActionBarBackground);
-        final TintedStatusFrameLayout mainContent = getMainContent();
-        mainContent.setDrawShadow(true);
-        mainContent.setDrawColor(true);
-
-        mainContent.setShadowColor(0xA0000000);
-        mActionBarBackground.setColor(primaryColor);
-        mainContent.setColor(primaryColor);
-        mainContent.setOnFitSystemWindowsListener(new IExtendedView.OnFitSystemWindowsListener() {
-            @Override
-            public void onFitSystemWindows(final Rect insets) {
-                mSystemWindowsInsets.set(insets);
-            }
-        });
-
-    }
-
-
-    // Workaround for http://stackoverflow.com/a/32887429/2165810
-    private void fixScrollView() {
-        final TintedStatusFrameLayout mainContent = getMainContent();
-        final Rect insets = new Rect();
-        final Rect scrollContentPadding = new Rect();
-        scrollContentPadding.left = mUserScrollContent.getPaddingLeft();
-        scrollContentPadding.top = mUserScrollContent.getPaddingTop();
-        scrollContentPadding.right = mUserScrollContent.getPaddingRight();
-        scrollContentPadding.bottom = mUserScrollContent.getPaddingBottom();
-        final ViewGroup.LayoutParams appBarLp = mAppBarLayout.getLayoutParams();
-        final UserAppBarBehavior behavior = new UserAppBarBehavior();
-        ((CoordinatorLayout.LayoutParams) appBarLp).setBehavior(behavior);
-        mainContent.setOnSizeChangedListener(new IExtendedView.OnSizeChangedListener() {
-            @Override
-            public void onSizeChanged(final View view, final int w, final int h, final int oldw, final int oldh) {
-                mainContent.getSystemWindowsInsets(insets);
-                final CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) mUserScrollView.getLayoutParams();
-//                lp.gravity = Gravity.TOP;
-                lp.height = h - insets.top - insets.bottom;
-                mUserScrollContent.setMinimumHeight(h - insets.top - insets.bottom + 2);
-                behavior.setSystemWindowsInsets(insets);
-            }
-        });
-
-    }
-
-    private void displayUser(final User user, final String accountId) {
+    private void displayUser(final User user) {
         if (user == null) return;
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
-        mImageLoader.displayProfileImage(avatarUrl, mProfileImageView);
+        mImageLoader.displayProfileImage(avatarUrl, mProfileImageView, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(final String imageUri, final View view) {
+
+            }
+
+            @Override
+            public void onLoadingFailed(final String imageUri, final View view, final FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(final String imageUri, final View view, final Bitmap loadedImage) {
+                Palette.from(loadedImage).generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(final Palette palette) {
+                        updatePalette(palette);
+                    }
+                });
+            }
+
+            @Override
+            public void onLoadingCancelled(final String imageUri, final View view) {
+
+            }
+        });
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {
             mIntroductionView.setText(R.string.no_introduction_yet);
@@ -352,6 +319,13 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         }
     }
 
+    private void updatePalette(final Palette palette) {
+        Palette.Swatch swatch = palette.getDarkVibrantSwatch();
+        if (swatch == null) return;
+        mToolbar.setTitleTextColor(swatch.getTitleTextColor());
+        mCollapsingToolbar.setBackgroundColor(swatch.getRgb());
+    }
+
     @Override
     public void onClick(final View v) {
         switch (v.getId()) {
@@ -393,7 +367,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             final User user = data.getData();
             final Account account = getAccount();
             final String accountId = Utils.getAccountId(this, account);
-            displayUser(user, accountId);
+            displayUser(user);
             if (StringUtils.equals(user.getId(), accountId)) {
                 Utils.saveUserInfo(UserActivity.this, account, user);
             } else {
@@ -474,56 +448,16 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
     }
 
-    @Override
-    public void onOffsetChanged(final AppBarLayout appBarLayout, final int offset) {
-        final float factor = -offset / (float) (appBarLayout.getHeight() - mSystemWindowsInsets.top);
-        mProfileImageView.setTranslationY(-offset / 2);
-        updateSystemBarFactor(factor);
-    }
 
     @Override
     protected boolean isTintBarEnabled() {
         return false;
     }
 
-    private void updateSystemBarFactor(final float factor) {
-        final TintedStatusFrameLayout mainContent = getMainContent();
-        mainContent.setFactor(factor);
-        mActionBarBackground.setFactor(factor);
-    }
 
     @Override
     public void onProfileUpdated(final User user) {
-        displayUser(user, Utils.getAccountId(this, getAccount()));
-    }
-
-    public static class UserAppBarBehavior extends AppBarLayout.Behavior {
-        private Rect mRect = new Rect();
-        private int mViewHeight;
-
-        public UserAppBarBehavior(final Context context, final AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        public UserAppBarBehavior() {
-
-        }
-
-        @Override
-        public boolean onLayoutChild(final CoordinatorLayout parent, final AppBarLayout abl, final int layoutDirection) {
-            final boolean handled = super.onLayoutChild(parent, abl, layoutDirection);
-            mViewHeight = abl.getMeasuredHeight();
-            return handled;
-        }
-
-        @Override
-        public boolean setTopAndBottomOffset(final int offset) {
-            return super.setTopAndBottomOffset(MathUtils.clamp(offset, 0, -(mViewHeight - mRect.top)));
-        }
-
-        public void setSystemWindowsInsets(final Rect insets) {
-            mRect.set(insets);
-        }
+        displayUser(user);
     }
 
     public static class SetUsernameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {

@@ -132,9 +132,7 @@ public class HomeActivity extends AppCompatActivity implements Constants, IAccou
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.addOnPageChangeListener(this);
-        mMainContent.setDrawColor(true);
-        mMainContent.setDrawShadow(false);
-        mMainContent.setColor(primaryColor);
+        mMainContent.setStatusBarColor(primaryColor);
         mFloatingActionButton.setOnClickListener(this);
 
         final Bundle args = new Bundle();

@@ -94,9 +94,7 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
         final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true));
 
-        mMainContent.setDrawColor(true);
-        mMainContent.setDrawShadow(false);
-        mMainContent.setColor(primaryColor);
+        mMainContent.setStatusBarColor(primaryColor);
 
         final Conversation conversation = getConversation();
         setTitle(Utils.getConversationName(conversation));

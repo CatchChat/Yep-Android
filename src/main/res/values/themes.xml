@@ -5,14 +5,12 @@
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/branding_color</item>
         <item name="colorPrimary">@color/branding_color</item>
-        <item name="colorPrimaryDark">@color/branding_color_dark</item>
     </style>
 
     <style name="Theme.Base.Dialog" parent="Theme.AppCompat.Light.Dialog">
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/branding_color</item>
         <item name="colorPrimary">@color/branding_color</item>
-        <item name="colorPrimaryDark">@color/branding_color_dark</item>
     </style>
 
     <style name="Theme.Yep" parent="Theme.Base">

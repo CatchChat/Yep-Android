@@ -60,11 +60,7 @@ public class ContentActivity extends AppCompatActivity {
 
         final int primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0);
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true));
-        mMainContent.setColor(primaryColor);
-
-        mMainContent.setDrawShadow(false);
-        mMainContent.setDrawColor(true);
-        mMainContent.setFactor(1);
+        mMainContent.setStatusBarColor(primaryColor);
     }
 
 }

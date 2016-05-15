@@ -34,6 +34,10 @@ public class ImageLoaderWrapper {
         imageLoader.displayImage(uri, view, profileImageOption);
     }
 
+    public void displayProfileImage(@Nullable final String uri, final ImageView view, final ImageLoadingListener listener) {
+        imageLoader.displayImage(uri, view, profileImageOption, listener);
+    }
+
     public void cancelDisplayTask(final ImageView imageView) {
         imageLoader.cancelDisplayTask(imageView);
     }
