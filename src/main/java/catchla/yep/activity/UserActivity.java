@@ -159,6 +159,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
             @Override
             public void onLoadingComplete(final String imageUri, final View view, final Bitmap loadedImage) {
+                if (loadedImage == null) return;
                 Palette.from(loadedImage).generate(new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(final Palette palette) {
