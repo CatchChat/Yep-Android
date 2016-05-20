@@ -17,12 +17,15 @@
         android:gravity="center"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/master_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/element_spacing_large"
         android:layout_marginTop="@dimen/element_spacing_large"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/element_spacing_normal"
         android:text="@string/label_master"
-        android:textAppearance="?android:textAppearanceSmall"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorSecondary"
         android:textStyle="bold"/>
 
@@ -32,12 +35,15 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/learning_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/element_spacing_large"
         android:layout_marginTop="@dimen/element_spacing_large"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/element_spacing_normal"
         android:text="@string/label_learning"
-        android:textAppearance="?android:textAppearanceSmall"
+        android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorSecondary"
         android:textStyle="bold"/>
 
@@ -71,15 +77,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:minHeight="?listPreferredItemHeight">
+        android:minHeight="?listPreferredItemHeight"
+        android:paddingLeft="@dimen/element_spacing_normal"
+        android:paddingRight="@dimen/element_spacing_normal">
+
+        <catchla.yep.view.ActionIconView
+            android:id="@+id/user_topics_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:color="?android:textColorSecondary"
+            android:src="@drawable/ic_action_feeds"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/user_topics_icon"
+            android:layout_toRightOf="@+id/user_topics_icon"
             android:padding="@dimen/element_spacing_normal"
-            android:text="@string/topics"
-            android:textAppearance="?android:textAppearanceMedium"/>
+            android:text="@string/feeds"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="?android:textColorSecondary"/>
     </RelativeLayout>
 
 </LinearLayout>

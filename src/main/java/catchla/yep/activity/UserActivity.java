@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,9 +29,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apmem.tools.layouts.FlowLayout;
@@ -72,6 +68,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
     private ImageView mProfileImageView;
     private TextView mIntroductionView;
     private FlowLayout mMasterSkills, mLearningSkills;
+    private View mMasterLabel, mLearningLabel;
     private LinearLayout mProvidersContainer;
     private View mProvidersDivider;
     private User mCurrentUser;
@@ -94,6 +91,8 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mIntroductionView = (TextView) findViewById(R.id.introduction);
         mMasterSkills = (FlowLayout) findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) findViewById(R.id.learning_skills);
+        mMasterLabel = findViewById(R.id.master_label);
+        mLearningLabel = findViewById(R.id.learning_label);
         mProvidersContainer = (LinearLayout) findViewById(R.id.providers_container);
         mProvidersDivider = findViewById(R.id.providers_divider);
         mUserScrollContent = findViewById(R.id.user_scroll_content);
@@ -187,9 +186,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             }
         }
         if (isMySelf) {
-            final View view = Utils.inflateAddSkillView(UserActivity.this, inflater, mLearningSkills);
-            final View skillButton = view.findViewById(R.id.skill_button);
-            skillButton.setOnClickListener(new View.OnClickListener() {
+            mLearningLabel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     final Intent intent = new Intent(UserActivity.this, SkillSelectorActivity.class);
@@ -197,7 +194,6 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                     startActivityForResult(intent, REQUEST_SELECT_LEARNING_SKILLS);
                 }
             });
-            mLearningSkills.addView(view);
         } else {
             //TODO: Add empty view
         }
@@ -213,9 +209,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
             }
         }
         if (isMySelf) {
-            final View view = Utils.inflateAddSkillView(UserActivity.this, inflater, mMasterSkills);
-            final View skillButton = view.findViewById(R.id.skill_button);
-            skillButton.setOnClickListener(new View.OnClickListener() {
+            mMasterLabel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     final Intent intent = new Intent(UserActivity.this, SkillSelectorActivity.class);
@@ -223,7 +217,6 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
                     startActivityForResult(intent, REQUEST_SELECT_MASTER_SKILLS);
                 }
             });
-            mMasterSkills.addView(view);
         } else {
             //TODO: Add empty view
         }
