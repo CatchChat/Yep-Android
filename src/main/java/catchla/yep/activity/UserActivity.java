@@ -146,33 +146,7 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         if (user == null) return;
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
-        mImageLoader.displayProfileImage(avatarUrl, mProfileImageView, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(final String imageUri, final View view) {
-
-            }
-
-            @Override
-            public void onLoadingFailed(final String imageUri, final View view, final FailReason failReason) {
-
-            }
-
-            @Override
-            public void onLoadingComplete(final String imageUri, final View view, final Bitmap loadedImage) {
-                if (loadedImage == null) return;
-                Palette.from(loadedImage).generate(new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(final Palette palette) {
-                        updatePalette(palette);
-                    }
-                });
-            }
-
-            @Override
-            public void onLoadingCancelled(final String imageUri, final View view) {
-
-            }
-        });
+        mImageLoader.displayProfileImage(avatarUrl, mProfileImageView);
         final String introduction = user.getIntroduction();
         if (TextUtils.isEmpty(introduction)) {
             mIntroductionView.setText(R.string.no_introduction_yet);

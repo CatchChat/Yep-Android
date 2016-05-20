@@ -35,6 +35,12 @@
                 app:layout_scrollFlags="scroll"
                 tools:src="@drawable/ic_profile_image_default"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/shadow_user_banner_action_bar"
+                app:layout_collapseMode="pin"/>
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
