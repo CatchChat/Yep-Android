@@ -3,10 +3,9 @@ package catchla.yep.preference;
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
-import android.preference.Preference;
-import android.support.annotation.NonNull;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,12 +46,12 @@ public class AccountInfoPreference extends Preference implements Constants {
     }
 
     @Override
-    protected void onBindView(@NonNull final View view) {
-        super.onBindView(view);
+    public void onBindViewHolder(final PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
         if (mAccount != null) {
-            final ImageView profileImageView = (ImageView) view.findViewById(R.id.account_profile_image);
-            final TextView nameView = (TextView) view.findViewById(R.id.account_name);
-            final TextView introductionView = (TextView) view.findViewById(R.id.account_introduction);
+            final ImageView profileImageView = (ImageView) holder.findViewById(R.id.account_profile_image);
+            final TextView nameView = (TextView) holder.findViewById(R.id.account_name);
+            final TextView introductionView = (TextView) holder.findViewById(R.id.account_introduction);
             mImageLoader.displayProfileImage(mAccountUser.getAvatarThumbUrl(), profileImageView);
             nameView.setText(mAccountUser.getNickname());
             introductionView.setText(mAccountUser.getIntroduction());
