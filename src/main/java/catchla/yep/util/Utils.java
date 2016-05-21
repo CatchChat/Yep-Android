@@ -289,10 +289,6 @@ public class Utils implements Constants {
         return view;
     }
 
-    public static View inflateAddSkillView(final Context context, final LayoutInflater inflater, final ViewGroup parent) {
-        return inflater.inflate(R.layout.layout_skill_add_button, parent, false);
-    }
-
 
     public static void setCompatToolbarOverlayAlpha(FragmentActivity activity, float alpha) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return;

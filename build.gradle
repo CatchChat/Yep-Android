@@ -149,7 +149,8 @@ dependencies {
     compile 'com.hannesdorfmann:adapterdelegates:1.1.0'
     compile 'me.philio:pinentryview:1.0.6'
     compile 'com.github.mariotaku:AbstractTask:0.9.1'
-    compile 'com.github.mariotaku.CommonsLibrary:logansquare:0.9.1-SNAPSHOT'
+    compile 'com.github.mariotaku.CommonsLibrary:logansquare:0.9.5-SNAPSHOT'
+    compile 'com.github.mariotaku.CommonsLibrary:view:0.9.5-SNAPSHOT'
     debugCompile 'com.facebook.stetho:stetho:1.3.1'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])

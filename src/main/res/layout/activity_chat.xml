@@ -31,11 +31,21 @@
             android:background="#e5ffffff"
             android:visibility="gone">
 
-
             <catchla.yep.view.VoiceWaveView
                 android:id="@+id/voice_wave_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/cancel_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/element_spacing_xlarge"
+                android:gravity="center"
+                android:padding="@dimen/element_spacing_normal"
+                android:text="@string/swipe_up_to_cancel"
+                android:textColor="@color/material_red"/>
         </RelativeLayout>
 
         <View

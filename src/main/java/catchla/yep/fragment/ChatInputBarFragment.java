@@ -3,6 +3,7 @@ package catchla.yep.fragment;
 import android.Manifest;
 import android.accounts.Account;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,14 +15,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.annotation.WorkerThread;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.GestureDetector;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +33,7 @@ import android.widget.Toast;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.mariotaku.abstask.library.TaskStarter;
+import org.mariotaku.commons.parcel.ViewUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,9 +147,14 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
         mVoiceToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final boolean newState = mVoiceRecordButton.getVisibility() != View.VISIBLE;
-                mVoiceRecordButton.setVisibility(newState ? View.VISIBLE : View.GONE);
-                mEditTextContainer.setVisibility(newState ? View.GONE : View.VISIBLE);
+                final boolean showVoice = mVoiceRecordButton.getVisibility() != View.VISIBLE;
+                if (showVoice) {
+                    final FragmentActivity activity = getActivity();
+                    InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mVoiceRecordButton.getWindowToken(), 0);
+                }
+                mVoiceRecordButton.setVisibility(showVoice ? View.VISIBLE : View.GONE);
+                mEditTextContainer.setVisibility(showVoice ? View.GONE : View.VISIBLE);
             }
         });
         final GestureViewHelper helper = new GestureViewHelper(getContext());
@@ -417,6 +427,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
 
         @Override
         public boolean onDown(final MotionEvent e) {
+            mFragment.mVoiceRecordButton.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             if (ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 final String[] permissions = {Manifest.permission.RECORD_AUDIO};
                 mFragment.requestPermissions(permissions, REQUEST_REQUEST_RECORD_PERMISSION);
@@ -443,8 +454,9 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
             mTimerTask = task;
             task.start();
             mRecorder = recorder;
-            if (mFragment.mListener != null)
+            if (mFragment.mListener != null) {
                 mFragment.mListener.onRecordStarted();
+            }
             mSampleRecorder.start();
             return true;
         }
@@ -455,7 +467,8 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
 
         @Override
         public void onUp(final MotionEvent event) {
-            stopRecording(false);
+            stopRecording(!ViewUtils.hitView(event.getRawX(), event.getRawY(),
+                    mFragment.mVoiceRecordButton));
         }
 
         @Override

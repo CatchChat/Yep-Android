@@ -66,6 +66,8 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
 
     private FloatingActionButton mActionButton;
     private ImageView mProfileImageView;
+    private TextView mNameView;
+    private TextView mUsernameView;
     private TextView mIntroductionView;
     private FlowLayout mMasterSkills, mLearningSkills;
     private View mMasterLabel, mLearningLabel;
@@ -88,6 +90,8 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mActionButton = (FloatingActionButton) findViewById(R.id.fab);
         mProfileImageView = (ImageView) findViewById(R.id.profile_image);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mNameView = (TextView) findViewById(R.id.name);
+        mUsernameView = (TextView) findViewById(R.id.username);
         mIntroductionView = (TextView) findViewById(R.id.introduction);
         mMasterSkills = (FlowLayout) findViewById(R.id.master_skills);
         mLearningSkills = (FlowLayout) findViewById(R.id.learning_skills);
@@ -146,7 +150,14 @@ public class UserActivity extends SwipeBackContentActivity implements Constants,
         mCurrentUser = user;
         final String avatarUrl = user.getAvatarUrl();
         mImageLoader.displayProfileImage(avatarUrl, mProfileImageView);
+        final String username = user.getUsername();
         final String introduction = user.getIntroduction();
+        mNameView.setText(user.getNickname());
+        if (TextUtils.isEmpty(username)) {
+            mUsernameView.setText(R.string.no_username);
+        } else {
+            mUsernameView.setText(username);
+        }
         if (TextUtils.isEmpty(introduction)) {
             mIntroductionView.setText(R.string.no_introduction_yet);
         } else {

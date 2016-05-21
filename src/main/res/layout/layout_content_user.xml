@@ -11,17 +11,32 @@
     tools:showIn="@layout/activity_user">
 
     <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="?android:textColorPrimary"/>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/element_spacing_normal"
+        android:textColor="?android:textColorTertiary"/>
+
+    <TextView
         android:id="@+id/introduction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"/>
+        android:layout_marginTop="@dimen/element_spacing_normal"
+        android:textColor="?android:textColorSecondary"/>
 
     <TextView
         android:id="@+id/master_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/element_spacing_large"
-        android:layout_marginTop="@dimen/element_spacing_large"
+        android:layout_marginBottom="@dimen/element_spacing_small"
+        android:layout_marginTop="@dimen/element_spacing_normal"
         android:background="?selectableItemBackground"
         android:padding="@dimen/element_spacing_normal"
         android:text="@string/label_master"
@@ -38,8 +53,8 @@
         android:id="@+id/learning_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/element_spacing_large"
-        android:layout_marginTop="@dimen/element_spacing_large"
+        android:layout_marginBottom="@dimen/element_spacing_small"
+        android:layout_marginTop="@dimen/element_spacing_normal"
         android:background="?selectableItemBackground"
         android:padding="@dimen/element_spacing_normal"
         android:text="@string/label_learning"
