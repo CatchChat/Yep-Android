@@ -80,6 +80,7 @@ import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
+import okhttp3.MediaType;
 import okio.ByteString;
 
 /**
@@ -534,10 +535,14 @@ public class Utils implements Constants {
         final String name = file.getName();
         final int dotIndex = name.indexOf(".");
         final MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        if (dotIndex < 0) {
-            return name + "." + mimeTypeMap.getExtensionFromMimeType(mimeType);
+        String extension = mimeTypeMap.getExtensionFromMimeType(mimeType);
+        if (extension == null) {
+            extension = MediaType.parse(mimeType).subtype();
         }
-        return name.substring(0, dotIndex + 1) + mimeTypeMap.getExtensionFromMimeType(mimeType);
+        if (dotIndex < 0) {
+            return name + "." + extension;
+        }
+        return name.substring(0, dotIndex + 1) + extension;
     }
 
     public static Bitmap getMarkerBitmap(final Context context) {

@@ -5,12 +5,16 @@
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/branding_color</item>
         <item name="colorPrimary">@color/branding_color</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.Base.Dialog" parent="Theme.AppCompat.Light.Dialog">
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/branding_color</item>
         <item name="colorPrimary">@color/branding_color</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.Yep" parent="Theme.Base">
