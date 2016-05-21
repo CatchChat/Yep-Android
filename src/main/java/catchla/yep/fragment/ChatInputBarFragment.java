@@ -457,6 +457,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
             if (mFragment.mListener != null) {
                 mFragment.mListener.onRecordStarted();
             }
+            mFragment.mVoiceRecordButton.setText(R.string.release_to_send);
             mSampleRecorder.start();
             return true;
         }
@@ -480,6 +481,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
             if (mFragment.mListener != null) {
                 mFragment.mListener.onRecordStopped();
             }
+            mFragment.mVoiceRecordButton.setText(R.string.ptt_hint);
             final float[] samples = mSampleRecorder.get();
             final MediaRecorder recorder = mRecorder;
             if (recorder == null) return;
