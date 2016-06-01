@@ -277,6 +277,17 @@ class FayeService : Service(), Constants {
         }
     }
 
+    /**
+     * Created by mariotaku on 16/6/1.
+     */
+    @JsonObject
+    internal class YepFayeExtension : Extension() {
+        @JsonField(name = arrayOf("version"))
+        lateinit var version: String
+        @JsonField(name = arrayOf("access_token"))
+        lateinit var accessToken: String
+
+    }
 
     internal class MessageSerializer : TypeConverter<Any> {
 
@@ -296,16 +307,4 @@ class FayeService : Service(), Constants {
             LoganSquare.mapperFor(obj.javaClass).serialize(obj, jsonGenerator, true)
         }
     }
-}
-
-/**
- * Created by mariotaku on 16/6/1.
- */
-@JsonObject
-class YepFayeExtension : Extension() {
-    @JsonField(name = arrayOf("version"))
-    lateinit var version: String
-    @JsonField(name = arrayOf("access_token"))
-    lateinit var accessToken: String
-
 }
