@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.squareup.otto.Bus
 import okhttp3.Request
 import okhttp3.ws.WebSocketCall
+import org.mariotaku.okfaye.Extension
 import org.mariotaku.okfaye.Faye
 import org.mariotaku.sqliteqb.library.Expression
 import java.io.IOException
@@ -101,8 +102,8 @@ class FayeService : Service(), Constants {
 
         mFayeClient = Faye.create(client, WebSocketCall.create(client, builder.build()))
         val extension = YepFayeExtension()
-        extension.setVersion("v1")
-        extension.setAccessToken(authToken)
+        extension.version = "v1"
+        extension.accessToken = authToken
         mFayeClient!!.setExtension(extension)
         mFayeClient!!.setErrorListener { e, code, message ->
             if (e != null) {
@@ -295,4 +296,16 @@ class FayeService : Service(), Constants {
             LoganSquare.mapperFor(obj.javaClass).serialize(obj, jsonGenerator, true)
         }
     }
+}
+
+/**
+ * Created by mariotaku on 16/6/1.
+ */
+@JsonObject
+class YepFayeExtension : Extension() {
+    @JsonField(name = arrayOf("version"))
+    lateinit var version: String
+    @JsonField(name = arrayOf("access_token"))
+    lateinit var accessToken: String
+
 }
