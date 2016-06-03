@@ -47,9 +47,10 @@ public class NewTopic implements JsonBody {
         attachments(Arrays.asList(attachments));
     }
 
-    public void attachments(final List<Object> attachments) {
+    public void attachments(final List<?> attachments) {
         if (attachments == null) return;
-        this.attachments = attachments;
+        //noinspection unchecked
+        this.attachments = (List<Object>) attachments;
     }
 
     public NewTopic location(double latitude, double longitude) {

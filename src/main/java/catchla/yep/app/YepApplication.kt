@@ -1,20 +1,16 @@
 package catchla.yep.app
 
-import android.accounts.Account
 import android.app.Activity
 import android.app.Application
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-
-import com.crashlytics.android.Crashlytics
-
 import catchla.yep.Constants
 import catchla.yep.activity.iface.IAccountActivity
 import catchla.yep.service.FayeService
 import catchla.yep.util.DebugModeUtils
 import catchla.yep.util.dagger.ApplicationModule
+import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 
 /**
@@ -41,9 +37,6 @@ class YepApplication : Application(), Constants {
                 if (activity is IAccountActivity) {
                     val fayeIntent = Intent(this@YepApplication, FayeService::class.java)
                     val account = activity.account
-                    if (account == null) {
-                        Log.e(Constants.LOGTAG, "Account should not be null here", Exception())
-                    }
                     fayeIntent.putExtra(Constants.EXTRA_ACCOUNT, account)
                     startedService = startService(fayeIntent)
                 }

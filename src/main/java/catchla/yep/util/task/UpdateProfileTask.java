@@ -85,7 +85,7 @@ public class UpdateProfileTask extends AsyncTask<Object, Object, TaskResponse<Us
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        ProgressDialogFragment df = ProgressDialogFragment.show(mActivity, UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
+        ProgressDialogFragment df = ProgressDialogFragment.Companion.show(mActivity, UPDATE_PROFILE_DIALOG_FRAGMENT_TAG);
         df.setCancelable(false);
     }
 

@@ -31,7 +31,7 @@ public class MouseScrollDirectionDecider {
         this.horizontalView = new InternalHorizontalScrollView(context, this);
     }
 
-    public float getHorizontalDirection() {
+    public int getHorizontalDirection() {
         return horizontalDirection;
     }
 
@@ -47,7 +47,7 @@ public class MouseScrollDirectionDecider {
         horizontalDirection = direction;
     }
 
-    public float getVerticalDirection() {
+    public int getVerticalDirection() {
         return verticalDirection;
     }
 

@@ -51,6 +51,7 @@ import catchla.yep.model.Message;
 import catchla.yep.model.NewMessage;
 import catchla.yep.model.TaskResponse;
 import catchla.yep.model.YepException;
+import catchla.yep.annotation.AttachableType;
 import catchla.yep.util.EditTextEnterHandler;
 import catchla.yep.util.GestureViewHelper;
 import catchla.yep.util.JsonSerializer;
@@ -231,7 +232,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
                 final String mimeType = message.getMetadataValue("mime_type", null);
                 final String metadata = message.getMetadataValue("metadata", null);
                 return yep.uploadAttachment(AttachmentUpload.create(new File(path), mimeType,
-                        YepAPI.AttachableType.MESSAGE, metadata));
+                        AttachableType.MESSAGE, metadata));
             }
 
             @Nullable
@@ -315,7 +316,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
     public void onButtonClick(final int id) {
         switch (id) {
             case R.id.gallery: {
-                startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).pickImage().build(),
+                startActivityForResult(ThemedImagePickerActivity.Companion.withThemed(getContext()).pickImage().build(),
                         REQUEST_PICK_IMAGE);
                 break;
             }
@@ -330,7 +331,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
 
     @Override
     public void onCameraClick() {
-        startActivityForResult(ThemedImagePickerActivity.withThemed(getContext()).takePhoto().build(),
+        startActivityForResult(ThemedImagePickerActivity.Companion.withThemed(getContext()).takePhoto().build(),
                 REQUEST_TAKE_PHOTO);
     }
 
@@ -520,7 +521,7 @@ public class ChatInputBarFragment extends BaseFragment implements Constants,
                 public FileAttachment uploadAttachment(final YepAPI yep, final NewMessage message) throws YepException {
                     final File file = new File(recordPath);
                     return yep.uploadAttachment(AttachmentUpload.create(file, "audio/mp4",
-                            YepAPI.AttachableType.MESSAGE, message.getMetadataValue("metadata", null)));
+                            AttachableType.MESSAGE, message.getMetadataValue("metadata", null)));
                 }
 
                 @Override

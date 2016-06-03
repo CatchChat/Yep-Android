@@ -138,7 +138,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
     }
 
     private void sendVerifyCode(final String phoneNumber, final String countryCode) {
-        ProgressDialogFragment.show(this, "send_verify");
+        ProgressDialogFragment.Companion.show(this, "send_verify");
         final AbstractTask<String[], TaskResponse<Pair<String, String>>, SignInActivity> task
                 = new AbstractTask<String[], TaskResponse<Pair<String, String>>, SignInActivity>() {
 
@@ -188,7 +188,7 @@ public class SignInActivity extends ContentActivity implements Constants, ViewPa
     }
 
     private void verifyPhoneNumber(final String verifyCode) {
-        ProgressDialogFragment.show(this, TAG_VERIFY_PHONE);
+        ProgressDialogFragment.Companion.show(this, TAG_VERIFY_PHONE);
         final AbstractTask<String[], TaskResponse<AccessToken>, SignInActivity> task
                 = new AbstractTask<String[], TaskResponse<AccessToken>, SignInActivity>() {
 

@@ -12,8 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import catchla.yep.annotation.AttachableType;
 import catchla.yep.util.Utils;
-import catchla.yep.util.YepAPI;
 
 /**
  * Created by mariotaku on 15/12/27.
@@ -25,7 +25,7 @@ public class AttachmentUpload {
     private final String metadata;
 
     public AttachmentUpload(final File file, final String mimeType,
-                            @YepAPI.AttachableType final String kind,
+                            @AttachableType final String kind,
                             final String metadata) {
         this.file = file;
         this.mimeType = mimeType;
@@ -34,7 +34,7 @@ public class AttachmentUpload {
     }
 
     public static AttachmentUpload create(final File file, final String mimeType,
-                                          @YepAPI.AttachableType final String kind,
+                                          @AttachableType final String kind,
                                           final String metadata) {
         return new AttachmentUpload(file, mimeType, kind, metadata);
     }

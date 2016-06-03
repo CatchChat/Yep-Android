@@ -53,6 +53,7 @@ import catchla.yep.model.message.LastSeenMessage;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.service.FayeService;
+import catchla.yep.annotation.PathRecipientType;
 import catchla.yep.util.ThemeUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
@@ -180,13 +181,13 @@ public class ChatActivity extends SwipeBackContentActivity implements Constants,
                     final LastReadResponse lastReadResponse;
                     switch (recipientType) {
                         case Message.RecipientType.CIRCLE: {
-                            lastReadResponse = yep.getSentLastRead(YepAPI.PathRecipientType.CIRCLES, recipientId);
-                            yep.batchMarkAsRead(YepAPI.PathRecipientType.CIRCLES, recipientId, lastId);
+                            lastReadResponse = yep.getSentLastRead(PathRecipientType.CIRCLES, recipientId);
+                            yep.batchMarkAsRead(PathRecipientType.CIRCLES, recipientId, lastId);
                             break;
                         }
                         case Message.RecipientType.USER: {
-                            lastReadResponse = yep.getSentLastRead(YepAPI.PathRecipientType.USERS, recipientId);
-                            yep.batchMarkAsRead(YepAPI.PathRecipientType.USERS, recipientId, lastId);
+                            lastReadResponse = yep.getSentLastRead(PathRecipientType.USERS, recipientId);
+                            yep.batchMarkAsRead(PathRecipientType.USERS, recipientId, lastId);
                             break;
                         }
                         default: {

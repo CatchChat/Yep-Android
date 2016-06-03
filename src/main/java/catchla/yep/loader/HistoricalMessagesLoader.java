@@ -13,6 +13,7 @@ import catchla.yep.model.Message;
 import catchla.yep.model.Paging;
 import catchla.yep.model.ResponseList;
 import catchla.yep.model.YepException;
+import catchla.yep.annotation.PathRecipientType;
 import catchla.yep.util.YepAPI;
 
 /**
@@ -21,12 +22,12 @@ import catchla.yep.util.YepAPI;
 public class HistoricalMessagesLoader extends CachedYepListLoader<Message> implements Constants {
 
     private final Paging mPaging;
-    @YepAPI.PathRecipientType
+    @PathRecipientType
     private final String mRecipientType;
     private final String mRecipientId;
 
     public HistoricalMessagesLoader(@NonNull Context context, @NonNull Account account,
-                                    @YepAPI.PathRecipientType final String recipientType,
+                                    @PathRecipientType final String recipientType,
                                     final String recipientId, @Nullable Paging paging,
                                     boolean readCache, boolean writeCache, @Nullable List<Message> oldData) {
         super(context, account, Message.class, oldData, readCache, writeCache);
