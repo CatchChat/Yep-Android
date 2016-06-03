@@ -52,13 +52,13 @@ public class BlockedUsersFragment extends AbsContentListRecyclerViewFragment<Use
 
     @Override
     public void onLoadFinished(final Loader<List<User>> loader, final List<User> data) {
-        getAdapter().setData(data);
+        getAdapter().setUsers(data);
         showContent();
         setRefreshing(false);
     }
 
     @Override
     public void onLoaderReset(final Loader<List<User>> loader) {
-        getAdapter().setData(null);
+        getAdapter().setUsers(null);
     }
 }

@@ -28,7 +28,7 @@ import catchla.yep.util.Utils
 
 class SettingsDetailsFragment : PreferenceFragmentCompat(), Constants, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val preferenceManager = preferenceManager
         val defaultScreen = preferenceScreen
         val preferenceScreen: PreferenceScreen

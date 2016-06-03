@@ -21,9 +21,9 @@ open class ContentActivity : AppCompatActivity() {
     protected var mainContent: TintedStatusFrameLayout? = null
         private set
     @Inject
-    lateinit var mBus: Bus
+    lateinit var bus: Bus
     @Inject
-    lateinit var mImageLoader: ImageLoaderWrapper
+    lateinit var imageLoader: ImageLoaderWrapper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

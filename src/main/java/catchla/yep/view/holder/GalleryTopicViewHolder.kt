@@ -52,7 +52,7 @@ class GalleryTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, conte
         private val inflater: LayoutInflater
         var attachments: List<Attachment>? = null
             set(value) {
-                attachments = value
+                field = value
                 notifyDataSetChanged()
             }
 

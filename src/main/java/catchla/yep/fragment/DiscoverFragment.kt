@@ -95,7 +95,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         }
         val oldData: List<User>?
         if (readOld) {
-            oldData = adapter.data
+            oldData = adapter.users
         } else {
             oldData = null
         }
@@ -104,7 +104,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
 
     override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>?) {
         val adapter = adapter
-        adapter.data = data
+        adapter.users = data
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) IndicatorPosition.END else IndicatorPosition.NONE
         showContent()
         isRefreshing = false
@@ -113,7 +113,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     }
 
     override fun onLoaderReset(loader: Loader<List<User>>) {
-        adapter.data = null
+        adapter.users = null
     }
 
     override fun onCreateAdapter(context: Context): UsersAdapter {

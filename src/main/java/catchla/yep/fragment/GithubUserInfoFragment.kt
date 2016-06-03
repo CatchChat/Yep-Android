@@ -6,44 +6,45 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
 import catchla.yep.Constants
 import catchla.yep.R
-import catchla.yep.adapter.InstagramMediaAdapter
-import catchla.yep.loader.InstagramMediaLoader
-import catchla.yep.model.InstagramMediaList
+import catchla.yep.adapter.GithubUserAdapter
+import catchla.yep.loader.GithubUserInfoLoader
+import catchla.yep.model.GithubUserInfo
 import catchla.yep.model.User
 
 /**
- * Created by mariotaku on 15/6/3.
+ * Created by mariotaku on 15/6/4.
  */
-class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<InstagramMediaList> {
+class GithubUserInfoFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<GithubUserInfo> {
+
 
     private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mAdapter: GithubUserAdapter
     private lateinit var mLoadProgress: View
 
-    private lateinit var mAdapter: InstagramMediaAdapter
-
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<InstagramMediaList> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<GithubUserInfo> {
         val fragmentArgs = arguments
         val user = fragmentArgs.getParcelable<User>(Constants.EXTRA_USER)
         val userId = user!!.id
-        return InstagramMediaLoader(activity, account, userId,
+        return GithubUserInfoLoader(activity, account, userId,
                 false, false)
     }
 
     private val account: Account
         get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
 
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mAdapter = InstagramMediaAdapter(activity)
-        val layoutManager = GridLayoutManager(activity, 2)
+        mAdapter = GithubUserAdapter(activity)
+        val layoutManager = LinearLayoutManager(activity)
         layoutManager.orientation = GridLayoutManager.VERTICAL
         mRecyclerView.layoutManager = layoutManager
         mRecyclerView.adapter = mAdapter
@@ -52,13 +53,17 @@ class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallba
         showProgress()
     }
 
-    override fun onLoadFinished(loader: Loader<InstagramMediaList>, data: InstagramMediaList?) {
-        mAdapter.shots = data?.media
+    override fun onLoadFinished(loader: Loader<GithubUserInfo>, data: GithubUserInfo?) {
+        if (data != null) {
+            mAdapter.info = data
+        } else {
+            mAdapter.info = null
+        }
         showContent()
     }
 
-    override fun onLoaderReset(loader: Loader<InstagramMediaList>) {
-        mAdapter.shots = null
+    override fun onLoaderReset(loader: Loader<GithubUserInfo>) {
+        mAdapter.info = null
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -80,5 +85,4 @@ class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallba
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater!!.inflate(R.layout.fragment_recycler_view, container, false)
     }
-
 }

@@ -19,6 +19,7 @@ import catchla.yep.R
 import catchla.yep.activity.FindFriendActivity
 import catchla.yep.activity.UserActivity
 import catchla.yep.adapter.FriendsListAdapter
+import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.FriendshipsLoader
 import catchla.yep.message.FriendshipsRefreshedEvent
@@ -34,11 +35,11 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
-        adapter.setItemClickListener { position, holder ->
+        adapter.itemClickListener = ItemClickListener { position, holder ->
             val friendship = adapter.getFriendship(position)
             val intent = Intent(activity, UserActivity::class.java)
             intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_USER, friendship.friend)
+            intent.putExtra(Constants.EXTRA_USER, friendship!!.friend)
             startActivity(intent)
         }
         loaderManager.initLoader(0, null, this)
@@ -77,7 +78,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
     }
 
     override fun onLoadFinished(loader: Loader<List<Friendship>>, data: List<Friendship>) {
-        adapter.setData(data)
+        adapter.friendships = data
         showContent()
     }
 
@@ -107,7 +108,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
     }
 
     override fun onLoaderReset(loader: Loader<List<Friendship>>) {
-        adapter.setData(null)
+        adapter.friendships = null
     }
 
     override fun getActionIcon(): Int {

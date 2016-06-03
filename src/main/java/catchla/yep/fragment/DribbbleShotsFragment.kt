@@ -23,9 +23,10 @@ import catchla.yep.model.User
  */
 class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<DribbbleShots> {
 
-    private var mRecyclerView: RecyclerView? = null
-    private var mAdapter: DribbbleShotsAdapter? = null
-    private var mLoadProgress: View? = null
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var loadProgress: View
+
+    private lateinit var adapter: DribbbleShotsAdapter
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<DribbbleShots> {
         val fragmentArgs = arguments
@@ -41,11 +42,11 @@ class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbac
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mAdapter = DribbbleShotsAdapter(activity)
+        adapter = DribbbleShotsAdapter(activity)
         val layoutManager = GridLayoutManager(activity, 2)
         layoutManager.orientation = GridLayoutManager.VERTICAL
-        mRecyclerView!!.layoutManager = layoutManager
-        mRecyclerView!!.adapter = mAdapter
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
 
         loaderManager.initLoader(0, null, this)
         showProgress()
@@ -53,31 +54,31 @@ class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbac
 
     override fun onLoadFinished(loader: Loader<DribbbleShots>, data: DribbbleShots?) {
         if (data != null) {
-            mAdapter!!.setData(data.shots)
+            adapter.shots = data.shots
         } else {
-            mAdapter!!.setData(null)
+            adapter.shots = null
         }
         showContent()
     }
 
     override fun onLoaderReset(loader: Loader<DribbbleShots>) {
-        mAdapter!!.setData(null)
+        adapter.shots = null
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mRecyclerView = view!!.findViewById(R.id.recycler_view) as RecyclerView
-        mLoadProgress = view.findViewById(R.id.load_progress)
+        recyclerView = view!!.findViewById(R.id.recycler_view) as RecyclerView
+        loadProgress = view.findViewById(R.id.load_progress)
     }
 
     private fun showContent() {
-        mRecyclerView!!.visibility = View.VISIBLE
-        mLoadProgress!!.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
+        loadProgress.visibility = View.GONE
     }
 
     private fun showProgress() {
-        mRecyclerView!!.visibility = View.GONE
-        mLoadProgress!!.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        loadProgress.visibility = View.VISIBLE
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {

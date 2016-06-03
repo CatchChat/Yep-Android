@@ -23,10 +23,10 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
     protected val inflater: LayoutInflater
     protected open var clickListener: ItemClickListener? = null
         get
-    var data: List<User>? = null
+    var users: List<User>? = null
         get
         set(value) {
-            data = value
+            field = value
             notifyDataSetChanged()
         }
 
@@ -64,8 +64,8 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
 
     val usersCount: Int
         get() {
-            if (data == null) return 0
-            return data!!.size
+            if (users == null) return 0
+            return users!!.size
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -83,7 +83,7 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
     }
 
     fun getUser(position: Int): User {
-        return data!![position]
+        return users!![position]
     }
 
     override fun getItemCount(): Int {

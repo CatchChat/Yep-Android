@@ -112,7 +112,7 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
     private fun displayUser(user: User) {
         mCurrentUser = user
         val url = if (mProfileImageUri != null) mProfileImageUri!!.toString() else user.avatarUrl
-        mImageLoader.displayProfileImage(url, mProfileImageView)
+        imageLoader.displayProfileImage(url, mProfileImageView)
         mCountryCodeView.text = user.phoneCode
         mPhoneNumberView.text = user.mobile
         mEditNickname.setText(user.nickname)

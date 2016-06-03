@@ -27,8 +27,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         set
 
     var topics: List<Topic>? = null
-        set (value) {
-            topics = value
+        set(value) {
+            field = value
             notifyDataSetChanged()
         }
 

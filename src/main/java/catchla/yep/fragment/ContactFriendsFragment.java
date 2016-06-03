@@ -55,13 +55,13 @@ public class ContactFriendsFragment extends AbsContentListRecyclerViewFragment<U
 
     @Override
     public void onLoadFinished(final Loader<TaskResponse<List<User>>> loader, final TaskResponse<List<User>> data) {
-        getAdapter().setData(data.getData());
+        getAdapter().setUsers(data.getData());
         showContent();
         setRefreshing(false);
     }
 
     @Override
     public void onLoaderReset(final Loader<TaskResponse<List<User>>> loader) {
-        getAdapter().setData(null);
+        getAdapter().setUsers(null);
     }
 }

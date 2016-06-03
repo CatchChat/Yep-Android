@@ -121,7 +121,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         if (user == null) return
         currentUser = user
         val avatarUrl = user.avatarUrl
-        mImageLoader.displayProfileImage(avatarUrl, profileImageView)
+        imageLoader.displayProfileImage(avatarUrl, profileImageView)
         val username = user.username
         val introduction = user.introduction
         nameView.text = user.nickname

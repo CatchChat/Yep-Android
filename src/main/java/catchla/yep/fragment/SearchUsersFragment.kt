@@ -54,12 +54,12 @@ class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), 
     }
 
     override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>) {
-        adapter.data = data
+        adapter.users = data
         showContent()
         isRefreshing = false
     }
 
     override fun onLoaderReset(loader: Loader<List<User>>) {
-        adapter.data = null
+        adapter.users = null
     }
 }
