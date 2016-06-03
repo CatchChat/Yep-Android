@@ -27,7 +27,7 @@ class TabsAdapter(private val context: Context, fm: FragmentManager) : SupportFi
         return Fragment.instantiate(context, spec.cls.name, spec.args)
     }
 
-    fun addTab(cls: Class<out Fragment>, title: CharSequence, icon: Int, args: Bundle?) {
+    fun addTab(cls: Class<out Fragment>, title: CharSequence?, icon: Int, args: Bundle?) {
         tabs.add(TabSpec(cls, title, icon, args))
         notifyDataSetChanged()
     }
@@ -42,7 +42,7 @@ class TabsAdapter(private val context: Context, fm: FragmentManager) : SupportFi
         return ContextCompat.getDrawable(context, spec.icon)
     }
 
-    override fun getPageTitle(position: Int): CharSequence {
+    override fun getPageTitle(position: Int): CharSequence? {
         val spec = tabs[position]
         return spec.title
     }

@@ -94,6 +94,10 @@ android {
 
 }
 
+kapt {
+    generateStubs = true
+}
+
 repositories {
     jcenter()
     mavenLocal()
@@ -106,6 +110,7 @@ repositories {
 dependencies {
     kapt 'com.bluelinelabs:logansquare-compiler:1.3.7'
     kapt 'com.hannesdorfmann.parcelableplease:processor:1.0.2'
+//    kapt 'com.github.grandstaish.paperparcel:compiler:1.0.0'
     kapt 'com.google.dagger:dagger-compiler:2.0.1'
     kapt 'com.github.mariotaku.ObjectCursor:processor:0.9.9'
     compile 'com.android.support:appcompat-v7:23.4.0'
@@ -141,11 +146,12 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.12'
     compile 'com.google.dagger:dagger:2.0.1'
     compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.2'
+//    compile 'com.github.grandstaish.paperparcel:paperparcel:1.0.0'
+//    compile 'com.github.grandstaish.paperparcel:paperparcel-kotlin:1.0.0'
     compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.5.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.7'
     compile 'com.sprylab.android.texturevideoview:texturevideoview:1.0.2'
     compile 'com.pnikosis:materialish-progress:1.7'
-    compile 'com.github.mariotaku:jackson-jr-trees:7fe682ee09'
     compile 'org.jdeferred:jdeferred-android-aar:1.2.4'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.github.mariotaku.ObjectCursor:core:0.9.9'

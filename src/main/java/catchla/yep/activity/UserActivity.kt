@@ -316,8 +316,8 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val isMySelf = Utils.isMySelf(this, account, currentUser)
-        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_friend, !isMySelf)
-        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_myself, isMySelf)
+        menu.setMenuGroupAvailability(R.id.group_menu_friend, !isMySelf)
+        menu.setMenuGroupAvailability(R.id.group_menu_myself, isMySelf)
         return true
     }
 

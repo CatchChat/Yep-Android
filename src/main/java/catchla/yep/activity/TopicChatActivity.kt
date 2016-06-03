@@ -2,14 +2,8 @@ package catchla.yep.activity
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
 import android.view.Menu
 import android.view.MenuItem
-
-import org.apache.commons.lang3.StringUtils
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
-
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.fragment.TopicChatListFragment
@@ -17,10 +11,12 @@ import catchla.yep.model.TaskResponse
 import catchla.yep.model.Topic
 import catchla.yep.model.UrlResponse
 import catchla.yep.model.YepException
-import catchla.yep.util.MenuUtils
 import catchla.yep.util.Utils
-import catchla.yep.util.YepAPI
 import catchla.yep.util.YepAPIFactory
+import catchla.yep.util.setMenuGroupAvailability
+import org.apache.commons.lang3.StringUtils
+import org.mariotaku.abstask.library.AbstractTask
+import org.mariotaku.abstask.library.TaskStarter
 
 class TopicChatActivity : SwipeBackContentActivity(), Constants {
 
@@ -72,7 +68,7 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val isMyTopic = StringUtils.equals(topic.user.id, Utils.getAccountId(this, account))
-        MenuUtils.setMenuGroupAvailability(menu, R.id.group_menu_my_topic, isMyTopic)
+        menu.setMenuGroupAvailability(R.id.group_menu_my_topic, isMyTopic)
         return super.onPrepareOptionsMenu(menu)
     }
 

@@ -98,10 +98,7 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
 
     private fun loadUser() {
         val account = account
-        val user = Utils.getAccountUser(this, account)
-        if (user != null) {
-            displayUser(user)
-        }
+        displayUser(Utils.getAccountUser(this, account))
     }
 
     override fun onProfileUpdated(user: User) {

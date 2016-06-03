@@ -46,9 +46,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.TreeNode;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -167,7 +164,8 @@ public class Utils implements Constants {
 
     @Nullable
     public static User getCurrentAccountUser(Context context) {
-        return getAccountUser(context, getCurrentAccount(context));
+        final Account account = getCurrentAccount(context);
+        return account != null ? getAccountUser(context, account) : null;
     }
 
 
@@ -179,9 +177,8 @@ public class Utils implements Constants {
         return o.outMimeType;
     }
 
-    @Nullable
-    public static User getAccountUser(Context context, Account account) {
-        if (account == null) return null;
+    @NonNull
+    public static User getAccountUser(Context context, @NonNull Account account) {
         final AccountManager am = AccountManager.get(context);
         final User user = new User();
         user.setId(am.getUserData(account, USER_DATA_ID));
@@ -521,14 +518,6 @@ public class Utils implements Constants {
     public static String getDefaultAvatarUrl() {
         return Uri.fromParts(ContentResolver.SCHEME_ANDROID_RESOURCE,
                 "//" + BuildConfig.APPLICATION_ID + "/" + R.drawable.ic_profile_image_default, null).toString();
-    }
-
-    public static JsonParser getJsonParser(final @NonNull TreeNode treeNode) throws IOException {
-        final JsonParser jsonParser = treeNode.traverse();
-        if (jsonParser.getCurrentToken() == null) {
-            jsonParser.nextToken();
-        }
-        return jsonParser;
     }
 
     public static String getFilename(File file, String mimeType) {
