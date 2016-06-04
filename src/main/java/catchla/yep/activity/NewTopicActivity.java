@@ -38,7 +38,6 @@ import catchla.yep.model.TaskResponse;
 import catchla.yep.model.Topic;
 import catchla.yep.model.User;
 import catchla.yep.model.YepException;
-import catchla.yep.util.ParseUtils;
 import catchla.yep.util.Utils;
 import catchla.yep.util.YepAPI;
 import catchla.yep.util.YepAPIFactory;
@@ -155,7 +154,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
 
     private boolean saveDrafts() {
         if (mShouldSkipSaveDrafts) return false;
-        final String text = ParseUtils.parseString(mEditText.getText());
+        final String text = mEditText.getText().toString();
         NewTopicMediaFragment fragment = getNewTopicMediaFragment();
         if (TextUtils.isEmpty(text) && !fragment.hasMedia()) {
             clearDraft();
@@ -204,7 +203,7 @@ public class NewTopicActivity extends SwipeBackContentActivity implements Consta
 
 
     private void postTopic() {
-        final String body = ParseUtils.parseString(mEditText.getText());
+        final String body = mEditText.getText().toString();
         final Location location = Utils.getCachedLocation(this);
         if (TextUtils.isEmpty(body)) {
             mEditText.setError(getString(R.string.no_content));

@@ -213,6 +213,7 @@ public class User implements Parcelable {
         this.id = id;
     }
 
+    @Nullable
     public List<Skill> getMasterSkills() {
         return masterSkills;
     }

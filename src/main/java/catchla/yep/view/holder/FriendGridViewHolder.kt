@@ -14,7 +14,6 @@ import catchla.yep.adapter.BaseRecyclerViewAdapter
 import catchla.yep.adapter.UsersGridAdapter
 import catchla.yep.model.Skill
 import catchla.yep.model.User
-import catchla.yep.util.ListUtils
 import catchla.yep.util.Utils
 import org.apache.commons.lang3.ObjectUtils
 import org.apmem.tools.layouts.FlowLayout
@@ -60,19 +59,16 @@ class FriendGridViewHolder(itemView: View, private val adapter: BaseRecyclerView
         descriptionView.text = user.introduction
         descriptionView.visibility = if (descriptionView.length() > 0) View.VISIBLE else View.GONE
         userSkills.removeAllViews()
-        val skills = ListUtils.nonNullList(user.masterSkills)
+        val skills = user.masterSkills
         val inflater = LayoutInflater.from(adapter.context)
-        var i = 0
-        val skillsSize = Math.min(3, skills.size)
-        while (i < skillsSize) {
-            val skill = skills[i]
+        for (i in 0..Math.min(3, skills?.size ?: 0) - 1) {
+            val skill = skills!![i]
             val textView = inflater.inflate(R.layout.layout_friend_grid_skill,
                     userSkills, false) as TextView
             textView.tag = skill
             textView.text = Utils.getDisplayName(skill)
             textView.setOnClickListener(this)
             userSkills.addView(textView)
-            i++
         }
         userSkills.visibility = if (userSkills.childCount > 0) View.VISIBLE else View.GONE
     }

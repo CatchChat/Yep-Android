@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils
 import org.apmem.tools.layouts.FlowLayout
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
+import org.mariotaku.ktextension.setMenuGroupAvailability
 import org.mariotaku.sqliteqb.library.Expression
 import java.util.*
 
@@ -388,7 +389,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     val editUsername = (dialog as Dialog).findViewById(R.id.edit_username) as EditText
-                    (activity as UserActivity).setUsername(ParseUtils.parseString(editUsername.text))
+                    (activity as UserActivity).setUsername(editUsername.text.toString())
                 }
             }
         }

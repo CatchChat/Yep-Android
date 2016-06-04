@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package catchla.yep.util
+package org.mariotaku.ktextension
 
 import android.support.v4.view.MenuItemCompat
 import android.view.Menu
@@ -34,34 +34,21 @@ fun Menu?.setMenuGroupAvailability(groupId: Int, available: Boolean) {
     setGroupVisible(groupId, available)
 }
 
-/**
- * Created by mariotaku on 15/4/12.
- */
-object MenuUtils {
+fun Menu?.setMenuItemChecked(id: Int, checked: Boolean) {
+    this?.findItem(id)?.isChecked = checked
+}
 
+fun Menu?.setMenuItemIcon(id: Int, icon: Int) {
+    this?.findItem(id)?.setIcon(icon)
+}
 
-    fun setMenuItemChecked(menu: Menu?, id: Int, checked: Boolean) {
-        if (menu == null) return
-        val item = menu.findItem(id) ?: return
-        item.isChecked = checked
-    }
+fun Menu?.setMenuItemShowAsActionFlags(id: Int, flags: Int) {
+    if (this == null) return
+    val item = findItem(id) ?: return
+    item.setShowAsActionFlags(flags)
+    MenuItemCompat.setShowAsAction(item, flags)
+}
 
-    fun setMenuItemIcon(menu: Menu?, id: Int, icon: Int) {
-        if (menu == null) return
-        val item = menu.findItem(id) ?: return
-        item.setIcon(icon)
-    }
-
-    fun setMenuItemShowAsActionFlags(menu: Menu?, id: Int, flags: Int) {
-        if (menu == null) return
-        val item = menu.findItem(id) ?: return
-        item.setShowAsActionFlags(flags)
-        MenuItemCompat.setShowAsAction(item, flags)
-    }
-
-    fun setMenuItemTitle(menu: Menu?, id: Int, icon: Int) {
-        if (menu == null) return
-        val item = menu.findItem(id) ?: return
-        item.setTitle(icon)
-    }
+fun Menu?.setMenuItemTitle(id: Int, icon: Int) {
+    this?.findItem(id)?.setTitle(icon)
 }

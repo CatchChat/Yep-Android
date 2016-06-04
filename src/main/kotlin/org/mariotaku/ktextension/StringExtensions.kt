@@ -1,4 +1,4 @@
-package catchla.yep.util
+package org.mariotaku.ktextension
 
 fun String.toLong(def: Long): Long {
     try {

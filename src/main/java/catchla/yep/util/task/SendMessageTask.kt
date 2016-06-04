@@ -10,6 +10,7 @@ import catchla.yep.provider.YepDataStore.Conversations
 import catchla.yep.provider.YepDataStore.Messages
 import catchla.yep.util.*
 import org.mariotaku.abstask.library.AbstractTask
+import org.mariotaku.ktextension.toLong
 import org.mariotaku.sqliteqb.library.Expression
 
 /**

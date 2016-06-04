@@ -19,38 +19,12 @@
 
 package catchla.yep.util;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import android.support.annotation.Nullable;
 
 public final class ParseUtils {
 
-    public static long parseLong(final String source, final long def) {
-        if (source == null) return def;
-        try {
-            return Long.parseLong(source);
-        } catch (final NumberFormatException e) {
-            // Wrong number format? Ignore them.
-        }
-        return def;
-    }
-
-    public static String parseString(final Object object) {
-        return parseString(object, null);
-    }
-
-    public static String parseString(final Object object, final String def) {
-        if (object == null) return def;
-        return String.valueOf(object);
-    }
-
-    public static URL parseURL(final String url_string) {
-        if (url_string == null) return null;
-        try {
-            return new URL(url_string);
-        } catch (final MalformedURLException e) {
-            // This should not happen.
-        }
-        return null;
+    public static String parseString(@Nullable final Object object) {
+        return object != null ? object.toString() : null;
     }
 
 }

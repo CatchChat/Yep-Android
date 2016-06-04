@@ -13,7 +13,7 @@ import catchla.yep.model.UrlResponse
 import catchla.yep.model.YepException
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
-import catchla.yep.util.setMenuGroupAvailability
+import org.mariotaku.ktextension.setMenuGroupAvailability
 import org.apache.commons.lang3.StringUtils
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter

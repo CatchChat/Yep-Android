@@ -12,7 +12,7 @@ import catchla.yep.graphic.EmptyDrawable
 import catchla.yep.model.Skill
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
-import catchla.yep.util.setItemAvailability
+import org.mariotaku.ktextension.setItemAvailability
 import catchla.yep.view.TabPagerIndicator
 
 /**
