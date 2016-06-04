@@ -29,7 +29,7 @@ class GithubUserInfoFragment : Fragment(), Constants, LoaderManager.LoaderCallba
     private lateinit var mAdapter: GithubUserAdapter
     private lateinit var mLoadProgress: View
 
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<GithubUserInfo> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<GithubUserInfo> {
         val fragmentArgs = arguments
         val user = fragmentArgs.getParcelable<User>(Constants.EXTRA_USER)
         val userId = user!!.id

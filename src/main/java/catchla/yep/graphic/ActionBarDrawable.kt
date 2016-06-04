@@ -19,9 +19,9 @@ class ActionBarDrawable(shadow: Drawable) : LayerDrawable(arrayOf(shadow, Action
 
     private var mFactor: Float = 0.toFloat()
     var color: Int = 0
-        set(color) {
-            this.color = color
-            mColorDrawable.color = color
+        set(value) {
+            field = value
+            mColorDrawable.color = value
             setFactor(mFactor)
         }
     private var mAlpha: Int = 0

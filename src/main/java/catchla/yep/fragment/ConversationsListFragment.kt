@@ -93,7 +93,7 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
         return false
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<Conversation>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Conversation>> {
         val recipientType = recipientType
         return ConversationsLoader(activity, account, recipientType,
                 Message.RecipientType.CIRCLE != recipientType)

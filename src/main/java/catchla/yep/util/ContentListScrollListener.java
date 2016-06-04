@@ -110,7 +110,7 @@ public class ContentListScrollListener extends OnScrollListener {
         if (mContentListSupport instanceof Fragment) {
             if (((Fragment) mContentListSupport).getContext() == null) return;
         }
-        final Object adapter = mContentListSupport.getAdapter();
+        final Object adapter = mContentListSupport.getContentAdapter();
         if (!(adapter instanceof ILoadMoreSupportAdapter)) return;
         final ILoadMoreSupportAdapter loadMoreAdapter = (ILoadMoreSupportAdapter) adapter;
         if (!mContentListSupport.isRefreshing() && loadMoreAdapter.getLoadMoreSupportedPosition() != IndicatorPosition.NONE
@@ -178,7 +178,7 @@ public class ContentListScrollListener extends OnScrollListener {
 
     public interface ContentListSupport {
 
-        Object getAdapter();
+        Object getContentAdapter();
 
         boolean isRefreshing();
 

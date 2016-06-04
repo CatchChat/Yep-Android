@@ -19,7 +19,7 @@ class GithubUserAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
 
     var info: GithubUserInfo? = null
         set(value) {
-            field = info
+            field = value
             notifyDataSetChanged()
         }
 

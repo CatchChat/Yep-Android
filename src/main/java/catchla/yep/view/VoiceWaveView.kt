@@ -14,8 +14,8 @@ import catchla.yep.R
 class VoiceWaveView : View {
 
     var amplitude: Int = 0
-        set(amplitude) {
-            this.amplitude = (this.amplitude + amplitude) / 2
+        set(value) {
+            field = (field + value) / 2
             phaseNext()
             invalidate()
         }
