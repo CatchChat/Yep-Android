@@ -47,7 +47,7 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
         when (item.itemId) {
             R.id.share -> {
                 TaskStarter.execute(object : AbstractTask<Any, TaskResponse<UrlResponse>, TopicChatActivity>() {
-                    public override fun doLongOperation(o: Any): TaskResponse<UrlResponse> {
+                    public override fun doLongOperation(param: Any?): TaskResponse<UrlResponse> {
                         val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
                         try {
                             return TaskResponse.getInstance(yep.getCircleShareUrl(topic.circle.id))

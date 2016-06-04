@@ -154,7 +154,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             mBus.post(AudioPlayEvent.end(attachment))
         }
         TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-            public override fun doLongOperation(o: Any): Any? {
+            public override fun doLongOperation(param: Any?): Any? {
                 var sink: BufferedSink? = null
                 var tempFile: File? = null
                 try {
@@ -314,14 +314,14 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         ) : RecyclerView.ViewHolder(itemView) {
 
             private val profileImageView: ImageView?
-            private val text1: TextView
             private val stateView: ImageView?
+            private val text1: TextView
 
             init {
                 text1 = itemView.findViewById(android.R.id.text1) as TextView
-                stateView = itemView.findViewById(R.id.state) as ImageView
-                profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
-                stateView.setOnClickListener { adapter.notifyStateClicked(layoutPosition) }
+                stateView = itemView.findViewById(R.id.state) as ImageView?
+                profileImageView = itemView.findViewById(R.id.profile_image) as ImageView?
+                stateView?.setOnClickListener { adapter.notifyStateClicked(layoutPosition) }
             }
 
             open fun displayMessage(message: Message) {
@@ -451,11 +451,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
         companion object {
 
-            private val FLAG_MESSAGE_OUTGOING = 0xF0000000.toInt()
-            private val VIEW_SUBTYPE_MESSAGE_TEXT = 0x0001
-            private val VIEW_SUBTYPE_MESSAGE_LOCATION = 0x0002
-            private val VIEW_SUBTYPE_MESSAGE_IMAGE = 0x0003
-            private val VIEW_SUBTYPE_MESSAGE_AUDIO = 0x0004
+            private val FLAG_MESSAGE_OUTGOING: Int = 0xF0000000.toInt()
+            private val VIEW_SUBTYPE_MESSAGE_TEXT: Int = 0x0001
+            private val VIEW_SUBTYPE_MESSAGE_LOCATION: Int = 0x0002
+            private val VIEW_SUBTYPE_MESSAGE_IMAGE: Int = 0x0003
+            private val VIEW_SUBTYPE_MESSAGE_AUDIO: Int = 0x0004
         }
 
 

@@ -296,7 +296,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                 Utils.saveUserInfo(this@UserActivity, account, user)
             } else {
                 TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-                    public override fun doLongOperation(o: Any): Any? {
+                    public override fun doLongOperation(param: Any?): Any? {
                         val values = ContentValues()
                         values.put(Friendships.FRIEND, JsonSerializer.serialize(user))
                         val cr = contentResolver
@@ -344,7 +344,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
             }
             R.id.block_user -> {
                 TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-                    public override fun doLongOperation(o: Any): Any? {
+                    public override fun doLongOperation(param: Any?): Any? {
                         val currentAccount = account
                         val yep = YepAPIFactory.getInstance(this@UserActivity, currentAccount)!!
                         try {

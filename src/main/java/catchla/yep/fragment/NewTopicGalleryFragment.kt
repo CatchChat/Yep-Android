@@ -134,7 +134,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
     private fun removeMedia(media: String) {
         mTopicMediaAdapter.removeMedia(media)
         TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-            public override fun doLongOperation(o: Any): Any {
+            public override fun doLongOperation(param: Any?): Any {
                 val uri = Uri.parse(media)
                 return File(uri.path).delete()
             }

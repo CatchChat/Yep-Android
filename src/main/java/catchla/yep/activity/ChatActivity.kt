@@ -120,7 +120,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
 
     private fun markAsRead(conversation: Conversation) {
         TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-            public override fun doLongOperation(o: Any): Any? {
+            public override fun doLongOperation(param: Any?): Any? {
                 val projection = arrayOf(Messages.MESSAGE_ID, Messages.TEXT_CONTENT)
                 val incomingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
