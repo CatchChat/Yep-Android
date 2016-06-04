@@ -7,6 +7,6 @@ import android.accounts.Account
  */
 interface IAccountActivity {
 
-    val account: Account
+    val account: Account?
 
 }
