@@ -22,30 +22,27 @@ import catchla.yep.model.AccessToken
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.view.TabPagerIndicator
-import catchla.yep.view.TintedStatusFrameLayout
 
 class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickListener {
 
-    private lateinit var mViewPager: ViewPager
-    private lateinit var mAdapter: TabsAdapter
-    private lateinit var mPagerIndicator: TabPagerIndicator
-    private lateinit var mMainContent: TintedStatusFrameLayout
-    private lateinit var mSignInButton: Button
-    private lateinit var mSignUpButton: Button
+    private lateinit var viewPager: ViewPager
+    private lateinit var adapter: TabsAdapter
+    private lateinit var pagerIndicator: TabPagerIndicator
+    private lateinit var signInButton: Button
+    private lateinit var signUpButton: Button
 
     override fun onContentChanged() {
         super.onContentChanged()
-        mMainContent = findViewById(R.id.main_content) as TintedStatusFrameLayout
-        mViewPager = findViewById(R.id.view_pager) as ViewPager
-        mSignInButton = findViewById(R.id.sign_in) as Button
-        mSignUpButton = findViewById(R.id.sign_up) as Button
+        viewPager = findViewById(R.id.view_pager) as ViewPager
+        signInButton = findViewById(R.id.sign_in) as Button
+        signUpButton = findViewById(R.id.sign_up) as Button
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             REQUEST_ADD_ACCOUNT -> {
                 if (resultCode != Activity.RESULT_OK) return
-                val token = data.getParcelableExtra<AccessToken>(Constants.EXTRA_TOKEN)
+                val token = data!!.getParcelableExtra<AccessToken>(Constants.EXTRA_TOKEN)
                 val user = token.user
                 val account = Account(user.mobile, Constants.ACCOUNT_TYPE)
                 val userData = Bundle()
@@ -78,22 +75,22 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
         actionBar.setCustomView(R.layout.layout_welcome_tabs)
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        mPagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
+        pagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
         setContentView(R.layout.activity_welcome)
         val toolbar = window.findViewById(android.support.v7.appcompat.R.id.action_bar) as Toolbar
         toolbar.setContentInsetsRelative(0, 0)
 
-        mSignInButton.setOnClickListener(this)
-        mSignUpButton.setOnClickListener(this)
+        signInButton.setOnClickListener(this)
+        signUpButton.setOnClickListener(this)
 
-        mAdapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
-        mViewPager.adapter = mAdapter
-        mViewPager.offscreenPageLimit = 2
-        mMainContent.setStatusBarColor(primaryColor)
-        mAdapter.addTab(UserSuggestionsFragment::class.java, getString(R.string.suggestions), 0, null)
-        mAdapter.addTab(UserRankFragment::class.java, getString(R.string.rank), 0, null)
-        mPagerIndicator.setViewPager(mViewPager)
-        mPagerIndicator.updateAppearance()
+        adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
+        viewPager.adapter = adapter
+        viewPager.offscreenPageLimit = 2
+        mainContent!!.setStatusBarColor(primaryColor)
+        adapter.addTab(UserSuggestionsFragment::class.java, getString(R.string.suggestions), 0, null)
+        adapter.addTab(UserRankFragment::class.java, getString(R.string.rank), 0, null)
+        pagerIndicator.setViewPager(viewPager)
+        pagerIndicator.updateAppearance()
     }
 
     override fun onClick(v: View) {

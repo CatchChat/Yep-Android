@@ -13,13 +13,12 @@ import catchla.yep.model.UrlResponse
 import catchla.yep.model.YepException
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
-import org.mariotaku.ktextension.setMenuGroupAvailability
 import org.apache.commons.lang3.StringUtils
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
+import org.mariotaku.ktextension.setMenuGroupAvailability
 
 class TopicChatActivity : SwipeBackContentActivity(), Constants {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +56,6 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
                         }
 
                     }
-
-
                 })
                 return true
             }
