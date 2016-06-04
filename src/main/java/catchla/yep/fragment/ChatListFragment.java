@@ -172,13 +172,13 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(final MediaPlayer mp) {
-                    mBus.post(AudioPlayEvent.end(attachment));
+                    mBus.post(AudioPlayEvent.Companion.end(attachment));
                 }
             });
         }
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
-            mBus.post(AudioPlayEvent.end(attachment));
+            mBus.post(AudioPlayEvent.Companion.end(attachment));
         }
         TaskStarter.execute(new AbstractTask<Object, Object, Object>() {
             @Override
@@ -215,7 +215,7 @@ public abstract class ChatListFragment extends AbsContentRecyclerViewFragment<Ch
             public void afterExecute(final Object o) {
                 if (mMediaPlayer == null) return;
                 mMediaPlayer.start();
-                mBus.post(AudioPlayEvent.start(attachment));
+                mBus.post(AudioPlayEvent.Companion.start(attachment));
             }
         });
     }

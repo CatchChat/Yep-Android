@@ -77,7 +77,7 @@ class SkillSelectorActivity : ContentActivity(), Constants {
             setListShownNoAnimation(false)
         }
 
-        override fun onCreateLoader(id: Int, args: Bundle): Loader<TaskResponse<List<SkillCategory>>> {
+        override fun onCreateLoader(id: Int, args: Bundle?): Loader<TaskResponse<List<SkillCategory>>> {
             return SkillCategoriesLoader(activity, Utils.getCurrentAccount(activity)!!, false, false)
         }
 

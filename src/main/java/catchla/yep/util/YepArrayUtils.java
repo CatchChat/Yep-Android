@@ -266,16 +266,6 @@ public final class YepArrayUtils {
         return builder.toString();
     }
 
-    public static String[] toStringArray(final Object[] array) {
-        if (array == null) return null;
-        final int length = array.length;
-        final String[] string_array = new String[length];
-        for (int i = 0; i < length; i++) {
-            string_array[i] = ParseUtils.parseString(array[i]);
-        }
-        return string_array;
-    }
-
     public static String toStringForSQL(final String[] array) {
         final int size = array != null ? array.length : 0;
         final StringBuilder builder = new StringBuilder();
