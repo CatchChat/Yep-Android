@@ -147,11 +147,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         if (mMediaPlayer == null) {
             mMediaPlayer = MediaPlayer()
             mMediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-            mMediaPlayer!!.setOnCompletionListener { mBus.post(AudioPlayEvent.end(attachment)) }
+            mMediaPlayer!!.setOnCompletionListener { bus.post(AudioPlayEvent.end(attachment)) }
         }
         if (mMediaPlayer!!.isPlaying) {
             mMediaPlayer!!.stop()
-            mBus.post(AudioPlayEvent.end(attachment))
+            bus.post(AudioPlayEvent.end(attachment))
         }
         TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
             public override fun doLongOperation(param: Any?): Any? {
@@ -186,7 +186,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             public override fun afterExecute(o: Any?) {
                 if (mMediaPlayer == null) return
                 mMediaPlayer!!.start()
-                mBus.post(AudioPlayEvent.start(attachment))
+                bus.post(AudioPlayEvent.start(attachment))
             }
         })
     }

@@ -33,7 +33,7 @@ import catchla.yep.view.holder.FriendGridViewHolder
 /**
  * Created by mariotaku on 15/4/29.
  */
-class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(), LoaderManager.LoaderCallbacks<List<User>>, UsersGridAdapter.UserGridItemClickListener {
+class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(), LoaderManager.LoaderCallbacks<List<User>> {
 
     private var mPage = 1
 
@@ -48,7 +48,19 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
             loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, true)
         }
         loaderManager.initLoader(0, loaderArgs, this)
-        adapter.setItemClickListener(this)
+        adapter.itemClickListener = { position: Int, holder: RecyclerView.ViewHolder ->
+            val user = adapter.getUser(position)
+            val intent = Intent(activity, UserActivity::class.java)
+            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+            intent.putExtra(Constants.EXTRA_USER, user)
+            startActivity(intent)
+        }
+        (adapter as UsersGridAdapter).skillClickListener = { position: Int, skill: Skill, holder: FriendGridViewHolder ->
+            val intent = Intent(activity, SkillUpdatesActivity::class.java)
+            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+            intent.putExtra(Constants.EXTRA_SKILL, skill)
+            startActivity(intent)
+        }
         showProgress()
     }
 
@@ -177,22 +189,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         return loaderManager.hasRunningLoaders()
     }
 
-
-    override fun onItemClick(position: Int, holder: RecyclerView.ViewHolder) {
-        val user = adapter.getUser(position)
-        val intent = Intent(activity, UserActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        intent.putExtra(Constants.EXTRA_USER, user)
-        startActivity(intent)
-    }
-
     private val account: Account
         get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
 
-    override fun onSkillClick(position: Int, skill: Skill, holder: FriendGridViewHolder) {
-        val intent = Intent(activity, SkillUpdatesActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        intent.putExtra(Constants.EXTRA_SKILL, skill)
-        startActivity(intent)
-    }
 }

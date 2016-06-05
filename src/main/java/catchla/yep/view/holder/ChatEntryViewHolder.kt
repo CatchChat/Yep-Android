@@ -9,20 +9,17 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-
 import catchla.yep.R
 import catchla.yep.adapter.ChatsListAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Conversation
 import catchla.yep.model.Message
-import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
 import catchla.yep.view.ShortTimeView
 
 /**
  * Created by mariotaku on 15/4/29.
  */
-class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter, listener: ItemClickListener?) : RecyclerView.ViewHolder(itemView) {
+class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter, listener: ((Int, RecyclerView.ViewHolder) -> Unit)?) : RecyclerView.ViewHolder(itemView) {
 
     private val profileImageView: ImageView
     private val nameView: TextView
@@ -37,7 +34,7 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
         messageView = itemView.findViewById(R.id.message) as TextView
         itemView.setOnClickListener(View.OnClickListener {
             if (listener == null) return@OnClickListener
-            listener.onItemClick(adapterPosition, this@ChatEntryViewHolder)
+            listener.invoke(adapterPosition, this@ChatEntryViewHolder)
         })
     }
 

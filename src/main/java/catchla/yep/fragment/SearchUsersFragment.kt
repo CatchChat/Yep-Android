@@ -9,7 +9,6 @@ import android.support.v4.content.Loader
 import catchla.yep.Constants
 import catchla.yep.activity.UserActivity
 import catchla.yep.adapter.UsersAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.loader.SearchUsersLoader
 import catchla.yep.model.User
 
@@ -26,13 +25,13 @@ class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        adapter.setItemClickListener(ItemClickListener { position, holder ->
+        adapter.itemClickListener = { position, holder ->
             val user = adapter.getUser(position)
             val intent = Intent(activity, UserActivity::class.java)
             intent.putExtra(Constants.EXTRA_ACCOUNT, account)
             intent.putExtra(Constants.EXTRA_USER, user)
             startActivity(intent)
-        })
+        }
         val loaderArgs = arguments
         loaderManager.initLoader(0, loaderArgs, this)
     }

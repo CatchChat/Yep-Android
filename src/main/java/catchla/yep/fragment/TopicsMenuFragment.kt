@@ -27,7 +27,7 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         adapter.add(Entry(Topic.SortOrder.TIME, getString(R.string.time)))
         mOrderSpinner.adapter = adapter
         mOrderSpinner.onItemSelectedListener = this
-        val sortOrder = mPreferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)
+        val sortOrder = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)
         var i = 0
         val j = adapter.count
         while (i < j) {

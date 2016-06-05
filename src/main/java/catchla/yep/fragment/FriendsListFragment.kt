@@ -35,7 +35,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
-        adapter.itemClickListener = ItemClickListener { position, holder ->
+        adapter.itemClickListener = { position, holder ->
             val friendship = adapter.getFriendship(position)
             val intent = Intent(activity, UserActivity::class.java)
             intent.putExtra(Constants.EXTRA_ACCOUNT, account)
@@ -84,11 +84,11 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
 
     override fun onStart() {
         super.onStart()
-        mBus.register(this)
+        bus.register(this)
     }
 
     override fun onStop() {
-        mBus.unregister(this)
+        bus.unregister(this)
         super.onStop()
     }
 

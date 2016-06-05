@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import android.widget.*
 import catchla.yep.Constants
 import catchla.yep.R
-import catchla.yep.adapter.ArrayAdapter
 import catchla.yep.fragment.NewTopicGalleryFragment
 import catchla.yep.fragment.NewTopicLocationFragment
 import catchla.yep.fragment.NewTopicMediaFragment

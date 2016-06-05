@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import catchla.yep.R
 import catchla.yep.adapter.BaseRecyclerViewAdapter
-import catchla.yep.adapter.UsersGridAdapter
 import catchla.yep.model.Skill
 import catchla.yep.model.User
 import catchla.yep.util.Utils
@@ -21,7 +20,12 @@ import org.apmem.tools.layouts.FlowLayout
 /**
  * Created by mariotaku on 15/4/29.
  */
-class FriendGridViewHolder(itemView: View, private val adapter: BaseRecyclerViewAdapter<RecyclerView.ViewHolder>, private val listener: UsersGridAdapter.UserGridItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class FriendGridViewHolder(
+        itemView: View,
+        private val adapter: BaseRecyclerViewAdapter<RecyclerView.ViewHolder>,
+        private val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?,
+        private val skillClickListener: ((Int, Skill, FriendGridViewHolder) -> Unit)?
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val profileImageView: ImageView
     private val nameView: TextView
@@ -39,11 +43,11 @@ class FriendGridViewHolder(itemView: View, private val adapter: BaseRecyclerView
     override fun onClick(v: View) {
         when (v.id) {
             R.id.item_content -> {
-                listener.onItemClick(adapterPosition, this)
+                listener?.invoke(adapterPosition, this)
             }
             R.id.skill_button -> {
                 val skill = v.tag as Skill
-                listener.onSkillClick(adapterPosition, skill, this)
+                skillClickListener?.invoke(adapterPosition, skill, this)
             }
         }
     }

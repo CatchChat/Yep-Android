@@ -18,7 +18,6 @@ import catchla.yep.R
 import catchla.yep.activity.ChatActivity
 import catchla.yep.activity.CirclesListActivity
 import catchla.yep.adapter.ChatsListAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.ConversationsLoader
 import catchla.yep.message.MessageRefreshedEvent
@@ -36,20 +35,20 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
 
-        adapter.setItemClickListener(ItemClickListener { position, holder ->
+        adapter.itemClickListener = { position, holder ->
             val adapter = adapter
             if (adapter.getItemViewType(position) == ChatsListAdapter.ITEM_VIEW_TYPE_CIRCLES_ENTRY) {
                 val intent = Intent(context, CirclesListActivity::class.java)
                 intent.putExtra(Constants.EXTRA_ACCOUNT, account)
                 startActivity(intent)
-                return@ItemClickListener
+            } else {
+                val conversation = adapter.getConversation(position)
+                val intent = Intent(context, ChatActivity::class.java)
+                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                intent.putExtra(Constants.EXTRA_CONVERSATION, conversation)
+                startActivity(intent)
             }
-            val conversation = adapter.getConversation(position)
-            val intent = Intent(context, ChatActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_CONVERSATION, conversation)
-            startActivity(intent)
-        })
+        }
         val loaderArgs = Bundle()
         loaderArgs.putString(EXTRA_RECIPIENT_TYPE, recipientType)
         loaderManager.initLoader(0, loaderArgs, this)
@@ -58,11 +57,11 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
 
     override fun onStart() {
         super.onStart()
-        mBus.register(this)
+        bus.register(this)
     }
 
     override fun onStop() {
-        mBus.unregister(this)
+        bus.unregister(this)
         super.onStop()
     }
 

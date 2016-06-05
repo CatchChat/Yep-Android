@@ -43,7 +43,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
-        mSortBy = mPreferences.getString(Constants.KEY_TOPICS_SORT_ORDER, Topic.SortOrder.DEFAULT)
+        mSortBy = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, Topic.SortOrder.DEFAULT)
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
@@ -225,7 +225,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
     fun reloadWithSortOrder(@Topic.SortOrder sortBy: String) {
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
         mSortBy = sortBy
-        mPreferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortBy).apply()
+        preferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortBy).apply()
         val loaderArgs = Bundle()
         loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
         loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, false)

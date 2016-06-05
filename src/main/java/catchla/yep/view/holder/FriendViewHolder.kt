@@ -8,20 +8,17 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-
 import catchla.yep.R
 import catchla.yep.adapter.BaseRecyclerViewAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Friendship
 import catchla.yep.model.User
-import catchla.yep.util.ImageLoaderWrapper
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 class FriendViewHolder(itemView: View,
                        val adapter: BaseRecyclerViewAdapter<RecyclerView.ViewHolder>,
-                       val listener: ItemClickListener?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+                       val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val profileImageView: ImageView
     private val nameView: TextView
@@ -37,8 +34,7 @@ class FriendViewHolder(itemView: View,
     }
 
     override fun onClick(v: View) {
-        if (listener == null) return
-        listener.onItemClick(adapterPosition, this@FriendViewHolder)
+        listener?.invoke(adapterPosition, this@FriendViewHolder)
     }
 
     fun displaySample(profileImage: Int, name: String, time: String, message: String) {

@@ -21,11 +21,11 @@ import javax.inject.Inject
 open class BaseFragment : Fragment(), IBaseFragment, Constants {
 
     @Inject
-    lateinit var mBus: Bus
+    lateinit var bus: Bus
     @Inject
-    lateinit var mImageLoader: ImageLoaderWrapper
+    lateinit var imageLoader: ImageLoaderWrapper
     @Inject
-    lateinit var mPreferences: SharedPreferences
+    lateinit var preferences: SharedPreferences
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,13 +39,11 @@ open class BaseFragment : Fragment(), IBaseFragment, Constants {
     }
 
     override fun requestFitSystemWindows() {
-        val activity = activity
-        val parentFragment = parentFragment
         val callback: IBaseFragment.SystemWindowsInsetsCallback
         if (parentFragment is IBaseFragment.SystemWindowsInsetsCallback) {
-            callback = parentFragment
+            callback = parentFragment as IBaseFragment.SystemWindowsInsetsCallback
         } else if (activity is IBaseFragment.SystemWindowsInsetsCallback) {
-            callback = activity
+            callback = activity as IBaseFragment.SystemWindowsInsetsCallback
         } else {
             return
         }
@@ -60,7 +58,6 @@ open class BaseFragment : Fragment(), IBaseFragment, Constants {
     }
 
     protected open fun fitSystemWindows(insets: Rect) {
-        val view = view
         view?.setPadding(insets.left, insets.top, insets.right, insets.bottom)
     }
 }

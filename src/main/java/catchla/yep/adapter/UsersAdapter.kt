@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import catchla.yep.R
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.User
 import catchla.yep.view.holder.FriendViewHolder
 import catchla.yep.view.holder.LoadIndicatorViewHolder
@@ -21,8 +20,9 @@ import catchla.yep.view.holder.LoadIndicatorViewHolder
 open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(context) {
 
     protected val inflater: LayoutInflater
-    protected open var clickListener: ItemClickListener? = null
+    var itemClickListener: ((position: Int, holder: RecyclerView.ViewHolder) -> Unit)? = null
         get
+        set
     var users: List<User>? = null
         get
         set(value) {
@@ -33,10 +33,6 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
     init {
         inflater = LayoutInflater.from(context)
 
-    }
-
-    open fun setItemClickListener(listener: ItemClickListener) {
-        this.clickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -54,7 +50,7 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
 
     protected open fun onCreateFriendViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = inflater.inflate(R.layout.list_item_friend, parent, false)
-        return FriendViewHolder(view, this, clickListener)
+        return FriendViewHolder(view, this, itemClickListener)
     }
 
     override fun getItemViewType(position: Int): Int {

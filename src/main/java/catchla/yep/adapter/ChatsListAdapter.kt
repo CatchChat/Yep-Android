@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import catchla.yep.R
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Conversation
 import catchla.yep.model.Message
 import catchla.yep.view.holder.ChatEntryViewHolder
@@ -21,15 +20,11 @@ class ChatsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.V
 
     private val inflater: LayoutInflater
     private var conversations: List<Conversation>? = null
-    private var itemClickListener: ItemClickListener? = null
+    var itemClickListener: ((position: Int, holder: RecyclerView.ViewHolder) -> Unit)? = null
     private var circleLength: Int = 0
 
     init {
         inflater = LayoutInflater.from(context)
-    }
-
-    fun setItemClickListener(mItemClickListener: ItemClickListener) {
-        this.itemClickListener = mItemClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

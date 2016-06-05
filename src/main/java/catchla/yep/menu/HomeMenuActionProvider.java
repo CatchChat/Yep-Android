@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ActionProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.ListPopupWindow;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -28,7 +30,6 @@ import javax.inject.Inject;
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
 import catchla.yep.R;
-import catchla.yep.adapter.ArrayAdapter;
 import catchla.yep.adapter.LayoutAdapter;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.ThemeUtils;
@@ -228,7 +229,7 @@ public class HomeMenuActionProvider extends ActionProvider implements Constants,
         }
 
         @Override
-        protected void bindView(final View view, final int position, final String tag) {
+        protected void bindView(@NonNull final View view, final int position, @NonNull final String tag) {
             if (!"profile".equals(tag)) return;
             final Account account = mAccount;
             if (account == null) return;

@@ -47,7 +47,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         if (savedInstanceState != null) {
             mTopicMediaAdapter.addAllMedia(savedInstanceState.getStringArray(EXTRA_ADAPTER_MEDIA))
         } else {
-            mTopicMediaAdapter.addAllMedia(mPreferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null))
+            mTopicMediaAdapter.addAllMedia(preferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null))
         }
     }
 
@@ -63,8 +63,8 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
     override fun saveDraft(): Boolean {
         val media = mTopicMediaAdapter.mediaStringSet
         var draftChanged = false
-        val editor = mPreferences.edit()
-        if (media != mPreferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null)) {
+        val editor = preferences.edit()
+        if (media != preferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null)) {
             editor.putStringSet(KEY_TOPIC_DRAFTS_MEDIA, media)
             draftChanged = true
         }
@@ -93,7 +93,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
     }
 
     override fun clearDraft() {
-        val editor = mPreferences.edit()
+        val editor = preferences.edit()
         editor.remove(KEY_TOPIC_DRAFTS_MEDIA)
         editor.apply()
     }

@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import catchla.yep.R
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Friendship
 import catchla.yep.view.holder.FriendViewHolder
 
@@ -25,13 +24,7 @@ class FriendsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView
             field = value
             notifyDataSetChanged()
         }
-    var itemClickListener: ItemClickListener? = null
-        set
-    private val mInternalItemClickListener = ItemClickListener { position, holder ->
-        if (itemClickListener != null) {
-            itemClickListener!!.onItemClick(position, holder)
-        }
-    }
+    var itemClickListener: ((Int, RecyclerView.ViewHolder) -> Unit)? = null
 
     init {
         mInflater = LayoutInflater.from(context)
@@ -39,7 +32,7 @@ class FriendsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = mInflater.inflate(R.layout.list_item_friend, parent, false)
-        return FriendViewHolder(view, this, mInternalItemClickListener)
+        return FriendViewHolder(view, this, itemClickListener)
     }
 
     override fun getItemViewType(position: Int): Int {
