@@ -59,7 +59,7 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         val actionBar = supportActionBar!!
         val provider = HomeMenuActionProvider(actionBar.themedContext)
         val account = Utils.getCurrentAccount(this)
-        provider.setAccount(account)
+        provider.setAccount(account!!)
         provider.setOnActionListener(object : HomeMenuActionProvider.OnActionListener {
             override fun onProfileClick() {
                 val intent = Intent(this@HomeActivity, UserActivity::class.java)
