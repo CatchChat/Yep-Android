@@ -29,7 +29,7 @@ public abstract class CachedYepListLoader<E> extends CachedYepLoader<List<E>> {
     }
 
     @Override
-    protected List<E> deserialize(final InputStream is) throws IOException {
-        return LoganSquare.parseList(is, mObjectClass);
+    protected List<E> deserialize(final InputStream st) throws IOException {
+        return LoganSquare.parseList(st, mObjectClass);
     }
 }

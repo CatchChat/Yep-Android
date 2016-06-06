@@ -21,7 +21,7 @@ import javax.inject.Inject
 abstract class CachedYepLoader<T>(
         context: Context,
         protected val account: Account,
-        private val oldData: T,
+        private val oldData: T?,
         private val readCache: Boolean,
         private val writeCache: Boolean
 ) : AsyncTaskLoader<T>(context), Constants {
@@ -42,7 +42,7 @@ abstract class CachedYepLoader<T>(
             if (readCache) {
                 var fis: FileInputStream? = null
                 try {
-                    val cacheFile = fileCache!!.get(cacheFileName)
+                    val cacheFile = fileCache.get(cacheFileName)
                     if (cacheFile != null) {
                         fis = FileInputStream(cacheFile)
                         val cached = deserialize(fis)
@@ -62,7 +62,7 @@ abstract class CachedYepLoader<T>(
                     pos = PipedOutputStream()
                     pis = PipedInputStream(pos)
                     serializeThreaded(data, pos)
-                    fileCache!!.save(cacheFileName, pis, null, null)
+                    fileCache.save(cacheFileName, pis, null, null)
                 } catch (e: IOException) {
                     // Ignore
                 } finally {
@@ -99,11 +99,11 @@ abstract class CachedYepLoader<T>(
     protected abstract fun serialize(data: T, os: OutputStream)
 
     @Throws(IOException::class)
-    protected abstract fun deserialize(`is`: InputStream): T?
+    protected abstract fun deserialize(st: InputStream): T?
 
     protected abstract val cacheFileName: String
 
     @Throws(YepException::class)
-    protected abstract fun requestData(yep: YepAPI, oldData: T): T
+    protected abstract fun requestData(yep: YepAPI, oldData: T?): T
 
 }
