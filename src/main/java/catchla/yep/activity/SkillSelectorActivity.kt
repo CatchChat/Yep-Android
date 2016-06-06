@@ -67,7 +67,7 @@ class SkillSelectorActivity : ContentActivity(), Constants {
     }
 
     class CategoriesFragment : ListFragment(), LoaderManager.LoaderCallbacks<TaskResponse<List<SkillCategory>>> {
-        private var adapter: CategoriesAdapter? = null
+        private lateinit var adapter: CategoriesAdapter
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
@@ -82,21 +82,21 @@ class SkillSelectorActivity : ContentActivity(), Constants {
         }
 
         override fun onLoadFinished(loader: Loader<TaskResponse<List<SkillCategory>>>, data: TaskResponse<List<SkillCategory>>) {
-            adapter!!.clear()
-            if (data.hasData()) {
-                adapter!!.addAll(data.data)
+            adapter.clear()
+            if (data.data != null) {
+                adapter.addAll(data.data)
             }
             setListShown(true)
         }
 
         override fun onLoaderReset(loader: Loader<TaskResponse<List<SkillCategory>>>) {
-            adapter!!.clear()
+            adapter.clear()
         }
 
         override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
             super.onListItemClick(l, v, position, id)
             val activity = activity as SkillSelectorActivity
-            activity.selectedCategory = adapter!!.getItem(position)
+            activity.selectedCategory = adapter.getItem(position)
             activity.showSkills()
         }
 

@@ -201,8 +201,8 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         val conversation = conversation
         if (account == null || conversation == null) return
         val task = object : SendMessageTask<ChatInputBarFragment>(context, account) {
-            override fun afterExecute(handler: ChatInputBarFragment?, result: TaskResponse<Message>?) {
-                if (result!!.hasData()) {
+            override fun afterExecute(handler: ChatInputBarFragment?, result: TaskResponse<Message>) {
+                if (result.data != null) {
                     handler!!.listener!!.onMessageSentFinished(result)
                     // TODO Reload messages
                 }

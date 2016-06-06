@@ -16,7 +16,7 @@ import java.util.*
 class DiscoverUsersLoader(
         context: Context, account: Account,
         private val query: DiscoverQuery,
-        oldData: List<User>,
+        oldData: List<User>?,
         private val paging: Paging,
         readCache: Boolean,
         writeCache: Boolean

@@ -36,7 +36,7 @@ class BlockedUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(),
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>> {
-        return BlockedUsersLoader(activity, Utils.getCurrentAccount(activity))
+        return BlockedUsersLoader(activity, Utils.getCurrentAccount(activity)!!)
     }
 
     override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>) {

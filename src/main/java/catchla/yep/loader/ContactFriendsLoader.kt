@@ -16,7 +16,10 @@ import java.util.*
 /**
  * Created by mariotaku on 15/5/27.
  */
-class ContactFriendsLoader(context: Context, private val account: Account) : AsyncTaskLoader<TaskResponse<List<User>>>(context) {
+class ContactFriendsLoader(
+        context: Context,
+        private val account: Account
+) : AsyncTaskLoader<TaskResponse<List<User>>>(context) {
 
     override fun loadInBackground(): TaskResponse<List<User>> {
         val yep = YepAPIFactory.getInstance(context, account)
@@ -40,9 +43,9 @@ class ContactFriendsLoader(context: Context, private val account: Account) : Asy
             c.moveToNext()
             c.close()
             val user = yep.uploadContact(contact)
-            return TaskResponse.getInstance<List<User>>(user)
+            return TaskResponse(user)
         } catch (e: YepException) {
-            return TaskResponse.getInstance<List<User>>(e)
+            return TaskResponse(exception = e)
         }
 
     }

@@ -123,19 +123,19 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
             public override fun doLongOperation(args: Array<String>): TaskResponse<CreateRegistrationResult> {
                 val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
                 try {
-                    return TaskResponse.getInstance(yep.createRegistration(args[1], args[2], args[0], 0.0, 0.0))
+                    return TaskResponse(yep.createRegistration(args[1], args[2], args[0], 0.0, 0.0))
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<CreateRegistrationResult>(e)
+                    return TaskResponse<CreateRegistrationResult>(exception = e)
                 }
 
             }
 
-            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<CreateRegistrationResult>?) {
+            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<CreateRegistrationResult>) {
                 val f = handler!!.supportFragmentManager.findFragmentByTag("create_registration")
                 if (f is DialogFragment) {
                     f.dismiss()
                 }
-                if (result!!.hasData()) {
+                if (result.data != null) {
                     handler.setCreateRegistrationResult(result.data)
                     handler.gotoNextPage()
                 } else {
@@ -171,21 +171,20 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
                 val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
                 try {
                     val result = args.first
-                    val verifyCode = args.second
-                    return TaskResponse.getInstance(yep.updateRegistration(result.mobile,
-                            result.phoneCode, verifyCode, Client.OFFICIAL, 0))
+                    return TaskResponse(yep.updateRegistration(result.mobile,
+                            result.phoneCode, args.second, Client.OFFICIAL, 0))
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<AccessToken>(e)
+                    return TaskResponse<AccessToken>(exception = e)
                 }
 
             }
 
-            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<AccessToken>?) {
+            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<AccessToken>) {
                 val f = handler!!.supportFragmentManager.findFragmentByTag("update_registration")
                 if (f is DialogFragment) {
                     f.dismiss()
                 }
-                if (result!!.hasData()) {
+                if (result.data != null) {
                     handler.setUpdateRegistrationResult(result.data)
                     handler.gotoNextPage()
                 } else {

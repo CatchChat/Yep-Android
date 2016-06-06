@@ -20,9 +20,9 @@ class UserLoader(context: Context, private val account: Account, private val id:
     override fun loadInBackground(): TaskResponse<User> {
         val yep = YepAPIFactory.getInstance(context, account)
         try {
-            return TaskResponse.getInstance(yep.showUser(id))
+            return TaskResponse(yep.showUser(id))
         } catch (e: YepException) {
-            return TaskResponse.getInstance<User>(e)
+            return TaskResponse(exception = e)
         }
 
     }

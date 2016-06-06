@@ -28,7 +28,9 @@ import catchla.yep.R
 import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Friendships
-import catchla.yep.util.*
+import catchla.yep.util.JsonSerializer
+import catchla.yep.util.Utils
+import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.task.UpdateProfileTask
 import org.apache.commons.lang3.StringUtils
 import org.apmem.tools.layouts.FlowLayout
@@ -287,26 +289,24 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     }
 
     override fun onLoadFinished(loader: Loader<TaskResponse<User>>, data: TaskResponse<User>) {
-        if (data.hasData()) {
-            val user = data.data
-            val account = account
-            val accountId = Utils.getAccountId(this, account)
-            displayUser(user)
-            if (StringUtils.equals(user.id, accountId)) {
-                Utils.saveUserInfo(this@UserActivity, account, user)
-            } else {
-                TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-                    public override fun doLongOperation(param: Any?): Any? {
-                        val values = ContentValues()
-                        values.put(Friendships.FRIEND, JsonSerializer.serialize(user))
-                        val cr = contentResolver
-                        val where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
-                                Expression.equalsArgs(Friendships.USER_ID)).sql
-                        cr.update(Friendships.CONTENT_URI, values, where, arrayOf(accountId, user.id))
-                        return null
-                    }
-                })
-            }
+        val user = data.data ?: return
+        val account = account
+        val accountId = Utils.getAccountId(this, account)
+        displayUser(user)
+        if (StringUtils.equals(user.id, accountId)) {
+            Utils.saveUserInfo(this@UserActivity, account, user)
+        } else {
+            TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
+                public override fun doLongOperation(param: Any?): Any? {
+                    val values = ContentValues()
+                    values.put(Friendships.FRIEND, JsonSerializer.serialize(user))
+                    val cr = contentResolver
+                    val where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
+                            Expression.equalsArgs(Friendships.USER_ID)).sql
+                    cr.update(Friendships.CONTENT_URI, values, where, arrayOf(accountId, user.id))
+                    return null
+                }
+            })
         }
     }
 

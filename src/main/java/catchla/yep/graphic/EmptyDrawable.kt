@@ -6,10 +6,10 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
 class EmptyDrawable(
-        private val intrinsicWidth: Int,
-        private val intrinsicHeight: Int,
-        private val minimumWidth: Int,
-        private val minimumHeight: Int
+        private val intrinsicWidth: Int = -1,
+        private val intrinsicHeight: Int = -1,
+        private val minimumWidth: Int = -1,
+        private val minimumHeight: Int = -1
 ) : Drawable() {
 
     constructor(drawableToCopySize: Drawable) : this(drawableToCopySize.minimumWidth, drawableToCopySize.minimumHeight,

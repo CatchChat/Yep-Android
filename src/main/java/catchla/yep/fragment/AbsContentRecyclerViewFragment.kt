@@ -59,7 +59,7 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
     private var mScrollListener: ContentListScrollListener? = null
 
     // Data fields
-    private val mSystemWindowsInsets = Rect()
+    private val systemWindowsInsets = Rect()
 
     override fun canScroll(dy: Float): Boolean {
         return mDrawerCallback!!.canScroll(dy)
@@ -215,7 +215,7 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         recyclerView!!.setPadding(insets.left + extraPadding.left, insets.top + extraPadding.top,
                 insets.right + extraPadding.right, insets.bottom + extraPadding.bottom)
         progressContainer!!.setPadding(insets.left, insets.top, insets.right, insets.bottom)
-        mSystemWindowsInsets.set(insets)
+        systemWindowsInsets.set(insets)
         updateRefreshProgressOffset()
     }
 
@@ -272,7 +272,7 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
 
     protected fun updateRefreshProgressOffset() {
         val activity = activity
-        val insets = this.mSystemWindowsInsets
+        val insets = this.systemWindowsInsets
         val layout = this.swipeRefreshLayout
         if (activity !is IControlBarActivity || insets.top == 0 || layout == null
                 || isRefreshing) {

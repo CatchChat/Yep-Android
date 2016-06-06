@@ -21,7 +21,7 @@ class GithubUserInfoLoader(
         get() = "cached_github_user_info_${account.name}"
 
     @Throws(YepException::class)
-    override fun requestData(yep: YepAPI, oldData: GithubUserInfo): GithubUserInfo {
+    override fun requestData(yep: YepAPI, oldData: GithubUserInfo?): GithubUserInfo {
         return yep.getGithubUserInfo(yepUserId)
     }
 

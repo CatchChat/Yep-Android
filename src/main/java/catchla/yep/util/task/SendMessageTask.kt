@@ -8,7 +8,10 @@ import catchla.yep.Constants
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Conversations
 import catchla.yep.provider.YepDataStore.Messages
-import catchla.yep.util.*
+import catchla.yep.util.JsonSerializer
+import catchla.yep.util.Utils
+import catchla.yep.util.YepAPI
+import catchla.yep.util.YepAPIFactory
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.ktextension.toLong
 import org.mariotaku.sqliteqb.library.Expression
@@ -41,7 +44,7 @@ abstract class SendMessageTask<H>(val context: Context, val account: Account) : 
             val message = yep.createMessage(newMessage.recipientType(),
                     newMessage.recipientId(), newMessage)
             updateSentMessage(draftId, message)
-            return TaskResponse.getInstance(message)
+            return TaskResponse(message)
         } catch (e: YepException) {
             Log.w(Constants.LOGTAG, e)
             val cr = context.contentResolver
@@ -50,7 +53,7 @@ abstract class SendMessageTask<H>(val context: Context, val account: Account) : 
             val where = Expression.equalsArgs(Messages.RANDOM_ID).sql
             val whereArgs = arrayOf(draftId)
             cr.update(Messages.CONTENT_URI, values, where, whereArgs)
-            return TaskResponse.getInstance<Message>(e)
+            return TaskResponse(exception = e)
         } catch (t: Throwable) {
             Log.wtf(Constants.LOGTAG, t)
             throw RuntimeException(t)

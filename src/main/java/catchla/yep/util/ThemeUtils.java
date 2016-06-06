@@ -57,7 +57,7 @@ public class ThemeUtils {
 
     @NonNull
     public static Drawable getActionBarBackground(final int primaryColor, final boolean outlineEnabled) {
-        return ActionBarColorDrawable.create(primaryColor, outlineEnabled);
+        return new ActionBarColorDrawable(primaryColor, outlineEnabled);
     }
 
     public static Context getActionBarPopupThemedContext(Context base) {

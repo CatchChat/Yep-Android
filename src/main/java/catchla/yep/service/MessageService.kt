@@ -71,15 +71,15 @@ class MessageService : Service(), Constants {
             public override fun doLongOperation(account: Account): TaskResponse<User> {
                 val yep = YepAPIFactory.getInstance(application, account)
                 try {
-                    return TaskResponse.getInstance(yep.getUser())
+                    return TaskResponse(yep.getUser())
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<User>(e)
+                    return TaskResponse(exception = e)
                 }
 
             }
 
-            public override fun afterExecute(handler: MessageService?, result: TaskResponse<User>?) {
-                if (result!!.hasData()) {
+            public override fun afterExecute(handler: MessageService?, result: TaskResponse<User>) {
+                if (result.data != null) {
                     Utils.saveUserInfo(handler, account, result.data)
                 }
             }
@@ -111,10 +111,10 @@ class MessageService : Service(), Constants {
                     val cr = contentResolver
                     cr.delete(Friendships.CONTENT_URI, null, null)
                     cr.bulkInsertSliced(Friendships.CONTENT_URI, values)
-                    return TaskResponse.getInstance(true)
+                    return TaskResponse(true)
                 } catch (e: YepException) {
                     Log.w(Constants.LOGTAG, e)
-                    return TaskResponse.getInstance<Boolean>(e)
+                    return TaskResponse(exception = e)
                 } finally {
                 }
             }
@@ -144,13 +144,13 @@ class MessageService : Service(), Constants {
                     val conversations = yep.getConversations(paging)
                     insertConversations(this@MessageService, conversations, accountUser.id)
                     System.identityHashCode(conversations)
-                    return TaskResponse.getInstance(true)
+                    return TaskResponse(true)
                 } catch (e: YepException) {
                     Log.w(Constants.LOGTAG, e)
-                    return TaskResponse.getInstance<Boolean>(e)
+                    return TaskResponse<Boolean>(exception = e)
                 } catch (e: Throwable) {
                     Log.wtf(Constants.LOGTAG, e)
-                    return TaskResponse.getInstance<Boolean>(e)
+                    return TaskResponse<Boolean>(exception = e)
                 } finally {
                 }
             }
@@ -179,10 +179,10 @@ class MessageService : Service(), Constants {
                     val circles = yep.getCircles(paging)
                     val accountId = accountUser.id
                     insertCircles(this@MessageService, circles, accountId)
-                    return TaskResponse.getInstance(true)
+                    return TaskResponse(true)
                 } catch (e: YepException) {
                     Log.w(Constants.LOGTAG, e)
-                    return TaskResponse.getInstance<Boolean>(e)
+                    return TaskResponse(exception = e)
                 } finally {
                 }
             }

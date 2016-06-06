@@ -125,19 +125,19 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
                 try {
                     val code = yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS)
                     System.identityHashCode(code)
-                    return TaskResponse.getInstance(Pair.create(args[0], args[1]))
+                    return TaskResponse(Pair.create(args[0], args[1]))
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<Pair<String, String>>(e)
+                    return TaskResponse(exception = e)
                 }
 
             }
 
-            override fun afterExecute(handler: SignInActivity?, result: TaskResponse<Pair<String, String>>?) {
+            override fun afterExecute(handler: SignInActivity?, result: TaskResponse<Pair<String, String>>) {
                 val f = handler!!.supportFragmentManager.findFragmentByTag("send_verify")
                 if (f is DialogFragment) {
                     f.dismiss()
                 }
-                if (result!!.hasData()) {
+                if (result.data != null) {
                     val data = result.data
                     handler.setPhoneNumber(data.first, data.second)
                     handler.gotoNextPage()
@@ -174,19 +174,19 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
                     val token = yep.tokenByMobile(args[0], args[1], args[2],
                             Client.OFFICIAL, 0)
                     token.user = yep.getUser()
-                    return TaskResponse.getInstance(token)
+                    return TaskResponse(token)
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<AccessToken>(e)
+                    return TaskResponse<AccessToken>(exception = e)
                 }
 
             }
 
-            public override fun afterExecute(handler: SignInActivity?, result: TaskResponse<AccessToken>?) {
+            public override fun afterExecute(handler: SignInActivity?, result: TaskResponse<AccessToken>) {
                 val f = handler!!.supportFragmentManager.findFragmentByTag(TAG_VERIFY_PHONE)
                 if (f is DialogFragment) {
                     f.dismiss()
                 }
-                if (result!!.hasData()) {
+                if (result.data != null) {
                     handler.finishAddAddAccount(result.data)
                     handler.gotoNextPage()
                 } else {

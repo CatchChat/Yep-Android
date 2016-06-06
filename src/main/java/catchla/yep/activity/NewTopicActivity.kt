@@ -35,23 +35,23 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
     private lateinit var topicSpinner: Spinner
     private lateinit var preferences: SharedPreferences
 
-    private var mDraftsSaved: Boolean = false
-    private var mShouldSkipSaveDrafts: Boolean = false
-    private var mFragmentResumed: Boolean = false
+    private var draftsSaved: Boolean = false
+    private var shouldSkipSaveDrafts: Boolean = false
+    private var fragmentResumed: Boolean = false
 
     override fun onPause() {
-        mFragmentResumed = false
+        fragmentResumed = false
         super.onPause()
     }
 
     override fun onResumeFragments() {
         super.onResumeFragments()
-        mFragmentResumed = true
+        fragmentResumed = true
         invokeFragmentRunnable()
     }
 
     private fun invokeFragmentRunnable() {
-        if (mFragmentResumed && mDismissUploadingDialogRunnable != null) {
+        if (fragmentResumed && mDismissUploadingDialogRunnable != null) {
             mDismissUploadingDialogRunnable!!.run()
         }
     }
@@ -115,12 +115,12 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
     }
 
     override fun onStop() {
-        mDraftsSaved = saveDrafts()
+        draftsSaved = saveDrafts()
         super.onStop()
     }
 
     private fun saveDrafts(): Boolean {
-        if (mShouldSkipSaveDrafts) return false
+        if (shouldSkipSaveDrafts) return false
         val text = editText.text.toString()
         val fragment = newTopicMediaFragment
         if (TextUtils.isEmpty(text) && !fragment.hasMedia()) {
@@ -149,7 +149,7 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
     }
 
     override fun onDestroy() {
-        if (mDraftsSaved) {
+        if (draftsSaved) {
             Toast.makeText(this, R.string.drafts_saved, Toast.LENGTH_SHORT).show()
         }
         super.onDestroy()
@@ -179,33 +179,31 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
         newTopic.skillId(skill?.id)
         newTopic.location(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
         val taskRunnable = object : AbstractTask<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
-            public override fun doLongOperation(params: NewTopic): TaskResponse<Topic>? {
+            public override fun doLongOperation(params: NewTopic): TaskResponse<Topic> {
                 val yep = YepAPIFactory.getInstance(this@NewTopicActivity, account)
                 try {
                     val fragment = newTopicMediaFragment
                     fragment.uploadMedia(yep, newTopic)
 
                     val topic = yep.postTopic(params)
-                    return TaskResponse.getInstance(topic)
+                    return TaskResponse(topic)
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<Topic>(e)
+                    return TaskResponse<Topic>(exception = e)
                 } catch (t: Throwable) {
                     Log.wtf(Constants.LOGTAG, t)
                     System.exit(0)
-                    return null
+                    return TaskResponse(exception = t)
                 }
 
             }
 
-            public override fun afterExecute(handler: NewTopicActivity?, response: TaskResponse<Topic>?) {
-                if (response!!.hasData()) {
-                    handler!!.finishPosting()
+            public override fun afterExecute(handler: NewTopicActivity, response: TaskResponse<Topic>) {
+                if (response.data != null) {
+                    handler.finishPosting()
                 } else {
-                    handler!!.dismissUploadingDialog()
+                    handler.dismissUploadingDialog()
                     Toast.makeText(handler, R.string.unable_to_create_topic, Toast.LENGTH_SHORT).show()
-                    if (response.hasException()) {
-                        Log.w(Constants.LOGTAG, response.exception)
-                    }
+                    Log.w(Constants.LOGTAG, response.exception ?: return)
                 }
             }
         }
@@ -229,7 +227,7 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
     }
 
     private fun finishPosting() {
-        mShouldSkipSaveDrafts = true
+        shouldSkipSaveDrafts = true
         clearDraft()
         Toast.makeText(this, R.string.topic_posted, Toast.LENGTH_SHORT).show()
         if (!isFinishing) {

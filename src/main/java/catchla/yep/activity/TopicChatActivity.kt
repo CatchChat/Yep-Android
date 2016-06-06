@@ -50,9 +50,9 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
                     public override fun doLongOperation(param: Any?): TaskResponse<UrlResponse> {
                         val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
                         try {
-                            return TaskResponse.getInstance(yep.getCircleShareUrl(topic.circle.id))
+                            return TaskResponse(yep.getCircleShareUrl(topic.circle.id))
                         } catch (e: YepException) {
-                            return TaskResponse.getInstance<UrlResponse>(e)
+                            return TaskResponse(exception = e)
                         }
 
                     }

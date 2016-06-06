@@ -177,7 +177,7 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
             update.setWebsite(mEditWebsite.text.toString())
         }
         if (changed) {
-            mTask = UpdateProfileTask(this, Utils.getCurrentAccount(this), update, mProfileImageUri)
+            mTask = UpdateProfileTask(this, Utils.getCurrentAccount(this)!!, update, mProfileImageUri)
             mTask!!.execute()
             return
         }

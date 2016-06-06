@@ -37,9 +37,9 @@ class SkillCategoriesLoader(context: Context, private val mAccount: Account, pri
             if (mWriteCache) {
                 saveCached(list)
             }
-            return TaskResponse.getInstance<List<SkillCategory>>(list)
+            return TaskResponse(list)
         } catch (e: YepException) {
-            return TaskResponse.getInstance<List<SkillCategory>>(e)
+            return TaskResponse(exception = e)
         }
 
     }
@@ -65,7 +65,7 @@ class SkillCategoriesLoader(context: Context, private val mAccount: Account, pri
                 if (!file.exists() || file.length() == 0L) throw FileNotFoundException()
                 s = FileInputStream(file)
                 val data = LoganSquare.parseList(s, SkillCategory::class.java)
-                if (data != null) return TaskResponse.getInstance(data)
+                if (data != null) return TaskResponse(data)
             } catch (ignored: IOException) {
             } finally {
                 Utils.closeSilently(s)

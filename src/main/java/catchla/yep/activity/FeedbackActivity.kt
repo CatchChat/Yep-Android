@@ -49,9 +49,9 @@ class FeedbackActivity : SwipeBackContentActivity() {
                 val deviceInfo = resources.configuration.toString()
                 try {
                     yepAPI.postFeedback(params, deviceInfo)
-                    return TaskResponse.getInstance(true)
+                    return TaskResponse(true)
                 } catch (e: YepException) {
-                    return TaskResponse.getInstance<Boolean>(e)
+                    return TaskResponse(exception = e)
                 }
 
             }

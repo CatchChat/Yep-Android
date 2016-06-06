@@ -13,13 +13,17 @@ import java.util.*
 /**
  * Created by mariotaku on 15/5/27.
  */
-class SearchUsersLoader(context: Context, account: Account, private val query: String) : CachedYepListLoader<User>(context, account, User::class.java, null, false, false), Constants {
+class SearchUsersLoader(
+        context: Context,
+        account: Account,
+        private val query: String
+) : CachedYepListLoader<User>(context, account, User::class.java, null, false, false), Constants {
     override val cacheFileName: String
         get() = ""
 
 
     @Throws(YepException::class)
-    override fun requestData(yep: YepAPI, oldData: List<User>): List<User> {
+    override fun requestData(yep: YepAPI, oldData: List<User>?): List<User> {
         val paging = Paging()
         var page = 1
         val list = ArrayList<User>()

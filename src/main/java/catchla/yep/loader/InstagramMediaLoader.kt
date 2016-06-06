@@ -18,10 +18,10 @@ class InstagramMediaLoader(
 ) : CachedYepObjectLoader<InstagramMediaList>(context, account, InstagramMediaList::class.java, readCache, writeCache) {
 
     override val cacheFileName: String
-        get() = "cached_instagram_media_" + account.name
+        get() = "cached_instagram_media_${account.name}"
 
     @Throws(YepException::class)
-    override fun requestData(yep: YepAPI, oldData: InstagramMediaList): InstagramMediaList {
+    override fun requestData(yep: YepAPI, oldData: InstagramMediaList?): InstagramMediaList {
         return yep.getInstagramMediaList(yepUserId)
     }
 
