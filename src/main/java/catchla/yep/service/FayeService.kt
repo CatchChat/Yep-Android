@@ -43,13 +43,14 @@ import javax.inject.Inject
 class FayeService : Service(), Constants {
 
     @Inject
-    lateinit var mBus: Bus
-    lateinit var mHandler: Handler
-    internal var mExecutor: Executor = Executors.newSingleThreadExecutor()
-    internal var mTimer = Timer(true)
+    lateinit var bus: Bus
+    lateinit var handler: Handler
+    lateinit var executor: Executor
+    lateinit var timer: Timer
 
-    internal var mInstantStateTask = WeakHashMap<String, TimerTask>()
-    private var mFayeClient: Faye? = null
+    internal var instantStateTask = WeakHashMap<String, TimerTask>()
+
+    private var fayeClient: Faye? = null
 
     private fun updateLastReedLastSeen(cr: ContentResolver,
                                        accountId: String, conversationId: String,
@@ -84,13 +85,15 @@ class FayeService : Service(), Constants {
 
     override fun onCreate() {
         super.onCreate()
-        mHandler = Handler(Looper.getMainLooper())
+        handler = Handler(Looper.getMainLooper())
+        executor = Executors.newSingleThreadExecutor()
+        timer = Timer(true)
         GeneralComponentHelper.build(this).inject(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) return Service.START_NOT_STICKY
-        if (mFayeClient != null) {
+        if (fayeClient != null) {
             return Service.START_STICKY
         }
         val account = intent.getParcelableExtra<Account>(Constants.EXTRA_ACCOUNT)
@@ -100,12 +103,12 @@ class FayeService : Service(), Constants {
         val authToken = YepAPIFactory.getAuthToken(this, account)
         val accountId = Utils.getAccountId(this, account)
 
-        mFayeClient = Faye.create(client, WebSocketCall.create(client, builder.build()))
+        fayeClient = Faye.create(client, WebSocketCall.create(client, builder.build()))
         val extension = YepFayeExtension()
         extension.version = "v1"
         extension.accessToken = authToken
-        mFayeClient!!.setExtension(extension)
-        mFayeClient!!.setErrorListener { e, code, message ->
+        fayeClient!!.setExtension(extension)
+        fayeClient!!.setErrorListener { e, code, message ->
             if (e != null) {
                 Log.w(Constants.LOGTAG, String.format(Locale.ROOT, "%d: %s", code, message), e)
             } else {
@@ -113,7 +116,7 @@ class FayeService : Service(), Constants {
             }
         }
         val userChannel = String.format(Locale.ROOT, "/v1/users/%s/messages", accountId)
-        mFayeClient!!.subscribe(userChannel) { json ->
+        fayeClient!!.subscribe(userChannel) { json ->
             Log.d(Constants.LOGTAG, json.toString())
 
             consumeMessage(json, MessageType::class.java) { parsed ->
@@ -161,7 +164,7 @@ class FayeService : Service(), Constants {
                             val conversationId = Conversation.generateId(recipientType,
                                     recipientId)
                             val taskKey = accountId + conversationId
-                            if (!mInstantStateTask.containsKey(taskKey)) {
+                            if (!instantStateTask.containsKey(taskKey)) {
                                 val task = object : TimerTask() {
                                     override fun run() {
                                         val cr = contentResolver
@@ -170,11 +173,11 @@ class FayeService : Service(), Constants {
                                                 -1, lastSeen)
                                         postMessage(LastSeenMessage(accountId, conversationId,
                                                 lastSeen))
-                                        mInstantStateTask.remove(taskKey)
+                                        instantStateTask.remove(taskKey)
                                     }
                                 }
-                                mInstantStateTask.put(taskKey, task)
-                                mTimer.schedule(task, 1000L)
+                                instantStateTask.put(taskKey, task)
+                                timer.schedule(task, 1000L)
                             }
                         }
                     }
@@ -191,8 +194,8 @@ class FayeService : Service(), Constants {
     }
 
     override fun onDestroy() {
-        if (mFayeClient != null) {
-            mExecutor.execute { mFayeClient!!.disconnect() }
+        if (fayeClient != null) {
+            executor.execute { fayeClient!!.disconnect() }
         }
         super.onDestroy()
     }
@@ -202,31 +205,31 @@ class FayeService : Service(), Constants {
     }
 
     private fun postMessage(obj: Any) {
-        mHandler.post { mBus.post(obj) }
+        handler.post { bus.post(obj) }
     }
 
     private fun sendMessage(messageType: String, channel: String, message: Any): Boolean {
-        if (mFayeClient == null) return false
-        mExecutor.execute {
+        if (fayeClient == null) return false
+        executor.execute {
             val fayeSend = FayeSend()
             fayeSend.messageType = messageType
             fayeSend.message = message
-            mFayeClient!!.publish(channel, fayeSend) { response -> Log.d(Constants.LOGTAG, "Instant message returns " + response) }
+            fayeClient!!.publish(channel, fayeSend) { response -> Log.d(Constants.LOGTAG, "Instant message returns " + response) }
         }
         return true
     }
 
     private class IFayeServiceBinder internal constructor(service: FayeService) : IFayeService.Stub() {
 
-        private val mReference: WeakReference<FayeService>
+        private val reference: WeakReference<FayeService>
 
         init {
-            mReference = WeakReference(service)
+            reference = WeakReference(service)
         }
 
         @Throws(RemoteException::class)
         override fun instantState(conversation: Conversation, type: String): Boolean {
-            val service = mReference.get()
+            val service = reference.get()
             val message = InstantStateMessage.create(type)
             message.recipientId = conversation.recipientId
             message.recipientType = conversation.recipientType
