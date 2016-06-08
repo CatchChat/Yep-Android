@@ -22,23 +22,17 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Base64;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,8 +44,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -103,40 +95,6 @@ public class Utils implements Constants {
     public static final Pattern PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml");
 
     public static final Pattern PATTERN_RESOURCE_IDENTIFIER = Pattern.compile("@([\\w_]+)/([\\w_]+)");
-
-    public static int getInsetsTopWithoutActionBarHeight(Context context, int top) {
-        final int actionBarHeight;
-        if (context instanceof AppCompatActivity) {
-            actionBarHeight = getActionBarHeight(((AppCompatActivity) context).getSupportActionBar());
-        } else {
-            return top;
-        }
-        if (actionBarHeight > top) {
-            return top;
-        }
-        return top - actionBarHeight;
-    }
-
-
-    public static int getActionBarHeight(@Nullable ActionBar actionBar) {
-        if (actionBar == null) return 0;
-        final Context context = actionBar.getThemedContext();
-        final TypedValue tv = new TypedValue();
-        final int height = actionBar.getHeight();
-        if (height > 0) return height;
-        if (context.getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, tv, true)) {
-            return TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
-        }
-        return 0;
-    }
-
-
-    public static int getInsetsTopWithoutActionBarHeight(Context context, int top, int actionBarHeight) {
-        if (actionBarHeight > top) {
-            return top;
-        }
-        return top - actionBarHeight;
-    }
 
 
     public static int getResId(final Context context, final String string) {
@@ -249,8 +207,11 @@ public class Utils implements Constants {
     public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
         final String name = provider.getName();
         final View view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
-        if ("dribbble".equals(name)) {
-        } else if ("github".equals(name)) {
+        switch (name) {
+            case "dribbble":
+                break;
+            case "github":
+                break;
         }
         final ImageView iconView = (ImageView) view.findViewById(android.R.id.icon);
         final TextView titleView = (TextView) view.findViewById(android.R.id.title);
@@ -274,9 +235,8 @@ public class Utils implements Constants {
         return view;
     }
 
-    public static boolean isMySelf(final Context context, final Account account, final User user) {
+    public static boolean isMySelf(@NonNull final Context context, @NonNull final Account account, @NonNull final User user) {
         final User accountUser = getAccountUser(context, account);
-        if (accountUser == null || user == null) return false;
         return user.getId().equals(accountUser.getId());
     }
 
@@ -287,18 +247,6 @@ public class Utils implements Constants {
         return view;
     }
 
-
-    public static void setCompatToolbarOverlayAlpha(FragmentActivity activity, float alpha) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return;
-//        final View windowOverlay = activity.findViewById(R.id.window_overlay);
-//        if (windowOverlay != null) {
-//            windowOverlay.setAlpha(alpha);
-//            return;
-//        }
-        final Drawable drawable = ThemeUtils.getCompatToolbarOverlay(activity);
-        if (drawable == null) return;
-        drawable.setAlpha(Math.round(alpha * 255));
-    }
 
     public static String getErrorMessage(final Exception exception) {
         if (exception instanceof YepException) {
@@ -414,12 +362,6 @@ public class Utils implements Constants {
         return am.getUserData(account, USER_DATA_ID);
     }
 
-    @Nullable
-    public static <T> ArrayList<T> arrayListFrom(@Nullable final List<T> list) {
-        if (list == null) return null;
-        return new ArrayList<>(list);
-    }
-
     public static String getDistanceString(final float distanceMeters) {
         if (distanceMeters < 1000) {
             return String.format(Locale.US, "%.0f m", distanceMeters);
@@ -450,19 +392,6 @@ public class Utils implements Constants {
 
     public static String getDisplayName(final Skill skill) {
         return TextUtils.isEmpty(skill.getNameString()) ? skill.getName() : skill.getNameString();
-    }
-
-    @SuppressWarnings("SuspiciousSystemArraycopy")
-    public static <T extends Parcelable> T[] newParcelableArray(Parcelable[] array, Parcelable.Creator<T> creator) {
-        if (array == null) return null;
-        final T[] result = creator.newArray(array.length);
-        System.arraycopy(array, 0, result, 0, array.length);
-        return result;
-    }
-
-    public static <T> List<T> emptyIfNull(final List<T> list) {
-        if (list != null) return list;
-        return Collections.emptyList();
     }
 
     public static boolean hasSkill(final User user, final Skill skill) {
@@ -508,11 +437,6 @@ public class Utils implements Constants {
             }
         }
         return null;
-    }
-
-    public static String emptyIfNull(final CharSequence text) {
-        if (text == null) return "";
-        return String.valueOf(text);
     }
 
     public static String getDefaultAvatarUrl() {

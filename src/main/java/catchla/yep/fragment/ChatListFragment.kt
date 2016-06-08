@@ -205,8 +205,8 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         }
     }
 
-    class ChatAdapter internal constructor(private val mActivity: ChatListFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(mActivity.context) {
-        private val mInflater: LayoutInflater
+    class ChatAdapter internal constructor(private val fragment: ChatListFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(fragment.context) {
+        private val inflater: LayoutInflater
         var data: List<Message>? = null
             set(value) {
                 field = value
@@ -214,7 +214,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             }
 
         init {
-            mInflater = LayoutInflater.from(mActivity.context)
+            inflater = LayoutInflater.from(fragment.context)
         }
 
 
@@ -222,9 +222,9 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             val isOutgoing = viewType and FLAG_MESSAGE_OUTGOING != 0
             val baseView: View
             if (isOutgoing) {
-                baseView = mInflater.inflate(R.layout.list_item_message_outgoing, parent, false)
+                baseView = inflater.inflate(R.layout.list_item_message_outgoing, parent, false)
             } else {
-                baseView = mInflater.inflate(R.layout.list_item_message_incoming, parent, false)
+                baseView = inflater.inflate(R.layout.list_item_message_incoming, parent, false)
             }
             val subType = viewType and FLAG_MESSAGE_OUTGOING.inv()
             when (subType) {
@@ -283,7 +283,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         }
 
         private fun playAudio(attachment: FileAttachment) {
-            mActivity.playAudio(attachment)
+            fragment.playAudio(attachment)
         }
 
         fun findPosition(id: String): Int {
@@ -304,7 +304,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             }
 
         private fun notifyStateClicked(position: Int) {
-            mActivity.onStateClicked(getMessage(position))
+            fragment.onStateClicked(getMessage(position))
         }
 
         private open class MessageViewHolder(
@@ -331,21 +331,18 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                     adapter.imageLoader.displayProfileImage(message.sender.avatarUrl,
                             profileImageView)
                 }
-                if (stateView != null) {
-                    val state = message.state
-                    when (Utils.emptyIfNull(state)) {
-                        MessageState.READ -> {
-                            stateView.setImageDrawable(null)
-                        }
-                        MessageState.FAILED -> {
-                            stateView.setImageResource(R.drawable.ic_message_state_retry)
-                        }
-                        MessageState.UNREAD -> {
-                            stateView.setImageResource(R.drawable.ic_message_state_unread)
-                        }
-                        else -> {
-                            stateView.setImageDrawable(null)
-                        }
+                when (message.state) {
+                    MessageState.READ -> {
+                        stateView?.setImageDrawable(null)
+                    }
+                    MessageState.FAILED -> {
+                        stateView?.setImageResource(R.drawable.ic_message_state_retry)
+                    }
+                    MessageState.UNREAD -> {
+                        stateView?.setImageResource(R.drawable.ic_message_state_unread)
+                    }
+                    else -> {
+                        stateView?.setImageDrawable(null)
                     }
                 }
             }

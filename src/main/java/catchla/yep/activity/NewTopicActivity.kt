@@ -106,8 +106,8 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
         if (skill != null) {
             adapter.add(skill)
         }
-        adapter.addAll(Utils.emptyIfNull(accountUser.masterSkills))
-        adapter.addAll(Utils.emptyIfNull(accountUser.learningSkills))
+        adapter.addAll(accountUser.masterSkills ?: emptyList())
+        adapter.addAll(accountUser.learningSkills ?: emptyList())
         topicSpinner.adapter = adapter
         if (skill != null) {
             topicSpinner.setSelection(adapter.findPositionBySkillId(skill.id))

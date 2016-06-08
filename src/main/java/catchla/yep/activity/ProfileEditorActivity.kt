@@ -160,19 +160,19 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         if (mTask != null && mTask!!.status == AsyncTask.Status.RUNNING) return
         var changed = mProfileImageUri != null
         val update = ProfileUpdate()
-        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser!!.nickname), mEditNickname.text)) {
+        if (!TextUtils.equals(mCurrentUser!!.nickname ?: "", mEditNickname.text)) {
             changed = changed or true
             update.setNickname(mEditNickname.text.toString())
         }
-        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser!!.introduction), mEditIntroduction.text)) {
+        if (!TextUtils.equals(mCurrentUser!!.introduction ?: "", mEditIntroduction.text)) {
             changed = changed or true
             update.setIntroduction(mEditIntroduction.text.toString())
         }
-        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser!!.username), mEditUsername.text)) {
+        if (!TextUtils.equals(mCurrentUser!!.username ?: "", mEditUsername.text)) {
             changed = changed or true
             update.setUsername(mEditUsername.text.toString())
         }
-        if (!TextUtils.equals(Utils.emptyIfNull(mCurrentUser!!.websiteUrl), mEditWebsite.text)) {
+        if (!TextUtils.equals(mCurrentUser!!.websiteUrl ?: "", mEditWebsite.text)) {
             changed = changed or true
             update.setWebsite(mEditWebsite.text.toString())
         }

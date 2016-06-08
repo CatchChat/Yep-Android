@@ -5,10 +5,6 @@
 package catchla.yep.util;
 
 public class MathUtils {
-    public static float clamp(final float num, final float bound1, final float bound2) {
-        final float max = Math.max(bound1, bound2), min = Math.min(bound1, bound2);
-        return Math.max(Math.min(num, max), min);
-    }
 
     public static int clamp(final int num, final int bound1, final int bound2) {
         final int max = Math.max(bound1, bound2), min = Math.min(bound1, bound2);
