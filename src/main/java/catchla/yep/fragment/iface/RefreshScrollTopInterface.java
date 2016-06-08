@@ -6,8 +6,8 @@ package catchla.yep.fragment.iface;
 
 public interface RefreshScrollTopInterface {
 
-	public boolean scrollToStart();
+    boolean scrollToStart();
 
-	public boolean triggerRefresh();
+    boolean triggerRefresh();
 
 }
