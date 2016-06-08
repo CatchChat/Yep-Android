@@ -38,17 +38,22 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
+const val REQUEST_PICK_IMAGE = 101
+const val REQUEST_TAKE_PHOTO = 102
+const val REQUEST_PICK_LOCATION = 103
+const val REQUEST_REQUEST_RECORD_PERMISSION = 104
+
 /**
  * Input bar component for chat activities
  * Created by mariotaku on 15/11/16.
  */
 class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDialogFragment.Callback {
 
-    private lateinit var mAttachSendButton: ImageView
-    private lateinit var mEditText: EditText
-    private lateinit var mVoiceToggle: View
-    private lateinit var mEditTextContainer: View
-    private lateinit var mVoiceRecordButton: Button
+    private lateinit var attachSendButton: ImageView
+    private lateinit var editText: EditText
+    private lateinit var voiceToggle: View
+    private lateinit var editTextContainer: View
+    private lateinit var voiceRecordButton: Button
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater!!.inflate(R.layout.layout_chat_input_panel, container, false)
@@ -66,31 +71,31 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
     override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onBaseViewCreated(view, savedInstanceState)
-        mEditText = view.findViewById(R.id.edit_text) as EditText
-        mEditTextContainer = view.findViewById(R.id.edit_text_container)
-        mAttachSendButton = view.findViewById(R.id.attachment_send) as ImageView
-        mVoiceToggle = view.findViewById(R.id.voice_toggle)
-        mVoiceRecordButton = view.findViewById(R.id.voice_record) as Button
+        editText = view.findViewById(R.id.edit_text) as EditText
+        editTextContainer = view.findViewById(R.id.edit_text_container)
+        attachSendButton = view.findViewById(R.id.attachment_send) as ImageView
+        voiceToggle = view.findViewById(R.id.voice_toggle)
+        voiceRecordButton = view.findViewById(R.id.voice_record) as Button
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mAttachSendButton.setOnClickListener {
-            if (mEditText.length() > 0) {
+        attachSendButton.setOnClickListener {
+            if (editText.length() > 0) {
                 sendTextMessage()
             } else {
                 openAttachmentMenu()
             }
         }
 
-        val handler = EditTextEnterHandler.attach(mEditText, EditTextEnterHandler.EnterListener { sendTextMessage() }, true)
+        val handler = EditTextEnterHandler.attach(editText, EditTextEnterHandler.EnterListener { sendTextMessage() }, true)
         handler.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                mAttachSendButton.setImageResource(if (s.length > 0) R.drawable.ic_action_send else R.drawable.ic_action_attachment)
+                attachSendButton.setImageResource(if (s.length > 0) R.drawable.ic_action_send else R.drawable.ic_action_attachment)
                 if (listener != null) {
                     listener!!.onTypingText()
                 }
@@ -101,19 +106,19 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
         })
 
-        mVoiceToggle.setOnClickListener {
-            val showVoice = mVoiceRecordButton.visibility != View.VISIBLE
+        voiceToggle.setOnClickListener {
+            val showVoice = voiceRecordButton.visibility != View.VISIBLE
             if (showVoice) {
                 val activity = activity
                 val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(mVoiceRecordButton.windowToken, 0)
+                imm.hideSoftInputFromWindow(voiceRecordButton.windowToken, 0)
             }
-            mVoiceRecordButton.visibility = if (showVoice) View.VISIBLE else View.GONE
-            mEditTextContainer.visibility = if (showVoice) View.GONE else View.VISIBLE
+            voiceRecordButton.visibility = if (showVoice) View.VISIBLE else View.GONE
+            editTextContainer.visibility = if (showVoice) View.GONE else View.VISIBLE
         }
         val helper = GestureViewHelper(context)
         helper.setOnGestureListener(VoicePressListener(this))
-        mVoiceRecordButton.setOnTouchListener { v, event ->
+        voiceRecordButton.setOnTouchListener { v, event ->
             helper.onTouchEvent(event)
             false
         }
@@ -197,31 +202,30 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
     }
 
     private fun sendMessage(sendMessageHandler: SendMessageHandler) {
-        val account = Utils.getCurrentAccount(context)
-        val conversation = conversation
-        if (account == null || conversation == null) return
+        val account = Utils.getCurrentAccount(context) ?: return
+        val conversation = this.conversation ?: return
         val task = object : SendMessageTask<ChatInputBarFragment>(context, account) {
-            override fun afterExecute(handler: ChatInputBarFragment?, result: TaskResponse<Message>) {
-                if (result.data != null) {
-                    handler!!.listener!!.onMessageSentFinished(result)
-                    // TODO Reload messages
-                }
-            }
+            override val mediaType: String
+                get() = sendMessageHandler.mediaType
 
             @Throws(YepException::class)
             override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
                 return sendMessageHandler.uploadAttachment(yep, newMessage)
             }
 
-            override val mediaType: String
-                get() = sendMessageHandler.mediaType
-
             override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
                 return sendMessageHandler.getLocalMetadata(newMessage)
             }
+
+            override fun afterExecute(handler: ChatInputBarFragment?, result: TaskResponse<Message>) {
+                if (result.data != null) {
+                    handler!!.listener!!.onMessageSentFinished(result)
+                    // TODO Reload messages
+                }
+            }
         }
         val newMessage = NewMessage()
-        newMessage.textContent(mEditText.text.toString())
+        newMessage.textContent(editText.text.toString())
         newMessage.accountId(conversation.accountId)
         newMessage.conversationId(conversation.id)
         newMessage.recipientId(conversation.recipientId)
@@ -235,7 +239,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         task.setResultHandler(this)
         listener!!.onMessageSentStarted(newMessage)
         TaskStarter.execute(task)
-        mEditText.setText("")
+        editText.setText("")
     }
 
     private val conversation: Conversation?
@@ -326,14 +330,14 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
     }
 
-    private class VoicePressListener(private val mFragment: ChatInputBarFragment) : GestureDetector.SimpleOnGestureListener(), GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
-        private var mRecorder: MediaRecorder? = null
-        private var mTimerTask: RecordMetersThread? = null
-        private var mCurrentRecordPath: String? = null
-        private val mSampleRecorder: SampleRecorder
+    private class VoicePressListener(private val fragment: ChatInputBarFragment) : GestureDetector.SimpleOnGestureListener(), GestureViewHelper.OnUpListener, GestureViewHelper.OnCancelListener {
+        private var recorder: MediaRecorder? = null
+        private var timerTask: RecordMetersThread? = null
+        private var currentRecordPath: String? = null
+        private val sampleRecorder: SampleRecorder
 
         init {
-            mSampleRecorder = SampleRecorder()
+            sampleRecorder = SampleRecorder()
         }
 
         override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
@@ -341,10 +345,10 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
 
         override fun onDown(e: MotionEvent): Boolean {
-            mFragment.mVoiceRecordButton!!.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            if (ContextCompat.checkSelfPermission(mFragment.context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            fragment.voiceRecordButton.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            if (ContextCompat.checkSelfPermission(fragment.context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
-                mFragment.requestPermissions(permissions, REQUEST_REQUEST_RECORD_PERMISSION)
+                fragment.requestPermissions(permissions, REQUEST_REQUEST_RECORD_PERMISSION)
                 return false
             }
             return startRecording()
@@ -362,27 +366,24 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             } catch (ioe: IOException) {
                 return false
             }
-            mCurrentRecordPath = recordFilePath
+            currentRecordPath = recordFilePath
             recorder.start()
             recorder.maxAmplitude
-            val task = RecordMetersThread()
-            mTimerTask = task
+            val task = RecordMetersThread(this)
+            timerTask = task
             task.start()
-            mRecorder = recorder
-            if (mFragment.listener != null) {
-                mFragment.listener!!.onRecordStarted()
-            }
-            mFragment.mVoiceRecordButton!!.setText(R.string.release_to_send)
-            mSampleRecorder.start()
+            this.recorder = recorder
+            fragment.listener?.onRecordStarted()
+            fragment.voiceRecordButton.setText(R.string.release_to_send)
+            sampleRecorder.start()
             return true
         }
 
         private val recordFilePath: String
-            get() = File(mFragment.context.cacheDir, "record_" + System.currentTimeMillis()).absolutePath
+            get() = File(fragment.context.cacheDir, "record_" + System.currentTimeMillis()).absolutePath
 
         override fun onUp(event: MotionEvent) {
-            stopRecording(!ViewUtils.hitView(event.rawX, event.rawY,
-                    mFragment.mVoiceRecordButton!!))
+            stopRecording(!ViewUtils.hitView(event.rawX, event.rawY, fragment.voiceRecordButton))
         }
 
         override fun onCancel(event: MotionEvent) {
@@ -390,19 +391,17 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
 
         private fun stopRecording(cancel: Boolean) {
-            if (mFragment.listener != null) {
-                mFragment.listener!!.onRecordStopped()
-            }
-            mFragment.mVoiceRecordButton!!.setText(R.string.ptt_hint)
-            val samples = mSampleRecorder.get()
-            val recorder = mRecorder ?: return
+            fragment.listener?.onRecordStopped()
+            fragment.voiceRecordButton.setText(R.string.ptt_hint)
+            val samples = sampleRecorder.get()
+            val recorder = this.recorder ?: return
             recorder.stop()
             recorder.release()
-            mRecorder = null
-            val task = mTimerTask
+            this.recorder = null
+            val task = timerTask
             task?.cancel()
-            mTimerTask = null
-            val recordPath = mCurrentRecordPath
+            timerTask = null
+            val recordPath = currentRecordPath
             if (cancel) {
                 if (recordPath != null) {
                     val file = File(recordPath)
@@ -410,9 +409,9 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
                 }
                 return
             }
-            mFragment.sendMessage(object : SendMessageHandler() {
+            fragment.sendMessage(object : SendMessageHandler() {
                 override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
-                    val player = MediaPlayer.create(mFragment.context, Uri.parse(recordPath))
+                    val player = MediaPlayer.create(fragment.context, Uri.parse(recordPath))
                     val metadataItem = FileAttachment.AudioMetadata()
                     metadataItem.duration = player.duration / 1000f
                     metadataItem.samples = samples
@@ -438,7 +437,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
 
 
-        private inner class RecordMetersThread : Thread() {
+        private class RecordMetersThread(val listener: VoicePressListener) : Thread() {
             private val cancelled = AtomicBoolean()
             val INTERVAL = 16L
 
@@ -460,26 +459,18 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             private fun updateView(): Long {
                 val callStart = System.currentTimeMillis()
                 if (cancelled.get()) return System.currentTimeMillis() - callStart
-                val recorder = mRecorder
+                val recorder = listener.recorder
                 if (recorder == null) {
                     cancel()
                     return System.currentTimeMillis() - callStart
                 }
                 val maxAmplitude = recorder.maxAmplitude
-                mFragment.listener!!.postSetAmplitude(maxAmplitude)
-                mFragment.activity.runOnUiThread { mSampleRecorder.put(maxAmplitude / java.lang.Short.MAX_VALUE.toFloat()) }
+                listener.fragment.listener!!.postSetAmplitude(maxAmplitude)
+                listener.fragment.activity.runOnUiThread { listener.sampleRecorder.put(maxAmplitude / Short.MAX_VALUE.toFloat()) }
                 return System.currentTimeMillis() - callStart
             }
 
         }
-    }
-
-    companion object {
-
-        private val REQUEST_PICK_IMAGE = 101
-        private val REQUEST_TAKE_PHOTO = 102
-        private val REQUEST_PICK_LOCATION = 103
-        private val REQUEST_REQUEST_RECORD_PERMISSION = 104
     }
 
 }

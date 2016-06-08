@@ -21,14 +21,10 @@ import org.mariotaku.sqliteqb.library.Expression
  */
 abstract class SendMessageTask<H>(val context: Context, val account: Account) : AbstractTask<NewMessage, TaskResponse<Message>, H>(), Constants {
     private val accountUser: User
+    protected abstract val mediaType: String
 
     init {
         this.accountUser = Utils.getAccountUser(context, account)
-    }
-
-    @Throws(YepException::class)
-    protected open fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
-        return null
     }
 
     public override fun doLongOperation(newMessage: NewMessage): TaskResponse<Message> {
@@ -61,22 +57,12 @@ abstract class SendMessageTask<H>(val context: Context, val account: Account) : 
 
     }
 
-    protected abstract val mediaType: String
-
-    private fun updateSentMessage(draftId: String, message: Message) {
-        val cr = context.contentResolver
-        val values = ContentValues()
-        values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.attachments,
-                Attachment::class.java))
-        values.put(Messages.STATE, Messages.MessageState.UNREAD)
-        values.put(Messages.MESSAGE_ID, message.id)
-        values.put(Messages.CREATED_AT, message.createdAt.time)
-        values.put(Messages.LATITUDE, message.latitude)
-        values.put(Messages.LONGITUDE, message.longitude)
-        val where = Expression.equalsArgs(Messages.RANDOM_ID).sql
-        val whereArgs = arrayOf(draftId)
-        cr.update(Messages.CONTENT_URI, values, where, whereArgs)
+    @Throws(YepException::class)
+    protected open fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
+        return null
     }
+
+    protected abstract fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>?
 
     private fun saveUnsentMessage(newMessage: NewMessage): Long {
         val cr = context.contentResolver
@@ -108,6 +94,19 @@ abstract class SendMessageTask<H>(val context: Context, val account: Account) : 
         return inserted!!.lastPathSegment.toLong(-1)
     }
 
-    protected abstract fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>?
+    private fun updateSentMessage(draftId: String, message: Message) {
+        val cr = context.contentResolver
+        val values = ContentValues()
+        values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.attachments,
+                Attachment::class.java))
+        values.put(Messages.STATE, Messages.MessageState.UNREAD)
+        values.put(Messages.MESSAGE_ID, message.id)
+        values.put(Messages.CREATED_AT, message.createdAt.time)
+        values.put(Messages.LATITUDE, message.latitude)
+        values.put(Messages.LONGITUDE, message.longitude)
+        val where = Expression.equalsArgs(Messages.RANDOM_ID).sql
+        val whereArgs = arrayOf(draftId)
+        cr.update(Messages.CONTENT_URI, values, where, whereArgs)
+    }
 
 }
