@@ -44,7 +44,7 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
                 if (resultCode != Activity.RESULT_OK) return
                 val token = data!!.getParcelableExtra<AccessToken>(Constants.EXTRA_TOKEN)
                 val user = token.user
-                val account = Account(user.mobile, Constants.ACCOUNT_TYPE)
+                val account = Account(user!!.mobile, Constants.ACCOUNT_TYPE)
                 val userData = Bundle()
                 Utils.writeUserToUserData(user, userData)
                 val am = AccountManager.get(this)
