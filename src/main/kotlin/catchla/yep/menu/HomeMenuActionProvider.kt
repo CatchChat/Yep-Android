@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.support.v4.view.ActionProvider
 import android.support.v4.view.GravityCompat
+import android.support.v7.widget.ForwardingListener
 import android.support.v7.widget.ListPopupWindow
 import android.view.LayoutInflater
 import android.view.View
@@ -35,60 +36,60 @@ class HomeMenuActionProvider
  */
 (context: Context) : ActionProvider(context), Constants, View.OnClickListener {
 
-    private val mPopupMaxWidth: Int
-    private var mActionView: View? = null
-    private val mOverflowPopup: ListPopupWindow?
-    private var mActionsAdapter: HomeMenuActionsAdapter? = null
-    private val mAdapter: MergeAdapter
-    private var mHasContentWidth: Boolean = false
-    private var mContentWidth: Int = 0
-    private var mPostedOpenRunnable: Runnable? = null
-    private val mOnItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-        if (mOnActionListener == null) return@OnItemClickListener
+    private val popupMaxWidth: Int
+    private var actionView: View? = null
+    private val overflowPopup: ListPopupWindow?
+    private var actionsAdapter: HomeMenuActionsAdapter? = null
+    private val adapter: MergeAdapter
+    private var hasContentWidth: Boolean = false
+    private var contentWidth: Int = 0
+    private var postedOpenRunnable: Runnable? = null
+    private val onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        if (onActionListener == null) return@OnItemClickListener
         if (position == 0) {
-            mOnActionListener!!.onProfileClick()
+            onActionListener!!.onProfileClick()
         } else {
-            mOnActionListener!!.onActionClick(parent.getItemAtPosition(position) as Action)
+            onActionListener!!.onActionClick(parent.getItemAtPosition(position) as Action)
         }
         dismissPopup()
     }
-    private var mOnActionListener: OnActionListener? = null
+    private var onActionListener: OnActionListener? = null
     private var account: Account? = null
-    private var mHeadersAdapter: HeadersAdapter? = null
+    private var headersAdapter: HeadersAdapter? = null
 
     init {
         val res = context.resources
-        mPopupMaxWidth = Math.max(res.displayMetrics.widthPixels / 2,
+        popupMaxWidth = Math.max(res.displayMetrics.widthPixels / 2,
                 res.getDimensionPixelSize(android.support.v7.appcompat.R.dimen.abc_panel_menu_list_width))
 
 
         val popupContext = ThemeUtils.getActionBarPopupThemedContext(getContext())
 
-        mAdapter = MergeAdapter()
-        mHeadersAdapter = HeadersAdapter(popupContext)
-        mActionsAdapter = HomeMenuActionsAdapter(popupContext)
-        mAdapter.addAdapter(mHeadersAdapter)
-        mAdapter.addAdapter(mActionsAdapter)
+        adapter = MergeAdapter()
+        headersAdapter = HeadersAdapter(popupContext)
+        actionsAdapter = HomeMenuActionsAdapter(popupContext)
+        adapter.addAdapter(headersAdapter)
+        adapter.addAdapter(actionsAdapter)
 
-        mHeadersAdapter!!.add(R.layout.header_home_menu_profile, "profile", true)
-        mHeadersAdapter!!.add(R.layout.layout_divider_vertical, "divider", false)
+        headersAdapter!!.add(R.layout.header_home_menu_profile, "profile", true)
+        headersAdapter!!.add(R.layout.layout_divider_vertical, "divider", false)
 
-        mHeadersAdapter!!.makeFinal()
+        headersAdapter!!.makeFinal()
 
-        mActionsAdapter!!.add(Action(popupContext.getString(R.string.settings), R.id.settings))
-        mActionsAdapter!!.add(Action(popupContext.getString(R.string.about), R.id.about))
+        actionsAdapter!!.add(Action(popupContext.getString(R.string.settings), R.id.settings))
+        actionsAdapter!!.add(Action(popupContext.getString(R.string.about), R.id.about))
         if (BuildConfig.DEBUG) {
-            mActionsAdapter!!.add(Action("Dev settings", R.id.development))
+            actionsAdapter!!.add(Action("Dev settings", R.id.development))
         }
 
-        mOverflowPopup = ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0)
-        mOverflowPopup.isModal = true
-        mOverflowPopup.setAdapter(mAdapter)
-        mOverflowPopup.setDropDownGravity(GravityCompat.END)
-        mOverflowPopup.horizontalOffset = -popupContext.resources.getDimensionPixelOffset(R.dimen.element_spacing_normal)
-        mOverflowPopup.verticalOffset = popupContext.resources.getDimensionPixelOffset(R.dimen.element_spacing_small)
-        mOverflowPopup.setOnItemClickListener(mOnItemClickListener)
-        mOverflowPopup.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
+        overflowPopup = ListPopupWindow(popupContext, null, android.support.v7.appcompat.R.attr.actionOverflowMenuStyle, 0)
+        overflowPopup.isModal = true
+        overflowPopup.setAdapter(adapter)
+        overflowPopup.setDropDownGravity(GravityCompat.END)
+        overflowPopup.horizontalOffset = -popupContext.resources.getDimensionPixelOffset(R.dimen.element_spacing_normal)
+        overflowPopup.verticalOffset = popupContext.resources.getDimensionPixelOffset(R.dimen.element_spacing_small)
+        overflowPopup.setOnItemClickListener(onItemClickListener)
+        overflowPopup.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
     }
 
     override fun onPerformDefaultAction(): Boolean {
@@ -107,21 +108,21 @@ class HomeMenuActionProvider
                 dismissPopup()
             }
         })
-        view.setOnTouchListener(object : ListPopupWindow.ForwardingListener(view) {
+        view.setOnTouchListener (object : ForwardingListener(view) {
             override fun getPopup(): ListPopupWindow {
-                return mOverflowPopup!!
+                return overflowPopup!!
             }
 
-            public override fun onForwardingStarted(): Boolean {
+            override fun onForwardingStarted(): Boolean {
                 showPopup()
                 return true
             }
 
-            public override fun onForwardingStopped(): Boolean {
+            override fun onForwardingStopped(): Boolean {
                 // Displaying the popup occurs asynchronously, so wait for
                 // the runnable to finish before deciding whether to stop
                 // forwarding.
-                if (mPostedOpenRunnable != null) {
+                if (postedOpenRunnable != null) {
                     return false
                 }
 
@@ -131,15 +132,15 @@ class HomeMenuActionProvider
         })
 
 
-        if (!mHasContentWidth) {
-            mContentWidth = measureContentWidth()
-            mHasContentWidth = true
+        if (!hasContentWidth) {
+            contentWidth = measureContentWidth()
+            hasContentWidth = true
         }
 
 
-        mOverflowPopup!!.anchorView = view
-        mOverflowPopup.setContentWidth(mContentWidth)
-        mActionView = view
+        overflowPopup!!.anchorView = view
+        overflowPopup.setContentWidth(contentWidth)
+        actionView = view
 
         updateHeader()
 
@@ -147,10 +148,10 @@ class HomeMenuActionProvider
     }
 
     private fun showPopup() {
-        if (mActionView == null || mOverflowPopup == null || mOverflowPopup.isShowing || account == null)
+        if (actionView == null || overflowPopup == null || overflowPopup.isShowing || account == null)
             return
-        mPostedOpenRunnable = ShowPopupRunnable(mOverflowPopup)
-        mActionView!!.post(mPostedOpenRunnable)
+        postedOpenRunnable = ShowPopupRunnable(overflowPopup)
+        actionView!!.post(postedOpenRunnable)
     }
 
     override fun hasSubMenu(): Boolean {
@@ -165,8 +166,8 @@ class HomeMenuActionProvider
     }
 
     private fun dismissPopup() {
-        if (mOverflowPopup == null || !mOverflowPopup.isShowing) return
-        mOverflowPopup.dismiss()
+        if (overflowPopup == null || !overflowPopup.isShowing) return
+        overflowPopup.dismiss()
     }
 
     fun setAccount(account: Account) {
@@ -175,7 +176,7 @@ class HomeMenuActionProvider
     }
 
     private fun updateHeader() {
-        mHeadersAdapter?.setAccount(account ?: return)
+        headersAdapter?.setAccount(account ?: return)
     }
 
     class Action(var title: String, var id: Int)
@@ -183,27 +184,27 @@ class HomeMenuActionProvider
     class HeadersAdapter(context: Context) : LayoutAdapter(context) {
 
         @Inject
-        internal lateinit var mImageLoader: ImageLoaderWrapper
+        internal lateinit var imageLoader: ImageLoaderWrapper
 
-        private var mAccount: Account? = null
+        private var account: Account? = null
 
         init {
             GeneralComponentHelper.build(context).inject(this)
         }
 
         fun setAccount(account: Account) {
-            mAccount = account
+            this.account = account
             notifyDataSetChanged()
         }
 
         override fun bindView(view: View, position: Int, tag: String) {
             if ("profile" != tag) return
-            val account = mAccount ?: return
+            val account = account ?: return
             val profileImageView = view.findViewById(R.id.home_menu_profile_image) as ImageView
             val nameView = view.findViewById(R.id.home_menu_name) as TextView
             val am = AccountManager.get(this.context)
             nameView.text = am.getUserData(account, Constants.USER_DATA_NICKNAME)
-            mImageLoader.displayProfileImage(am.getUserData(account, Constants.USER_DATA_AVATAR), profileImageView)
+            imageLoader.displayProfileImage(am.getUserData(account, Constants.USER_DATA_AVATAR), profileImageView)
         }
     }
 
@@ -227,7 +228,7 @@ class HomeMenuActionProvider
         var itemView: View? = null
         var itemType = 0
 
-        val adapter = mAdapter
+        val adapter = adapter
         val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val count = adapter.count
@@ -246,8 +247,8 @@ class HomeMenuActionProvider
             itemView!!.measure(widthMeasureSpec, heightMeasureSpec)
 
             val itemWidth = itemView.measuredWidth
-            if (itemWidth >= mPopupMaxWidth) {
-                return mPopupMaxWidth
+            if (itemWidth >= popupMaxWidth) {
+                return popupMaxWidth
             } else if (itemWidth > maxWidth) {
                 maxWidth = itemWidth
             }
@@ -257,19 +258,19 @@ class HomeMenuActionProvider
     }
 
 
-    private inner class ShowPopupRunnable(private val mPopup: ListPopupWindow) : Runnable {
+    private inner class ShowPopupRunnable(private val popup: ListPopupWindow) : Runnable {
 
         override fun run() {
-            val itemView = mActionView
+            val itemView = actionView
             if (itemView != null && itemView.windowToken != null) {
-                mPopup.show()
+                popup.show()
             }
-            mPostedOpenRunnable = null
+            postedOpenRunnable = null
         }
     }
 
     fun setOnActionListener(listener: OnActionListener) {
-        mOnActionListener = listener
+        onActionListener = listener
     }
 
     interface OnActionListener {
