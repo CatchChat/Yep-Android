@@ -16,7 +16,7 @@ class BlockedUsersActivity : SwipeBackContentActivity() {
         setContentView(R.layout.activity_fragment_content)
         val fm = supportFragmentManager
         val ft = fm.beginTransaction()
-        ft.replace(R.id.main_content, BlockedUsersFragment())
+        ft.replace(R.id.mainContent, BlockedUsersFragment())
         ft.commit()
     }
 }

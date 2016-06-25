@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.activity_find_friend.*
  */
 class FindFriendActivity : SwipeBackContentActivity(), Constants {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_friend)

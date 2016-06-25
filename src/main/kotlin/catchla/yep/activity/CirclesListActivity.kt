@@ -19,6 +19,6 @@ class CirclesListActivity : SwipeBackContentActivity(), Constants {
         args.putString(ConversationsListFragment.EXTRA_RECIPIENT_TYPE, Message.RecipientType.CIRCLE)
         val f = ConversationsListFragment()
         f.arguments = args
-        supportFragmentManager.beginTransaction().replace(R.id.main_content, f).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.mainContent, f).commit()
     }
 }

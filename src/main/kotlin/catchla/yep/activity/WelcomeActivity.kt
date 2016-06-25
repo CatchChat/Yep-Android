@@ -9,10 +9,8 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.view.View
-import android.widget.Button
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
@@ -22,21 +20,11 @@ import catchla.yep.model.AccessToken
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.view.TabPagerIndicator
+import kotlinx.android.synthetic.main.activity_welcome.*
 
 class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickListener {
 
-    private lateinit var viewPager: ViewPager
-    private lateinit var adapter: TabsAdapter
-    private lateinit var pagerIndicator: TabPagerIndicator
-    private lateinit var signInButton: Button
-    private lateinit var signUpButton: Button
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        viewPager = findViewById(R.id.view_pager) as ViewPager
-        signInButton = findViewById(R.id.sign_in) as Button
-        signUpButton = findViewById(R.id.sign_up) as Button
-    }
+    private val REQUEST_ADD_ACCOUNT = 101
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
@@ -75,15 +63,15 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
         actionBar.setCustomView(R.layout.layout_welcome_tabs)
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        pagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
+        val pagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
         setContentView(R.layout.activity_welcome)
         val toolbar = window.findViewById(android.support.v7.appcompat.R.id.action_bar) as Toolbar
         toolbar.setContentInsetsRelative(0, 0)
 
-        signInButton.setOnClickListener(this)
-        signUpButton.setOnClickListener(this)
+        signIn.setOnClickListener(this)
+        signUp.setOnClickListener(this)
 
-        adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
+        val adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 2
         mainContent!!.setStatusBarColor(primaryColor)
@@ -102,11 +90,6 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
                 startActivityForResult(Intent(this, SignUpActivity::class.java), REQUEST_ADD_ACCOUNT)
             }
         }
-    }
-
-    companion object {
-
-        private val REQUEST_ADD_ACCOUNT = 101
     }
 
 }

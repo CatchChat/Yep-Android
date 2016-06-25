@@ -29,7 +29,6 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import catchla.yep.Constants
@@ -38,16 +37,14 @@ import catchla.yep.adapter.TabsAdapter
 import catchla.yep.fragment.ProgressDialogFragment
 import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
+import kotlinx.android.synthetic.main.activity_sign_in_sign_up.*
 import me.philio.pinentry.PinEntryView
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
 
 class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
 
-    private var mViewPager: ViewPager? = null
-    private var mAdapter: TabsAdapter? = null
 
-    private var mNextButton: Button? = null
     private var mName: String? = null
     private var mCreateRegistrationResult: CreateRegistrationResult? = null
     private var mAccessToken: AccessToken? = null
@@ -56,23 +53,21 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in_sign_up)
-        mAdapter = TabsAdapter(this, supportFragmentManager)
-        mViewPager!!.adapter = mAdapter
-        mViewPager!!.isEnabled = false
-        mViewPager!!.setOnPageChangeListener(this)
+        val adapter = TabsAdapter(this, supportFragmentManager)
+        viewPager.adapter = adapter
+        viewPager.isEnabled = false
+        viewPager.addOnPageChangeListener(this)
 
-        mNextButton!!.setOnClickListener(this)
+        nextButton.setOnClickListener(this)
 
-        mAdapter!!.addTab(EditNameFragment::class.java, null, 0, null)
-        mAdapter!!.addTab(EditPhoneNumberFragment::class.java, null, 0, null)
-        mAdapter!!.addTab(VerifyPhoneNumberFragment::class.java, null, 0, null)
-        mAdapter!!.addTab(EditAvatarFragment::class.java, null, 0, null)
+        adapter.addTab(EditNameFragment::class.java, null, 0, null)
+        adapter.addTab(EditPhoneNumberFragment::class.java, null, 0, null)
+        adapter.addTab(VerifyPhoneNumberFragment::class.java, null, 0, null)
+        adapter.addTab(EditAvatarFragment::class.java, null, 0, null)
     }
 
     override fun onContentChanged() {
         super.onContentChanged()
-        mViewPager = findViewById(R.id.view_pager) as ViewPager?
-        mNextButton = findViewById(R.id.next_button) as Button?
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -94,7 +89,7 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     override fun onClick(v: View) {
         when (v.id) {
             R.id.next_button -> {
-                val fragment = mAdapter!!.primaryItem
+                val fragment = (viewPager.adapter as TabsAdapter).primaryItem
                 if (fragment is AbsSignUpPageFragment) {
                     fragment.onNextPage()
                 }
@@ -107,13 +102,13 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     private fun setNextEnabled(enabled: Boolean) {
-        mNextButton!!.isEnabled = enabled
+        nextButton.isEnabled = enabled
     }
 
     private fun gotoNextPage() {
-        val currentItem = mViewPager!!.currentItem
-        if (currentItem == mAdapter!!.count - 1) return
-        mViewPager!!.currentItem = currentItem + 1
+        val currentItem = viewPager.currentItem
+        if (currentItem == viewPager.adapter.count - 1) return
+        viewPager.currentItem = currentItem + 1
     }
 
     private fun sendVerifyCode(phoneNumber: String, countryCode: String) {
@@ -161,7 +156,7 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     private val currentFragment: Fragment?
-        get() = mAdapter!!.instantiateItem(mViewPager!!, mViewPager!!.currentItem) as Fragment?
+        get() = viewPager.adapter.instantiateItem(viewPager, viewPager.currentItem) as Fragment?
 
     private fun verifyPhoneNumber(verifyCode: String) {
         ProgressDialogFragment.show(this, "update_registration")

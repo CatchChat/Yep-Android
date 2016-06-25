@@ -2,24 +2,19 @@ package catchla.yep.activity
 
 import android.accounts.Account
 import android.os.Bundle
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
-
-import com.squareup.otto.Bus
-
-import javax.inject.Inject
-
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.dagger.GeneralComponentHelper
 import catchla.yep.view.TintedStatusFrameLayout
+import com.squareup.otto.Bus
+import javax.inject.Inject
 
 open class ContentActivity : AppCompatActivity() {
 
-    protected var mainContent: TintedStatusFrameLayout? = null
-        private set
+    protected val mainContent by lazy { findViewById(R.id.mainContent) as TintedStatusFrameLayout? }
     @Inject
     lateinit var bus: Bus
     @Inject
@@ -40,7 +35,6 @@ open class ContentActivity : AppCompatActivity() {
 
     override fun onContentChanged() {
         super.onContentChanged()
-        mainContent = findViewById(R.id.main_content) as TintedStatusFrameLayout?
     }
 
     protected open val isTintBarEnabled: Boolean

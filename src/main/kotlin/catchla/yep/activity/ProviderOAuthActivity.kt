@@ -17,28 +17,27 @@ import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.model.Provider
 import catchla.yep.util.YepAPIFactory
+import kotlinx.android.synthetic.main.activity_provider_oauth.*
 import java.util.*
 
 /**
  * Created by mariotaku on 15/6/3.
  */
 class ProviderOAuthActivity : ContentActivity(), Constants {
-    private lateinit var mWebView: WebView
-    private lateinit var mLoadProgress: View
+    private var loadProgress: View? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_provider_oauth)
-        val intent = intent
         val providerName = intent.getStringExtra(Constants.EXTRA_PROVIDER_NAME)
         val url = YepAPIFactory.getProviderOAuthUrl(providerName)
         val headers = HashMap<String, String>()
         headers.put("Authorization", YepAPIFactory.getAuthorizationHeaderValue(
                 YepAPIFactory.getAuthToken(this, account)))
         title = getString(R.string.sign_in_to_provider_name, Provider.getProviderName(this, providerName))
-        mWebView.loadUrl(url, headers)
-        mWebView.setWebViewClient(object : WebViewClient() {
+        webView.loadUrl(url, headers)
+        webView.setWebViewClient(object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 val uri = Uri.parse(url)
@@ -56,12 +55,12 @@ class ProviderOAuthActivity : ContentActivity(), Constants {
 
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                mLoadProgress.visibility = View.GONE
+                loadProgress?.visibility = View.GONE
             }
 
             override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
                 super.onPageStarted(view, url, favicon)
-                mLoadProgress.visibility = View.VISIBLE
+                loadProgress?.visibility = View.VISIBLE
             }
 
             override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
@@ -72,7 +71,7 @@ class ProviderOAuthActivity : ContentActivity(), Constants {
                 }
             }
         })
-        val settings = mWebView.settings
+        val settings = webView.settings
         settings.javaScriptEnabled = true
         settings.blockNetworkLoads = false
         settings.blockNetworkImage = false
@@ -80,27 +79,26 @@ class ProviderOAuthActivity : ContentActivity(), Constants {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_provider_oauth, menu)
-        mLoadProgress = MenuItemCompat.getActionView(menu.findItem(R.id.load_progress))
+        loadProgress = MenuItemCompat.getActionView(menu.findItem(R.id.load_progress))
         return true
     }
 
     override fun onContentChanged() {
         super.onContentChanged()
-        mWebView = findViewById(R.id.webview) as WebView
     }
 
     override fun onPause() {
-        mWebView.onPause()
+        webView.onPause()
         super.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        mWebView.onResume()
+        webView.onResume()
     }
 
     override fun onDestroy() {
-        mWebView.destroy()
+        webView.destroy()
         super.onDestroy()
     }
 }

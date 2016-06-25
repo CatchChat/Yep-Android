@@ -37,9 +37,9 @@ import javax.inject.Inject
 class MediaViewerActivity : AbsMediaViewerActivity(), Constants, OnPageChangeListener {
 
     @Inject
-    lateinit var mFileCache: FileCache
+    lateinit var fileDiskCache: FileCache
     @Inject
-    lateinit var mMediaDownloader: MediaDownloader
+    lateinit var mediaDownloader: MediaDownloader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         GeneralComponentHelper.build(this).inject(this)
@@ -68,11 +68,11 @@ class MediaViewerActivity : AbsMediaViewerActivity(), Constants, OnPageChangeLis
     }
 
     override fun getDownloader(): MediaDownloader {
-        return mMediaDownloader
+        return mediaDownloader
     }
 
     override fun getFileCache(): FileCache {
-        return mFileCache
+        return fileDiskCache
     }
 
     override fun instantiateMediaFragment(position: Int): MediaViewerFragment {

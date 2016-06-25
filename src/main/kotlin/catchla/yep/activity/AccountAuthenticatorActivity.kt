@@ -40,22 +40,22 @@ import android.os.Bundle
  * [AccountManager.ERROR_CODE_CANCELED] will be called on the response.
  */
 open class AccountAuthenticatorActivity : ContentActivity() {
-    private var mAccountAuthenticatorResponse: AccountAuthenticatorResponse? = null
-    private var mResultBundle: Bundle? = null
+    private var accountAuthenticatorResponse: AccountAuthenticatorResponse? = null
+    private var resultBundle: Bundle? = null
 
     /**
      * Sends the result or a Constants.ERROR_CODE_CANCELED error if a result
      * isn't present.
      */
     override fun finish() {
-        if (mAccountAuthenticatorResponse != null) {
+        if (accountAuthenticatorResponse != null) {
             // send the result bundle back if set, otherwise send an error.
-            if (mResultBundle != null) {
-                mAccountAuthenticatorResponse!!.onResult(mResultBundle)
+            if (resultBundle != null) {
+                accountAuthenticatorResponse!!.onResult(resultBundle)
             } else {
-                mAccountAuthenticatorResponse!!.onError(AccountManager.ERROR_CODE_CANCELED, "canceled")
+                accountAuthenticatorResponse!!.onError(AccountManager.ERROR_CODE_CANCELED, "canceled")
             }
-            mAccountAuthenticatorResponse = null
+            accountAuthenticatorResponse = null
         }
         super.finish()
     }
@@ -69,7 +69,7 @@ open class AccountAuthenticatorActivity : ContentActivity() {
      * *               AbstractAccountAuthenticator request
      */
     fun setAccountAuthenticatorResult(result: Bundle) {
-        mResultBundle = result
+        resultBundle = result
     }
 
     /**
@@ -81,11 +81,11 @@ open class AccountAuthenticatorActivity : ContentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mAccountAuthenticatorResponse = intent.getParcelableExtra<AccountAuthenticatorResponse>(
+        accountAuthenticatorResponse = intent.getParcelableExtra<AccountAuthenticatorResponse>(
                 AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)
 
-        if (mAccountAuthenticatorResponse != null) {
-            mAccountAuthenticatorResponse!!.onRequestContinued()
+        if (accountAuthenticatorResponse != null) {
+            accountAuthenticatorResponse!!.onRequestContinued()
         }
     }
 }

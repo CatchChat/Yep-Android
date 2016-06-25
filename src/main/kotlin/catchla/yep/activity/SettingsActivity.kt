@@ -18,6 +18,6 @@ class SettingsActivity : ContentActivity(), Constants {
         val fname = intent.getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT)
         val args = intent.getBundleExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS)
         val fragment = Fragment.instantiate(this, fname, args)
-        supportFragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit()
     }
 }

@@ -20,7 +20,7 @@ class UserTopicsActivity : SwipeBackContentActivity(), Constants {
         args.putParcelable(Constants.EXTRA_ACCOUNT, account)
         args.putString(Constants.EXTRA_USER_ID, user.id)
         f.arguments = args
-        fm.beginTransaction().replace(R.id.main_content, f).commit()
+        fm.beginTransaction().replace(R.id.mainContent, f).commit()
     }
 
     private val user: User

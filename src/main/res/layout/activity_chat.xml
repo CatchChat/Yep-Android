@@ -3,7 +3,7 @@
   -->
 
 <catchla.yep.view.TintedStatusFrameLayout
-    android:id="@+id/main_content"
+    android:id="@+id/mainContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,32 +12,32 @@
     app:setPadding="true">
 
     <RelativeLayout
-        android:id="@+id/conversation_container"
+        android:id="@+id/conversationContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/list_container"
+            android:id="@+id/listContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/input_panel"/>
+            android:layout_above="@+id/inputPanel"/>
 
         <RelativeLayout
-            android:id="@+id/voice_wave_container"
+            android:id="@+id/voiceWaveContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignBottom="@id/list_container"
-            android:layout_alignTop="@id/list_container"
+            android:layout_alignBottom="@+id/listContainer"
+            android:layout_alignTop="@+id/listContainer"
             android:background="#e5ffffff"
             android:visibility="gone">
 
             <catchla.yep.view.VoiceWaveView
-                android:id="@+id/voice_wave_view"
+                android:id="@+id/voiceWaveView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <TextView
-                android:id="@+id/cancel_hint"
+                android:id="@+id/cancelHint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -49,14 +49,14 @@
         </RelativeLayout>
 
         <View
-            android:id="@+id/input_panel_shadow_compat"
+            android:id="@+id/inputPanelShadowCompat"
             android:layout_width="match_parent"
             android:layout_height="@dimen/element_spacing_small"
-            android:layout_above="@+id/input_panel"
+            android:layout_above="@+id/inputPanel"
             android:background="@drawable/shadow_top"/>
 
         <FrameLayout
-            android:id="@+id/input_panel"
+            android:id="@+id/inputPanel"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"

@@ -18,7 +18,7 @@
 -->
 
 <catchla.yep.view.TintedStatusFrameLayout
-    android:id="@id/main_content"
+    android:id="@id/mainContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:orientation="vertical">
 
         <catchla.yep.view.ExtendedViewPager
-            android:id="@+id/view_pager"
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
@@ -43,7 +43,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/prev_button"
+                android:id="@+id/prevButton"
                 style="?buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
 
 
             <Button
-                android:id="@+id/next_button"
+                android:id="@+id/nextButton"
                 style="?buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

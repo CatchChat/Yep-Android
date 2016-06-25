@@ -34,7 +34,7 @@ class ProviderContentActivity : SwipeBackContentActivity(), Constants {
         fragment.arguments = args
         val fm = supportFragmentManager
         val ft = fm.beginTransaction()
-        ft.replace(R.id.main_content, fragment)
+        ft.replace(R.id.mainContent, fragment)
         ft.commit()
     }
 

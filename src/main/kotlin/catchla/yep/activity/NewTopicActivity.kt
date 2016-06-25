@@ -11,7 +11,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.fragment.NewTopicGalleryFragment
@@ -21,6 +24,7 @@ import catchla.yep.fragment.ProgressDialogFragment
 import catchla.yep.model.*
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
+import kotlinx.android.synthetic.main.activity_new_topic.*
 import org.apache.commons.lang3.StringUtils
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
@@ -31,8 +35,6 @@ import org.mariotaku.abstask.library.TaskStarter
 class NewTopicActivity : SwipeBackContentActivity(), Constants {
     private var mDismissUploadingDialogRunnable: Runnable? = null
 
-    private lateinit var editText: EditText
-    private lateinit var topicSpinner: Spinner
     private lateinit var preferences: SharedPreferences
 
     private var draftsSaved: Boolean = false
@@ -58,8 +60,6 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
 
     override fun onContentChanged() {
         super.onContentChanged()
-        editText = findViewById(R.id.edit_text) as EditText
-        topicSpinner = findViewById(R.id.topics_spinner) as Spinner
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

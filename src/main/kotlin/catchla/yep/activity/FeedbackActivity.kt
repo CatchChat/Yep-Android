@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
 import catchla.yep.R
 import catchla.yep.model.TaskResponse
 import catchla.yep.model.YepException
 import catchla.yep.util.YepAPIFactory
+import kotlinx.android.synthetic.main.activity_feedback.*
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
 
@@ -17,22 +17,20 @@ import org.mariotaku.abstask.library.TaskStarter
  */
 class FeedbackActivity : SwipeBackContentActivity() {
 
-    private lateinit var mEditFeedback: EditText
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        mEditFeedback = findViewById(R.id.edit_feedback) as EditText
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feedback)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_feedback, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.send -> {
-                val text = mEditFeedback.text
+                val text = editFeedback.text
                 if (TextUtils.isEmpty(text)) return true
                 sendFeedback(text.toString())
                 return true
@@ -63,10 +61,5 @@ class FeedbackActivity : SwipeBackContentActivity() {
         task.setParams(content)
         task.setResultHandler(this)
         TaskStarter.execute(task)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_feedback, menu)
-        return true
     }
 }

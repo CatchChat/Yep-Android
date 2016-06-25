@@ -29,7 +29,6 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import catchla.yep.Constants
@@ -39,16 +38,15 @@ import catchla.yep.fragment.ProgressDialogFragment
 import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import kotlinx.android.synthetic.main.activity_sign_in_sign_up.*
 import me.philio.pinentry.PinEntryView
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
 import java.util.*
 
 class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
-    private var mViewPager: ViewPager? = null
-    private var mAdapter: TabsAdapter? = null
 
-    private var mNextButton: Button? = null
+    val TAG_VERIFY_PHONE = "verify_phone"
 
     private var mPhoneNumber: String? = null
     private var mCountryCode: String? = null
@@ -57,26 +55,20 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in_sign_up)
-        mAdapter = TabsAdapter(this, supportFragmentManager)
-        mViewPager!!.adapter = mAdapter
-        mViewPager!!.isEnabled = false
-        mViewPager!!.addOnPageChangeListener(this)
+        val adapter = TabsAdapter(this, supportFragmentManager)
+        viewPager.adapter = adapter
+        viewPager.isEnabled = false
+        viewPager.addOnPageChangeListener(this)
 
-        mNextButton!!.setOnClickListener(this)
+        nextButton.setOnClickListener(this)
 
-        mAdapter!!.addTab(EditPhoneNumberFragment::class.java, null, 0, null)
-        mAdapter!!.addTab(VerifyPhoneNumberFragment::class.java, null, 0, null)
+        adapter.addTab(EditPhoneNumberFragment::class.java, null, 0, null)
+        adapter.addTab(VerifyPhoneNumberFragment::class.java, null, 0, null)
     }
 
     override fun onDestroy() {
-        mViewPager!!.removeOnPageChangeListener(this)
+        viewPager.removeOnPageChangeListener(this)
         super.onDestroy()
-    }
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        mViewPager = findViewById(R.id.view_pager) as ViewPager?
-        mNextButton = findViewById(R.id.next_button) as Button?
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -98,7 +90,7 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     override fun onClick(v: View) {
         when (v.id) {
             R.id.next_button -> {
-                val fragment = mAdapter!!.primaryItem
+                val fragment = (viewPager.adapter as TabsAdapter).primaryItem
                 if (fragment is AbsSignInPageFragment) {
                     fragment.onNextPage()
                 }
@@ -107,13 +99,13 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     private fun setNextEnabled(enabled: Boolean) {
-        mNextButton!!.isEnabled = enabled
+        nextButton!!.isEnabled = enabled
     }
 
     private fun gotoNextPage() {
-        val currentItem = mViewPager!!.currentItem
-        if (currentItem == mAdapter!!.count - 1) return
-        mViewPager!!.currentItem = currentItem + 1
+        val currentItem = viewPager.currentItem
+        if (currentItem == viewPager.adapter.count - 1) return
+        viewPager.currentItem = currentItem + 1
     }
 
     private fun sendVerifyCode(phoneNumber: String, countryCode: String) {
@@ -212,7 +204,7 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     private val currentFragment: Fragment?
-        get() = mAdapter!!.instantiateItem(mViewPager!!, mViewPager!!.currentItem) as Fragment?
+        get() = viewPager.adapter.instantiateItem(viewPager, viewPager.currentItem) as Fragment?
 
     abstract class AbsSignInPageFragment : Fragment() {
         protected abstract fun updateNextButton()
@@ -236,8 +228,8 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     class EditPhoneNumberFragment : AbsSignInPageFragment() {
-        private var mEditPhoneNumber: EditText? = null
-        private var mEditCountryCode: EditText? = null
+        private var editPhoneNumber: EditText? = null
+        private var editCountryCode: EditText? = null
 
         override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             return inflater!!.inflate(R.layout.fragment_sign_up_phone_number, container, false)
@@ -246,26 +238,26 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
         override fun updateNextButton() {
             if (!userVisibleHint) return
             val signInActivity = signInActivity
-            if (signInActivity == null || mEditPhoneNumber == null || mEditCountryCode == null)
+            if (signInActivity == null || editPhoneNumber == null || editCountryCode == null)
                 return
-            signInActivity.setNextEnabled(mEditPhoneNumber!!.length() > 0 && mEditCountryCode!!.length() > 0)
+            signInActivity.setNextEnabled(editPhoneNumber!!.length() > 0 && editCountryCode!!.length() > 0)
         }
 
         override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            mEditPhoneNumber = view!!.findViewById(R.id.edit_phone_number) as EditText
-            mEditCountryCode = view.findViewById(R.id.edit_country_code) as EditText
+            editPhoneNumber = view!!.findViewById(R.id.edit_phone_number) as EditText
+            editCountryCode = view.findViewById(R.id.edit_country_code) as EditText
         }
 
         override fun onNextPage() {
-            val phoneNumber = mEditPhoneNumber!!.text.toString()
-            val countryCode = mEditCountryCode!!.text.toString()
+            val phoneNumber = editPhoneNumber!!.text.toString()
+            val countryCode = editCountryCode!!.text.toString()
             signInActivity!!.sendVerifyCode(phoneNumber, countryCode)
         }
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            mEditPhoneNumber!!.addTextChangedListener(object : TextWatcher {
+            editPhoneNumber!!.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
                 }
@@ -278,7 +270,7 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
                 }
             })
-            mEditCountryCode!!.addTextChangedListener(object : TextWatcher {
+            editCountryCode!!.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
                 }
@@ -293,7 +285,7 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
             })
             if (savedInstanceState == null) {
                 val util = PhoneNumberUtil.getInstance()
-                mEditCountryCode!!.setText(util.getCountryCodeForRegion(Locale.getDefault().country).toString())
+                editCountryCode!!.setText(util.getCountryCodeForRegion(Locale.getDefault().country).toString())
             }
         }
     }
@@ -360,8 +352,4 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
         finish()
     }
 
-    companion object {
-
-        val TAG_VERIFY_PHONE = "verify_phone"
-    }
 }

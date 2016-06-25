@@ -30,8 +30,8 @@ import catchla.yep.service.FayeService
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
-import catchla.yep.view.VoiceWaveView
 import com.squareup.otto.Subscribe
+import kotlinx.android.synthetic.main.activity_chat.*
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.sqliteqb.library.Expression
@@ -43,23 +43,11 @@ import java.util.*
  */
 class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment.Listener, ServiceConnection {
 
-    private lateinit var voiceWaveView: VoiceWaveView
-    private lateinit var voiceWaveContainer: View
-
-    private lateinit var handler: Handler
+    private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var fayeService: IFayeService? = null
-
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        voiceWaveContainer = findViewById(R.id.voice_wave_container)!!
-        voiceWaveView = findViewById(R.id.voice_wave_view) as VoiceWaveView
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        handler = Handler(Looper.getMainLooper())
         setContentView(R.layout.activity_chat)
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
@@ -89,8 +77,8 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         chatInputBarFragment.listener = this
 
         val ft = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.list_container, chatListFragment)
-        ft.replace(R.id.input_panel, chatInputBarFragment)
+        ft.replace(R.id.listContainer, chatListFragment)
+        ft.replace(R.id.inputPanel, chatInputBarFragment)
         ft.commit()
 
         if (savedInstanceState == null) {
@@ -267,7 +255,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
     }
 
     override fun onMessageSentStarted(newMessage: NewMessage) {
-        val chatListFragment = supportFragmentManager.findFragmentById(R.id.list_container) as ChatListFragment
+        val chatListFragment = supportFragmentManager.findFragmentById(R.id.listContainer) as ChatListFragment
         chatListFragment.scrollToStart()
         chatListFragment.setJumpToLast(true)
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <catchla.yep.view.TintedStatusFrameLayout
-    android:id="@+id/main_content"
+    android:id="@+id/mainContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,21 +14,21 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:id="@+id/chat_list"
+            android:id="@+id/chatList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/input_panel"
+            android:layout_above="@+id/inputPanel"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <View
-            android:id="@+id/input_panel_shadow_compat"
+            android:id="@+id/inputPanelShadowCompat"
             android:layout_width="match_parent"
             android:layout_height="@dimen/element_spacing_small"
-            android:layout_above="@+id/input_panel"
+            android:layout_above="@+id/inputPanel"
             android:background="@drawable/shadow_top"/>
 
         <RelativeLayout
-            android:id="@+id/input_panel"
+            android:id="@+id/inputPanel"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"

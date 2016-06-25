@@ -24,14 +24,13 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_topic_chat)
 
-        val topic = topic
         displayTopic(topic)
 
         val ft = supportFragmentManager.beginTransaction()
         val args = Bundle()
         args.putParcelable(Constants.EXTRA_ACCOUNT, account)
         args.putParcelable(Constants.EXTRA_TOPIC, topic)
-        ft.replace(R.id.chat_list, Fragment.instantiate(this, TopicChatListFragment::class.java.name, args))
+        ft.replace(R.id.chatList, Fragment.instantiate(this, TopicChatListFragment::class.java.name, args))
         ft.commit()
     }
 

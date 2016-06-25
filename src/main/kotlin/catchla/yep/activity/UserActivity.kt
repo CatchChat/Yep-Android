@@ -37,6 +37,9 @@ import java.util.*
 
 class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener, LoaderManager.LoaderCallbacks<TaskResponse<User>>, UpdateProfileTask.Callback {
 
+    private val REQUEST_SELECT_MASTER_SKILLS = 111
+    private val REQUEST_SELECT_LEARNING_SKILLS = 112
+
     private val currentUser: User?
         get() = if (intent.hasExtra(Constants.EXTRA_USER)) {
             intent.getParcelableExtra<User>(Constants.EXTRA_USER)
@@ -45,10 +48,6 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         }
 
     private var updateProfileTask: UpdateProfileTask? = null
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +73,6 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     override fun onDestroy() {
         super.onDestroy()
     }
-
 
     private fun displayUser(user: User?) {
         if (user == null) return
@@ -361,9 +359,4 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         }
     }
 
-    companion object {
-
-        private val REQUEST_SELECT_MASTER_SKILLS = 111
-        private val REQUEST_SELECT_LEARNING_SKILLS = 112
-    }
 }

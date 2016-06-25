@@ -16,10 +16,9 @@ class SearchActivity : SwipeBackContentActivity(), Constants {
         val fm = supportFragmentManager
         val f = SearchUsersFragment()
         val args = Bundle()
-        val intent = intent
         args.putParcelable(Constants.EXTRA_ACCOUNT, account)
         args.putString(Constants.EXTRA_QUERY, intent.getStringExtra(Constants.EXTRA_QUERY))
         f.arguments = args
-        fm.beginTransaction().replace(R.id.main_content, f).commit()
+        fm.beginTransaction().replace(R.id.mainContent, f).commit()
     }
 }

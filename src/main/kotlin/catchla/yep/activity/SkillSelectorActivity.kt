@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v4.app.ListFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
-import android.support.v4.view.ViewPager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -21,6 +20,7 @@ import catchla.yep.model.Skill
 import catchla.yep.model.SkillCategory
 import catchla.yep.model.TaskResponse
 import catchla.yep.util.Utils
+import kotlinx.android.synthetic.main.activity_add_skill.*
 import java.util.*
 
 /**
@@ -28,7 +28,6 @@ import java.util.*
  */
 class SkillSelectorActivity : ContentActivity(), Constants {
 
-    private lateinit var viewPager: ViewPager
     private lateinit var adapter: TabsAdapter
     var selectedCategory: SkillCategory? = null
 
@@ -46,11 +45,6 @@ class SkillSelectorActivity : ContentActivity(), Constants {
 
         adapter.addTab(CategoriesFragment::class.java, null, 0, null)
         adapter.addTab(SkillsFragment::class.java, null, 0, null)
-    }
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        viewPager = findViewById(R.id.view_pager) as ViewPager
     }
 
     override fun onBackPressed() {

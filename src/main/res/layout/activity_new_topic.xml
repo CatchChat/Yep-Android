@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <catchla.yep.view.TintedStatusFrameLayout
-    android:id="@+id/main_content"
+    android:id="@+id/mainContent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/edit_text"
+                android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -42,7 +42,7 @@
                 android:textStyle="bold"/>
 
             <Spinner
-                android:id="@+id/topics_spinner"
+                android:id="@+id/topicSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/element_spacing_normal"/>
