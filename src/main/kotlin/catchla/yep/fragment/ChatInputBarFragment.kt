@@ -19,7 +19,6 @@ import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import catchla.yep.Constants
@@ -30,6 +29,7 @@ import catchla.yep.annotation.AttachableType
 import catchla.yep.model.*
 import catchla.yep.util.*
 import catchla.yep.util.task.SendMessageTask
+import kotlinx.android.synthetic.main.layout_chat_input_panel.*
 import org.apache.commons.lang3.ArrayUtils
 import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.commons.parcel.ViewUtils
@@ -49,38 +49,10 @@ const val REQUEST_REQUEST_RECORD_PERMISSION = 104
  */
 class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDialogFragment.Callback {
 
-    private lateinit var attachSendButton: ImageView
-    private lateinit var editText: EditText
-    private lateinit var voiceToggle: View
-    private lateinit var editTextContainer: View
-    private lateinit var voiceRecordButton: Button
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.layout_chat_input_panel, container, false)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_REQUEST_RECORD_PERMISSION -> {
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(context, R.string.record_audio_permission_required, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onBaseViewCreated(view, savedInstanceState)
-        editText = view.findViewById(R.id.edit_text) as EditText
-        editTextContainer = view.findViewById(R.id.edit_text_container)
-        attachSendButton = view.findViewById(R.id.attachment_send) as ImageView
-        voiceToggle = view.findViewById(R.id.voice_toggle)
-        voiceRecordButton = view.findViewById(R.id.voice_record) as Button
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        attachSendButton.setOnClickListener {
+        attachmentSend.setOnClickListener {
             if (editText.length() > 0) {
                 sendTextMessage()
             } else {
@@ -95,7 +67,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                attachSendButton.setImageResource(if (s.length > 0) R.drawable.ic_action_send else R.drawable.ic_action_attachment)
+                attachmentSend.setImageResource(if (s.length > 0) R.drawable.ic_action_send else R.drawable.ic_action_attachment)
                 if (listener != null) {
                     listener!!.onTypingText()
                 }
@@ -107,22 +79,36 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         })
 
         voiceToggle.setOnClickListener {
-            val showVoice = voiceRecordButton.visibility != View.VISIBLE
+            val showVoice = voiceRecord.visibility != View.VISIBLE
             if (showVoice) {
                 val activity = activity
                 val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(voiceRecordButton.windowToken, 0)
+                imm.hideSoftInputFromWindow(voiceRecord.windowToken, 0)
             }
-            voiceRecordButton.visibility = if (showVoice) View.VISIBLE else View.GONE
+            voiceRecord.visibility = if (showVoice) View.VISIBLE else View.GONE
             editTextContainer.visibility = if (showVoice) View.GONE else View.VISIBLE
         }
         val helper = GestureViewHelper(context)
         helper.setOnGestureListener(VoicePressListener(this))
-        voiceRecordButton.setOnTouchListener { v, event ->
+        voiceRecord.setOnTouchListener { v, event ->
             helper.onTouchEvent(event)
             false
         }
 
+    }
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater!!.inflate(R.layout.layout_chat_input_panel, container, false)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_REQUEST_RECORD_PERMISSION -> {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(context, R.string.record_audio_permission_required, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -345,7 +331,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
 
         override fun onDown(e: MotionEvent): Boolean {
-            fragment.voiceRecordButton.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            fragment.voiceRecord.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
             if (ContextCompat.checkSelfPermission(fragment.context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
                 fragment.requestPermissions(permissions, REQUEST_REQUEST_RECORD_PERMISSION)
@@ -374,7 +360,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             task.start()
             this.recorder = recorder
             fragment.listener?.onRecordStarted()
-            fragment.voiceRecordButton.setText(R.string.release_to_send)
+            fragment.voiceRecord.setText(R.string.release_to_send)
             sampleRecorder.start()
             return true
         }
@@ -383,7 +369,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             get() = File(fragment.context.cacheDir, "record_" + System.currentTimeMillis()).absolutePath
 
         override fun onUp(event: MotionEvent) {
-            stopRecording(!ViewUtils.hitView(event.rawX, event.rawY, fragment.voiceRecordButton))
+            stopRecording(!ViewUtils.hitView(event.rawX, event.rawY, fragment.voiceRecord))
         }
 
         override fun onCancel(event: MotionEvent) {
@@ -392,7 +378,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
         private fun stopRecording(cancel: Boolean) {
             fragment.listener?.onRecordStopped()
-            fragment.voiceRecordButton.setText(R.string.ptt_hint)
+            fragment.voiceRecord.setText(R.string.ptt_hint)
             val samples = sampleRecorder.get()
             val recorder = this.recorder ?: return
             recorder.stop()

@@ -16,7 +16,7 @@ import java.io.InputStream
 class YepImageDownloader(context: Context, private val downloader: MediaDownloader) : BaseImageDownloader(context) {
 
     @Throws(IOException::class)
-    override fun getStreamFromNetwork(imageUri: String, extra: Any): InputStream {
+    override fun getStreamFromNetwork(imageUri: String, extra: Any?): InputStream {
         return downloader.get(imageUri, extra).stream
     }
 

@@ -82,11 +82,11 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
     }
 
     override fun onClick(v: View) {
-        when (v.id) {
-            R.id.sign_in -> {
+        when (v) {
+            signIn -> {
                 startActivityForResult(Intent(this, SignInActivity::class.java), REQUEST_ADD_ACCOUNT)
             }
-            R.id.sign_up -> {
+            signUp -> {
                 startActivityForResult(Intent(this, SignUpActivity::class.java), REQUEST_ADD_ACCOUNT)
             }
         }

@@ -88,8 +88,8 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     override fun onClick(v: View) {
-        when (v.id) {
-            R.id.next_button -> {
+        when (v) {
+            nextButton -> {
                 val fragment = (viewPager.adapter as TabsAdapter).primaryItem
                 if (fragment is AbsSignInPageFragment) {
                     fragment.onNextPage()

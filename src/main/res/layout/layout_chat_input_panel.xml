@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <catchla.yep.view.ActionIconView
-        android:id="@+id/voice_toggle"
+        android:id="@+id/voiceToggle"
         android:layout_width="@dimen/element_size_normal"
         android:layout_height="@dimen/element_size_normal"
         android:layout_alignParentLeft="true"
@@ -19,20 +19,20 @@
         android:src="@drawable/ic_action_mic"/>
 
     <Button
-        android:id="@+id/voice_record"
+        android:id="@+id/voiceRecord"
         android:layout_width="match_parent"
         android:layout_height="@dimen/element_size_normal"
-        android:layout_toEndOf="@id/voice_toggle"
-        android:layout_toLeftOf="@+id/attachment_send"
-        android:layout_toRightOf="@id/voice_toggle"
-        android:layout_toStartOf="@+id/attachment_send"
+        android:layout_toEndOf="@id/voiceToggle"
+        android:layout_toLeftOf="@+id/attachmentSend"
+        android:layout_toRightOf="@id/voiceToggle"
+        android:layout_toStartOf="@+id/attachmentSend"
         android:gravity="center"
         android:text="@string/ptt_hint"
         android:visibility="gone"
         tools:visibility="visible"/>
 
     <catchla.yep.view.ActionIconView
-        android:id="@+id/attachment_send"
+        android:id="@+id/attachmentSend"
         android:layout_width="@dimen/element_size_normal"
         android:layout_height="@dimen/element_size_normal"
         android:layout_alignParentEnd="true"
@@ -44,16 +44,16 @@
         android:src="@drawable/ic_action_attachment"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
-        android:id="@+id/edit_text_container"
+        android:id="@+id/editTextContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="-8dp"
         android:layout_marginRight="-8dp"
-        android:layout_toEndOf="@+id/voice_toggle"
-        android:layout_toLeftOf="@+id/attachment_send"
-        android:layout_toRightOf="@+id/voice_toggle"
-        android:layout_toStartOf="@+id/attachment_send"
+        android:layout_toEndOf="@+id/voiceToggle"
+        android:layout_toLeftOf="@+id/attachmentSend"
+        android:layout_toRightOf="@+id/voiceToggle"
+        android:layout_toStartOf="@+id/attachmentSend"
         app:bubbleColor="#fff"
         app:caretHeight="8dp"
         app:caretPosition="topRight"
