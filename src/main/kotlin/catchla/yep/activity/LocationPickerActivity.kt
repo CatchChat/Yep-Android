@@ -29,7 +29,6 @@ import catchla.yep.util.Utils
 import com.amap.api.maps2d.AMap
 import com.amap.api.maps2d.CameraUpdateFactory
 import com.amap.api.maps2d.LocationSource
-import com.amap.api.maps2d.MapView
 import com.amap.api.maps2d.model.*
 import com.amap.api.services.core.AMapException
 import com.amap.api.services.core.LatLonPoint
@@ -40,31 +39,28 @@ import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
 import com.hannesdorfmann.adapterdelegates.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates.ListDelegationAdapter
+import kotlinx.android.synthetic.main.activity_location_picker.*
 import java.util.*
 
 /**
  * Created by mariotaku on 16/1/3.
  */
 class LocationPickerActivity : ContentActivity(), Constants, LocationListener, LoaderManager.LoaderCallbacks<PoiResult> {
-    // Views
-    private var mMapView: MapView? = null
 
-    private var mLocationManager: LocationManager? = null
-    private var mOnLocationChangedListener: LocationSource.OnLocationChangedListener? = null
-    private val mLocationSource = object : LocationSource {
+    private val locationManager: LocationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager }
+    private var onLocationChangedListener: LocationSource.OnLocationChangedListener? = null
+    private val locationSource = object : LocationSource {
         override fun activate(listener: LocationSource.OnLocationChangedListener) {
-            mOnLocationChangedListener = listener
+            onLocationChangedListener = listener
         }
 
         override fun deactivate() {
-            mOnLocationChangedListener = null
+            onLocationChangedListener = null
         }
     }
-    private var mMap: AMap? = null
-    private var mLoaderInitialized: Boolean = false
-    private var mPlacesList: RecyclerView? = null
-    private var mAdapter: LocationAdapter? = null
-    private var mMarker: Marker? = null
+    private var map: AMap? = null
+    private var loaderInitialized: Boolean = false
+    private var marker: Marker? = null
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_location_picker, menu)
@@ -73,27 +69,25 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         setContentView(R.layout.activity_location_picker)
-        mMapView!!.onCreate(savedInstanceState)
-        mAdapter = LocationAdapter(this)
-        mPlacesList!!.adapter = mAdapter
-        mPlacesList!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        mapView.onCreate(savedInstanceState)
+        placesList.adapter = LocationAdapter(this)
+        placesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         setupMap()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.use_location -> {
-                val myLocation = mMap!!.myLocation
+                val myLocation = map!!.myLocation
                 val data = Intent()
-                if (mMarker != null) {
+                if (marker != null) {
                     val location = Location("")
-                    val position = mMarker!!.position
+                    val position = marker!!.position
                     location.latitude = position.latitude
                     location.longitude = position.longitude
                     data.putExtra(Constants.EXTRA_LOCATION, location)
-                    data.putExtra(Constants.EXTRA_NAME, mMarker!!.title)
+                    data.putExtra(Constants.EXTRA_NAME, marker!!.title)
                 } else if (myLocation != null) {
                     data.putExtra(Constants.EXTRA_LOCATION, myLocation)
                 } else {
@@ -110,7 +104,7 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     }
 
     private fun setupMap() {
-        mMap = mMapView!!.map
+        map = mapView.map
         val style = MyLocationStyle()
         style.radiusFillColor(0x200079ff)
         style.strokeColor(Color.TRANSPARENT)
@@ -118,10 +112,10 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
         val bitmap = Utils.getMarkerBitmap(this)
         style.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
         style.anchor(.5f, .5f)
-        mMap!!.setMyLocationStyle(style)
-        mMap!!.setLocationSource(mLocationSource)
-        mMap!!.setOnMapClickListener { latLng -> showMarker(latLng, "Pin on map", false) }
-        mMap!!.setOnCameraChangeListener(object : AMap.OnCameraChangeListener {
+        map!!.setMyLocationStyle(style)
+        map!!.setLocationSource(locationSource)
+        map!!.setOnMapClickListener { latLng -> showMarker(latLng, "Pin on map", false) }
+        map!!.setOnCameraChangeListener(object : AMap.OnCameraChangeListener {
             override fun onCameraChange(position: CameraPosition) {
 
             }
@@ -130,7 +124,7 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
                 searchNearbyPoi(position)
             }
         })
-        val uiSettings = mMap!!.uiSettings
+        val uiSettings = map!!.uiSettings
         uiSettings.isCompassEnabled = false
         uiSettings.isMyLocationButtonEnabled = false
         uiSettings.isZoomControlsEnabled = false
@@ -146,17 +140,17 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
         val lm = supportLoaderManager
         val args = Bundle()
         args.putParcelable(Constants.POSITION, position.target)
-        args.putParcelable(Constants.BOUNDS, mMap!!.projection.visibleRegion.latLngBounds)
-        if (mLoaderInitialized) {
+        args.putParcelable(Constants.BOUNDS, map!!.projection.visibleRegion.latLngBounds)
+        if (loaderInitialized) {
             lm.restartLoader(0, args, this)
         } else {
             lm.initLoader(0, args, this)
-            mLoaderInitialized = true
+            loaderInitialized = true
         }
     }
 
     override fun onDestroy() {
-        mMapView!!.onDestroy()
+        mapView.onDestroy()
         super.onDestroy()
     }
 
@@ -167,17 +161,17 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mMapView!!.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
 
     override fun onLowMemory() {
-        mMapView!!.onLowMemory()
+        mapView.onLowMemory()
         super.onLowMemory()
     }
 
     override fun onResume() {
         super.onResume()
-        mMapView!!.onResume()
+        mapView.onResume()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -187,11 +181,11 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
             REQUEST_LOCATION_PERMISSION -> {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     val criteria = Criteria()
-                    mLocationManager!!.requestLocationUpdates(5000L, 0f, criteria, this,
+                    locationManager.requestLocationUpdates(5000L, 0f, criteria, this,
                             Looper.getMainLooper())
-                    mMap!!.isMyLocationEnabled = true
+                    map!!.isMyLocationEnabled = true
                 } else {
-                    mMap!!.isMyLocationEnabled = false
+                    map!!.isMyLocationEnabled = false
                 }
                 return
             }
@@ -200,23 +194,21 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     }
 
     override fun onPause() {
-        mMapView!!.onPause()
+        mapView.onPause()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager!!.removeUpdates(this)
+            locationManager.removeUpdates(this)
         }
         super.onPause()
     }
 
     override fun onContentChanged() {
         super.onContentChanged()
-        mMapView = findViewById(R.id.map_view) as MapView?
-        mPlacesList = findViewById(R.id.places_list) as RecyclerView?
     }
 
 
     override fun onLocationChanged(location: Location) {
-        if (mOnLocationChangedListener != null) {
-            mOnLocationChangedListener!!.onLocationChanged(location)
+        if (onLocationChangedListener != null) {
+            onLocationChangedListener!!.onLocationChanged(location)
         }
     }
 
@@ -243,17 +235,19 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
         if (data != null) {
             items.addAll(data.pois)
         }
-        mAdapter!!.items = items
-        mAdapter!!.notifyDataSetChanged()
+        val adapter = placesList.adapter as LocationAdapter
+        adapter.items = items
+        adapter.notifyDataSetChanged()
     }
 
     override fun onLoaderReset(loader: Loader<PoiResult>) {
-        mAdapter!!.items = null
-        mAdapter!!.notifyDataSetChanged()
+        val adapter = placesList.adapter as LocationAdapter
+        adapter.items = null
+        adapter.notifyDataSetChanged()
     }
 
     private fun notifyCurrentLocationClick() {
-        val myLocation = mMap!!.myLocation ?: return
+        val myLocation = map!!.myLocation ?: return
         val latLng = LatLng(myLocation.latitude, myLocation.longitude)
         showMarker(latLng, "My location", true)
     }
@@ -264,10 +258,10 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     }
 
     private fun showMarker(latLng: LatLng?, name: String, center: Boolean) {
-        if (mMarker != null) {
-            mMarker!!.remove()
-            mMarker!!.destroy()
-            mMarker = null
+        if (marker != null) {
+            marker!!.remove()
+            marker!!.destroy()
+            marker = null
         }
         if (latLng == null) return
         val options = MarkerOptions()
@@ -276,27 +270,27 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
         options.title(name)
         options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_place_pin))
         options.anchor(0.5f, 1f)
-        mMarker = mMap!!.addMarker(options)
+        marker = map!!.addMarker(options)
         if (center) {
-            mMap!!.animateCamera(CameraUpdateFactory.changeLatLng(latLng))
+            map!!.animateCamera(CameraUpdateFactory.changeLatLng(latLng))
         }
     }
 
-    class NearByPoiLoader(context: Context, private val mLatLng: LatLng?, private val mBounds: LatLngBounds?) : AsyncTaskLoader<PoiResult>(context) {
+    class NearByPoiLoader(context: Context, private val latLng: LatLng?, private val bounds: LatLngBounds?) : AsyncTaskLoader<PoiResult>(context) {
 
         override fun onStartLoading() {
             forceLoad()
         }
 
         override fun loadInBackground(): PoiResult? {
-            if (mLatLng == null || mBounds == null) return null
+            if (latLng == null || bounds == null) return null
             try {
                 val geocodeSearch = GeocodeSearch(context)
                 val address = geocodeSearch.getFromLocation(RegeocodeQuery(
-                        LatLonPoint(mLatLng.latitude, mLatLng.longitude), 0f, GeocodeSearch.GPS))
+                        LatLonPoint(latLng.latitude, latLng.longitude), 0f, GeocodeSearch.GPS))
                 val poiSearch = PoiSearch(context, PoiSearch.Query("", "景点",
                         address.adCode))
-                poiSearch.bound = AMapModelUtils.toSearchBound(mBounds)
+                poiSearch.bound = AMapModelUtils.toSearchBound(bounds)
                 return poiSearch.searchPOI()
             } catch (e: AMapException) {
                 return null

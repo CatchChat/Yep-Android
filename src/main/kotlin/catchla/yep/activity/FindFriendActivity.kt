@@ -7,21 +7,17 @@ import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ListView
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.util.ThemeUtils
-import catchla.yep.view.TintedStatusFrameLayout
 import com.commonsware.cwac.merge.MergeAdapter
+import kotlinx.android.synthetic.main.activity_find_friend.*
 
 /**
  * Created by mariotaku on 15/6/30.
  */
 class FindFriendActivity : SwipeBackContentActivity(), Constants {
 
-    private lateinit var mMainContent: TintedStatusFrameLayout
-    private lateinit var mListView: ListView
-    private var mAdapter: MergeAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +28,12 @@ class FindFriendActivity : SwipeBackContentActivity(), Constants {
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
 
-
-        mAdapter = MergeAdapter()
+        val mergeAdapter = MergeAdapter()
         val actionsAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
         actionsAdapter.add(getString(R.string.contact_friends))
-        mAdapter!!.addAdapter(actionsAdapter)
-        mListView.adapter = mAdapter
-        mListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        mergeAdapter.addAdapter(actionsAdapter)
+        listView.adapter = mergeAdapter
+        listView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             if (position == 1) {
                 startActivity(Intent(this@FindFriendActivity, ContactFriendsActivity::class.java))
             }
@@ -62,12 +57,6 @@ class FindFriendActivity : SwipeBackContentActivity(), Constants {
             }
         })
         return true
-    }
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-        mMainContent = findViewById(R.id.main_content) as TintedStatusFrameLayout
-        mListView = findViewById(R.id.list_view) as ListView
     }
 
 }

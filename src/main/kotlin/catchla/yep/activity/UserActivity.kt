@@ -6,23 +6,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.support.v7.graphics.Palette
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.loader.UserLoader
@@ -32,8 +26,9 @@ import catchla.yep.util.JsonSerializer
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.task.UpdateProfileTask
+import kotlinx.android.synthetic.main.activity_user.*
+import kotlinx.android.synthetic.main.layout_content_user.*
 import org.apache.commons.lang3.StringUtils
-import org.apmem.tools.layouts.FlowLayout
 import org.mariotaku.abstask.library.AbstractTask
 import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.ktextension.setMenuGroupAvailability
@@ -42,46 +37,17 @@ import java.util.*
 
 class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener, LoaderManager.LoaderCallbacks<TaskResponse<User>>, UpdateProfileTask.Callback {
 
-    private lateinit var actionButton: FloatingActionButton
-    private lateinit var profileImageView: ImageView
-    private lateinit var nameView: TextView
-    private lateinit var usernameView: TextView
-    private lateinit var introductionView: TextView
-    private lateinit var masterSkills: FlowLayout
-    private lateinit var learningSkills: FlowLayout
-    private lateinit var masterLabel: View
-    private lateinit var learningLabel: View
-    private lateinit var providersContainer: LinearLayout
-    private lateinit var providersDivider: View
-    private lateinit var currentUser: User
-    private lateinit var userScrollContent: View
-    private lateinit var userScrollView: View
-    private lateinit var appBarLayout: AppBarLayout
-    private lateinit var toolbar: Toolbar
-    private lateinit var topicsItemView: View
-    private lateinit var collapsingToolbar: View
+    private val currentUser: User?
+        get() = if (intent.hasExtra(Constants.EXTRA_USER)) {
+            intent.getParcelableExtra<User>(Constants.EXTRA_USER)
+        } else {
+            Utils.getAccountUser(this, account)
+        }
 
     private var updateProfileTask: UpdateProfileTask? = null
 
     override fun onContentChanged() {
         super.onContentChanged()
-        actionButton = findViewById(R.id.fab) as FloatingActionButton
-        profileImageView = findViewById(R.id.profile_image) as ImageView
-        toolbar = findViewById(R.id.toolbar) as Toolbar
-        nameView = findViewById(R.id.name) as TextView
-        usernameView = findViewById(R.id.username) as TextView
-        introductionView = findViewById(R.id.introduction) as TextView
-        masterSkills = findViewById(R.id.master_skills) as FlowLayout
-        learningSkills = findViewById(R.id.learning_skills) as FlowLayout
-        masterLabel = findViewById(R.id.master_label)!!
-        learningLabel = findViewById(R.id.learning_label)!!
-        providersContainer = findViewById(R.id.providers_container) as LinearLayout
-        providersDivider = findViewById(R.id.providers_divider)!!
-        userScrollContent = findViewById(R.id.user_scroll_content)!!
-        userScrollView = findViewById(R.id.user_scroll_view)!!
-        appBarLayout = findViewById(R.id.app_bar) as AppBarLayout
-        topicsItemView = findViewById(R.id.user_topics)!!
-        collapsingToolbar = findViewById(R.id.collapsing_toolbar)!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,23 +57,13 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
 
-
-        val currentUser: User?
-        val intent = intent
-        val account = account
-
-        if (intent.hasExtra(Constants.EXTRA_USER)) {
-            currentUser = intent.getParcelableExtra<User>(Constants.EXTRA_USER)
-        } else {
-            currentUser = Utils.getAccountUser(this, account)
-        }
-
+        val currentUser = this.currentUser
         if (currentUser == null) {
             finish()
             return
         }
-        actionButton.setOnClickListener(this)
-        topicsItemView.setOnClickListener(this)
+        fab.setOnClickListener(this)
+        userTopics.setOnClickListener(this)
 
         title = Utils.getDisplayName(currentUser)
         displayUser(currentUser)
@@ -122,21 +78,21 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
 
     private fun displayUser(user: User?) {
         if (user == null) return
-        currentUser = user
+        intent.putExtra(Constants.EXTRA_USER, user)
         val avatarUrl = user.avatarUrl
-        imageLoader.displayProfileImage(avatarUrl, profileImageView)
+        imageLoader.displayProfileImage(avatarUrl, profileImage)
         val username = user.username
         val introduction = user.introduction
-        nameView.text = user.nickname
+        name.text = user.nickname
         if (TextUtils.isEmpty(username)) {
-            usernameView.setText(R.string.no_username)
+            this.username.setText(R.string.no_username)
         } else {
-            usernameView.text = username
+            this.username.text = username
         }
         if (TextUtils.isEmpty(introduction)) {
-            introductionView.setText(R.string.no_introduction_yet)
+            this.introduction.setText(R.string.no_introduction_yet)
         } else {
-            introductionView.text = introduction
+            this.introduction.text = introduction
         }
 
         val skillOnClickListener = View.OnClickListener { v ->
@@ -150,9 +106,9 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         val isMySelf = Utils.isMySelf(this, account, user)
 
         if (isMySelf) {
-            actionButton.setImageResource(R.drawable.ic_action_edit)
+            fab.setImageResource(R.drawable.ic_action_edit)
         } else {
-            actionButton.setImageResource(R.drawable.ic_action_chat)
+            fab.setImageResource(R.drawable.ic_action_chat)
         }
 
         val inflater = this@UserActivity.layoutInflater
@@ -262,9 +218,9 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     }
 
     override fun onClick(v: View) {
-        when (v.id) {
-            R.id.fab -> {
-                if (Utils.isMySelf(this, account, currentUser)) {
+        when (v) {
+            fab -> {
+                if (Utils.isMySelf(this, account, currentUser!!)) {
                     val intent = Intent(this, ProfileEditorActivity::class.java)
                     intent.putExtra(Constants.EXTRA_ACCOUNT, account)
                     startActivity(intent)
@@ -275,7 +231,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                     startActivity(intent)
                 }
             }
-            R.id.user_topics -> {
+            userTopics -> {
                 val intent = Intent(this, UserTopicsActivity::class.java)
                 intent.putExtra(Constants.EXTRA_ACCOUNT, account)
                 intent.putExtra(Constants.EXTRA_USER, currentUser)
@@ -285,7 +241,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<TaskResponse<User>> {
-        return UserLoader(this, account, currentUser.id)
+        return UserLoader(this, account, currentUser!!.id)
     }
 
     override fun onLoadFinished(loader: Loader<TaskResponse<User>>, data: TaskResponse<User>) {
@@ -316,13 +272,14 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val isMySelf = Utils.isMySelf(this, account, currentUser)
+        val isMySelf = Utils.isMySelf(this, account, currentUser!!)
         menu.setMenuGroupAvailability(R.id.group_menu_friend, !isMySelf)
         menu.setMenuGroupAvailability(R.id.group_menu_myself, isMySelf)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val currentUser = this.currentUser ?: return false
         when (item.itemId) {
             R.id.settings -> {
                 Utils.openSettings(this, account)

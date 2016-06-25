@@ -210,7 +210,7 @@ class HomeMenuActionProvider
 
     private class HomeMenuActionsAdapter(context: Context) : ArrayAdapter<Action>(context, R.layout.list_item_menu, android.R.id.text1) {
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = super.getView(position, convertView, parent)
             val icon = view.findViewById(android.R.id.icon) as ImageView
             icon.visibility = View.GONE

@@ -8,7 +8,6 @@ import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceActivity
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.ViewPager
@@ -28,30 +27,57 @@ import catchla.yep.menu.HomeMenuActionProvider
 import catchla.yep.service.MessageService
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
-import catchla.yep.view.FloatingActionMenu
 import catchla.yep.view.TabPagerIndicator
-import catchla.yep.view.TintedStatusFrameLayout
 import catchla.yep.view.iface.PagerIndicator
+import kotlinx.android.synthetic.main.activity_home.*
 
 /**
  * Created by mariotaku on 15/4/29.
  */
 class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener, IControlBarActivity {
 
-    private lateinit var adapter: TabsAdapter
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val actionBar = supportActionBar!!
+        actionBar.setDisplayShowCustomEnabled(true)
+        actionBar.setCustomView(R.layout.layout_home_tabs)
+        val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
+        actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
+        val indicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
+        setContentView(R.layout.activity_home)
+        val toolbar = window.findViewById(android.support.v7.appcompat.R.id.action_bar) as Toolbar
+        toolbar.setContentInsetsRelative(resources.getDimensionPixelSize(R.dimen.element_spacing_normal), 0)
+        val adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
+        adapter.tabListener = this
+        viewPager.adapter = adapter
+        viewPager.offscreenPageLimit = 2
+        viewPager.addOnPageChangeListener(this)
+        mainContent.setStatusBarColor(primaryColor)
+        floatingActionButton.setOnClickListener(this)
 
-    private lateinit var viewPager: ViewPager
-    private lateinit var floatingActionButton: FloatingActionButton
-    private lateinit var floatingActionMenu: FloatingActionMenu
-    private lateinit var mPagerIndicator: TabPagerIndicator
-    private lateinit var mainContent: TintedStatusFrameLayout
+        val args = Bundle()
+        args.putBoolean(Constants.EXTRA_CACHING_ENABLED, true)
+        val account = account
+        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
 
-    override fun onContentChanged() {
-        super.onContentChanged()
-        mainContent = findViewById(R.id.main_content) as TintedStatusFrameLayout
-        viewPager = findViewById(R.id.view_pager) as ViewPager
-        floatingActionButton = findViewById(R.id.floating_action_button) as FloatingActionButton
-        floatingActionMenu = findViewById(R.id.floating_action_menur) as FloatingActionMenu
+        adapter.addTab(ConversationsListFragment::class.java, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args)
+        adapter.addTab(FriendsListFragment::class.java, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args)
+        adapter.addTab(TopicsListFragment::class.java, getString(R.string.topics), R.drawable.ic_action_feeds, args)
+        adapter.addTab(DiscoverFragment::class.java, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args)
+        indicator.setViewPager(viewPager)
+        indicator.updateAppearance()
+
+        updateActionButton()
+
+        val intent = Intent(this, MessageService::class.java)
+        intent.action = MessageService.ACTION_REFRESH_FRIENDSHIPS
+        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        startService(intent)
+    }
+
+    override fun onDestroy() {
+        viewPager.removeOnPageChangeListener(this)
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -88,51 +114,6 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         })
         MenuItemCompat.setActionProvider(menu.findItem(R.id.menu), provider)
         return true
-    }
-
-    override fun onDestroy() {
-        viewPager.removeOnPageChangeListener(this)
-
-        super.onDestroy()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val actionBar = supportActionBar!!
-        actionBar.setDisplayShowCustomEnabled(true)
-        actionBar.setCustomView(R.layout.layout_home_tabs)
-        val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
-        actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        mPagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
-        setContentView(R.layout.activity_home)
-        val toolbar = window.findViewById(android.support.v7.appcompat.R.id.action_bar) as Toolbar
-        toolbar.setContentInsetsRelative(resources.getDimensionPixelSize(R.dimen.element_spacing_normal), 0)
-        adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
-        adapter.tabListener = this
-        viewPager.adapter = adapter
-        viewPager.offscreenPageLimit = 2
-        viewPager.addOnPageChangeListener(this)
-        mainContent.setStatusBarColor(primaryColor)
-        floatingActionButton.setOnClickListener(this)
-
-        val args = Bundle()
-        args.putBoolean(Constants.EXTRA_CACHING_ENABLED, true)
-        val account = account
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
-
-        adapter.addTab(ConversationsListFragment::class.java, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args)
-        adapter.addTab(FriendsListFragment::class.java, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args)
-        adapter.addTab(TopicsListFragment::class.java, getString(R.string.topics), R.drawable.ic_action_feeds, args)
-        adapter.addTab(DiscoverFragment::class.java, getString(R.string.tab_title_explore), R.drawable.ic_action_explore, args)
-        mPagerIndicator.setViewPager(viewPager)
-        mPagerIndicator.updateAppearance()
-
-        updateActionButton()
-
-        val intent = Intent(this, MessageService::class.java)
-        intent.action = MessageService.ACTION_REFRESH_FRIENDSHIPS
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        startService(intent)
     }
 
     override val account: Account?
@@ -185,15 +166,15 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
     }
 
     private val currentFragment: Fragment?
-        get() = adapter.instantiateItem(viewPager, viewPager.currentItem) as Fragment?
+        get() = viewPager.adapter.instantiateItem(viewPager, viewPager.currentItem) as Fragment?
 
     override fun onPageScrollStateChanged(state: Int) {
 
     }
 
     override fun onClick(v: View) {
-        when (v.id) {
-            R.id.floating_action_button -> {
+        when (v) {
+            floatingActionButton -> {
                 val fragment = currentFragment
                 if (fragment is IActionButtonSupportFragment) {
                     fragment.onActionPerformed()
