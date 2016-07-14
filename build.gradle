@@ -7,7 +7,7 @@ apply plugin: "androidsvgdrawable"
 import fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
 
 buildscript {
-    ext.kotlin_version = '1.0.2'
+    ext.kotlin_version = '1.0.3'
     repositories {
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
