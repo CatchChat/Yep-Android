@@ -17,38 +17,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package catchla.yep.view;
+package catchla.yep.view
 
-import android.content.Context;
-import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
+import android.content.Context
+import android.support.v4.view.ViewPager
+import android.util.AttributeSet
+import android.view.MotionEvent
 
-public class ExtendedViewPager extends ViewPager {
+open class ExtendedViewPager @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : ViewPager(context, attrs) {
 
-    public ExtendedViewPager(final Context context) {
-        this(context, null);
-    }
-
-    public ExtendedViewPager(final Context context, final AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(final MotionEvent event) {
-        if (!isEnabled()) return false;
+    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) return false
         try {
-            return super.onInterceptTouchEvent(event);
-        } catch (IllegalArgumentException e) {
+            return super.onInterceptTouchEvent(event)
+        } catch (e: IllegalArgumentException) {
             //Ignore
-            return false;
+            return false
         }
+
     }
 
-    @Override
-    public boolean onTouchEvent(final MotionEvent event) {
-        if (!isEnabled()) return false;
-        return super.onTouchEvent(event);
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) return false
+        return super.onTouchEvent(event)
     }
 
 }

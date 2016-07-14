@@ -421,7 +421,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 val metadata = getAudioMetadata(message)
                 if (metadata != null) {
                     audioLengthView.text = String.format(Locale.ROOT, "%.1f", metadata.duration)
-                    sampleView.setSamples(metadata.samples)
+                    sampleView.samples = metadata.samples
                 }
             }
 
