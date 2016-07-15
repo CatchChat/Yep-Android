@@ -26,7 +26,8 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 
-import catchla.yep.util.support.DrawableSupport;
+import org.mariotaku.ktextension.DrawableExtensionsKt;
+
 import catchla.yep.util.support.graphic.OutlineCompat;
 
 
@@ -73,7 +74,7 @@ public abstract class ViewOutlineProviderCompat {
         public void getOutline(View view, OutlineCompat outline) {
             Drawable background = view.getBackground();
             if (background != null) {
-                DrawableSupport.getOutline(background, outline);
+                DrawableExtensionsKt.getOutline(background, outline);
             } else {
                 outline.setRect(0, 0, view.getWidth(), view.getHeight());
                 outline.setAlpha(0.0f);

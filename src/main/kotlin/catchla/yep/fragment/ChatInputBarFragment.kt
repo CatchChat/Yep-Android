@@ -18,8 +18,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
@@ -60,7 +58,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
         }
 
-        val handler = EditTextEnterHandler.attach(editText, EditTextEnterHandler.EnterListener { sendTextMessage() }, true)
+        val handler = EditTextEnterHandler.attach(editText, true) { sendTextMessage() }
         handler.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
