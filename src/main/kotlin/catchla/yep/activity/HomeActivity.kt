@@ -35,6 +35,12 @@ import kotlinx.android.synthetic.main.activity_home.*
  * Created by mariotaku on 15/4/29.
  */
 class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager.OnPageChangeListener, View.OnClickListener, PagerIndicator.TabListener, IControlBarActivity {
+    override val controlBarHeight: Int
+        get() = 0
+    override var controlBarOffset: Float
+        get() = 0f
+        set(value) {
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -183,9 +189,6 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         }
     }
 
-    override fun setControlBarOffset(offset: Float) {
-
-    }
 
     override fun setControlBarVisibleAnimate(visible: Boolean) {
         val currentFragment = currentFragment
@@ -207,13 +210,6 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         }
     }
 
-    override fun getControlBarOffset(): Float {
-        return 0f
-    }
-
-    override fun getControlBarHeight(): Int {
-        return 0
-    }
 
     override fun notifyControlBarOffsetChanged() {
 
