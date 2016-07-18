@@ -53,7 +53,7 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
         timeView.setTime(Utils.getTime(conversation.updatedAt))
     }
 
-    private fun getConversationSummary(context: Context, conversation: Conversation): String {
+    private fun getConversationSummary(context: Context, conversation: Conversation): String? {
         if (Message.MediaType.LOCATION.equals(conversation.mediaType, ignoreCase = true)) {
             return context.getString(R.string.location)
         } else if (Message.MediaType.IMAGE.equals(conversation.mediaType, ignoreCase = true)) {
