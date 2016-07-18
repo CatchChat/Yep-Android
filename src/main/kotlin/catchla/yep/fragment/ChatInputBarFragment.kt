@@ -36,17 +36,18 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
-const val REQUEST_PICK_IMAGE = 101
-const val REQUEST_TAKE_PHOTO = 102
-const val REQUEST_PICK_LOCATION = 103
-const val REQUEST_REQUEST_RECORD_PERMISSION = 104
-
 /**
  * Input bar component for chat activities
  * Created by mariotaku on 15/11/16.
  */
 class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDialogFragment.Callback {
 
+    companion object {
+        val REQUEST_PICK_IMAGE = 101
+        val REQUEST_TAKE_PHOTO = 102
+        val REQUEST_PICK_LOCATION = 103
+        val REQUEST_REQUEST_RECORD_PERMISSION = 104
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -332,7 +333,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             fragment.voiceRecord.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
             if (ContextCompat.checkSelfPermission(fragment.context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
-                fragment.requestPermissions(permissions, REQUEST_REQUEST_RECORD_PERMISSION)
+                fragment.requestPermissions(permissions, ChatInputBarFragment.REQUEST_REQUEST_RECORD_PERMISSION)
                 return false
             }
             return startRecording()

@@ -9,7 +9,6 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.view.View
 import catchla.yep.Constants
 import catchla.yep.R
@@ -19,7 +18,6 @@ import catchla.yep.fragment.UserSuggestionsFragment
 import catchla.yep.model.AccessToken
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
-import catchla.yep.view.TabPagerIndicator
 import kotlinx.android.synthetic.main.activity_welcome.*
 
 class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickListener {
@@ -57,28 +55,18 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val actionBar = supportActionBar!!
-        actionBar.setDisplayShowCustomEnabled(true)
-        actionBar.setCustomView(R.layout.layout_welcome_tabs)
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
-        actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        val pagerIndicator = actionBar.customView.findViewById(R.id.pager_indicator) as TabPagerIndicator
         setContentView(R.layout.activity_welcome)
-        val toolbar = window.findViewById(android.support.v7.appcompat.R.id.action_bar) as Toolbar
-        toolbar.setContentInsetsRelative(0, 0)
 
         signIn.setOnClickListener(this)
         signUp.setOnClickListener(this)
 
-        val adapter = TabsAdapter(actionBar.themedContext, supportFragmentManager)
+        val adapter = TabsAdapter(this, supportFragmentManager)
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 2
         mainContent!!.setStatusBarColor(primaryColor)
         adapter.addTab(UserSuggestionsFragment::class.java, getString(R.string.suggestions), 0, null)
         adapter.addTab(UserRankFragment::class.java, getString(R.string.rank), 0, null)
-        pagerIndicator.setViewPager(viewPager)
-        pagerIndicator.updateAppearance()
     }
 
     override fun onClick(v: View) {

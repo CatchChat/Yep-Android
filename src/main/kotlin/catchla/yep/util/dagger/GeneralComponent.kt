@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import catchla.yep.activity.ContentActivity
 import catchla.yep.activity.MediaViewerActivity
 import catchla.yep.adapter.BaseRecyclerViewAdapter
+import catchla.yep.fragment.BaseDialogFragment
 import catchla.yep.fragment.BaseFragment
 import catchla.yep.loader.CachedYepLoader
 import catchla.yep.loader.TileImageLoader
@@ -25,6 +26,8 @@ interface GeneralComponent {
     fun inject(activity: ContentActivity)
 
     fun inject(fragment: BaseFragment)
+
+    fun inject(fragment: BaseDialogFragment)
 
     fun inject(service: MessageService)
 

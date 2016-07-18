@@ -417,7 +417,7 @@ public class Utils implements Constants {
             if (circle != null) {
                 final Topic topic = circle.getTopic();
                 if (topic != null) {
-                    return getAttachmentThumb(topic.getAttachments(), topic.getAttachmentKind());
+                    return getAttachmentThumb(topic.getAttachments(), topic.getKind());
                 }
             }
             return null;

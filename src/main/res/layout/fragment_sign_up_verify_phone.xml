@@ -31,5 +31,18 @@
             app:numDigits="4"
             app:pinAccentColor="@color/branding_color"
             app:pinInputType="number"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/element_spacing_normal"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/message_not_received_hint"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

@@ -30,10 +30,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
+import catchla.yep.fragment.MessageDialogFragment
 import catchla.yep.fragment.ProgressDialogFragment
 import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
@@ -138,9 +138,9 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
                     val exception = result.exception as YepException
                     val error = exception.error
                     if (TextUtils.isEmpty(error)) {
-                        Toast.makeText(handler, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show()
+                        MessageDialogFragment.show(handler, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
                     } else {
-                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show()
+                        MessageDialogFragment.show(handler, error, "unable_to_verify_phone")
                     }
                 }
             }
@@ -186,9 +186,9 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
                     val exception = result.exception as YepException
                     val error = exception.error
                     if (TextUtils.isEmpty(error)) {
-                        Toast.makeText(handler, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show()
+                        MessageDialogFragment.show(handler, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
                     } else {
-                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show()
+                        MessageDialogFragment.show(handler, error, "unable_to_verify_phone")
                     }
                     val fragment = handler.currentFragment
                     if (fragment is VerifyPhoneNumberFragment) {
@@ -219,7 +219,7 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
         }
 
         val signInActivity: SignInActivity?
-            get() = activity as SignInActivity
+            get() = activity as SignInActivity?
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
@@ -237,8 +237,8 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
         override fun updateNextButton() {
             if (!userVisibleHint) return
-            val signInActivity = signInActivity
-            if (signInActivity == null || editPhoneNumber == null || editCountryCode == null)
+            val signInActivity = signInActivity ?: return
+            if (editPhoneNumber == null || editCountryCode == null)
                 return
             signInActivity.setNextEnabled(editPhoneNumber!!.length() > 0 && editCountryCode!!.length() > 0)
         }

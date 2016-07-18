@@ -114,12 +114,12 @@ class SkillSelectorActivity : ContentActivity(), Constants {
 
     class SkillsFragment : ListFragment() {
 
-        private var mSkillsAdapter: SkillsAdapter? = null
+        private var skillsAdapter: SkillsAdapter? = null
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            mSkillsAdapter = SkillsAdapter(activity)
-            listAdapter = mSkillsAdapter
+            skillsAdapter = SkillsAdapter(activity)
+            listAdapter = skillsAdapter
             listView.choiceMode = ListView.CHOICE_MODE_MULTIPLE
         }
 
@@ -131,14 +131,14 @@ class SkillSelectorActivity : ContentActivity(), Constants {
                 val activity = activity as SkillSelectorActivity
                 val selected = activity.selectedSkills
                 val skillCategory = activity.selectedCategory
-                mSkillsAdapter!!.clear()
+                skillsAdapter!!.clear()
                 if (skillCategory != null) {
                     val skills = skillCategory.skills
-                    mSkillsAdapter!!.addAll(skills)
+                    skillsAdapter!!.addAll(skills)
                     var i = 0
                     val j = listView.count
                     while (i < j) {
-                        listView.setItemChecked(i, isSelected(selected, mSkillsAdapter!!.getItem(i).id))
+                        listView.setItemChecked(i, isSelected(selected, skillsAdapter!!.getItem(i).id))
                         i++
                     }
                 }
@@ -160,18 +160,15 @@ class SkillSelectorActivity : ContentActivity(), Constants {
 
         fun applyToSelected(selectedSkills: MutableList<Skill>) {
             val listView = listView
-            var i = 0
-            val j = listView.count
-            while (i < j) {
+            for (i in 0..listView.count - 1) {
                 val checked = listView.isItemChecked(i)
-                val current = mSkillsAdapter!!.getItem(i)
+                val current = skillsAdapter!!.getItem(i)
                 val inList = Utils.findSkill(selectedSkills, current.id)
                 if (checked && inList == null) {
                     selectedSkills.add(current)
                 } else if (!checked && inList != null) {
                     selectedSkills.remove(inList)
                 }
-                i++
             }
         }
 

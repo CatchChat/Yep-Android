@@ -116,4 +116,5 @@
     <string name="swipe_up_to_cancel">Swipe up to cancel</string>
     <string name="release_to_cancel">Release to cancel</string>
     <string name="release_to_send">Release to send</string>
+    <string name="message_not_received_hint">Message not received?</string>
 </resources>
