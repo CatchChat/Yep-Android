@@ -3,10 +3,7 @@ package catchla.yep.loader
 import android.accounts.Account
 import android.content.Context
 import catchla.yep.Constants
-import catchla.yep.model.Paging
-import catchla.yep.model.ResponseList
-import catchla.yep.model.Topic
-import catchla.yep.model.YepException
+import catchla.yep.model.*
 import catchla.yep.util.YepAPI
 import java.util.*
 
@@ -18,7 +15,7 @@ class DiscoverTopicsLoader(
         account: Account,
         private val userId: String?,
         private val paging: Paging,
-        @Topic.SortOrder
+        @SortOrder
         private val sortBy: String,
         readCache: Boolean,
         writeCache: Boolean,

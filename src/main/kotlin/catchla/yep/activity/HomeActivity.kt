@@ -147,8 +147,13 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
     private fun updateActionButton() {
         val currentFragment = currentFragment
         if (currentFragment is IActionButtonSupportFragment) {
-            floatingActionButton.setImageResource(currentFragment.actionIcon)
-            floatingActionButton.show()
+            val actionIcon = currentFragment.actionIcon
+            if (actionIcon != 0) {
+                floatingActionButton.setImageResource(actionIcon)
+                floatingActionButton.show()
+            } else {
+                floatingActionButton.hide()
+            }
             val actionMenuFragmentCls = currentFragment.actionMenuFragment
             val fm = supportFragmentManager
             val ft = fm.beginTransaction()

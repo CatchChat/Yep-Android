@@ -218,13 +218,6 @@ public class Topic implements Parcelable {
         attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
     }
 
-    @StringDef({SortOrder.DEFAULT, SortOrder.DISTANCE, SortOrder.TIME})
-    public @interface SortOrder {
-        String DEFAULT = "default";
-        String DISTANCE = "distance";
-        String TIME = "time";
-    }
-
     @StringDef({Kind.GITHUB, Kind.DRIBBBLE, Kind.LOCATION, Kind.IMAGE, Kind.TEXT})
     public @interface Kind {
         String GITHUB = "github";

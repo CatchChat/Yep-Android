@@ -23,6 +23,7 @@ import catchla.yep.adapter.UsersAdapter
 import catchla.yep.adapter.UsersGridAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
+import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverUsersLoader
 import catchla.yep.model.DiscoverQuery
 import catchla.yep.model.Paging
@@ -33,7 +34,8 @@ import catchla.yep.view.holder.FriendGridViewHolder
 /**
  * Created by mariotaku on 15/4/29.
  */
-class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(), LoaderManager.LoaderCallbacks<List<User>> {
+class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(),
+        LoaderManager.LoaderCallbacks<List<User>>, IActionButtonSupportFragment {
 
     private var mPage = 1
 
@@ -188,6 +190,15 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     override fun isRefreshing(): Boolean {
         return loaderManager.hasRunningLoaders()
     }
+
+    override fun getActionIcon(): Int {
+        return 0
+    }
+
+    override fun onActionPerformed() {
+    }
+
+    override fun getActionMenuFragment(): Class<out DiscoverMenuFragment> = DiscoverMenuFragment::class.java
 
     private val account: Account
         get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)

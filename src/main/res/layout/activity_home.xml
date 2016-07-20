@@ -32,17 +32,32 @@
                 app:cardCornerRadius="2dp"
                 app:cardElevation="4dp"/>
 
+
+            <View
+                android:id="@+id/floatingActionButtonStub"
+                android:layout_width="@dimen/design_fab_size_normal"
+                android:layout_height="@dimen/design_fab_size_normal"
+                android:layout_gravity="end|center_vertical"
+                android:layout_margin="@dimen/element_spacing_large"
+                android:enabled="false"
+                android:focusable="false"
+                android:visibility="invisible"/>
+
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/floatingActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
-                android:layout_margin="@dimen/element_spacing_large"
+                android:layout_marginEnd="@dimen/element_spacing_large"
+                android:layout_marginRight="@dimen/element_spacing_large"
                 android:src="@drawable/ic_action_add"
                 app:elevation="4dp"
                 app:pressedTranslationZ="2dp"/>
 
+
         </FrameLayout>
+
+
     </RelativeLayout>
 
 </catchla.yep.view.TintedStatusFrameLayout>

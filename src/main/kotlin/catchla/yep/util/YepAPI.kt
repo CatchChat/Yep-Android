@@ -188,7 +188,7 @@ interface YepAPI {
 
     @GET("topics/discover")
     @Throws(YepException::class)
-    fun getDiscoverTopics(@Query("sort") @Topic.SortOrder sortOrder: String, @Query paging: Paging): ResponseList<Topic>
+    fun getDiscoverTopics(@Query("sort") @SortOrder sortOrder: String, @Query paging: Paging): ResponseList<Topic>
 
     @GET("topics")
     @Throws(YepException::class)

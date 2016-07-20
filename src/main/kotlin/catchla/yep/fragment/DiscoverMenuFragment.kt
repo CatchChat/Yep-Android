@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import catchla.yep.Constants
+import catchla.yep.Constants.KEY_DISCOVER_SORT_ORDER
 import catchla.yep.R
 import catchla.yep.model.SortOrder
 import kotlinx.android.synthetic.main.fragment_spinner_floating_menu.*
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_spinner_floating_menu.*
 /**
  * Created by mariotaku on 15/12/6.
  */
-class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelectedListener {
+class DiscoverMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -25,7 +25,7 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         adapter.add(Entry(SortOrder.TIME, getString(R.string.time)))
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
-        val sortOrder = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)
+        val sortOrder = preferences.getString(KEY_DISCOVER_SORT_ORDER, null)
         for (i in 0..adapter.count - 1) {
             if (adapter.getItem(i).sortBy == sortOrder) {
                 spinner.setSelection(i)
@@ -39,8 +39,7 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
     }
 
     override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        val fragment = belongsTo as TopicsListFragment?
-        fragment?.reloadWithSortOrder((spinner.getItemAtPosition(position) as Entry).sortBy)
+        val fragment = belongsTo as DiscoverFragment?
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {

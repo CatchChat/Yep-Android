@@ -26,10 +26,7 @@ import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverTopicsLoader
-import catchla.yep.model.Attachment
-import catchla.yep.model.LocationAttachment
-import catchla.yep.model.Paging
-import catchla.yep.model.Topic
+import catchla.yep.model.*
 import catchla.yep.view.holder.TopicViewHolder
 
 /**
@@ -37,13 +34,13 @@ import catchla.yep.view.holder.TopicViewHolder
  */
 class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickListener, IActionButtonSupportFragment {
 
-    @Topic.SortOrder
+    @SortOrder
     private var mSortBy: String? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
-        mSortBy = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, Topic.SortOrder.DEFAULT)
+        mSortBy = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, SortOrder.DEFAULT)
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
@@ -80,10 +77,10 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
     }
 
     private val sortOrder: String
-        @Topic.SortOrder
+        @SortOrder
         get() {
-            if (hasUserId()) return Topic.SortOrder.TIME
-            return if (mSortBy != null) mSortBy!! else Topic.SortOrder.TIME
+            if (hasUserId()) return SortOrder.TIME
+            return if (mSortBy != null) mSortBy!! else SortOrder.TIME
         }
 
     private fun hasUserId(): Boolean {
@@ -222,7 +219,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         ActivityCompat.startActivity(activity, intent, options)
     }
 
-    fun reloadWithSortOrder(@Topic.SortOrder sortBy: String) {
+    fun reloadWithSortOrder(@SortOrder sortBy: String) {
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
         mSortBy = sortBy
         preferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortBy).apply()
