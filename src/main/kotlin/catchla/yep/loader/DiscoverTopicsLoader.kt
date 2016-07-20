@@ -15,7 +15,7 @@ class DiscoverTopicsLoader(
         account: Account,
         private val userId: String?,
         private val paging: Paging,
-        @SortOrder
+        @TopicSortOrder
         private val sortBy: String,
         readCache: Boolean,
         writeCache: Boolean,

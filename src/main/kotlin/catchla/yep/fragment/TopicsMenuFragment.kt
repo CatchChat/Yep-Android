@@ -8,7 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import catchla.yep.Constants
 import catchla.yep.R
-import catchla.yep.model.SortOrder
+import catchla.yep.model.TopicSortOrder
 import kotlinx.android.synthetic.main.fragment_spinner_floating_menu.*
 
 /**
@@ -20,9 +20,9 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         super.onActivityCreated(savedInstanceState)
         val adapter = ArrayAdapter<Entry>(context, android.R.layout.simple_list_item_1)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        adapter.add(Entry(SortOrder.DEFAULT, getString(R.string.sort_order_default)))
-        adapter.add(Entry(SortOrder.DISTANCE, getString(R.string.distance)))
-        adapter.add(Entry(SortOrder.TIME, getString(R.string.time)))
+        adapter.add(Entry(TopicSortOrder.DEFAULT, getString(R.string.sort_order_default)))
+        adapter.add(Entry(TopicSortOrder.DISTANCE, getString(R.string.distance)))
+        adapter.add(Entry(TopicSortOrder.TIME, getString(R.string.time)))
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
         val sortOrder = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)

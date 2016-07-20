@@ -19,7 +19,7 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
@@ -34,23 +34,23 @@ import catchla.yep.view.holder.TopicViewHolder
  */
 class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickListener, IActionButtonSupportFragment {
 
-    @SortOrder
+    @TopicSortOrder
     private var mSortBy: String? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
-        mSortBy = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, SortOrder.DEFAULT)
+        mSortBy = preferences.getString(KEY_TOPICS_SORT_ORDER, TopicSortOrder.DEFAULT)
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
         if (fragmentArgs != null) {
-            loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, !fragmentArgs.containsKey(Constants.EXTRA_LEARNING) && !fragmentArgs.containsKey(Constants.EXTRA_MASTER))
-            if (fragmentArgs.containsKey(Constants.EXTRA_USER_ID)) {
-                loaderArgs.putString(Constants.EXTRA_USER_ID, fragmentArgs.getString(Constants.EXTRA_USER_ID))
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING) && !fragmentArgs.containsKey(EXTRA_MASTER))
+            if (fragmentArgs.containsKey(EXTRA_USER_ID)) {
+                loaderArgs.putString(EXTRA_USER_ID, fragmentArgs.getString(EXTRA_USER_ID))
             }
         } else {
-            loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, true)
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, true)
         }
         loaderManager.initLoader(0, loaderArgs, this)
         adapter.clickListener = this
@@ -59,9 +59,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Topic>> {
         val cachingEnabled = isCachingEnabled
-        val readCache = args!!.getBoolean(Constants.EXTRA_READ_CACHE) && cachingEnabled
-        val readOld = args.getBoolean(Constants.EXTRA_READ_OLD, readCache) && cachingEnabled
-        val maxId = args.getString(Constants.EXTRA_MAX_ID)
+        val readCache = args!!.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
+        val readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled
+        val maxId = args.getString(EXTRA_MAX_ID)
         val paging = Paging()
         if (maxId != null) {
             paging.maxId(maxId)
@@ -72,20 +72,20 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         } else {
             oldData = null
         }
-        return DiscoverTopicsLoader(activity, account, arguments.getString(Constants.EXTRA_USER_ID),
+        return DiscoverTopicsLoader(activity, account, arguments.getString(EXTRA_USER_ID),
                 paging, sortOrder, readCache, cachingEnabled, oldData)
     }
 
     private val sortOrder: String
-        @SortOrder
+        @TopicSortOrder
         get() {
-            if (hasUserId()) return SortOrder.TIME
-            return if (mSortBy != null) mSortBy!! else SortOrder.TIME
+            if (hasUserId()) return TopicSortOrder.TIME
+            return if (mSortBy != null) mSortBy!! else TopicSortOrder.TIME
         }
 
     private fun hasUserId(): Boolean {
         val fragmentArgs = arguments
-        return fragmentArgs != null && fragmentArgs.containsKey(Constants.EXTRA_USER_ID)
+        return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID)
     }
 
     override fun onLoadFinished(loader: Loader<List<Topic>>, data: List<Topic>?) {
@@ -106,16 +106,16 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         when (requestCode) {
             REQUEST_NEW_LOCATION_TOPIC -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val name = data!!.getStringExtra(Constants.EXTRA_NAME)
-                    val location = data.getParcelableExtra<Location>(Constants.EXTRA_LOCATION)
+                    val name = data!!.getStringExtra(EXTRA_NAME)
+                    val location = data.getParcelableExtra<Location>(EXTRA_LOCATION)
                     val intent = Intent(context, NewTopicActivity::class.java)
                     val attachment = LocationAttachment()
                     attachment.place = name
                     attachment.latitude = location.latitude
                     attachment.longitude = location.longitude
-                    intent.putExtra(Constants.EXTRA_NEW_TOPIC_TYPE, NewTopicActivity.TYPE_LOCATION)
-                    intent.putExtra(Constants.EXTRA_ATTACHMENT, attachment)
-                    intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                    intent.putExtra(EXTRA_NEW_TOPIC_TYPE, NewTopicActivity.TYPE_LOCATION)
+                    intent.putExtra(EXTRA_ATTACHMENT, attachment)
+                    intent.putExtra(EXTRA_ACCOUNT, account)
                     startActivity(intent)
                     return
                 }
@@ -139,7 +139,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
 
     override fun onRefresh() {
         val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
@@ -148,18 +148,18 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
     }
 
     val isCachingEnabled: Boolean
-        get() = arguments.getBoolean(Constants.EXTRA_CACHING_ENABLED)
+        get() = arguments.getBoolean(EXTRA_CACHING_ENABLED)
 
     override fun onItemClick(position: Int, holder: RecyclerView.ViewHolder) {
         val topic = adapter.getTopic(position)
         val intent = Intent(activity, TopicChatActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        intent.putExtra(Constants.EXTRA_TOPIC, topic)
+        intent.putExtra(EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_TOPIC, topic)
         startActivity(intent)
     }
 
     private val account: Account
-        get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
+        get() = arguments.getParcelable<Account>(EXTRA_ACCOUNT)
 
     override fun getActionIcon(): Int {
         return R.drawable.ic_action_edit
@@ -167,7 +167,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
 
     override fun onActionPerformed() {
         val args = Bundle()
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
+        args.putParcelable(EXTRA_ACCOUNT, account)
         val df = NewTopicTypeDialogFragment()
         df.arguments = args
         df.show(childFragmentManager, "new_topic_type")
@@ -182,34 +182,34 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         if (position and IndicatorPosition.START != 0) return
         super.onLoadMoreContents(position)
         val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, true)
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
+        loaderArgs.putBoolean(EXTRA_READ_OLD, true)
         val adapter = adapter
         val topicsCount = adapter.topicsCount
         if (topicsCount > 0) {
-            loaderArgs.putString(Constants.EXTRA_MAX_ID, adapter.getTopic(topicsCount - 1).id)
+            loaderArgs.putString(EXTRA_MAX_ID, adapter.getTopic(topicsCount - 1).id)
         }
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
     override fun onSkillClick(position: Int, holder: TopicViewHolder) {
         val intent = Intent(context, SkillUpdatesActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        intent.putExtra(Constants.EXTRA_SKILL, adapter.getTopic(position).skill)
+        intent.putExtra(EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_SKILL, adapter.getTopic(position).skill)
         startActivity(intent)
     }
 
     override fun onUserClick(position: Int, holder: TopicViewHolder) {
         val intent = Intent(context, UserActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-        intent.putExtra(Constants.EXTRA_USER, adapter.getTopic(position).user)
+        intent.putExtra(EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_USER, adapter.getTopic(position).user)
         startActivity(intent)
     }
 
     override fun onMediaClick(attachments: Array<Attachment>, attachment: Attachment, clickedView: View) {
         val intent = Intent(context, MediaViewerActivity::class.java)
-        intent.putExtra(Constants.EXTRA_MEDIA, attachments)
-        intent.putExtra(Constants.EXTRA_CURRENT_MEDIA, attachment)
+        intent.putExtra(EXTRA_MEDIA, attachments)
+        intent.putExtra(EXTRA_CURRENT_MEDIA, attachment)
         val location = IntArray(2)
         clickedView.getLocationOnScreen(location)
         intent.sourceBounds = Rect(location[0], location[1], location[0] + clickedView.width,
@@ -219,13 +219,13 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         ActivityCompat.startActivity(activity, intent, options)
     }
 
-    fun reloadWithSortOrder(@SortOrder sortBy: String) {
+    fun reloadWithSortOrder(@TopicSortOrder sortBy: String) {
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
         mSortBy = sortBy
-        preferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortBy).apply()
+        preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply()
         val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, false)
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
+        loaderArgs.putBoolean(EXTRA_READ_OLD, false)
         loaderManager.restartLoader(0, loaderArgs, this)
         showProgress()
     }
@@ -241,7 +241,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
                 when (values[which]) {
                     "photos_text" -> {
                         val intent = Intent(context, NewTopicActivity::class.java)
-                        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                        intent.putExtra(EXTRA_ACCOUNT, account)
                         startActivity(intent)
                     }
                     "audio" -> {
@@ -249,7 +249,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
                     "location" -> {
                         val parent = parentFragment
                         val intent = Intent(context, LocationPickerActivity::class.java)
-                        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                        intent.putExtra(EXTRA_ACCOUNT, account)
                         parent.startActivityForResult(intent, REQUEST_NEW_LOCATION_TOPIC)
                     }
                 }
@@ -258,7 +258,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         }
 
         private val account: Account
-            get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
+            get() = arguments.getParcelable<Account>(EXTRA_ACCOUNT)
     }
 
     companion object {

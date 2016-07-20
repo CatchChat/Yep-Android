@@ -66,7 +66,8 @@ interface YepAPI {
 
     @GET("user/discover")
     @Throws(YepException::class)
-    fun getDiscover(@Query(arrayDelimiter = ',') query: DiscoverQuery, @Query paging: Paging): ResponseList<User>
+    fun getDiscover(@Query(arrayDelimiter = ',') query: DiscoverQuery, @Query paging: Paging,
+                    @Query("sort") sortOrder: String): ResponseList<User>
 
 
     @GET("messages/unread")
@@ -188,7 +189,7 @@ interface YepAPI {
 
     @GET("topics/discover")
     @Throws(YepException::class)
-    fun getDiscoverTopics(@Query("sort") @SortOrder sortOrder: String, @Query paging: Paging): ResponseList<Topic>
+    fun getDiscoverTopics(@Query("sort") @TopicSortOrder sortOrder: String, @Query paging: Paging): ResponseList<Topic>
 
     @GET("topics")
     @Throws(YepException::class)

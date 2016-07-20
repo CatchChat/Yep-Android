@@ -14,6 +14,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.text.TextUtils
 import android.view.*
 import catchla.yep.Constants
 import catchla.yep.R
@@ -25,10 +26,7 @@ import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverUsersLoader
-import catchla.yep.model.DiscoverQuery
-import catchla.yep.model.Paging
-import catchla.yep.model.Skill
-import catchla.yep.model.User
+import catchla.yep.model.*
 import catchla.yep.view.holder.FriendGridViewHolder
 
 /**
@@ -37,7 +35,8 @@ import catchla.yep.view.holder.FriendGridViewHolder
 class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(),
         LoaderManager.LoaderCallbacks<List<User>>, IActionButtonSupportFragment {
 
-    private var mPage = 1
+    private var page = 1
+    private var sortOrder: String? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -89,10 +88,10 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         return StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<User>> {
         val query = DiscoverQuery()
         val fragmentArgs = arguments
-        val readCache = args!!.getBoolean(Constants.EXTRA_READ_CACHE)
+        val readCache = args.getBoolean(Constants.EXTRA_READ_CACHE)
         val readOld = args.getBoolean(Constants.EXTRA_READ_OLD, readCache)
         val paging = Paging()
         paging.page(args.getInt(Constants.EXTRA_PAGE, 1))
@@ -113,7 +112,8 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         } else {
             oldData = null
         }
-        return DiscoverUsersLoader(activity, account, query, oldData, paging, readCache, writeCache)
+        val sortOrder = sortOrder ?: DiscoverSortOrder.SCORE
+        return DiscoverUsersLoader(activity, account, query, sortOrder, oldData, paging, readCache, writeCache)
     }
 
     override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>?) {
@@ -155,7 +155,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         val loaderArgs = Bundle()
         loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
         loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, true)
-        loaderArgs.putInt(Constants.EXTRA_PAGE, ++mPage)
+        loaderArgs.putInt(Constants.EXTRA_PAGE, ++page)
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
@@ -202,5 +202,16 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
 
     private val account: Account
         get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
+
+    fun reloadWithSortOrder(sortOrder: String) {
+        if (TextUtils.equals(sortOrder, this.sortOrder)) return
+        this.sortOrder = sortOrder
+        preferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortOrder).apply()
+        val loaderArgs = Bundle()
+        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
+        loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, false)
+        loaderManager.restartLoader(0, loaderArgs, this)
+        showProgress()
+    }
 
 }

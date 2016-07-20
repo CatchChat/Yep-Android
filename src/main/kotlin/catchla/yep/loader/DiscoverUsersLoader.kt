@@ -16,6 +16,7 @@ import java.util.*
 class DiscoverUsersLoader(
         context: Context, account: Account,
         private val query: DiscoverQuery,
+        private val sortOrder: String,
         oldData: List<User>?,
         private val paging: Paging,
         readCache: Boolean,
@@ -31,7 +32,7 @@ class DiscoverUsersLoader(
         if (oldData != null) {
             list.addAll(oldData)
         }
-        for (topic in yep.getDiscover(query, paging)) {
+        for (topic in yep.getDiscover(query, paging, sortOrder)) {
             list.remove(topic)
             list.add(topic)
         }
