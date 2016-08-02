@@ -21,7 +21,7 @@ import catchla.yep.view.holder.*
  */
 class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(context) {
 
-    private val mInflater: LayoutInflater
+    private val inflater: LayoutInflater
 
     var clickListener: TopicClickListener? = null
         set
@@ -33,44 +33,44 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         }
 
     init {
-        mInflater = LayoutInflater.from(context)
+        inflater = LayoutInflater.from(context)
 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
             ITEM_VIEW_TYPE_MEDIA_GALLERY -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_gallery, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_gallery, view as ViewGroup)
                 return GalleryTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_GITHUB -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_github, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_github, view as ViewGroup)
                 return GithubTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_DRIBBBLE -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_dribbble, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_dribbble, view as ViewGroup)
                 return DribbbleTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_LOCATION -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_location, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_location, view as ViewGroup)
                 return LocationTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_BASIC -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_null, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_null, view as ViewGroup)
                 return TopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_SINGLE_IMAGE -> {
-                val view = mInflater.inflate(R.layout.list_item_topic, parent, false)
-                mInflater.inflate(R.layout.layout_topic_attachment_image, view as ViewGroup)
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_image, view as ViewGroup)
                 return SingleImageTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
-                val view = mInflater.inflate(R.layout.card_item_load_indicator, parent, false)
+                val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
             }
         }
@@ -102,7 +102,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         when (getItemViewType(position)) {
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
             }
-            ITEM_VIEW_TYPE_BASIC, ITEM_VIEW_TYPE_MEDIA_GALLERY, ITEM_VIEW_TYPE_GITHUB, ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE -> {
+            ITEM_VIEW_TYPE_BASIC, ITEM_VIEW_TYPE_MEDIA_GALLERY, ITEM_VIEW_TYPE_GITHUB,
+            ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE -> {
                 val topicViewHolder = holder as TopicViewHolder
                 topicViewHolder.displayTopic(topics!![position])
             }

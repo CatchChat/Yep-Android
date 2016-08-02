@@ -7,21 +7,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-
-import org.apache.commons.lang3.ObjectUtils
-
-import java.util.Date
-
 import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.Attachment
-import catchla.yep.model.LatLng
-import catchla.yep.model.Skill
 import catchla.yep.model.Topic
-import catchla.yep.model.User
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
 import catchla.yep.view.ShortTimeView
+import org.apache.commons.lang3.ObjectUtils
 
 /**
  * Created by mariotaku on 15/10/12.
@@ -85,7 +78,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         } else {
             distanceView.visibility = View.GONE
         }
-        messagesCountView.text = topic.messageCount.toString()
+        messagesCountView.text = if (topic.messageCount > 0) topic.messageCount.toString() else null
         val skill = topic.skill
         if (skill != null) {
             skillButton.text = Utils.getDisplayName(skill)
