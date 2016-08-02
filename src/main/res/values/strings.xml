@@ -117,4 +117,5 @@
     <string name="release_to_cancel">Release to cancel</string>
     <string name="release_to_send">Release to send</string>
     <string name="message_not_received_hint">Message not received?</string>
+    <string name="last_seen_time">Last seen <xliff:g id="time">%1$s</xliff:g></string>
 </resources>

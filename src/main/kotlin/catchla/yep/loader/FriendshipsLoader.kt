@@ -8,6 +8,7 @@ import catchla.yep.model.FriendshipTableInfo
 import catchla.yep.provider.YepDataStore.Friendships
 import catchla.yep.util.Utils
 import org.mariotaku.sqliteqb.library.Expression
+import org.mariotaku.sqliteqb.library.OrderBy
 
 /**
  * Created by mariotaku on 15/5/27.
@@ -22,6 +23,7 @@ class FriendshipsLoader(
         projection = FriendshipTableInfo.COLUMNS
         selection = Expression.equalsArgs(Friendships.ACCOUNT_ID).sql
         selectionArgs = arrayOf(Utils.getAccountId(context, account))
+        sortOrder = OrderBy(Friendships.USER_UPDATED_AT, false).sql
     }
 
 }

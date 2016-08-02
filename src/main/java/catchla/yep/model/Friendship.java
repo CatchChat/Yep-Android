@@ -7,12 +7,16 @@ import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import org.mariotaku.library.objectcursor.annotation.AfterCursorObjectCreated;
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
 
+import java.util.Date;
+
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
+import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.provider.YepDataStore.Friendships;
 
 /**
@@ -48,6 +52,10 @@ public class Friendship implements Parcelable {
     @JsonField(name = "friend")
     @CursorField(value = "friend", converter = LoganSquareCursorFieldConverter.class)
     User friend;
+
+    @ParcelableThisPlease
+    @CursorField(value = Friendships.USER_UPDATED_AT, converter = TimestampToDateConverter.class, type = CursorField.INTEGER)
+    Date userUpdatedAt;
 
 
     public static final Creator<Friendship> CREATOR = new Creator<Friendship>() {
@@ -100,6 +108,10 @@ public class Friendship implements Parcelable {
         return name;
     }
 
+    public Date getUserUpdatedAt() {
+        return userUpdatedAt;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -113,6 +125,7 @@ public class Friendship implements Parcelable {
     @OnJsonParseComplete
     void onJsonParseComplete() {
         userId = friend.getId();
+        userUpdatedAt = friend.getUpdatedAt();
     }
 
     @AfterCursorObjectCreated

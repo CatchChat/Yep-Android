@@ -5,6 +5,7 @@
 package catchla.yep.view.holder
 
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,12 +25,14 @@ class FriendViewHolder(itemView: View,
     private val nameView: TextView
     private val timeView: TextView
     private val descriptionView: TextView
+    private val badgeView: ImageView
 
     init {
         profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
         nameView = itemView.findViewById(R.id.name) as TextView
         timeView = itemView.findViewById(R.id.update_time) as TextView
         descriptionView = itemView.findViewById(R.id.description) as TextView
+        badgeView = itemView.findViewById(R.id.badge) as ImageView
         itemView.setOnClickListener(this)
     }
 
@@ -50,6 +53,14 @@ class FriendViewHolder(itemView: View,
         nameView.text = user.nickname
         //        timeView.setText();
         descriptionView.text = user.introduction
+        badgeView.setImageResource(user.badge?.icon ?: 0)
+        if (user.updatedAt != null) {
+            timeView.visibility = View.VISIBLE
+            timeView.text = adapter.context.getString(R.string.last_seen_time,
+                    DateUtils.getRelativeTimeSpanString(user.updatedAt.time))
+        } else {
+            timeView.visibility = View.GONE
+        }
     }
 
     fun displayFriendship(friendship: Friendship) {

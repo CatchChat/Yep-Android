@@ -9,7 +9,7 @@ package catchla.yep;
  */
 public interface Constants {
     String YEP_DATABASE_NAME = "yep_data.db";
-    int YEP_DATABASE_VERSION = 24;
+    int YEP_DATABASE_VERSION = 26;
 
     String LOGTAG = "Yep";
 

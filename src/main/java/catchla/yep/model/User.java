@@ -1,23 +1,35 @@
 package catchla.yep.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
+import com.bluelinelabs.logansquare.typeconverters.StringBasedTypeConverter;
+import com.hannesdorfmann.parcelableplease.ParcelBagger;
+import com.hannesdorfmann.parcelableplease.annotation.Bagger;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
+import org.mariotaku.library.objectcursor.converter.CursorFieldConverter;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.Date;
 import java.util.List;
 
+import catchla.yep.R;
 import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.model.util.ProviderConverter;
 import catchla.yep.model.util.SkillListTypeConverter;
+import catchla.yep.model.util.TimestampToDateConverter;
+import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Users;
 
@@ -105,8 +117,11 @@ public class User implements Parcelable {
     @JsonField(name = "longitude")
     double longitude = Double.NaN;
     @ParcelableThisPlease
-    @JsonField(name = "badge")
-    String badge;
+    @Bagger(Badge.Bagger.class)
+    @JsonField(name = "badge", typeConverter = Badge.Converter.class)
+    @CursorField(value = Users.BADGE, converter = Badge.CursorConverter.class)
+    @Nullable
+    Badge badge;
     @ParcelableThisPlease
     @JsonField(name = "website_url")
     String websiteUrl;
@@ -115,6 +130,14 @@ public class User implements Parcelable {
     String websiteTitle;
     @ParcelableThisPlease
     LatLng location;
+    @ParcelableThisPlease
+    @JsonField(name = "created_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Users.CREATED_AT, converter = TimestampToDateConverter.class, type = CursorField.INTEGER)
+    Date createdAt;
+    @ParcelableThisPlease
+    @JsonField(name = "updated_at", typeConverter = YepTimestampDateConverter.class)
+    @CursorField(value = Users.UPDATED_AT, converter = TimestampToDateConverter.class, type = CursorField.INTEGER)
+    Date updatedAt;
 
     public User() {
 
@@ -254,6 +277,31 @@ public class User implements Parcelable {
         this.websiteTitle = websiteTitle;
     }
 
+    @Nullable
+    public Badge getBadge() {
+        return badge;
+    }
+
+    public void setBadge(@Nullable final Badge badge) {
+        this.badge = badge;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(final Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(final Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -304,4 +352,87 @@ public class User implements Parcelable {
         UserParcelablePlease.writeToParcel(this, dest, flags);
     }
 
+    public enum Badge {
+        PALETTE("palette", R.drawable.ic_user_badge_palette),
+        PLANE("plane", R.drawable.ic_user_badge_paperplane),
+        HEART("heart", R.drawable.ic_user_badge_heart),
+        STAR("star", R.drawable.ic_user_badge_star),
+        BUBBLE("bubble", R.drawable.ic_user_badge_chatbubble),
+
+        ANDROID("android", R.drawable.ic_user_badge_android),
+        APPLE("apple", R.drawable.ic_user_badge_apple),
+        PET("pet", R.drawable.ic_user_badge_paw),
+        WINE("wine", R.drawable.ic_user_badge_wineglass),
+        MUSIC("music", R.drawable.ic_user_badge_music),
+
+        STEVE("steve", R.drawable.ic_user_badge_glasses),
+        CAMERA("camera", R.drawable.ic_user_badge_camera),
+        GAME("game", R.drawable.ic_user_badge_game),
+        BALL("ball", R.drawable.ic_user_badge_basketball),
+        TECH("tech", R.drawable.ic_user_badge_tech);
+        private final String value;
+        @DrawableRes
+        private final int icon;
+
+        Badge(String value, @DrawableRes int icon) {
+            this.value = value;
+            this.icon = icon;
+        }
+
+        @Nullable
+        private static Badge parse(@Nullable final String string) {
+            if (string == null) return null;
+            for (final Badge badge : values()) {
+                if (string.equals(badge.value)) {
+                    return badge;
+                }
+            }
+            return null;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public int getIcon() {
+            return icon;
+        }
+
+        public static class Converter extends StringBasedTypeConverter<Badge> {
+            @Override
+            public Badge getFromString(final String string) {
+                return Badge.parse(string);
+            }
+
+            @Override
+            public String convertToString(final Badge object) {
+                if (object == null) return null;
+                return object.value;
+            }
+        }
+
+        public static class Bagger implements ParcelBagger<Badge> {
+            @Override
+            public void write(final Badge value, final Parcel out, final int flags) {
+                out.writeString(value != null ? value.value : null);
+            }
+
+            @Override
+            public Badge read(final Parcel in) {
+                return Badge.parse(in.readString());
+            }
+        }
+
+        public static class CursorConverter implements CursorFieldConverter<Badge> {
+            @Override
+            public Badge parseField(final Cursor cursor, final int columnIndex, final ParameterizedType fieldType) {
+                return Badge.parse(cursor.getString(columnIndex));
+            }
+
+            @Override
+            public void writeField(final ContentValues values, final Badge object, final String columnName, final ParameterizedType fieldType) {
+                values.put(columnName, object != null ? object.value : null);
+            }
+        }
+    }
 }

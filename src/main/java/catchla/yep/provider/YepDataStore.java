@@ -82,6 +82,8 @@ public interface YepDataStore {
         String NAME = "name";
         String REMARKED_NAME = "remarked_name";
         String CONTACT_NAME = "contact_name";
+
+        String USER_UPDATED_AT = "user_updated_at";
     }
 
     interface Circles extends BaseColumns {
@@ -116,7 +118,9 @@ public interface YepDataStore {
         String LEARNING_SKILLS = "learning_skill";
         String MASTER_SKILLS = "master_skills";
         String PROVIDERS = "providers";
-
+        String BADGE = "badge";
+        String CREATED_AT = "created_at";
+        String UPDATED_AT = "updated_at";
     }
 
 }
