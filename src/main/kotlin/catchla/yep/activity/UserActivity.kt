@@ -4,11 +4,13 @@ import android.app.Dialog
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.graphics.Palette
 import android.text.TextUtils
@@ -16,6 +18,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import catchla.yep.Constants
 import catchla.yep.R
@@ -25,6 +28,7 @@ import catchla.yep.provider.YepDataStore.Friendships
 import catchla.yep.util.JsonSerializer
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
+import catchla.yep.util.support.WindowSupport
 import catchla.yep.util.task.UpdateProfileTask
 import kotlinx.android.synthetic.main.activity_user.*
 import kotlinx.android.synthetic.main.layout_content_user.*
@@ -66,6 +70,15 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
 
         title = Utils.getDisplayName(currentUser)
         displayUser(currentUser)
+
+        WindowSupport.setStatusBarColor(window, Color.TRANSPARENT)
+        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
+            toolbarShadow.setPadding(0, insets.systemWindowInsetTop, 0, 0)
+            val lp = toolbar.layoutParams as ViewGroup.MarginLayoutParams
+            lp.topMargin = insets.systemWindowInsetTop
+            toolbar.layoutParams = lp
+            return@setOnApplyWindowInsetsListener insets.consumeSystemWindowInsets()
+        }
 
         supportLoaderManager.initLoader(0, null, this)
     }

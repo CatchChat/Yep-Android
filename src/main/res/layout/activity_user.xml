@@ -36,9 +36,11 @@
                 tools:src="@drawable/ic_profile_image_default"/>
 
             <View
+                android:id="@+id/toolbarShadow"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content"
                 android:background="@drawable/shadow_user_banner_action_bar"
+                android:minHeight="?attr/actionBarSize"
                 app:layout_collapseMode="pin"/>
 
             <android.support.v7.widget.Toolbar
