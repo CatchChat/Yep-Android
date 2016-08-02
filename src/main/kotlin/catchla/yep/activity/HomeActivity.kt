@@ -6,6 +6,7 @@ package catchla.yep.activity
 
 import android.accounts.Account
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.support.v4.app.Fragment
@@ -27,6 +28,8 @@ import catchla.yep.menu.HomeMenuActionProvider
 import catchla.yep.service.MessageService
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
+import catchla.yep.util.support.WindowSupport
+import catchla.yep.util.view.ViewSupport
 import catchla.yep.view.TabPagerIndicator
 import catchla.yep.view.iface.PagerIndicator
 import kotlinx.android.synthetic.main.activity_home.*
@@ -44,6 +47,7 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowSupport.setStatusBarColor(window, Color.TRANSPARENT)
         val actionBar = supportActionBar!!
         actionBar.setDisplayShowCustomEnabled(true)
         actionBar.setCustomView(R.layout.layout_home_tabs)
@@ -58,7 +62,7 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 2
         viewPager.addOnPageChangeListener(this)
-        mainContent.setStatusBarColor(primaryColor)
+        mainContent.setStatusBarColorDarken(primaryColor)
         floatingActionButton.setOnClickListener(this)
 
         val args = Bundle()

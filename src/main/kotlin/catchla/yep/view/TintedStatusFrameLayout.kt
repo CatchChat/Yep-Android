@@ -25,10 +25,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
+import android.support.v4.graphics.ColorUtils
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 import catchla.yep.R
+import catchla.yep.util.Utils
+import catchla.yep.util.support.WindowSupport
 import catchla.yep.view.iface.TintedStatusLayout
 
 /**
@@ -70,8 +73,8 @@ class TintedStatusFrameLayout @JvmOverloads constructor(context: Context, attrs:
     }
 
 
-    override fun setStatusBarColor(color: Int) {
-        mColorPaint.color = 0xFF000000.toInt() or color
+    override fun setStatusBarColorDarken(color: Int) {
+        mColorPaint.color = 0xFF000000.toInt() or Utils.getColorDark(color)
         mColorPaint.alpha = Color.alpha(color)
         invalidate()
     }

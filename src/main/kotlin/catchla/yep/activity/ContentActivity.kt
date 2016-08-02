@@ -1,6 +1,7 @@
 package catchla.yep.activity
 
 import android.accounts.Account
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import catchla.yep.Constants
@@ -8,6 +9,7 @@ import catchla.yep.R
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.dagger.GeneralComponentHelper
+import catchla.yep.util.support.WindowSupport
 import catchla.yep.view.TintedStatusFrameLayout
 import com.squareup.otto.Bus
 import javax.inject.Inject
@@ -22,6 +24,7 @@ open class ContentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowSupport.setStatusBarColor(window, Color.TRANSPARENT)
         GeneralComponentHelper.build(this).inject(this)
     }
 
@@ -46,7 +49,7 @@ open class ContentActivity : AppCompatActivity() {
 
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        mainContent!!.setStatusBarColor(primaryColor)
+        mainContent!!.setStatusBarColorDarken(primaryColor)
     }
 
 }

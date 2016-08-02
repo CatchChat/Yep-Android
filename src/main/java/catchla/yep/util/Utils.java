@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -472,5 +473,12 @@ public class Utils implements Constants {
         final byte[] buf = new byte[length];
         sRandom.nextBytes(buf);
         return ByteString.of(buf).hex();
+    }
+
+    public static int getColorDark(final int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.9f;
+        return Color.HSVToColor(hsv);
     }
 }

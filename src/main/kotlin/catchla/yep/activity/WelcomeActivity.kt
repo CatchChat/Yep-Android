@@ -64,7 +64,7 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
         val adapter = TabsAdapter(this, supportFragmentManager)
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 2
-        mainContent!!.setStatusBarColor(primaryColor)
+        mainContent!!.setStatusBarColorDarken(primaryColor)
         adapter.addTab(UserSuggestionsFragment::class.java, getString(R.string.suggestions), 0, null)
         adapter.addTab(UserRankFragment::class.java, getString(R.string.rank), 0, null)
     }

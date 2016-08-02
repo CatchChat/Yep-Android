@@ -55,7 +55,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
 
-        mainContent?.setStatusBarColor(primaryColor)
+        mainContent?.setStatusBarColorDarken(primaryColor)
 
         val conversation = conversation
         title = Utils.getConversationName(conversation)
