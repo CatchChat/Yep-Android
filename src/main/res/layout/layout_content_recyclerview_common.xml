@@ -4,7 +4,7 @@
        tools:showIn="@layout/fragment_content_recyclerview">
 
     <FrameLayout
-        android:id="@+id/progress_container"
+        android:id="@+id/progressContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/element_spacing_large"
@@ -18,13 +18,13 @@
     </FrameLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_layout"
+        android:id="@+id/swipeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false">
 
         <catchla.yep.view.RecyclerViewBackport
-            android:id="@+id/recycler_view"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"

@@ -37,6 +37,7 @@ import catchla.yep.util.ContentListScrollListener
 import catchla.yep.util.SimpleDrawerCallback
 import catchla.yep.util.ThemeUtils
 import catchla.yep.view.HeaderDrawerLayout
+import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
 
 
 /**
@@ -44,10 +45,6 @@ import catchla.yep.view.HeaderDrawerLayout
  */
 abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<RecyclerView.ViewHolder>, L : RecyclerView.LayoutManager> : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HeaderDrawerLayout.DrawerCallback, RefreshScrollTopInterface, IControlBarActivity.ControlBarOffsetListener, ContentListScrollListener.ContentListSupport {
 
-    private var progressContainer: View? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    lateinit var recyclerView: RecyclerView
-        private set
 
     lateinit var layoutManager: L
         private set
@@ -129,13 +126,13 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
     abstract override fun isRefreshing(): Boolean
 
     fun setRefreshing(refreshing: Boolean) {
-        val currentRefreshing = swipeRefreshLayout!!.isRefreshing
+        val currentRefreshing = swipeLayout!!.isRefreshing
         if (!currentRefreshing) {
             updateRefreshProgressOffset()
         }
         if (refreshing == currentRefreshing) return
         val layoutRefreshing = refreshing && adapter.loadMoreIndicatorPosition != IndicatorPosition.NONE
-        swipeRefreshLayout!!.isRefreshing = layoutRefreshing
+        swipeLayout!!.isRefreshing = layoutRefreshing
     }
 
     override fun onLoadMoreContents(@IndicatorPosition position: Int) {
@@ -164,8 +161,8 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
 
         val view = view ?: throw AssertionError()
         val context = view.context
-        swipeRefreshLayout!!.setOnRefreshListener(this)
-        swipeRefreshLayout!!.setColorSchemeColors(ThemeUtils.getColorAccent(context))
+        swipeLayout!!.setOnRefreshListener(this)
+        swipeLayout!!.setColorSchemeColors(ThemeUtils.getColorAccent(context))
         adapter = onCreateAdapter(context)
         layoutManager = onCreateLayoutManager(context)
         recyclerView.layoutManager = layoutManager
@@ -192,13 +189,6 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         super.onStop()
     }
 
-    override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onBaseViewCreated(view, savedInstanceState)
-        progressContainer = view.findViewById(R.id.progress_container)
-        swipeRefreshLayout = view.findViewById(R.id.swipe_layout) as SwipeRefreshLayout
-        recyclerView = view.findViewById(R.id.recycler_view) as RecyclerView
-    }
-
     override fun onDetach() {
         val activity = activity
         if (activity is IControlBarActivity) {
@@ -212,15 +202,15 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
 
     override fun fitSystemWindows(insets: Rect) {
         val extraPadding = extraContentPadding
-        recyclerView!!.setPadding(insets.left + extraPadding.left, insets.top + extraPadding.top,
+        recyclerView.setPadding(insets.left + extraPadding.left, insets.top + extraPadding.top,
                 insets.right + extraPadding.right, insets.bottom + extraPadding.bottom)
-        progressContainer!!.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+        progressContainer.setPadding(insets.left, insets.top, insets.right, insets.bottom)
         systemWindowsInsets.set(insets)
         updateRefreshProgressOffset()
     }
 
     fun setRefreshEnabled(enabled: Boolean) {
-        swipeRefreshLayout!!.isEnabled = enabled
+        swipeLayout.isEnabled = enabled
     }
 
     override fun triggerRefresh(): Boolean {
@@ -253,27 +243,27 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
 
     private fun showContentInternal(animate: Boolean) {
         if (animate) {
-            progressContainer!!.animate().alpha(0f).setDuration(200).start()
-            swipeRefreshLayout!!.animate().alpha(1f).setDuration(200).start()
+            progressContainer.animate().alpha(0f).setDuration(200).start()
+            swipeLayout.animate().alpha(1f).setDuration(200).start()
         }
-        progressContainer!!.visibility = View.GONE
-        swipeRefreshLayout!!.visibility = View.VISIBLE
+        progressContainer.visibility = View.GONE
+        swipeLayout.visibility = View.VISIBLE
     }
 
     private fun showProgressInternal(animate: Boolean) {
         if (animate) {
-            progressContainer!!.animate().alpha(1f).setDuration(200).start()
-            swipeRefreshLayout!!.animate().alpha(0f).setDuration(200).start()
+            progressContainer.animate().alpha(1f).setDuration(200).start()
+            swipeLayout.animate().alpha(0f).setDuration(200).start()
         }
-        progressContainer!!.visibility = View.VISIBLE
-        swipeRefreshLayout!!.visibility = View.GONE
+        progressContainer.visibility = View.VISIBLE
+        swipeLayout.visibility = View.GONE
     }
 
 
     protected fun updateRefreshProgressOffset() {
         val activity = activity
         val insets = this.systemWindowsInsets
-        val layout = this.swipeRefreshLayout
+        val layout = this.swipeLayout
         if (activity !is IControlBarActivity || insets.top == 0 || layout == null
                 || isRefreshing) {
             return

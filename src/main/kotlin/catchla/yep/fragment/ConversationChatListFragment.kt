@@ -12,7 +12,7 @@ import catchla.yep.model.Message
  * Created by mariotaku on 15/12/10.
  */
 class ConversationChatListFragment : ChatListFragment() {
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Message>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Message>?> {
         return MessagesLoader(context, conversation)
     }
 

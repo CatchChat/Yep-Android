@@ -15,7 +15,7 @@ import catchla.yep.model.User
 /**
  * Created by mariotaku on 15/8/25.
  */
-class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), LoaderManager.LoaderCallbacks<List<User>> {
+class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), LoaderManager.LoaderCallbacks<List<User>?> {
 
     override fun onRefresh() {
         super.onRefresh()
@@ -47,18 +47,18 @@ class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), 
         return UsersAdapter(context)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>?> {
         val query = args!!.getString(Constants.EXTRA_QUERY)
         return SearchUsersLoader(activity, account, query)
     }
 
-    override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>) {
+    override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {
         adapter.users = data
         showContent()
         isRefreshing = false
     }
 
-    override fun onLoaderReset(loader: Loader<List<User>>) {
+    override fun onLoaderReset(loader: Loader<List<User>?>) {
         adapter.users = null
     }
 }

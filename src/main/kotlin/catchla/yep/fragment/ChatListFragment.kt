@@ -44,10 +44,11 @@ import java.util.*
  * List component for chat activities
  * Created by mariotaku on 15/11/16.
  */
-abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter, LinearLayoutManager>(), LoaderManager.LoaderCallbacks<List<Message>> {
+abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter,
+        LinearLayoutManager>(), LoaderManager.LoaderCallbacks<List<Message>?> {
 
     private var mMediaPlayer: MediaPlayer? = null
-    private var mJumpToLast: Boolean = false
+    var jumpToLast: Boolean = false
 
     private lateinit var topicTitle: TextView
     private lateinit var topicSummary: TextView
@@ -112,16 +113,16 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
     private val topic: Topic?
         get() = arguments.getParcelable<Topic>(Constants.EXTRA_TOPIC)
 
-    override fun onLoadFinished(loader: Loader<List<Message>>, data: List<Message>) {
+    override fun onLoadFinished(loader: Loader<List<Message>?>, data: List<Message>?) {
         val backupPosition = layoutManager.findFirstVisibleItemPosition()
         val backupMessage: Message?
         val adapter = adapter
-        if (backupPosition != RecyclerView.NO_POSITION && !mJumpToLast) {
+        if (backupPosition != RecyclerView.NO_POSITION && !jumpToLast) {
             backupMessage = adapter.getMessage(backupPosition)
         } else {
             backupMessage = null
         }
-        mJumpToLast = false
+        jumpToLast = false
         adapter.data = data
         showContent()
         if (backupMessage != null && backupMessage.id != null) {
@@ -134,11 +135,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         }
     }
 
-    fun setJumpToLast(jumpToLast: Boolean) {
-        mJumpToLast = jumpToLast
-    }
-
-    override fun onLoaderReset(loader: Loader<List<Message>>) {
+    override fun onLoaderReset(loader: Loader<List<Message>?>) {
         adapter.data = null
     }
 

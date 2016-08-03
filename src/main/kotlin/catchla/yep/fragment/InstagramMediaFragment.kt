@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,23 +15,20 @@ import catchla.yep.adapter.InstagramMediaAdapter
 import catchla.yep.loader.InstagramMediaLoader
 import catchla.yep.model.InstagramMediaList
 import catchla.yep.model.User
+import kotlinx.android.synthetic.main.fragment_recycler_view.*
 
 /**
  * Created by mariotaku on 15/6/3.
  */
-class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<InstagramMediaList> {
+class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<InstagramMediaList?> {
 
-    private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mLoadProgress: View
+    private lateinit var adapter: InstagramMediaAdapter
 
-    private lateinit var mAdapter: InstagramMediaAdapter
-
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<InstagramMediaList> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<InstagramMediaList?> {
         val fragmentArgs = arguments
         val user = fragmentArgs.getParcelable<User>(Constants.EXTRA_USER)
         val userId = user!!.id
-        return InstagramMediaLoader(activity, account, userId,
-                false, false)
+        return InstagramMediaLoader(activity, account, userId, false, false)
     }
 
     private val account: Account
@@ -42,39 +38,31 @@ class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallba
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mAdapter = InstagramMediaAdapter(activity)
+        adapter = InstagramMediaAdapter(activity)
         val layoutManager = GridLayoutManager(activity, 2)
         layoutManager.orientation = GridLayoutManager.VERTICAL
-        mRecyclerView.layoutManager = layoutManager
-        mRecyclerView.adapter = mAdapter
 
         loaderManager.initLoader(0, null, this)
         showProgress()
     }
 
-    override fun onLoadFinished(loader: Loader<InstagramMediaList>, data: InstagramMediaList?) {
-        mAdapter.shots = data?.media
+    override fun onLoadFinished(loader: Loader<InstagramMediaList?>, data: InstagramMediaList?) {
+        adapter.shots = data?.media
         showContent()
     }
 
-    override fun onLoaderReset(loader: Loader<InstagramMediaList>) {
-        mAdapter.shots = null
-    }
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mRecyclerView = view!!.findViewById(R.id.recycler_view) as RecyclerView
-        mLoadProgress = view.findViewById(R.id.load_progress)
+    override fun onLoaderReset(loader: Loader<InstagramMediaList?>) {
+        adapter.shots = null
     }
 
     private fun showContent() {
-        mRecyclerView.visibility = View.VISIBLE
-        mLoadProgress.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
+        loadProgress.visibility = View.GONE
     }
 
     private fun showProgress() {
-        mRecyclerView.visibility = View.GONE
-        mLoadProgress.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        loadProgress.visibility = View.VISIBLE
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {

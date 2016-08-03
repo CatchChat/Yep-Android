@@ -13,7 +13,7 @@ import catchla.yep.util.Utils
 /**
  * Created by mariotaku on 15/10/10.
  */
-class BlockedUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), LoaderManager.LoaderCallbacks<List<User>> {
+class BlockedUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), LoaderManager.LoaderCallbacks<List<User>?> {
 
     override fun onRefresh() {
         super.onRefresh()
@@ -35,17 +35,17 @@ class BlockedUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(),
         return UsersAdapter(context)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>?> {
         return BlockedUsersLoader(activity, Utils.getCurrentAccount(activity)!!)
     }
 
-    override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>) {
+    override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {
         adapter.users = data
         showContent()
         isRefreshing = false
     }
 
-    override fun onLoaderReset(loader: Loader<List<User>>) {
+    override fun onLoaderReset(loader: Loader<List<User>?>) {
         adapter.users = null
     }
 }

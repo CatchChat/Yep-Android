@@ -329,6 +329,86 @@ public class User implements Parcelable {
                 '}';
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final User user = (User) o;
+
+        if (_id != user._id) return false;
+        if (Double.compare(user.latitude, latitude) != 0) return false;
+        if (Double.compare(user.longitude, longitude) != 0) return false;
+        if (masterSkills != null ? !masterSkills.equals(user.masterSkills) : user.masterSkills != null)
+            return false;
+        if (learningSkills != null ? !learningSkills.equals(user.learningSkills) : user.learningSkills != null)
+            return false;
+        if (accountId != null ? !accountId.equals(user.accountId) : user.accountId != null)
+            return false;
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (username != null ? !username.equals(user.username) : user.username != null)
+            return false;
+        if (nickname != null ? !nickname.equals(user.nickname) : user.nickname != null)
+            return false;
+        if (introduction != null ? !introduction.equals(user.introduction) : user.introduction != null)
+            return false;
+        if (avatarUrl != null ? !avatarUrl.equals(user.avatarUrl) : user.avatarUrl != null)
+            return false;
+        if (avatarThumbUrl != null ? !avatarThumbUrl.equals(user.avatarThumbUrl) : user.avatarThumbUrl != null)
+            return false;
+        if (avatar != null ? !avatar.equals(user.avatar) : user.avatar != null) return false;
+        if (mobile != null ? !mobile.equals(user.mobile) : user.mobile != null) return false;
+        if (phoneCode != null ? !phoneCode.equals(user.phoneCode) : user.phoneCode != null)
+            return false;
+        if (contactName != null ? !contactName.equals(user.contactName) : user.contactName != null)
+            return false;
+        if (providers != null ? !providers.equals(user.providers) : user.providers != null)
+            return false;
+        if (badge != user.badge) return false;
+        if (websiteUrl != null ? !websiteUrl.equals(user.websiteUrl) : user.websiteUrl != null)
+            return false;
+        if (websiteTitle != null ? !websiteTitle.equals(user.websiteTitle) : user.websiteTitle != null)
+            return false;
+        if (location != null ? !location.equals(user.location) : user.location != null)
+            return false;
+        if (createdAt != null ? !createdAt.equals(user.createdAt) : user.createdAt != null)
+            return false;
+        return updatedAt != null ? updatedAt.equals(user.updatedAt) : user.updatedAt == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (int) (_id ^ (_id >>> 32));
+        result = 31 * result + (masterSkills != null ? masterSkills.hashCode() : 0);
+        result = 31 * result + (learningSkills != null ? learningSkills.hashCode() : 0);
+        result = 31 * result + (accountId != null ? accountId.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (nickname != null ? nickname.hashCode() : 0);
+        result = 31 * result + (introduction != null ? introduction.hashCode() : 0);
+        result = 31 * result + (avatarUrl != null ? avatarUrl.hashCode() : 0);
+        result = 31 * result + (avatarThumbUrl != null ? avatarThumbUrl.hashCode() : 0);
+        result = 31 * result + (avatar != null ? avatar.hashCode() : 0);
+        result = 31 * result + (mobile != null ? mobile.hashCode() : 0);
+        result = 31 * result + (phoneCode != null ? phoneCode.hashCode() : 0);
+        result = 31 * result + (contactName != null ? contactName.hashCode() : 0);
+        result = 31 * result + (providers != null ? providers.hashCode() : 0);
+        temp = Double.doubleToLongBits(latitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (badge != null ? badge.hashCode() : 0);
+        result = 31 * result + (websiteUrl != null ? websiteUrl.hashCode() : 0);
+        result = 31 * result + (websiteTitle != null ? websiteTitle.hashCode() : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        return result;
+    }
+
     @OnJsonParseComplete
     void onParseComplete() {
         if (Double.isNaN(latitude) || Double.isNaN(longitude)) {

@@ -16,7 +16,7 @@ import catchla.yep.util.YepAPI
  * Created by mariotaku on 15/12/10.
  */
 class TopicChatListFragment : ChatListFragment() {
-    override fun onLoadFinished(loader: Loader<List<Message>>, data: List<Message>) {
+    override fun onLoadFinished(loader: Loader<List<Message>?>, data: List<Message>?) {
         super.onLoadFinished(loader, data)
         setRefreshEnabled(false)
     }
@@ -26,7 +26,7 @@ class TopicChatListFragment : ChatListFragment() {
         setRefreshEnabled(false)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Message>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Message>?> {
         val topic = topic
         val recipientId = topic.circle.id
         return HistoricalMessagesLoader(context, account,

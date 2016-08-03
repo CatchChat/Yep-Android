@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<catchla.yep.view.GithubProviderWidgetContainer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/element_spacing_normal">
+
+    <LinearLayout
+        android:id="@+id/widgetContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/repoCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_github_repo"
+            android:drawableStart="@drawable/ic_github_repo"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"/>
+
+        <TextView
+            android:id="@+id/starCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loadProgress"
+        style="?android:progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+</catchla.yep.view.GithubProviderWidgetContainer>

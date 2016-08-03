@@ -24,7 +24,7 @@ abstract class CachedYepLoader<T>(
         private val oldData: T?,
         private val readCache: Boolean,
         private val writeCache: Boolean
-) : AsyncTaskLoader<T>(context), Constants {
+) : AsyncTaskLoader<T?>(context), Constants {
 
     @Inject
     internal lateinit var fileCache: FileCache

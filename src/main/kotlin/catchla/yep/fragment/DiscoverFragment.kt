@@ -33,7 +33,7 @@ import catchla.yep.view.holder.FriendGridViewHolder
  * Created by mariotaku on 15/4/29.
  */
 class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerView.LayoutManager>(),
-        LoaderManager.LoaderCallbacks<List<User>>, IActionButtonSupportFragment {
+        LoaderManager.LoaderCallbacks<List<User>?>, IActionButtonSupportFragment {
 
     private var page = 1
     private var sortOrder: String? = null
@@ -88,7 +88,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         return StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<User>> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<User>?> {
         val query = DiscoverQuery()
         val fragmentArgs = arguments
         val readCache = args.getBoolean(Constants.EXTRA_READ_CACHE)
@@ -116,7 +116,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         return DiscoverUsersLoader(activity, account, query, sortOrder, oldData, paging, readCache, writeCache)
     }
 
-    override fun onLoadFinished(loader: Loader<List<User>>, data: List<User>?) {
+    override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {
         val adapter = adapter
         adapter.users = data
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) IndicatorPosition.END else IndicatorPosition.NONE
@@ -126,7 +126,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         setLoadMoreIndicatorPosition(IndicatorPosition.NONE)
     }
 
-    override fun onLoaderReset(loader: Loader<List<User>>) {
+    override fun onLoaderReset(loader: Loader<List<User>?>) {
         adapter.users = null
     }
 

@@ -111,6 +111,25 @@ public class Provider implements Parcelable {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Provider provider = (Provider) o;
+
+        if (supported != provider.supported) return false;
+        return name != null ? name.equals(provider.name) : provider.name == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (supported ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

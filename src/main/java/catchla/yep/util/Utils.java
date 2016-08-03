@@ -28,6 +28,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -38,6 +39,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -70,6 +72,7 @@ import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
+import catchla.yep.view.GithubProviderWidgetContainer;
 import okhttp3.MediaType;
 import okio.ByteString;
 
@@ -205,14 +208,26 @@ public class Utils implements Constants {
         userData.putString(USER_DATA_PROVIDERS, JsonSerializer.serialize(user.getProviders(), Provider.class));
     }
 
-    public static View inflateProviderItemView(final Context context, final LayoutInflater inflater, final Provider provider, final ViewGroup parent) {
+    public static View inflateProviderItemView(final Context context, final FragmentManager fm,
+                                               final LayoutInflater inflater, final Provider provider,
+                                               final ViewGroup parent, final boolean addWidget,
+                                               final Account account, final User user) {
         final String name = provider.getName();
         final View view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
-        switch (name) {
-            case "dribbble":
-                break;
-            case "github":
-                break;
+        if (addWidget) {
+            final FrameLayout widgetFrame = (FrameLayout) view.findViewById(R.id.provider_widget_frame);
+            switch (name) {
+                case "dribbble":
+                    break;
+                case "github": {
+                    GithubProviderWidgetContainer widget = (GithubProviderWidgetContainer)
+                            inflater.inflate(R.layout.provider_widget_github, widgetFrame, false);
+                    widget.setAccount(account);
+                    widget.setUser(user);
+                    widgetFrame.addView(widget);
+                    break;
+                }
+            }
         }
         final ImageView iconView = (ImageView) view.findViewById(android.R.id.icon);
         final TextView titleView = (TextView) view.findViewById(android.R.id.title);

@@ -257,7 +257,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
     override fun onMessageSentStarted(newMessage: NewMessage) {
         val chatListFragment = supportFragmentManager.findFragmentById(R.id.listContainer) as ChatListFragment
         chatListFragment.scrollToStart()
-        chatListFragment.setJumpToLast(true)
+        chatListFragment.jumpToLast = true
     }
 
     override fun onTypingText() {

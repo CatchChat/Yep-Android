@@ -11,11 +11,12 @@ import java.io.OutputStream
  * Created by mariotaku on 15/6/3.
  */
 abstract class CachedYepObjectLoader<T>(
-         context: Context,
+        context: Context,
         account: Account,
         private val objectClass: Class<T>,
-         readCache: Boolean,
-         writeCache: Boolean) : CachedYepLoader<T>(context, account, null, readCache, writeCache) {
+        readCache: Boolean,
+        writeCache: Boolean
+) : CachedYepLoader<T>(context, account, null, readCache, writeCache) {
 
     @Throws(IOException::class)
     override fun serialize(data: T, os: OutputStream) {

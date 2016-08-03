@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -12,7 +11,6 @@ import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.graphics.Palette
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
@@ -21,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
@@ -45,8 +44,8 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
     private val REQUEST_SELECT_LEARNING_SKILLS = 112
 
     private val currentUser: User?
-        get() = if (intent.hasExtra(Constants.EXTRA_USER)) {
-            intent.getParcelableExtra<User>(Constants.EXTRA_USER)
+        get() = if (intent.hasExtra(EXTRA_USER)) {
+            intent.getParcelableExtra<User>(EXTRA_USER)
         } else {
             Utils.getAccountUser(this, account)
         }
@@ -89,7 +88,9 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
 
     private fun displayUser(user: User?) {
         if (user == null) return
-        intent.putExtra(Constants.EXTRA_USER, user)
+        val oldUser: User? = intent.getParcelableExtra(EXTRA_USER)
+        val providersChanged = (user.providers?.equals(oldUser?.providers) ?: false) != true
+        intent.putExtra(EXTRA_USER, user)
         val avatarUrl = user.avatarUrl
         imageLoader.displayProfileImage(avatarUrl, profileImage)
         val username = user.username
@@ -109,8 +110,8 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         val skillOnClickListener = View.OnClickListener { v ->
             val skill = v.tag as Skill
             val intent = Intent(this@UserActivity, SkillUsersActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_SKILL, skill)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_SKILL, skill)
             startActivity(intent)
         }
 
@@ -135,7 +136,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         if (isMySelf) {
             learningLabel.setOnClickListener {
                 val intent = Intent(this@UserActivity, SkillSelectorActivity::class.java)
-                intent.putParcelableArrayListExtra(Constants.EXTRA_SKILLS, ArrayList(user.learningSkills))
+                intent.putParcelableArrayListExtra(EXTRA_SKILLS, ArrayList(user.learningSkills))
                 startActivityForResult(intent, REQUEST_SELECT_LEARNING_SKILLS)
             }
         } else {
@@ -152,63 +153,63 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         if (isMySelf) {
             masterLabel.setOnClickListener {
                 val intent = Intent(this@UserActivity, SkillSelectorActivity::class.java)
-                intent.putParcelableArrayListExtra(Constants.EXTRA_SKILLS, ArrayList(user.learningSkills))
+                intent.putParcelableArrayListExtra(EXTRA_SKILLS, ArrayList(user.learningSkills))
                 startActivityForResult(intent, REQUEST_SELECT_MASTER_SKILLS)
             }
         } else {
             //TODO: Add empty view
         }
         val providers = user.providers
-        providersContainer.removeAllViews()
+        if (providersChanged) {
+            providersContainer.removeAllViews()
 
-        val websiteUrl = user.websiteUrl
-        val hasWebsite = !TextUtils.isEmpty(websiteUrl)
+            val websiteUrl = user.websiteUrl
+            val hasWebsite = !TextUtils.isEmpty(websiteUrl)
 
-        val providerOnClickListener = View.OnClickListener { v ->
-            val provider = v.tag as Provider
-            val intent: Intent
-            if (provider.isSupported) {
-                if (Provider.PROVIDER_BLOG == provider.name) {
-                    // TODO open web address
+            val providerOnClickListener = View.OnClickListener { v ->
+                val provider = v.tag as Provider
+                val intent: Intent
+                if (provider.isSupported) {
+                    if (Provider.PROVIDER_BLOG == provider.name) {
+                        // TODO open web address
+                        return@OnClickListener
+                    }
+                    intent = Intent(this@UserActivity, ProviderContentActivity::class.java)
+                } else if (isMySelf) {
+                    if (Provider.PROVIDER_BLOG == provider.name) {
+                        // TODO open url editor
+                        return@OnClickListener
+                    }
+                    intent = Intent(this@UserActivity, ProviderOAuthActivity::class.java)
+                } else {
                     return@OnClickListener
                 }
-                intent = Intent(this@UserActivity, ProviderContentActivity::class.java)
-            } else if (isMySelf) {
-                if (Provider.PROVIDER_BLOG == provider.name) {
-                    // TODO open url editor
-                    return@OnClickListener
-                }
-                intent = Intent(this@UserActivity, ProviderOAuthActivity::class.java)
-            } else {
-                return@OnClickListener
+                intent.putExtra(EXTRA_PROVIDER_NAME, provider.name)
+                intent.putExtra(EXTRA_USER, user)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+                startActivity(intent)
             }
-            intent.putExtra(Constants.EXTRA_PROVIDER_NAME, provider.name)
-            intent.putExtra(Constants.EXTRA_USER, user)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            startActivity(intent)
-        }
-        if (hasWebsite || isMySelf) {
-            val provider = Provider("blog", hasWebsite)
-            val view = Utils.inflateProviderItemView(this@UserActivity,
-                    inflater, provider, providersContainer)
-            view.tag = provider
-            view.setOnClickListener(providerOnClickListener)
-            providersContainer.addView(view)
-        }
-        if (providers != null) {
-            for (provider in providers) {
-                if (!provider.isSupported) continue
-                val view = Utils.inflateProviderItemView(this@UserActivity,
-                        inflater, provider, providersContainer)
+            if (hasWebsite || isMySelf) {
+                val provider = Provider("blog", hasWebsite)
+                val view = Utils.inflateProviderItemView(this@UserActivity, supportFragmentManager,
+                        inflater, provider, providersContainer, false, account, user)
                 view.tag = provider
                 view.setOnClickListener(providerOnClickListener)
                 providersContainer.addView(view)
             }
-            if (isMySelf) {
+            if (providers != null) {
                 for (provider in providers) {
+                    if (!provider.isSupported) continue
+                    val view = Utils.inflateProviderItemView(this@UserActivity, supportFragmentManager,
+                            inflater, provider, providersContainer, true, account, user)
+                    view.tag = provider
+                    view.setOnClickListener(providerOnClickListener)
+                    providersContainer.addView(view)
+                }
+                if (isMySelf) for (provider in providers) {
                     if (provider.isSupported) continue
-                    val view = Utils.inflateProviderItemView(this@UserActivity,
-                            inflater, provider, providersContainer)
+                    val view = Utils.inflateProviderItemView(this@UserActivity, supportFragmentManager,
+                            inflater, provider, providersContainer, false, account, user)
                     view.tag = provider
                     view.setOnClickListener(providerOnClickListener)
                     providersContainer.addView(view)
@@ -222,30 +223,24 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         }
     }
 
-    private fun updatePalette(palette: Palette) {
-        val swatch = palette.darkVibrantSwatch ?: return
-        toolbar.setTitleTextColor(swatch.titleTextColor)
-        collapsingToolbar.setBackgroundColor(swatch.rgb)
-    }
-
     override fun onClick(v: View) {
         when (v) {
             fab -> {
                 if (Utils.isMySelf(this, account, currentUser!!)) {
                     val intent = Intent(this, ProfileEditorActivity::class.java)
-                    intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                    intent.putExtra(EXTRA_ACCOUNT, account)
                     startActivity(intent)
                 } else {
                     val intent = Intent(this, ChatActivity::class.java)
-                    intent.putExtra(Constants.EXTRA_CONVERSATION, Conversation.fromUser(currentUser,
+                    intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(currentUser,
                             Utils.getAccountId(this, account)))
                     startActivity(intent)
                 }
             }
             userTopics -> {
                 val intent = Intent(this, UserTopicsActivity::class.java)
-                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-                intent.putExtra(Constants.EXTRA_USER, currentUser)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+                intent.putExtra(EXTRA_USER, currentUser)
                 startActivity(intent)
             }
         }
@@ -318,7 +313,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                         try {
                             yep.blockUser(currentUser.id)
                         } catch (e: YepException) {
-                            Log.w(Constants.LOGTAG, e)
+                            Log.w(LOGTAG, e)
                         }
 
                         return null

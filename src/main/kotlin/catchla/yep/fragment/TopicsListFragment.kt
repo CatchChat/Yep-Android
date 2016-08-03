@@ -32,7 +32,9 @@ import catchla.yep.view.holder.TopicViewHolder
 /**
  * Created by mariotaku on 15/10/12.
  */
-class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), LoaderManager.LoaderCallbacks<List<Topic>>, TopicsAdapter.TopicClickListener, IActionButtonSupportFragment {
+class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
+        LoaderManager.LoaderCallbacks<List<Topic>?>, TopicsAdapter.TopicClickListener,
+        IActionButtonSupportFragment {
 
     @TopicSortOrder
     private var mSortBy: String? = null
@@ -57,7 +59,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         showProgress()
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Topic>> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Topic>?> {
         val cachingEnabled = isCachingEnabled
         val readCache = args!!.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
         val readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled
@@ -88,7 +90,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID)
     }
 
-    override fun onLoadFinished(loader: Loader<List<Topic>>, data: List<Topic>?) {
+    override fun onLoadFinished(loader: Loader<List<Topic>?>, data: List<Topic>?) {
         val adapter = adapter
         adapter.topics = data
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) IndicatorPosition.END else IndicatorPosition.NONE
@@ -98,7 +100,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(), 
         setLoadMoreIndicatorPosition(IndicatorPosition.NONE)
     }
 
-    override fun onLoaderReset(loader: Loader<List<Topic>>) {
+    override fun onLoaderReset(loader: Loader<List<Topic>?>) {
 
     }
 

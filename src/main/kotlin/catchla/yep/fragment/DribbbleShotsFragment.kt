@@ -17,18 +17,16 @@ import catchla.yep.adapter.DribbbleShotsAdapter
 import catchla.yep.loader.DribbbleShotsLoader
 import catchla.yep.model.DribbbleShots
 import catchla.yep.model.User
+import kotlinx.android.synthetic.main.fragment_recycler_view.*
 
 /**
  * Created by mariotaku on 15/6/3.
  */
-class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<DribbbleShots> {
-
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var loadProgress: View
+class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbacks<DribbbleShots?> {
 
     private lateinit var adapter: DribbbleShotsAdapter
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<DribbbleShots> {
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<DribbbleShots?> {
         val fragmentArgs = arguments
         val user = fragmentArgs.getParcelable<User>(Constants.EXTRA_USER)
         val userId = user!!.id
@@ -52,7 +50,7 @@ class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbac
         showProgress()
     }
 
-    override fun onLoadFinished(loader: Loader<DribbbleShots>, data: DribbbleShots?) {
+    override fun onLoadFinished(loader: Loader<DribbbleShots?>, data: DribbbleShots?) {
         if (data != null) {
             adapter.shots = data.shots
         } else {
@@ -61,14 +59,8 @@ class DribbbleShotsFragment : Fragment(), Constants, LoaderManager.LoaderCallbac
         showContent()
     }
 
-    override fun onLoaderReset(loader: Loader<DribbbleShots>) {
+    override fun onLoaderReset(loader: Loader<DribbbleShots?>) {
         adapter.shots = null
-    }
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        recyclerView = view!!.findViewById(R.id.recycler_view) as RecyclerView
-        loadProgress = view.findViewById(R.id.load_progress)
     }
 
     private fun showContent() {
