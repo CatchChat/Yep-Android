@@ -71,7 +71,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         title = Utils.getDisplayName(currentUser)
         displayUser(currentUser)
 
-        WindowSupport.setStatusBarColor(window, Color.TRANSPARENT)
+        WindowSupport.setStatusBarColor(window, 0x19000000)
         ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
             toolbarShadow.setPadding(0, insets.systemWindowInsetTop, 0, 0)
             val lp = toolbar.layoutParams as ViewGroup.MarginLayoutParams
