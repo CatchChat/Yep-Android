@@ -161,10 +161,11 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
         val task = object : AbstractTask<Array<String>, TaskResponse<AccessToken>, SignInActivity>() {
 
             public override fun doLongOperation(args: Array<String>): TaskResponse<AccessToken> {
-                val yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
+                var yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
                 try {
                     val token = yep.tokenByMobile(args[0], args[1], args[2],
                             Client.OFFICIAL, 0)
+                    yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, token.accessToken)
                     token.user = yep.getUser()
                     return TaskResponse(token)
                 } catch (e: YepException) {
