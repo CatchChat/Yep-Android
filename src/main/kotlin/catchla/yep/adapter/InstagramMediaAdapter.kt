@@ -34,8 +34,7 @@ class InstagramMediaAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerV
     }
 
     override fun getItemCount(): Int {
-        if (shots == null) return 0
-        return shots!!.size
+        return shots?.size ?: 0
     }
 
 }

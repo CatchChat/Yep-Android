@@ -39,8 +39,11 @@ class InstagramMediaFragment : Fragment(), Constants, LoaderManager.LoaderCallba
         super.onActivityCreated(savedInstanceState)
 
         adapter = InstagramMediaAdapter(activity)
+
         val layoutManager = GridLayoutManager(activity, 2)
         layoutManager.orientation = GridLayoutManager.VERTICAL
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
 
         loaderManager.initLoader(0, null, this)
         showProgress()
