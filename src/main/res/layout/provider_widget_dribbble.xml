@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<catchla.yep.view.GithubProviderWidgetContainer
+<catchla.yep.view.DribbbleProviderWidgetContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -12,27 +12,34 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/repoCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_github_repo"
-            android:drawableStart="@drawable/ic_github_repo"
+        <ImageView
+            android:id="@+id/mediaPreview0"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:gravity="center_vertical"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="?android:textColorSecondary"/>
 
-        <TextView
-            android:id="@+id/starCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/mediaPreview1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
             android:layout_marginStart="@dimen/element_spacing_small"
-            android:drawableLeft="@drawable/ic_github_star"
-            android:drawableStart="@drawable/ic_github_star"
             android:gravity="center_vertical"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="?android:textColorSecondary"/>
+
+        <ImageView
+            android:id="@+id/mediaPreview2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="@dimen/element_spacing_small"
+            android:layout_marginStart="@dimen/element_spacing_small"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"/>
+
 
     </LinearLayout>
 
@@ -42,4 +49,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
-</catchla.yep.view.GithubProviderWidgetContainer>
+</catchla.yep.view.DribbbleProviderWidgetContainer>

@@ -1,5 +1,6 @@
 package catchla.yep.util.dagger
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import catchla.yep.activity.ContentActivity
 import catchla.yep.activity.MediaViewerActivity
@@ -13,6 +14,7 @@ import catchla.yep.preference.AccountInfoPreference
 import catchla.yep.provider.CacheProvider
 import catchla.yep.service.FayeService
 import catchla.yep.service.MessageService
+import catchla.yep.view.DribbbleProviderWidgetContainer
 import catchla.yep.view.StaticMapView
 import dagger.Component
 import javax.inject.Singleton
@@ -48,5 +50,7 @@ interface GeneralComponent {
     fun inject(provider: CacheProvider)
 
     fun inject(loader: CachedYepLoader<Any>)
+
+    fun inject(container: DribbbleProviderWidgetContainer)
 
 }

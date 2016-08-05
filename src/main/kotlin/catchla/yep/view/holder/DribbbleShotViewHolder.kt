@@ -4,15 +4,12 @@ import android.graphics.Bitmap
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
-
-import com.nostra13.universalimageloader.core.assist.FailReason
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
-
 import catchla.yep.R
 import catchla.yep.adapter.DribbbleShotsAdapter
 import catchla.yep.model.DribbbleShot
 import catchla.yep.model.DribbbleShotImage
-import catchla.yep.util.ImageLoaderWrapper
+import com.nostra13.universalimageloader.core.assist.FailReason
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener
 
 /**
  * Created by mariotaku on 15/6/3.
@@ -37,13 +34,6 @@ class DribbbleShotViewHolder(private val adapter: DribbbleShotsAdapter, itemView
         }
     }
 
-    private fun getBestImage(images: List<DribbbleShotImage>?): DribbbleShotImage? {
-        if (images == null) return null
-        for (image in images) {
-            if ("normal" == image.resolution) return image
-        }
-        return null
-    }
 
     override fun onLoadingStarted(imageUri: String, view: View) {
         imageProgress.visibility = View.VISIBLE
@@ -59,5 +49,15 @@ class DribbbleShotViewHolder(private val adapter: DribbbleShotsAdapter, itemView
 
     override fun onLoadingCancelled(imageUri: String, view: View) {
         imageProgress.visibility = View.GONE
+    }
+
+    companion object {
+        fun getBestImage(images: List<DribbbleShotImage>?): DribbbleShotImage? {
+            if (images == null) return null
+            for (image in images) {
+                if ("normal" == image.resolution) return image
+            }
+            return null
+        }
     }
 }

@@ -72,6 +72,7 @@ import catchla.yep.model.YepException;
 import catchla.yep.provider.YepDataStore.Conversations;
 import catchla.yep.provider.YepDataStore.Friendships;
 import catchla.yep.provider.YepDataStore.Messages;
+import catchla.yep.view.DribbbleProviderWidgetContainer;
 import catchla.yep.view.GithubProviderWidgetContainer;
 import okhttp3.MediaType;
 import okio.ByteString;
@@ -217,8 +218,14 @@ public class Utils implements Constants {
         if (addWidget) {
             final FrameLayout widgetFrame = (FrameLayout) view.findViewById(R.id.provider_widget_frame);
             switch (name) {
-                case "dribbble":
+                case "dribbble": {
+                    DribbbleProviderWidgetContainer widget = (DribbbleProviderWidgetContainer)
+                            inflater.inflate(R.layout.provider_widget_dribbble, widgetFrame, false);
+                    widget.setAccount(account);
+                    widget.setUser(user);
+                    widgetFrame.addView(widget);
                     break;
+                }
                 case "github": {
                     GithubProviderWidgetContainer widget = (GithubProviderWidgetContainer)
                             inflater.inflate(R.layout.provider_widget_github, widgetFrame, false);

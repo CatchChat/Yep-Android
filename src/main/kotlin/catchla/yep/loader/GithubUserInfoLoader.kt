@@ -22,7 +22,9 @@ class GithubUserInfoLoader(
 
     @Throws(YepException::class)
     override fun requestData(yep: YepAPI, oldData: GithubUserInfo?): GithubUserInfo {
-        return yep.getGithubUserInfo(yepUserId)
+        val info = yep.getGithubUserInfo(yepUserId)
+        info.repos.sortByDescending { it.stargazersCount }
+        return info
     }
 
 }
