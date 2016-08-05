@@ -15,6 +15,7 @@ import catchla.yep.provider.CacheProvider
 import catchla.yep.service.FayeService
 import catchla.yep.service.MessageService
 import catchla.yep.view.DribbbleProviderWidgetContainer
+import catchla.yep.view.InstagramProviderWidgetContainer
 import catchla.yep.view.StaticMapView
 import dagger.Component
 import javax.inject.Singleton
@@ -52,5 +53,7 @@ interface GeneralComponent {
     fun inject(loader: CachedYepLoader<Any>)
 
     fun inject(container: DribbbleProviderWidgetContainer)
+
+    fun inject(container: InstagramProviderWidgetContainer)
 
 }
