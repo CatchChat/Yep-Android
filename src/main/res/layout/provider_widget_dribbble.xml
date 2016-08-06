@@ -16,9 +16,7 @@
             android:id="@+id/mediaPreview0"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"/>
+            android:gravity="center_vertical"/>
 
         <ImageView
             android:id="@+id/mediaPreview1"
@@ -26,9 +24,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
             android:layout_marginStart="@dimen/element_spacing_small"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"/>
+            android:gravity="center_vertical"/>
 
         <ImageView
             android:id="@+id/mediaPreview2"
@@ -36,9 +32,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
             android:layout_marginStart="@dimen/element_spacing_small"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"/>
+            android:gravity="center_vertical"/>
 
 
     </LinearLayout>

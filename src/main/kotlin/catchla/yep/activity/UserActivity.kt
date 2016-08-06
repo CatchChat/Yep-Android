@@ -221,6 +221,10 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         } else {
             providersDivider.visibility = View.GONE
         }
+
+        topicsWidgetFrame.account = account
+        topicsWidgetFrame.user = user
+        topicsWidgetFrame.startTask()
     }
 
     override fun onClick(v: View) {

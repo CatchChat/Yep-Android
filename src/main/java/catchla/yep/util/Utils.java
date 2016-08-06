@@ -217,7 +217,7 @@ public class Utils implements Constants {
         final String name = provider.getName();
         final View view = inflater.inflate(R.layout.list_item_provider_common, parent, false);
         if (addWidget) {
-            final FrameLayout widgetFrame = (FrameLayout) view.findViewById(R.id.provider_widget_frame);
+            final FrameLayout widgetFrame = (FrameLayout) view.findViewById(R.id.providerWidgetFrame);
             switch (name) {
                 case "instagram": {
                     InstagramProviderWidgetContainer widget = (InstagramProviderWidgetContainer)

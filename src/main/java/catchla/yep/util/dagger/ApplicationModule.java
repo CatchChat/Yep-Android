@@ -88,7 +88,7 @@ public class ApplicationModule implements Constants {
     @Singleton
     public ImageLoaderWrapper getImageLoaderWrapper(final ImageLoader imageLoader) {
         final DisplayImageOptions defaultDisplayImageOptions = createDefaultDisplayImageOptions();
-        return new ImageLoaderWrapper(imageLoader, defaultDisplayImageOptions);
+        return new ImageLoaderWrapper(application, imageLoader, defaultDisplayImageOptions);
     }
 
     private DiskCache createDiskCache() {

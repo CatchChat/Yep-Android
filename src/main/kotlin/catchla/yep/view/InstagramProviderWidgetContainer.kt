@@ -4,21 +4,21 @@ import android.accounts.Account
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import catchla.yep.model.DribbbleShots
+import catchla.yep.model.InstagramMediaList
 import catchla.yep.model.TaskResponse
 import catchla.yep.model.User
 import catchla.yep.model.YepException
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
-import catchla.yep.view.holder.DribbbleShotViewHolder
+import catchla.yep.view.holder.InstagramMediaViewHolder
 import kotlinx.android.synthetic.main.provider_widget_dribbble.view.*
 import javax.inject.Inject
 
 /**
  * Created by mariotaku on 16/8/3.
  */
-class DribbbleProviderWidgetContainer : ProviderWidgetContainer<DribbbleShots> {
+class InstagramProviderWidgetContainer : ProviderWidgetContainer<InstagramMediaList> {
     @Inject
     lateinit var imageLoader: ImageLoaderWrapper
 
@@ -38,16 +38,16 @@ class DribbbleProviderWidgetContainer : ProviderWidgetContainer<DribbbleShots> {
         GeneralComponentHelper.build(context).inject(this)
     }
 
-    override fun displayData(result: TaskResponse<DribbbleShots>) {
+    override fun displayData(result: TaskResponse<InstagramMediaList>) {
         widgetContent.visibility = View.VISIBLE
         loadProgress.visibility = View.GONE
         if (result.data != null) {
             val views = arrayOf(mediaPreview0, mediaPreview1, mediaPreview2)
             views.forEachIndexed { index, view ->
-                if (index < result.data.shots.size) {
-                    val image = DribbbleShotViewHolder.getBestImage(result.data.shots[index].images)
+                if (index < result.data.media.size) {
+                    val image = InstagramMediaViewHolder.getBestImage(result.data.media[index].images)
                     if (image != null) {
-                        imageLoader.displayImage(image.url, view)
+                        imageLoader.displayProviderPreviewImage(image.url, view)
                     } else {
                         view.setImageDrawable(null)
                     }
@@ -65,8 +65,8 @@ class DribbbleProviderWidgetContainer : ProviderWidgetContainer<DribbbleShots> {
     }
 
     @Throws(YepException::class)
-    override fun doRequest(): DribbbleShots {
+    override fun doRequest(): InstagramMediaList {
         val yep = YepAPIFactory.getInstance(context, account)
-        return yep.getDribbbleShots(user.id)
+        return yep.getInstagramMediaList(user.id)
     }
 }

@@ -22,8 +22,16 @@ abstract class ProviderWidgetContainer<T> : FrameLayout {
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    private var attachedToWindow: Boolean = false
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        attachedToWindow = true
+        startTask()
+    }
+
+    fun startTask() {
+        if (task != null || !ready || !attachedToWindow) return
         task = object : AsyncTask<Any, Any, TaskResponse<T>>() {
 
             override fun doInBackground(vararg objects: Any): TaskResponse<T> {
@@ -50,6 +58,7 @@ abstract class ProviderWidgetContainer<T> : FrameLayout {
             task!!.cancel(true)
             task = null
         }
+        attachedToWindow = false
         super.onDetachedFromWindow()
     }
 
@@ -58,6 +67,9 @@ abstract class ProviderWidgetContainer<T> : FrameLayout {
 
     @UiThread
     protected abstract fun preRequest()
+
+    protected open val ready: Boolean
+        get() = true
 
     @WorkerThread
     @Throws(YepException::class)

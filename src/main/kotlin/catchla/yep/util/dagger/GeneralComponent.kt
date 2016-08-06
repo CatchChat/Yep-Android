@@ -17,6 +17,7 @@ import catchla.yep.service.MessageService
 import catchla.yep.view.DribbbleProviderWidgetContainer
 import catchla.yep.view.InstagramProviderWidgetContainer
 import catchla.yep.view.StaticMapView
+import catchla.yep.view.TopicsWidgetContainer
 import dagger.Component
 import javax.inject.Singleton
 
@@ -55,5 +56,7 @@ interface GeneralComponent {
     fun inject(container: DribbbleProviderWidgetContainer)
 
     fun inject(container: InstagramProviderWidgetContainer)
+
+    fun inject(container: TopicsWidgetContainer)
 
 }

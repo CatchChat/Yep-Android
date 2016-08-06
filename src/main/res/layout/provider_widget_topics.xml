@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<catchla.yep.view.InstagramProviderWidgetContainer
+<catchla.yep.view.TopicsWidgetContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -16,8 +16,7 @@
             android:id="@+id/mediaPreview0"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:gravity="center_vertical"
-            android:scaleType="centerCrop"/>
+            android:gravity="center_vertical"/>
 
         <ImageView
             android:id="@+id/mediaPreview1"
@@ -25,8 +24,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
             android:layout_marginStart="@dimen/element_spacing_small"
-            android:gravity="center_vertical"
-            android:scaleType="centerCrop"/>
+            android:gravity="center_vertical"/>
 
         <ImageView
             android:id="@+id/mediaPreview2"
@@ -34,8 +32,16 @@
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
             android:layout_marginStart="@dimen/element_spacing_small"
-            android:gravity="center_vertical"
-            android:scaleType="centerCrop"/>
+            android:gravity="center_vertical"/>
+
+
+        <ImageView
+            android:id="@+id/mediaPreview3"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="@dimen/element_spacing_small"
+            android:layout_marginStart="@dimen/element_spacing_small"
+            android:gravity="center_vertical"/>
 
 
     </LinearLayout>
@@ -46,4 +52,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
-</catchla.yep.view.InstagramProviderWidgetContainer>
+</catchla.yep.view.TopicsWidgetContainer>

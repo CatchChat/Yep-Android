@@ -23,14 +23,14 @@
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginStart="@dimen/element_spacing_normal"
         android:layout_toEndOf="@android:id/icon"
-        android:layout_toLeftOf="@+id/provider_widget_frame"
+        android:layout_toLeftOf="@+id/providerWidgetFrame"
         android:layout_toRightOf="@android:id/icon"
-        android:layout_toStartOf="@+id/provider_widget_frame"
+        android:layout_toStartOf="@+id/providerWidgetFrame"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorPrimary"/>
 
     <FrameLayout
-        android:id="@+id/provider_widget_frame"
+        android:id="@+id/providerWidgetFrame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
