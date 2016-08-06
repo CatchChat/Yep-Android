@@ -4,8 +4,10 @@ import android.app.Dialog
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.support.customtabs.CustomTabsIntent
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
@@ -25,6 +27,7 @@ import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Friendships
 import catchla.yep.util.JsonSerializer
+import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.support.WindowSupport
@@ -170,8 +173,12 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                 val provider = v.tag as Provider
                 val intent: Intent
                 if (provider.isSupported) {
-                    if (Provider.PROVIDER_BLOG == provider.name) {
+                    if (Provider.PROVIDER_BLOG == provider.name && user.websiteUrl != null) {
                         // TODO open web address
+                        val builder = CustomTabsIntent.Builder()
+                        builder.setToolbarColor(ThemeUtils.getColorPrimary(this))
+                        val customTabsIntent = builder.build()
+                        customTabsIntent.launchUrl(this, Uri.parse(user.websiteUrl))
                         return@OnClickListener
                     }
                     intent = Intent(this@UserActivity, ProviderContentActivity::class.java)

@@ -13,7 +13,7 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:id="@+id/map_container"
+            android:id="@+id/mapContainer"
             android:layout_width="match_parent"
             android:layout_height="240dp">
 
@@ -25,11 +25,11 @@
         </FrameLayout>
 
         <RelativeLayout
-            android:id="@+id/design_bottom_sheet"
+            android:id="@+id/designBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/map_container"
+            android:layout_below="@+id/mapContainer"
             android:background="?android:windowBackground">
 
 
@@ -60,15 +60,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
-                android:layout_below="@+id/edit_query_container"/>
+                android:layout_below="@+id/editQueryContainer"/>
         </RelativeLayout>
 
 
         <View
-            android:id="@+id/view_shadow"
+            android:id="@+id/viewShadow"
             android:layout_width="match_parent"
             android:layout_height="@dimen/element_spacing_xsmall"
-            android:layout_below="@+id/map_container"
+            android:layout_below="@+id/mapContainer"
             android:background="@drawable/shadow_top"/>
 
     </RelativeLayout>

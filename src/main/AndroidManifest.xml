@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="catchla.yep"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="catchla.yep"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.READ_PROFILE"/>
@@ -20,6 +22,10 @@
     <!-- Required by AMap -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        tools:overrideLibrary="android.support.customtabs"/>
 
     <application
         android:name=".app.YepApplication"

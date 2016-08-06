@@ -40,6 +40,10 @@ public class ThemeUtils {
         return getColorFromAttribute(context, android.support.v7.appcompat.R.attr.colorAccent, 0);
     }
 
+    public static int getColorPrimary(Context context) {
+        return getColorFromAttribute(context, android.support.v7.appcompat.R.attr.colorPrimary, 0);
+    }
+
     public static int getTextColorPrimary(Context context) {
         return getColorFromAttribute(context, android.R.attr.textColorPrimary, 0);
     }
