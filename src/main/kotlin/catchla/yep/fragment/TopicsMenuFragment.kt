@@ -26,7 +26,7 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
         val sortOrder = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)
-        for (i in 0..adapter.count - 1) {
+        for (i in 0 until adapter.count) {
             if (adapter.getItem(i).sortBy == sortOrder) {
                 spinner.setSelection(i)
                 break

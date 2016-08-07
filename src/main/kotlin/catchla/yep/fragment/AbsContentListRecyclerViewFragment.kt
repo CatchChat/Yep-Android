@@ -43,8 +43,8 @@ abstract class AbsContentListRecyclerViewFragment<A : LoadMoreSupportAdapter<Rec
     }
 
     override fun setLoadMoreIndicatorPosition(@IndicatorPosition position: Int) {
-        if (itemDecoration != null) {
-            itemDecoration!!.setDecorationEndOffset(if (position == IndicatorPosition.END) 1 else 0)
+        itemDecoration?.let {
+            it.setDecorationEndOffset(if (position == IndicatorPosition.END) 1 else 0)
         }
         super.setLoadMoreIndicatorPosition(position)
     }

@@ -64,7 +64,7 @@ class FriendGridViewHolder(
         userSkills.removeAllViews()
         val skills = user.masterSkills
         val inflater = LayoutInflater.from(adapter.context)
-        for (i in 0..Math.min(3, skills?.size ?: 0) - 1) {
+        for (i in 0 until Math.min(3, skills?.size ?: 0)) {
             val skill = skills!![i]
             val textView = inflater.inflate(R.layout.layout_friend_grid_skill,
                     userSkills, false) as TextView

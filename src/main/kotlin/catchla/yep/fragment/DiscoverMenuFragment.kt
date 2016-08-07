@@ -26,7 +26,7 @@ class DiscoverMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSel
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
         val sortOrder = preferences.getString(KEY_DISCOVER_SORT_ORDER, null)
-        for (i in 0..adapter.count - 1) {
+        for (i in 0 until adapter.count) {
             if (adapter.getItem(i).sortBy == sortOrder) {
                 spinner.setSelection(i)
                 break

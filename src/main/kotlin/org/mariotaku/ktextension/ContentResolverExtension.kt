@@ -20,7 +20,7 @@ fun <T : Any?> ContentResolver.bulkDelete(uri: Uri, inColumn: String, colValues:
     val colValuesLength = colValues.size
     val blocksCount = colValuesLength / MAX_BULK_COUNT + 1
     var rowsDeleted = 0
-    for (i in 0..blocksCount - 1) {
+    for (i in 0 until blocksCount) {
         val start = i * MAX_BULK_COUNT
         val endInclusive = Math.min(start + MAX_BULK_COUNT, colValuesLength) - 1
         val block = colValues.sliceArray(start..endInclusive).toStringArray()
@@ -50,7 +50,7 @@ fun ContentResolver.bulkInsertSliced(uri: Uri, values: Array<ContentValues?>): I
     val colValuesLength = values.size
     val blocksCount = colValuesLength / MAX_BULK_COUNT + 1
     var rowsInserted = 0
-    for (i in 0..blocksCount - 1) {
+    for (i in 0 until blocksCount) {
         val start = i * MAX_BULK_COUNT
         val end = Math.min(start + MAX_BULK_COUNT, colValuesLength)
         val block = arrayOfNulls<ContentValues>(end - start)

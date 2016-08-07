@@ -26,16 +26,16 @@ open class ExtendedFrameLayout : FrameLayout, IExtendedView {
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (touchInterceptor != null) {
-            val ret = touchInterceptor!!.dispatchTouchEvent(this, event)
+        touchInterceptor?.let {
+            val ret = it.dispatchTouchEvent(this, event)
             if (ret) return true
         }
         return super.dispatchTouchEvent(event)
     }
 
     override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-        if (touchInterceptor != null) {
-            val ret = touchInterceptor!!.onInterceptTouchEvent(this, event)
+        touchInterceptor?.let {
+            val ret = it.onInterceptTouchEvent(this, event)
             if (ret) return true
         }
         return super.onInterceptTouchEvent(event)

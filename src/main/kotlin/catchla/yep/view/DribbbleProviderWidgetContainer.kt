@@ -41,11 +41,11 @@ class DribbbleProviderWidgetContainer : ProviderWidgetContainer<DribbbleShots> {
     override fun displayData(result: TaskResponse<DribbbleShots>) {
         widgetContent.visibility = View.VISIBLE
         loadProgress.visibility = View.GONE
-        if (result.data != null) {
+        result.data?.let {
             val views = arrayOf(mediaPreview0, mediaPreview1, mediaPreview2)
             views.forEachIndexed { index, view ->
-                if (index < result.data.shots.size) {
-                    val image = DribbbleShotViewHolder.getBestImage(result.data.shots[index].images)
+                if (index < it.shots.size) {
+                    val image = DribbbleShotViewHolder.getBestImage(it.shots[index].images)
                     if (image != null) {
                         imageLoader.displayProviderPreviewImage(image.url, view)
                     } else {

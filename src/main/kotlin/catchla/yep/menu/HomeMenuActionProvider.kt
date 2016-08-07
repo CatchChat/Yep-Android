@@ -108,7 +108,7 @@ class HomeMenuActionProvider
                 dismissPopup()
             }
         })
-        view.setOnTouchListener (object : ForwardingListener(view) {
+        view.setOnTouchListener(object : ForwardingListener(view) {
             override fun getPopup(): ListPopupWindow {
                 return overflowPopup!!
             }
@@ -232,7 +232,7 @@ class HomeMenuActionProvider
         val widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         val count = adapter.count
-        for (i in 0..count - 1) {
+        for (i in 0 until count) {
             val positionType = adapter.getItemViewType(i)
             if (positionType != itemType) {
                 itemType = positionType

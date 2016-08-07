@@ -23,8 +23,8 @@ class YepDataProvider : ContentProvider() {
     override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
         val table = Utils.getTableName(uri) ?: return null
         val cursor = db.query(table, projection, selection, selectionArgs, null, null, sortOrder)
-        if (cursor != null) {
-            setNotificationUri(cursor, uri)
+        cursor?.let {
+            setNotificationUri(it, uri)
         }
         return cursor
     }

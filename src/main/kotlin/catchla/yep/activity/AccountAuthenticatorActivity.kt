@@ -48,12 +48,12 @@ open class AccountAuthenticatorActivity : ContentActivity() {
      * isn't present.
      */
     override fun finish() {
-        if (accountAuthenticatorResponse != null) {
+        accountAuthenticatorResponse?.let {
             // send the result bundle back if set, otherwise send an error.
             if (resultBundle != null) {
-                accountAuthenticatorResponse!!.onResult(resultBundle)
+                it.onResult(resultBundle)
             } else {
-                accountAuthenticatorResponse!!.onError(AccountManager.ERROR_CODE_CANCELED, "canceled")
+                it.onError(AccountManager.ERROR_CODE_CANCELED, "canceled")
             }
             accountAuthenticatorResponse = null
         }

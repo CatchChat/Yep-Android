@@ -304,7 +304,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
             val gap = size / idealSampleSize
             val result = FloatArray(idealSampleSize)
-            for (i in 0..idealSampleSize - 1) {
+            for (i in 0 until idealSampleSize) {
                 result[i] = MathUtils.avg(rawSamplesArray, i * gap, (i + 1) * gap - 1)
             }
             return result

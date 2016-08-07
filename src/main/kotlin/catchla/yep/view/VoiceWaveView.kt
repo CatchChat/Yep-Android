@@ -71,7 +71,7 @@ class VoiceWaveView : View {
         } else {
             drawlock = true
         }
-        for (i in 0..numberOfWaves - 1) {
+        for (i in 0 until numberOfWaves) {
 
             val progress = 1.0f - i / numberOfWaves.toFloat()
             val normedAmplitude = (1.5f * progress - 0.5f) * amplitude / 65536f

@@ -160,7 +160,7 @@ class SkillSelectorActivity : ContentActivity(), Constants {
 
         fun applyToSelected(selectedSkills: MutableList<Skill>) {
             val listView = listView
-            for (i in 0..listView.count - 1) {
+            for (i in 0 until listView.count) {
                 val checked = listView.isItemChecked(i)
                 val current = skillsAdapter!!.getItem(i)
                 val inList = Utils.findSkill(selectedSkills, current.id)

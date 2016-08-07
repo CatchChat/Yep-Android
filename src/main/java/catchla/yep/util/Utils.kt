@@ -147,18 +147,18 @@ class Utils : Constants {
             editor.apply()
         }
 
-        fun closeSilently(`is`: Closeable?) {
-            if (`is` == null) return
+        fun closeSilently(s: Closeable?) {
+            if (s == null) return
             try {
-                `is`.close()
+                s.close()
             } catch (ignored: IOException) {
             }
 
         }
 
-        fun closeSilently(`is`: Cursor?) {
-            if (`is` == null) return
-            `is`.close()
+        fun closeSilently(s: Cursor?) {
+            if (s == null) return
+            s.close()
         }
 
         fun formatSameDayTime(context: Context?, timestamp: Long): String? {
@@ -375,27 +375,6 @@ class Utils : Constants {
                 return String.format(Locale.US, "%.0f m", distanceMeters)
             }
             return String.format(Locale.US, "%.1f km", distanceMeters / 1000f)
-        }
-
-        fun <T> findFieldOfTypes(obj: T, cls: Class<out T>, vararg checkTypes: Class<*>): Any? {
-            labelField@ for (field in cls.declaredFields) {
-                field.isAccessible = true
-                val fieldObj: Any?
-                try {
-                    fieldObj = field.get(obj)
-                } catch (ignore: Exception) {
-                    continue
-                }
-
-                if (fieldObj != null) {
-                    val type = fieldObj.javaClass
-                    for (checkType in checkTypes) {
-                        if (!checkType.isAssignableFrom(type)) continue@labelField
-                    }
-                    return fieldObj
-                }
-            }
-            return null
         }
 
         fun getDisplayName(skill: Skill): String {
