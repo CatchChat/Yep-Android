@@ -25,7 +25,7 @@ public class GithubUserHeaderViewHolder extends RecyclerView.ViewHolder {
     public GithubUserHeaderViewHolder(final View itemView, final GithubUserAdapter adapter) {
         super(itemView);
         this.adapter = adapter;
-        profileImageView = (ImageView) itemView.findViewById(R.id.profile_image);
+        profileImageView = (ImageView) itemView.findViewById(R.id.profileImage);
         followersCount = (TextView) itemView.findViewById(R.id.followers_count);
         starsCount = (TextView) itemView.findViewById(R.id.stars_count);
         followingCount = (TextView) itemView.findViewById(R.id.following_count);

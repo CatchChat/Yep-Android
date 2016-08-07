@@ -40,7 +40,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         if (listener != null) {
             itemView.setOnClickListener(this)
         }
-        profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
+        profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
         providerIcon = itemView.findViewById(R.id.provider_icon) as ImageView
         nameView = itemView.findViewById(R.id.name) as TextView
         textView = itemView.findViewById(R.id.text) as TextView
@@ -111,7 +111,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
             R.id.skill_button -> {
                 listener!!.onSkillClick(layoutPosition, this)
             }
-            R.id.profile_image, R.id.name -> {
+            R.id.profileImage, R.id.name -> {
                 run { listener!!.onUserClick(layoutPosition, this) }
             }
             R.id.attachment_view -> {

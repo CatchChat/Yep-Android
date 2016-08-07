@@ -32,7 +32,7 @@ class FriendGridViewHolder(
     private val userSkills: FlowLayout
 
     init {
-        profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
+        profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
         nameView = itemView.findViewById(R.id.name) as TextView
         descriptionView = itemView.findViewById(R.id.description) as TextView
         userSkills = itemView.findViewById(R.id.user_skills) as FlowLayout

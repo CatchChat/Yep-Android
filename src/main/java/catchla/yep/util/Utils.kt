@@ -133,6 +133,7 @@ class Utils : Constants {
             user.masterSkills = JsonSerializer.parseList(masterJson, Skill::class.java)
             val providersJson = am.getUserData(account, Constants.USER_DATA_PROVIDERS)
             user.providers = JsonSerializer.parseList(providersJson, Provider::class.java)
+            user.badge = User.Badge.parse(am.getUserData(account, Constants.USER_DATA_BADGE))
             return user
         }
 
@@ -185,6 +186,7 @@ class Utils : Constants {
             userData.putString(Constants.USER_DATA_LEARNING_SKILLS, JsonSerializer.serialize(user.learningSkills, Skill::class.java))
             userData.putString(Constants.USER_DATA_MASTER_SKILLS, JsonSerializer.serialize(user.masterSkills, Skill::class.java))
             userData.putString(Constants.USER_DATA_PROVIDERS, JsonSerializer.serialize(user.providers, Provider::class.java))
+            userData.putString(Constants.USER_DATA_BADGE, user.badge?.value)
         }
 
         fun inflateProviderItemView(context: Context, fm: FragmentManager,

@@ -28,7 +28,7 @@ class FriendViewHolder(itemView: View,
     private val badgeView: ImageView
 
     init {
-        profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
+        profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
         nameView = itemView.findViewById(R.id.name) as TextView
         timeView = itemView.findViewById(R.id.update_time) as TextView
         descriptionView = itemView.findViewById(R.id.description) as TextView

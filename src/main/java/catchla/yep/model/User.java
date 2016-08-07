@@ -460,7 +460,7 @@ public class User implements Parcelable {
         }
 
         @Nullable
-        private static Badge parse(@Nullable final String string) {
+        public static Badge parse(@Nullable final String string) {
             if (string == null) return null;
             for (final Badge badge : values()) {
                 if (string.equals(badge.value)) {

@@ -32,6 +32,7 @@ public interface Constants {
     String USER_DATA_MASTER_SKILLS = "master_skills";
     String USER_DATA_LEARNING_SKILLS = "learning_skills";
     String USER_DATA_PROVIDERS = "providers";
+    String USER_DATA_BADGE = "badge";
 
     String EXTRA_RESID = "resid";
     String EXTRA_TOKEN = "token";

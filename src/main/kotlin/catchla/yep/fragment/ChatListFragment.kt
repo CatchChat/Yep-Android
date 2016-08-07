@@ -317,7 +317,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             init {
                 text1 = itemView.findViewById(android.R.id.text1) as TextView
                 stateView = itemView.findViewById(R.id.state) as ImageView?
-                profileImageView = itemView.findViewById(R.id.profile_image) as ImageView?
+                profileImageView = itemView.findViewById(R.id.profileImage) as ImageView?
                 stateView?.setOnClickListener { adapter.notifyStateClicked(layoutPosition) }
             }
 

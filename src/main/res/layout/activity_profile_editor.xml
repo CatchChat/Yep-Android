@@ -38,7 +38,7 @@
             android:orientation="vertical">
 
             <com.pkmmte.view.CircularImageView
-                android:id="@+id/profile_image"
+                android:id="@+id/profileImage"
                 android:layout_width="@dimen/icon_size_account_info_edit_profile_image"
                 android:layout_height="@dimen/icon_size_account_info_edit_profile_image"
                 android:layout_marginTop="64dp"/>
@@ -51,7 +51,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/country_code"
+                    android:id="@+id/countryCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceMedium"
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/phone_number"
+                    android:id="@+id/phoneNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceMedium"
@@ -73,7 +73,7 @@
             </LinearLayout>
 
             <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/edit_username"
+                android:id="@+id/editUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/element_spacing_large"
@@ -85,20 +85,37 @@
                 app:met_floatingLabelAlwaysShown="true"
                 app:met_floatingLabelText="@string/username"/>
 
-            <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/edit_nickname"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/element_spacing_large"
                 android:layout_marginRight="@dimen/element_spacing_large"
-                android:gravity="top"
-                android:singleLine="true"
-                app:met_floatingLabel="normal"
-                app:met_floatingLabelAlwaysShown="true"
-                app:met_floatingLabelText="@string/nickname"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/editNickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    app:met_floatingLabel="normal"
+                    app:met_floatingLabelAlwaysShown="true"
+                    app:met_floatingLabelText="@string/nickname"/>
+
+                <ImageButton
+                    android:id="@+id/editBadge"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="@dimen/element_spacing_normal"
+                    android:layout_marginStart="@dimen/element_spacing_normal"
+                    android:layout_weight="0"
+                    android:background="?selectableItemBackground"
+                    tools:src="@drawable/ic_user_badge_android"/>
+            </LinearLayout>
 
             <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/edit_introduction"
+                android:id="@+id/editIntroduction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/element_spacing_large"
@@ -110,7 +127,7 @@
                 app:met_floatingLabelText="@string/introduction"/>
 
             <com.rengwuxian.materialedittext.MaterialEditText
-                android:id="@+id/edit_website"
+                android:id="@+id/editWebsite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/element_spacing_large"

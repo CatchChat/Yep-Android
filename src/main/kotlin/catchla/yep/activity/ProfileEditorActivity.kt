@@ -17,32 +17,19 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.Menu
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.model.ProfileUpdate
 import catchla.yep.model.User
 import catchla.yep.util.Utils
 import catchla.yep.util.task.UpdateProfileTask
+import kotlinx.android.synthetic.main.activity_profile_editor.*
 
 class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Constants {
 
-    // Views
-    private lateinit var mProfileImageView: ImageView
-    private lateinit var mCountryCodeView: TextView
-    private lateinit var mPhoneNumberView: TextView
-    private lateinit var mLogoutButton: View
-    private lateinit var mEditUsername: EditText
-    private lateinit var mEditNickname: EditText
-    private lateinit var mEditIntroduction: EditText
-    private lateinit var mEditWebsite: EditText
-
     // Data fields
     private var mProfileImageUri: Uri? = null
-    private var mCurrentUser: User? = null
+    private var currentUser: User? = null
     private var mTask: UpdateProfileTask? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -62,11 +49,11 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         setContentView(R.layout.activity_profile_editor)
 
         loadUser()
-        mLogoutButton.setOnClickListener {
+        logout.setOnClickListener {
             val df = LogoutConfirmDialogFragment()
             df.show(supportFragmentManager, "logout_confirm")
         }
-        mProfileImageView.setOnClickListener {
+        profileImage.setOnClickListener {
             if (ContextCompat.checkSelfPermission(this@ProfileEditorActivity, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 pickProfileImage()
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -77,6 +64,9 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
             } else {
                 pickProfileImage()
             }
+        }
+        editBadge.setOnClickListener {
+
         }
     }
 
@@ -107,18 +97,19 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
     }
 
     private fun displayUser(user: User) {
-        mCurrentUser = user
+        currentUser = user
         val url = if (mProfileImageUri != null) mProfileImageUri!!.toString() else user.avatarUrl
-        imageLoader.displayProfileImage(url, mProfileImageView)
-        mCountryCodeView.text = user.phoneCode
-        mPhoneNumberView.text = user.mobile
-        mEditNickname.setText(user.nickname)
-        mEditUsername.setText(user.username)
+        imageLoader.displayProfileImage(url, profileImage)
+        countryCode.text = user.phoneCode
+        phoneNumber.text = user.mobile
+        editNickname.setText(user.nickname)
+        editUsername.setText(user.username)
         val canEditUsername = TextUtils.isEmpty(user.username)
-        mEditUsername.isEnabled = canEditUsername
-        mEditUsername.isFocusable = canEditUsername
-        mEditIntroduction.setText(user.introduction)
-        mEditWebsite.setText(user.websiteUrl)
+        editUsername.isEnabled = canEditUsername
+        editUsername.isFocusable = canEditUsername
+        editIntroduction.setText(user.introduction)
+        editWebsite.setText(user.websiteUrl)
+        editBadge.setImageResource(user.badge?.icon ?: 0)
     }
 
     class LogoutConfirmDialogFragment : DialogFragment() {
@@ -138,18 +129,6 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         }
     }
 
-    override fun onContentChanged() {
-        super.onContentChanged()
-        mProfileImageView = findViewById(R.id.profile_image) as ImageView
-        mCountryCodeView = findViewById(R.id.country_code) as TextView
-        mPhoneNumberView = findViewById(R.id.phone_number) as TextView
-        mLogoutButton = findViewById(R.id.logout)!!
-        mEditNickname = findViewById(R.id.edit_nickname) as EditText
-        mEditUsername = findViewById(R.id.edit_username) as EditText
-        mEditIntroduction = findViewById(R.id.edit_introduction) as EditText
-        mEditWebsite = findViewById(R.id.edit_website) as EditText
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_profile_editor, menu)
@@ -160,21 +139,22 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         if (mTask != null && mTask!!.status == AsyncTask.Status.RUNNING) return
         var changed = mProfileImageUri != null
         val update = ProfileUpdate()
-        if (!TextUtils.equals(mCurrentUser!!.nickname ?: "", mEditNickname.text)) {
+        val currentUser = currentUser!!
+        if (!TextUtils.equals(currentUser.nickname ?: "", editNickname.text)) {
             changed = changed or true
-            update.setNickname(mEditNickname.text.toString())
+            update.setNickname(editNickname.text.toString())
         }
-        if (!TextUtils.equals(mCurrentUser!!.introduction ?: "", mEditIntroduction.text)) {
+        if (!TextUtils.equals(currentUser.introduction ?: "", editIntroduction.text)) {
             changed = changed or true
-            update.setIntroduction(mEditIntroduction.text.toString())
+            update.setIntroduction(editIntroduction.text.toString())
         }
-        if (!TextUtils.equals(mCurrentUser!!.username ?: "", mEditUsername.text)) {
+        if (!TextUtils.equals(currentUser.username ?: "", editUsername.text)) {
             changed = changed or true
-            update.setUsername(mEditUsername.text.toString())
+            update.setUsername(editUsername.text.toString())
         }
-        if (!TextUtils.equals(mCurrentUser!!.websiteUrl ?: "", mEditWebsite.text)) {
+        if (!TextUtils.equals(currentUser.websiteUrl ?: "", editWebsite.text)) {
             changed = changed or true
-            update.setWebsite(mEditWebsite.text.toString())
+            update.setWebsite(editWebsite.text.toString())
         }
         if (changed) {
             mTask = UpdateProfileTask(this, Utils.getCurrentAccount(this)!!, update, mProfileImageUri)

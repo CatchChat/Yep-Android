@@ -9,7 +9,7 @@
     android:padding="@dimen/element_spacing_normal">
 
     <com.pkmmte.view.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/profileImage"
         android:layout_width="@dimen/icon_size_chat_bubble_profile_image"
         android:layout_height="@dimen/icon_size_chat_bubble_profile_image"
         android:scaleType="centerCrop"

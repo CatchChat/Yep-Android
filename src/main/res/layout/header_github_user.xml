@@ -9,7 +9,7 @@
     android:padding="@dimen/element_spacing_normal">
 
     <com.pkmmte.view.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/profileImage"
         android:layout_width="@dimen/profile_image_size_github_user_info"
         android:layout_height="@dimen/profile_image_size_github_user_info"
         android:layout_gravity="center_horizontal"

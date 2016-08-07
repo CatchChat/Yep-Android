@@ -27,7 +27,7 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
     private val messageView: TextView
 
     init {
-        profileImageView = itemView.findViewById(R.id.profile_image) as ImageView
+        profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
 
         nameView = itemView.findViewById(R.id.name) as TextView
         timeView = itemView.findViewById(R.id.update_time) as ShortTimeView

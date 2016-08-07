@@ -9,7 +9,7 @@
     android:padding="@dimen/element_spacing_normal">
 
     <com.pkmmte.view.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/profileImage"
         android:layout_width="@dimen/icon_size_topic_item_profile_image"
         android:layout_height="@dimen/icon_size_topic_item_profile_image"
         tools:src="@drawable/ic_profile_image_default"/>
@@ -18,14 +18,14 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/profile_image"
-        android:layout_alignTop="@+id/profile_image"
+        android:layout_alignBottom="@+id/profileImage"
+        android:layout_alignTop="@+id/profileImage"
         android:layout_marginBottom="@dimen/element_spacing_normal"
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginRight="@dimen/element_spacing_normal"
-        android:layout_toEndOf="@+id/profile_image"
+        android:layout_toEndOf="@+id/profileImage"
         android:layout_toLeftOf="@+id/provider_skill_container"
-        android:layout_toRightOf="@+id/profile_image"
+        android:layout_toRightOf="@+id/profileImage"
         android:layout_toStartOf="@+id/provider_skill_container"
         android:gravity="center_vertical"
         android:textAppearance="?android:textAppearanceSmall"
@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/name"
         android:layout_alignStart="@+id/name"
-        android:layout_below="@+id/profile_image"
+        android:layout_below="@+id/profileImage"
         android:layout_marginBottom="@dimen/element_spacing_normal"
         android:autoLink="email|map|web"
         android:textAppearance="?android:textAppearanceSmall"
