@@ -39,7 +39,7 @@ class UpdateProfileTask(
             var fis: FileInputStream? = null
             try {
                 val imageFile = File(profileImageUri.path)
-                val mimeType = Utils.getImageMimeType(imageFile)
+                val mimeType = Utils.getImageMimeType(imageFile)!!
                 val body = MultipartBody()
                 fis = FileInputStream(imageFile)
                 body.add("avatar", FileBody(fis, Utils.getFilename(imageFile, mimeType),

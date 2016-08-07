@@ -51,7 +51,7 @@ public class AttachmentUpload {
         final MultipartBody body = new MultipartBody();
         body.add("attachable_type", new StringBody(kind, (ContentType) null));
         body.add("metadata", new StringBody(metadata, (ContentType) null));
-        body.add("file", new FileBody(new FileInputStream(file), Utils.getFilename(file, mimeType),
+        body.add("file", new FileBody(new FileInputStream(file), Utils.Companion.getFilename(file, mimeType),
                 file.length(), ContentType.parse(mimeType)));
         return body;
     }

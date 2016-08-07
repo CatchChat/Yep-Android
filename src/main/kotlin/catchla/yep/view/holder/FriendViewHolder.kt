@@ -49,7 +49,10 @@ class FriendViewHolder(itemView: View,
 
     fun displayUser(user: User) {
         val imageLoader = adapter.imageLoader
-        imageLoader.displayProfileImage(user.avatarThumbUrl, profileImageView)
+        if (user.avatarThumbUrl != profileImageView.tag || profileImageView.drawable == null) {
+            imageLoader.displayProfileImage(user.avatarThumbUrl, profileImageView)
+        }
+        profileImageView.tag = user.avatarThumbUrl
         nameView.text = user.nickname
         //        timeView.setText();
         descriptionView.text = user.introduction

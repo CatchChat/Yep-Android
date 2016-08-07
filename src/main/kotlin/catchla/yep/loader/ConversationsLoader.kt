@@ -23,7 +23,7 @@ class ConversationsLoader(context: Context, account: Account, recipientType: Str
     private val accountId: String
 
     init {
-        accountId = Utils.getAccountId(context, account)
+        accountId = Utils.getAccountId(context, account)!!
         val whereConditions = ArrayList<Expression>()
         val whereArgs = ArrayList<String>()
         whereConditions.add(Expression.equalsArgs(Conversations.ACCOUNT_ID))

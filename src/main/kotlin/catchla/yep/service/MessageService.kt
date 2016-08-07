@@ -80,7 +80,7 @@ class MessageService : Service(), Constants {
 
             public override fun afterExecute(handler: MessageService?, result: TaskResponse<User>) {
                 if (result.data != null) {
-                    Utils.saveUserInfo(handler, account, result.data)
+                    Utils.saveUserInfo(handler!!, account, result.data)
                 }
             }
         }

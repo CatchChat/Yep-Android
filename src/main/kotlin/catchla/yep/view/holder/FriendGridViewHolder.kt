@@ -14,7 +14,6 @@ import catchla.yep.adapter.BaseRecyclerViewAdapter
 import catchla.yep.model.Skill
 import catchla.yep.model.User
 import catchla.yep.util.Utils
-import org.apache.commons.lang3.ObjectUtils
 import org.apmem.tools.layouts.FlowLayout
 
 /**
@@ -55,7 +54,7 @@ class FriendGridViewHolder(
     fun displayUser(user: User) {
         val imageLoader = adapter.imageLoader
         val avatarUrl = user.avatarThumbUrl
-        if (ObjectUtils.notEqual(avatarUrl, profileImageView.tag) || profileImageView.drawable == null) {
+        if (avatarUrl != profileImageView.tag || profileImageView.drawable == null) {
             imageLoader.displayProfileImage(avatarUrl, profileImageView)
         }
         profileImageView.tag = avatarUrl

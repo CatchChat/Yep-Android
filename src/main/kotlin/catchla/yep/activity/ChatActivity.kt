@@ -57,12 +57,12 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
 
         mainContent?.setStatusBarColorDarken(primaryColor)
 
-        val conversation = conversation
+        val conversation = conversation!!
         title = Utils.getConversationName(conversation)
 
         val fragmentArgs = Bundle()
 
-        val circle = conversation!!.circle
+        val circle = conversation.circle
 
         fragmentArgs.putParcelable(Constants.EXTRA_CONVERSATION, conversation)
         fragmentArgs.putParcelable(Constants.EXTRA_ACCOUNT, account)

@@ -1,5 +1,6 @@
 package catchla.yep.view.holder
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ import catchla.yep.model.LocationAttachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.StaticMapUrlGenerator
+import catchla.yep.util.Utils
 import catchla.yep.view.StaticMapView
 
 /**
@@ -56,7 +58,8 @@ class LocationTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, cont
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, geoUri))
         } catch (e: ActivityNotFoundException) {
-            // Ignore
+            val fallbackUrl = "https://maps.google.com?q=${attachment.latitude},${attachment.longitude}"
+            Utils.openUri(adapter.context as Activity, Uri.parse(fallbackUrl))
         }
 
     }

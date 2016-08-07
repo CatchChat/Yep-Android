@@ -1,5 +1,6 @@
 package catchla.yep.view.holder
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,6 +13,7 @@ import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.DribbbleAttachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
+import catchla.yep.util.Utils
 
 /**
  * Created by mariotaku on 15/12/9.
@@ -42,6 +44,6 @@ class DribbbleTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, cont
 
     override fun onAttachmentClick() {
         val attachment = getDribbbleAttachment(adapter.getTopic(layoutPosition))
-        adapter.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url)))
+        Utils.openUri(adapter.context as Activity, Uri.parse(attachment.url))
     }
 }

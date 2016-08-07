@@ -1,16 +1,16 @@
 package catchla.yep.view.holder
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.widget.TextView
-
 import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.GithubAttachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
+import catchla.yep.util.Utils
 
 /**
  * Created by mariotaku on 15/12/9.
@@ -32,7 +32,7 @@ class GithubTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, contex
         when (v.id) {
             R.id.attachment_view -> {
                 val attachment = adapter.getTopic(layoutPosition).attachments[0] as GithubAttachment
-                adapter.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(attachment.url)))
+                Utils.openUri(adapter.context as Activity, Uri.parse(attachment.url))
                 return
             }
         }

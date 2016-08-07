@@ -1,6 +1,6 @@
 package catchla.yep.view.holder
 
-import android.content.Intent
+import android.app.Activity
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
@@ -9,6 +9,7 @@ import android.widget.TextView
 import catchla.yep.R
 import catchla.yep.adapter.GithubUserAdapter
 import catchla.yep.model.GithubRepo
+import catchla.yep.util.Utils
 import java.util.*
 
 /**
@@ -29,9 +30,8 @@ class GithubRepoItemViewHolder(itemView: View, private val adapter: GithubUserAd
     }
 
     override fun onClick(v: View) {
-        val context = v.context
         val repo = adapter.getRepoAt(layoutPosition) ?: return
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(repo.htmlUrl)))
+        Utils.openUri(adapter.context as Activity, Uri.parse(repo.htmlUrl))
     }
 
     fun displayRepo(repo: GithubRepo) {

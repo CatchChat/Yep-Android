@@ -175,10 +175,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                 if (provider.isSupported) {
                     if (Provider.PROVIDER_BLOG == provider.name && user.websiteUrl != null) {
                         // TODO open web address
-                        val builder = CustomTabsIntent.Builder()
-                        builder.setToolbarColor(ThemeUtils.getColorPrimary(this))
-                        val customTabsIntent = builder.build()
-                        customTabsIntent.launchUrl(this, Uri.parse(user.websiteUrl))
+                        Utils.openUri(this, Uri.parse(user.websiteUrl))
                         return@OnClickListener
                     }
                     intent = Intent(this@UserActivity, ProviderContentActivity::class.java)
