@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.activity.iface.IBaseActivity
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.dagger.GeneralComponentHelper
@@ -14,13 +15,15 @@ import catchla.yep.view.TintedStatusFrameLayout
 import com.squareup.otto.Bus
 import javax.inject.Inject
 
-open class ContentActivity : AppCompatActivity() {
+open class ContentActivity : AppCompatActivity(), IBaseActivity {
 
     protected val mainContent by lazy { findViewById(R.id.mainContent) as TintedStatusFrameLayout? }
     @Inject
     lateinit var bus: Bus
     @Inject
     lateinit var imageLoader: ImageLoaderWrapper
+
+    private val actionHelper = IBaseActivity.ActionHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,21 @@ open class ContentActivity : AppCompatActivity() {
 
     override fun onContentChanged() {
         super.onContentChanged()
+    }
+
+
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        actionHelper.dispatchOnResumeFragments()
+    }
+
+    override fun executeAfterFragmentResumed(action: (IBaseActivity) -> Unit) {
+        actionHelper.executeAfterFragmentResumed(action)
+    }
+
+    override fun onPause() {
+        actionHelper.dispatchOnPause()
+        super.onPause()
     }
 
     protected open val isTintBarEnabled: Boolean

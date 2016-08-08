@@ -1,5 +1,6 @@
 package catchla.yep.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.Menu
@@ -7,15 +8,14 @@ import android.view.MenuItem
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.fragment.TopicChatListFragment
-import catchla.yep.model.TaskResponse
 import catchla.yep.model.Topic
-import catchla.yep.model.UrlResponse
-import catchla.yep.model.YepException
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.alwaysUi
+import nl.komponents.kovenant.ui.failUi
+import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.StringUtils
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.ktextension.setMenuGroupAvailability
 
 class TopicChatActivity : SwipeBackContentActivity(), Constants {
@@ -45,17 +45,32 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.share -> {
-                TaskStarter.execute(object : AbstractTask<Any, TaskResponse<UrlResponse>, TopicChatActivity>() {
-                    public override fun doLongOperation(param: Any?): TaskResponse<UrlResponse> {
-                        val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
-                        try {
-                            return TaskResponse(yep.getCircleShareUrl(topic.circle.id))
-                        } catch (e: YepException) {
-                            return TaskResponse(exception = e)
-                        }
+                task {
+                    val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
+                    yep.getCircleShareUrl(topic.circle.id)
+                }.successUi {
+                    val intent = Intent(Intent.ACTION_SEND)
+                    intent.putExtra(Intent.EXTRA_TEXT, it.url)
+                    intent.type = "text/plain"
+                    startActivity(Intent.createChooser(intent, getString(R.string.share)))
+                }.failUi {
+
+                }.alwaysUi {
+                    // TODO dismiss dialog
+                    executeAfterFragmentResumed {
 
                     }
-                })
+                }
+                return true
+            }
+            R.id.report_topic -> {
+                return true
+            }
+            R.id.notifications -> {
+                // TODO update notification settings
+                return true
+            }
+            R.id.subscribe -> {
                 return true
             }
         }
