@@ -41,7 +41,9 @@
                 android:id="@+id/profileImage"
                 android:layout_width="@dimen/icon_size_account_info_edit_profile_image"
                 android:layout_height="@dimen/icon_size_account_info_edit_profile_image"
-                android:layout_marginTop="64dp"/>
+                android:layout_marginTop="64dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/ic_profile_image_default"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:textAppearanceMedium"
                     android:textColor="?android:textColorPrimary"
-                    tools:text="86"/>
+                    tools:text="+86"/>
 
                 <Space
                     android:layout_width="@dimen/element_spacing_small"
@@ -83,7 +85,8 @@
                 android:singleLine="true"
                 app:met_floatingLabel="normal"
                 app:met_floatingLabelAlwaysShown="true"
-                app:met_floatingLabelText="@string/username"/>
+                app:met_floatingLabelText="@string/username"
+                tools:text="Username"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -101,7 +104,8 @@
                     android:singleLine="true"
                     app:met_floatingLabel="normal"
                     app:met_floatingLabelAlwaysShown="true"
-                    app:met_floatingLabelText="@string/nickname"/>
+                    app:met_floatingLabelText="@string/nickname"
+                    tools:text="Nickname"/>
 
                 <ImageButton
                     android:id="@+id/editBadge"
@@ -124,7 +128,8 @@
                 android:minLines="4"
                 app:met_floatingLabel="normal"
                 app:met_floatingLabelAlwaysShown="true"
-                app:met_floatingLabelText="@string/introduction"/>
+                app:met_floatingLabelText="@string/introduction"
+                tools:text="Introduction"/>
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/editWebsite"
@@ -136,7 +141,8 @@
                 android:singleLine="true"
                 app:met_floatingLabel="normal"
                 app:met_floatingLabelAlwaysShown="true"
-                app:met_floatingLabelText="@string/blog"/>
+                app:met_floatingLabelText="@string/blog"
+                tools:text="https://www.example.com/"/>
 
             <Button
                 android:id="@+id/logout"
