@@ -15,8 +15,8 @@ public class ProfileUpdate extends SimpleValueMap {
         put("username", username);
     }
 
-    public void setBadge(String username) {
-        put("badge", username);
+    public void setBadge(String badge) {
+        put("badge", badge);
     }
 
     public void setIntroduction(final String introduction) {

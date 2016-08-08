@@ -3,8 +3,8 @@ package catchla.yep.activity
 import android.Manifest
 import android.accounts.AccountManager
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,15 +15,23 @@ import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.DialogFragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.text.TextUtils
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.GridView
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.fragment.BaseDialogFragment
 import catchla.yep.model.ProfileUpdate
 import catchla.yep.model.User
 import catchla.yep.util.Utils
 import catchla.yep.util.task.UpdateProfileTask
 import kotlinx.android.synthetic.main.activity_profile_editor.*
+import kotlinx.android.synthetic.main.grid_item_badge.view.*
 
 class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Constants {
 
@@ -66,7 +74,8 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
             }
         }
         editBadge.setOnClickListener {
-
+            val df = BadgeGridDialogFragment()
+            df.show(supportFragmentManager, "pick_badge")
         }
     }
 
@@ -110,6 +119,7 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         editIntroduction.setText(user.introduction)
         editWebsite.setText(user.websiteUrl)
         editBadge.setImageResource(user.badge?.icon ?: 0)
+        editBadge.tag = user.badge
     }
 
     class LogoutConfirmDialogFragment : DialogFragment() {
@@ -141,20 +151,24 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
         val update = ProfileUpdate()
         val currentUser = currentUser!!
         if (!TextUtils.equals(currentUser.nickname ?: "", editNickname.text)) {
-            changed = changed or true
+            changed = true
             update.setNickname(editNickname.text.toString())
         }
         if (!TextUtils.equals(currentUser.introduction ?: "", editIntroduction.text)) {
-            changed = changed or true
+            changed = true
             update.setIntroduction(editIntroduction.text.toString())
         }
         if (!TextUtils.equals(currentUser.username ?: "", editUsername.text)) {
-            changed = changed or true
+            changed = true
             update.setUsername(editUsername.text.toString())
         }
         if (!TextUtils.equals(currentUser.websiteUrl ?: "", editWebsite.text)) {
-            changed = changed or true
+            changed = true
             update.setWebsite(editWebsite.text.toString())
+        }
+        if (currentUser.badge != editBadge.tag) {
+            changed = true
+            update.setBadge((editBadge.tag as? User.Badge)?.value ?: "")
         }
         if (changed) {
             mTask = UpdateProfileTask(this, Utils.getCurrentAccount(this)!!, update, mProfileImageUri)
@@ -162,6 +176,59 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
             return
         }
         super.onBackPressed()
+    }
+
+    class BadgeGridDialogFragment : BaseDialogFragment() {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+            val builder = AlertDialog.Builder(context)
+            builder.setView(R.layout.dialog_badge_grid)
+            val dialog = builder.create()
+            dialog.setOnShowListener {
+                with(it as Dialog) {
+                    val badgeGrid = findViewById(R.id.badgeGrid) as GridView
+                    val badgeAdapter = BadgeAdapter(context)
+                    badgeGrid.adapter = badgeAdapter
+                    badgeGrid.setOnItemClickListener { view, child, position, id ->
+                        val pea = activity as ProfileEditorActivity
+                        pea.selectBadge(badgeAdapter.getItem(position))
+                        dismiss()
+                    }
+                }
+            }
+            return dialog
+        }
+
+        class BadgeAdapter(context: Context) : BaseAdapter() {
+
+            private val inflater: LayoutInflater
+
+            init {
+                inflater = LayoutInflater.from(context)
+            }
+
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+                val view = convertView ?: inflater.inflate(R.layout.grid_item_badge, parent, false)
+                view.icon.setImageResource(getItem(position).icon)
+                return view
+            }
+
+            override fun getItem(position: Int): User.Badge {
+                return User.Badge.values()[position]
+            }
+
+            override fun getItemId(position: Int): Long {
+                return getItem(position).ordinal.toLong()
+            }
+
+            override fun getCount(): Int {
+                return User.Badge.values().size
+            }
+        }
+    }
+
+    private fun selectBadge(item: User.Badge) {
+        editBadge.setImageResource(item.icon)
+        editBadge.tag = item
     }
 
     companion object {
