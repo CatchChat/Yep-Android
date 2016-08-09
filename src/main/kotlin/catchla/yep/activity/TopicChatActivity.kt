@@ -64,10 +64,15 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
                 return true
             }
             R.id.report_topic -> {
+                task {
+//                    val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
+//                    yep.reportTopic(topic.id, )
+                }
                 return true
             }
             R.id.notifications -> {
                 // TODO update notification settings
+
                 return true
             }
             R.id.subscribe -> {

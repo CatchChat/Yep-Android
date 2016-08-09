@@ -120,4 +120,8 @@
     <string name="last_seen_time">Last seen <xliff:g id="time">%1$s</xliff:g></string>
     <string name="subscribe">Subscribe</string>
     <string name="report_topic">Report topic</string>
+    <string name="sexual_content">Sexual content</string>
+    <string name="spam">Spam</string>
+    <string name="phishing">Phishing</string>
+    <string name="other_reason">Other</string>
 </resources>
