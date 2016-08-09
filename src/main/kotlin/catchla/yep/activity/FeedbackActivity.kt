@@ -5,12 +5,11 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import catchla.yep.R
-import catchla.yep.model.TaskResponse
-import catchla.yep.model.YepException
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_feedback.*
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.alwaysUi
+import nl.komponents.kovenant.ui.successUi
 
 /**
  * Created by mariotaku on 15/10/10.
@@ -40,26 +39,15 @@ class FeedbackActivity : SwipeBackContentActivity() {
     }
 
     private fun sendFeedback(content: String) {
-        val task = object : AbstractTask<String, TaskResponse<Boolean>, FeedbackActivity>() {
+        task {
+            val yepAPI = YepAPIFactory.getInstance(this, account)
+            val deviceInfo = resources.configuration.toString()
+            yepAPI.postFeedback(content, deviceInfo)
+        }.successUi {
+            finish()
+        }.alwaysUi {
 
-            public override fun doLongOperation(params: String): TaskResponse<Boolean> {
-                val yepAPI = YepAPIFactory.getInstance(this@FeedbackActivity, account)
-                val deviceInfo = resources.configuration.toString()
-                try {
-                    yepAPI.postFeedback(params, deviceInfo)
-                    return TaskResponse(true)
-                } catch (e: YepException) {
-                    return TaskResponse(exception = e)
-                }
-
-            }
-
-            public override fun afterExecute(handler: FeedbackActivity?, result: TaskResponse<Boolean>?) {
-                handler!!.finish()
-            }
         }
-        task.setParams(content)
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
+
     }
 }

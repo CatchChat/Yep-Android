@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.IBinder
 import android.support.v4.util.SimpleArrayMap
 import android.text.TextUtils
-import android.util.Log
 import catchla.yep.BuildConfig
 import catchla.yep.Constants
 import catchla.yep.message.FriendshipsRefreshedEvent
@@ -19,8 +18,8 @@ import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
 import com.squareup.otto.Bus
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.successUi
 import org.mariotaku.ktextension.bulkInsertSliced
 import org.mariotaku.sqliteqb.library.Expression
 import java.util.*
@@ -66,138 +65,68 @@ class MessageService : Service(), Constants {
     private fun refreshUserInfo(account: Account?) {
         if (account == null) return
 
-        val task = object : AbstractTask<Account, TaskResponse<User>, MessageService>() {
-
-            public override fun doLongOperation(account: Account): TaskResponse<User> {
-                val yep = YepAPIFactory.getInstance(application, account)
-                try {
-                    return TaskResponse(yep.getUser())
-                } catch (e: YepException) {
-                    return TaskResponse(exception = e)
-                }
-
+        task {
+            with(YepAPIFactory.getInstance(application, account)) {
+                return@task getUser()
             }
-
-            public override fun afterExecute(handler: MessageService?, result: TaskResponse<User>) {
-                if (result.data != null) {
-                    Utils.saveUserInfo(handler!!, account, result.data)
-                }
-            }
+        }.successUi {
+            Utils.saveUserInfo(this, account, it)
         }
-        TaskStarter.execute(task)
     }
 
     private fun refreshFriendships(account: Account?) {
         if (account == null) return
-        val task = object : AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
-            public override fun doLongOperation(account: Account): TaskResponse<Boolean> {
-                val yep = YepAPIFactory.getInstance(application, account)
-                try {
-                    var friendships: ResponseList<Friendship>
-                    var page = 1
-                    val paging = Paging()
-                    val values = ArrayList<ContentValues>()
-                    val accountId = Utils.getAccountId(application, account)
-                    do {
-                        friendships = yep.getFriendships(paging)
-                        if (friendships.isEmpty()) break
-                        for (friendship in friendships) {
-                            friendship.accountId = accountId
-                            values.add(FriendshipValuesCreator.create(friendship))
-                        }
-                        paging.page(++page)
-                    } while (friendships.count >= friendships.perPage)
-
-                    val cr = contentResolver
-                    cr.delete(Friendships.CONTENT_URI, null, null)
-                    cr.bulkInsertSliced(Friendships.CONTENT_URI, values)
-                    return TaskResponse(true)
-                } catch (e: YepException) {
-                    Log.w(Constants.LOGTAG, e)
-                    return TaskResponse(exception = e)
-                } finally {
+        task {
+            val yep = YepAPIFactory.getInstance(application, account)
+            var friendships: ResponseList<Friendship>
+            var page = 1
+            val paging = Paging()
+            val values = ArrayList<ContentValues>()
+            val accountId = Utils.getAccountId(application, account)
+            do {
+                friendships = yep.getFriendships(paging)
+                if (friendships.isEmpty()) break
+                for (friendship in friendships) {
+                    friendship.accountId = accountId
+                    values.add(FriendshipValuesCreator.create(friendship))
                 }
-            }
+                paging.page(++page)
+            } while (friendships.count >= friendships.perPage)
 
-            public override fun afterExecute(response: TaskResponse<Boolean>?) {
-                bus.post(FriendshipsRefreshedEvent())
-            }
-
-            public override fun afterExecute(messageService: MessageService?, response: TaskResponse<Boolean>?) {
-                afterExecute(response)
-            }
+            val cr = contentResolver
+            cr.delete(Friendships.CONTENT_URI, null, null)
+            cr.bulkInsertSliced(Friendships.CONTENT_URI, values)
+        }.successUi {
+            bus.post(FriendshipsRefreshedEvent())
         }
-        task.setParams(account)
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
     }
 
     private fun refreshMessages() {
         val account = Utils.getCurrentAccount(this) ?: return
         val accountUser = Utils.getAccountUser(this, account) ?: return
-        val task = object : AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
-            public override fun doLongOperation(account: Account): TaskResponse<Boolean> {
-                val yep = YepAPIFactory.getInstance(application, account)
-                try {
-                    val paging = Paging()
-                    paging.perPage(30)
-                    val conversations = yep.getConversations(paging)
-                    insertConversations(this@MessageService, conversations, accountUser.id)
-                    System.identityHashCode(conversations)
-                    return TaskResponse(true)
-                } catch (e: YepException) {
-                    Log.w(Constants.LOGTAG, e)
-                    return TaskResponse<Boolean>(exception = e)
-                } catch (e: Throwable) {
-                    Log.wtf(Constants.LOGTAG, e)
-                    return TaskResponse<Boolean>(exception = e)
-                } finally {
-                }
-            }
-
-            public override fun afterExecute(response: TaskResponse<Boolean>?) {
-                bus.post(MessageRefreshedEvent())
-            }
-
-            public override fun afterExecute(messageService: MessageService?, response: TaskResponse<Boolean>?) {
-                afterExecute(response)
-            }
+        task {
+            val yep = YepAPIFactory.getInstance(application, account)
+            val paging = Paging()
+            paging.perPage(30)
+            val conversations = yep.getConversations(paging)
+            insertConversations(this@MessageService, conversations, accountUser.id)
+        }.successUi {
+            bus.post(MessageRefreshedEvent())
         }
-        task.setParams(account)
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
     }
 
     private fun refreshCircles() {
         val account = Utils.getCurrentAccount(this) ?: return
         val accountUser = Utils.getAccountUser(this, account) ?: return
-        val task = object : AbstractTask<Account, TaskResponse<Boolean>, MessageService>() {
-            public override fun doLongOperation(account: Account): TaskResponse<Boolean> {
-                val yep = YepAPIFactory.getInstance(application, account)
-                try {
-                    val paging = Paging()
-                    val circles = yep.getCircles(paging)
-                    val accountId = accountUser.id
-                    insertCircles(this@MessageService, circles, accountId)
-                    return TaskResponse(true)
-                } catch (e: YepException) {
-                    Log.w(Constants.LOGTAG, e)
-                    return TaskResponse(exception = e)
-                } finally {
-                }
-            }
-
-            public override fun afterExecute(response: TaskResponse<Boolean>?) {
-                bus.post(MessageRefreshedEvent())
-            }
-
-            public override fun afterExecute(messageService: MessageService?, response: TaskResponse<Boolean>?) {
-                afterExecute(response)
-            }
+        task {
+            val yep = YepAPIFactory.getInstance(application, account)
+            val paging = Paging()
+            val circles = yep.getCircles(paging)
+            val accountId = accountUser.id
+            insertCircles(this@MessageService, circles, accountId)
+        }.successUi {
+            bus.post(MessageRefreshedEvent())
         }
-        task.setParams(account)
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
     }
 
     companion object {

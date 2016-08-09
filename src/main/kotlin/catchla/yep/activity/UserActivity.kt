@@ -7,14 +7,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import android.support.customtabs.CustomTabsIntent
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AlertDialog
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -27,16 +25,14 @@ import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Friendships
 import catchla.yep.util.JsonSerializer
-import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.support.WindowSupport
 import catchla.yep.util.task.UpdateProfileTask
 import kotlinx.android.synthetic.main.activity_user.*
 import kotlinx.android.synthetic.main.layout_content_user.*
+import nl.komponents.kovenant.task
 import org.apache.commons.lang3.StringUtils
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.ktextension.setMenuGroupAvailability
 import org.mariotaku.sqliteqb.library.Expression
 import java.util.*
@@ -266,17 +262,14 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         if (StringUtils.equals(user.id, accountId)) {
             Utils.saveUserInfo(this@UserActivity, account, user)
         } else {
-            TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-                public override fun doLongOperation(param: Any?): Any? {
-                    val values = ContentValues()
-                    values.put(Friendships.FRIEND, JsonSerializer.serialize(user))
-                    val cr = contentResolver
-                    val where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
-                            Expression.equalsArgs(Friendships.USER_ID)).sql
-                    cr.update(Friendships.CONTENT_URI, values, where, arrayOf(accountId, user.id))
-                    return null
-                }
-            })
+            task {
+                val values = ContentValues()
+                values.put(Friendships.FRIEND, JsonSerializer.serialize(user))
+                val cr = contentResolver
+                val where = Expression.and(Expression.equalsArgs(Friendships.ACCOUNT_ID),
+                        Expression.equalsArgs(Friendships.USER_ID)).sql
+                cr.update(Friendships.CONTENT_URI, values, where, arrayOf(accountId, user.id))
+            }
         }
     }
 
@@ -314,19 +307,11 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                 return true
             }
             R.id.block_user -> {
-                TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-                    public override fun doLongOperation(param: Any?): Any? {
-                        val currentAccount = account
-                        val yep = YepAPIFactory.getInstance(this@UserActivity, currentAccount)!!
-                        try {
-                            yep.blockUser(currentUser.id)
-                        } catch (e: YepException) {
-                            Log.w(LOGTAG, e)
-                        }
-
-                        return null
+                task {
+                    with(YepAPIFactory.getInstance(this@UserActivity, account)) {
+                        blockUser(currentUser.id)
                     }
-                })
+                }
                 return true
             }
         }

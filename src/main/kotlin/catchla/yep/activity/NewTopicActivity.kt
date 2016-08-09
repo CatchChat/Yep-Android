@@ -21,13 +21,15 @@ import catchla.yep.fragment.NewTopicGalleryFragment
 import catchla.yep.fragment.NewTopicLocationFragment
 import catchla.yep.fragment.NewTopicMediaFragment
 import catchla.yep.fragment.ProgressDialogFragment
-import catchla.yep.model.*
+import catchla.yep.model.NewTopic
+import catchla.yep.model.Skill
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_new_topic.*
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.failUi
+import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.StringUtils
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
 
 /**
  * Created by mariotaku on 15/10/13.
@@ -178,38 +180,17 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
         val skill = topicSpinner.selectedItem as Skill?
         newTopic.skillId(skill?.id)
         newTopic.location(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
-        val taskRunnable = object : AbstractTask<NewTopic, TaskResponse<Topic>, NewTopicActivity>() {
-            public override fun doLongOperation(params: NewTopic): TaskResponse<Topic> {
-                val yep = YepAPIFactory.getInstance(this@NewTopicActivity, account)
-                try {
-                    val fragment = newTopicMediaFragment
-                    fragment.uploadMedia(yep, newTopic)
-
-                    val topic = yep.postTopic(params)
-                    return TaskResponse(topic)
-                } catch (e: YepException) {
-                    return TaskResponse<Topic>(exception = e)
-                } catch (t: Throwable) {
-                    Log.wtf(Constants.LOGTAG, t)
-                    System.exit(0)
-                    return TaskResponse(exception = t)
-                }
-
-            }
-
-            public override fun afterExecute(handler: NewTopicActivity, response: TaskResponse<Topic>) {
-                if (response.data != null) {
-                    handler.finishPosting()
-                } else {
-                    handler.dismissUploadingDialog()
-                    Toast.makeText(handler, R.string.unable_to_create_topic, Toast.LENGTH_SHORT).show()
-                    Log.w(Constants.LOGTAG, response.exception ?: return)
-                }
-            }
+        task {
+            val yep = YepAPIFactory.getInstance(this@NewTopicActivity, account)
+            newTopicMediaFragment.uploadMedia(yep, newTopic)
+            return@task yep.postTopic(newTopic)
+        }.successUi {
+            finishPosting()
+        }.failUi {
+            dismissUploadingDialog()
+            Toast.makeText(this, R.string.unable_to_create_topic, Toast.LENGTH_SHORT).show()
+            Log.w(Constants.LOGTAG, it)
         }
-        taskRunnable.setResultHandler(this)
-        taskRunnable.setParams(newTopic)
-        TaskStarter.execute(taskRunnable)
         val df = ProgressDialogFragment()
         df.isCancelable = false
         df.show(supportFragmentManager, FRAGMENT_TAG_POSTING_TOPIC)

@@ -32,8 +32,7 @@ import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.activity_chat.*
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
+import nl.komponents.kovenant.task
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.sqliteqb.library.OrderBy
 import java.util.*
@@ -107,76 +106,67 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         get() = intent.getParcelableExtra<Conversation>(Constants.EXTRA_CONVERSATION)
 
     private fun markAsRead(conversation: Conversation) {
-        TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-            public override fun doLongOperation(param: Any?): Any? {
-                val projection = arrayOf(Messages.MESSAGE_ID, Messages.TEXT_CONTENT)
-                val incomingWhere = Expression.and(
+        task {
+            val projection = arrayOf(Messages.MESSAGE_ID, Messages.TEXT_CONTENT)
+            val incomingWhere = Expression.and(
+                    Expression.equalsArgs(Messages.ACCOUNT_ID),
+                    Expression.equalsArgs(Messages.CONVERSATION_ID),
+                    Expression.equalsArgs(Messages.RECIPIENT_ID))
+            val whereArgs = arrayOf(conversation.accountId, conversation.id, conversation.accountId)
+            val orderBy = OrderBy(Messages.CREATED_AT, false)
+            val cr = contentResolver
+            val incoming = cr.query(Messages.CONTENT_URI, projection,
+                    incomingWhere.sql, whereArgs, orderBy.sql)!!
+            val lastId: String?
+            try {
+                lastId = if (incoming.moveToFirst()) incoming.getString(0) else null
+            } finally {
+                incoming.close()
+            }
+            val yep = YepAPIFactory.getInstance(this@ChatActivity, Utils.getCurrentAccount(this@ChatActivity))
+            val lastReadAt = lastId?.let {
+                val recipientType = conversation.recipientType
+                val recipientId = conversation.recipientId
+                val lastReadResponse: LastReadResponse
+                when (recipientType) {
+                    Message.RecipientType.CIRCLE -> {
+                        lastReadResponse = yep.getSentLastRead(PathRecipientType.CIRCLES, recipientId)
+                        yep.batchMarkAsRead(PathRecipientType.CIRCLES, recipientId, it)
+                    }
+                    Message.RecipientType.USER -> {
+                        lastReadResponse = yep.getSentLastRead(PathRecipientType.USERS, recipientId)
+                        yep.batchMarkAsRead(PathRecipientType.USERS, recipientId, it)
+                    }
+                    else -> {
+                        throw UnsupportedOperationException(recipientType)
+                    }
+                }
+                lastReadResponse.lastReadAt
+            }
+            if (lastReadAt != null) {
+                val markAsReadValues = ContentValues()
+                markAsReadValues.put(Messages.STATE, Messages.MessageState.READ)
+                val outgoingWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
                         Expression.equalsArgs(Messages.CONVERSATION_ID),
-                        Expression.equalsArgs(Messages.RECIPIENT_ID))
-                val whereArgs = arrayOf(conversation.accountId, conversation.id, conversation.accountId)
-                val orderBy = OrderBy(Messages.CREATED_AT, false)
-                val cr = contentResolver
-                val incoming = cr.query(Messages.CONTENT_URI, projection,
-                        incomingWhere.sql, whereArgs, orderBy.sql)!!
-                val lastId: String
-                try {
-                    if (!incoming.moveToFirst()) return null
-                    lastId = incoming.getString(0)
-                } finally {
-                    incoming.close()
-                }
-                val yep = YepAPIFactory.getInstance(this@ChatActivity, Utils.getCurrentAccount(this@ChatActivity))
-                try {
-                    val recipientType = conversation.recipientType
-                    val recipientId = conversation.recipientId
-                    val lastReadResponse: LastReadResponse
-                    when (recipientType) {
-                        Message.RecipientType.CIRCLE -> {
-                            lastReadResponse = yep.getSentLastRead(PathRecipientType.CIRCLES, recipientId)
-                            yep.batchMarkAsRead(PathRecipientType.CIRCLES, recipientId, lastId)
-                        }
-                        Message.RecipientType.USER -> {
-                            lastReadResponse = yep.getSentLastRead(PathRecipientType.USERS, recipientId)
-                            yep.batchMarkAsRead(PathRecipientType.USERS, recipientId, lastId)
-                        }
-                        else -> {
-                            throw UnsupportedOperationException(recipientType)
-                        }
-                    }
-                    val lastReadAt = lastReadResponse.lastReadAt
-                    if (lastReadAt != null) {
-                        val markAsReadValues = ContentValues()
-                        markAsReadValues.put(Messages.STATE, Messages.MessageState.READ)
-                        val outgoingWhere = Expression.and(
-                                Expression.equalsArgs(Messages.ACCOUNT_ID),
-                                Expression.equalsArgs(Messages.CONVERSATION_ID),
-                                Expression.equalsArgs(Messages.STATE),
-                                Expression.lesserEqualsArgs(Messages.CREATED_AT),
-                                Expression.isNotArgs(Messages.RECIPIENT_ID))
-                        val outgoingWhereArgs = arrayOf(conversation.accountId, conversation.id, Messages.MessageState.UNREAD, lastReadAt.time.toString(), conversation.accountId)
-                        cr.update(Messages.CONTENT_URI, markAsReadValues, outgoingWhere.sql,
-                                outgoingWhereArgs)
+                        Expression.equalsArgs(Messages.STATE),
+                        Expression.lesserEqualsArgs(Messages.CREATED_AT),
+                        Expression.isNotArgs(Messages.RECIPIENT_ID))
+                val outgoingWhereArgs = arrayOf(conversation.accountId, conversation.id, Messages.MessageState.UNREAD, lastReadAt.time.toString(), conversation.accountId)
+                cr.update(Messages.CONTENT_URI, markAsReadValues, outgoingWhere.sql,
+                        outgoingWhereArgs)
 
-                        val conversationWhere = Expression.and(
-                                Expression.equalsArgs(Conversations.ACCOUNT_ID),
-                                Expression.equalsArgs(Conversations.CONVERSATION_ID))
+                val conversationWhere = Expression.and(
+                        Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                        Expression.equalsArgs(Conversations.CONVERSATION_ID))
 
-                        val conversationWhereArgs = arrayOf(conversation.accountId, conversation.id)
-                        val lastSeenValues = ContentValues()
-                        lastSeenValues.put(Conversations.LAST_SEEN_AT, lastReadAt.time)
-                        cr.update(Conversations.CONTENT_URI, lastSeenValues, conversationWhere.sql,
-                                conversationWhereArgs)
-                    }
-                } catch (e: YepException) {
-                    Log.w(Constants.LOGTAG, e)
-                } catch (t: Throwable) {
-                    Log.wtf(Constants.LOGTAG, t)
-                }
-
-                return null
+                val conversationWhereArgs = arrayOf(conversation.accountId, conversation.id)
+                val lastSeenValues = ContentValues()
+                lastSeenValues.put(Conversations.LAST_SEEN_AT, lastReadAt.time)
+                cr.update(Conversations.CONTENT_URI, lastSeenValues, conversationWhere.sql,
+                        conversationWhereArgs)
             }
-        })
+        }
     }
 
 

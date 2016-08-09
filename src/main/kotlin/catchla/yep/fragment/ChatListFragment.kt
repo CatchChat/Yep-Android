@@ -31,12 +31,12 @@ import catchla.yep.util.Utils
 import catchla.yep.view.AudioSampleView
 import catchla.yep.view.MediaSizeImageView
 import catchla.yep.view.StaticMapView
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.successUi
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.BufferedSink
 import okio.Okio
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
 import java.io.File
 import java.util.*
 
@@ -47,7 +47,7 @@ import java.util.*
 abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter,
         LinearLayoutManager>(), LoaderManager.LoaderCallbacks<List<Message>?> {
 
-    private var mMediaPlayer: MediaPlayer? = null
+    private var mediaPlayer: MediaPlayer? = null
     var jumpToLast: Boolean = false
 
     private lateinit var topicTitle: TextView
@@ -86,12 +86,12 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
     }
 
     override fun onStop() {
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer!!.isPlaying) {
-                mMediaPlayer!!.stop()
+        if (mediaPlayer != null) {
+            if (mediaPlayer!!.isPlaying) {
+                mediaPlayer!!.stop()
             }
-            mMediaPlayer!!.release()
-            mMediaPlayer = null
+            mediaPlayer!!.release()
+            mediaPlayer = null
         }
         super.onStop()
     }
@@ -141,51 +141,45 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
     private fun playAudio(attachment: FileAttachment) {
         if ("audio" != attachment.kind) return
-        if (mMediaPlayer == null) {
-            mMediaPlayer = MediaPlayer()
-            mMediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-            mMediaPlayer!!.setOnCompletionListener { bus.post(AudioPlayEvent.end(attachment)) }
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer()
+            mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            mediaPlayer!!.setOnCompletionListener { bus.post(AudioPlayEvent.end(attachment)) }
         }
-        if (mMediaPlayer!!.isPlaying) {
-            mMediaPlayer!!.stop()
+        if (mediaPlayer!!.isPlaying) {
+            mediaPlayer!!.stop()
             bus.post(AudioPlayEvent.end(attachment))
         }
-        TaskStarter.execute(object : AbstractTask<Any, Any, Any>() {
-            public override fun doLongOperation(param: Any?): Any? {
-                var sink: BufferedSink? = null
-                var tempFile: File? = null
-                try {
-                    tempFile = File.createTempFile("voice_dl" + System.currentTimeMillis(), "m4a")
-                    if (tempFile!!.length() > 0) {
-                        mMediaPlayer!!.setDataSource(tempFile.absolutePath)
-                    } else {
-                        val client = OkHttpClient()
-                        val response = client.newCall(Request.Builder().url(attachment.file.url).build()).execute()
-                        sink = Okio.buffer(Okio.sink(tempFile))
-                        sink!!.writeAll(response.body().source())
-                        sink.flush()
-                        mMediaPlayer!!.setDataSource(context, Uri.parse(attachment.file.url))
-                    }
-                    mMediaPlayer!!.prepare()
-                } catch (e: Exception) {
-                    Log.w(Constants.LOGTAG, e)
-                    if (tempFile != null) {
-                        tempFile.delete()
-                    }
-                } catch (t: Throwable) {
-                    Log.wtf(Constants.LOGTAG, t)
-                } finally {
-                    Utils.closeSilently(sink)
+        task {
+            var sink: BufferedSink? = null
+            var tempFile: File? = null
+            try {
+                tempFile = File.createTempFile("voice_dl" + System.currentTimeMillis(), "m4a")
+                if (tempFile!!.length() > 0) {
+                    mediaPlayer!!.setDataSource(tempFile.absolutePath)
+                } else {
+                    val client = OkHttpClient()
+                    val response = client.newCall(Request.Builder().url(attachment.file.url).build()).execute()
+                    sink = Okio.buffer(Okio.sink(tempFile))
+                    sink!!.writeAll(response.body().source())
+                    sink.flush()
+                    mediaPlayer!!.setDataSource(context, Uri.parse(attachment.file.url))
                 }
-                return null
+                mediaPlayer!!.prepare()
+            } catch (e: Exception) {
+                Log.w(Constants.LOGTAG, e)
+                tempFile?.delete()
+            } catch (t: Throwable) {
+                Log.wtf(Constants.LOGTAG, t)
+            } finally {
+                Utils.closeSilently(sink)
             }
-
-            public override fun afterExecute(o: Any?) {
-                if (mMediaPlayer == null) return
-                mMediaPlayer!!.start()
+        }.successUi {
+            mediaPlayer?.let {
+                it.start()
                 bus.post(AudioPlayEvent.start(attachment))
             }
-        })
+        }
     }
 
     override fun isReachingEnd(): Boolean {
