@@ -25,7 +25,6 @@ import android.support.v4.view.ViewPager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,12 +34,17 @@ import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
 import catchla.yep.fragment.ProgressDialogFragment
-import catchla.yep.model.*
+import catchla.yep.model.AccessToken
+import catchla.yep.model.Client
+import catchla.yep.model.CreateRegistrationResult
+import catchla.yep.model.YepException
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_sign_in_sign_up.*
 import me.philio.pinentry.PinEntryView
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.alwaysUi
+import nl.komponents.kovenant.ui.failUi
+import nl.komponents.kovenant.ui.successUi
 
 class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
 
@@ -113,46 +117,32 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
     private fun sendVerifyCode(phoneNumber: String, countryCode: String) {
         ProgressDialogFragment.show(this, "create_registration")
-        val task = object : AbstractTask<Array<String>, TaskResponse<CreateRegistrationResult>, SignUpActivity>() {
-
-            public override fun doLongOperation(args: Array<String>): TaskResponse<CreateRegistrationResult> {
-                val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
-                try {
-                    return TaskResponse(yep.createRegistration(args[1], args[2], args[0], 0.0, 0.0))
-                } catch (e: YepException) {
-                    return TaskResponse<CreateRegistrationResult>(exception = e)
-                }
-
+        task {
+            val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
+            yep.createRegistration(phoneNumber, countryCode, mName!!, 0.0, 0.0)
+        }.successUi {
+            setCreateRegistrationResult(it)
+            gotoNextPage()
+        }.failUi {
+            @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+            val exception = it as? YepException
+            val error = exception?.error
+            if (error != null && !TextUtils.isEmpty(error)) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, R.string.unable_to_register, Toast.LENGTH_SHORT).show()
             }
-
-            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<CreateRegistrationResult>) {
-                val f = handler!!.supportFragmentManager.findFragmentByTag("create_registration")
-                if (f is DialogFragment) {
-                    f.dismiss()
-                }
-                if (result.data != null) {
-                    handler.setCreateRegistrationResult(result.data)
-                    handler.gotoNextPage()
-                } else {
-                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-                    val exception = result.exception as YepException
-                    val error = exception.error
-                    if (TextUtils.isEmpty(error)) {
-                        Toast.makeText(handler, R.string.unable_to_register, Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show()
-                    }
-                    val fragment = handler.currentFragment
-                    if (fragment is VerifyPhoneNumberFragment) {
-                        fragment.clearPin()
-                    }
-                }
+            val fragment = currentFragment
+            if (fragment is VerifyPhoneNumberFragment) {
+                fragment.clearPin()
             }
-
+        }.alwaysUi {
+            val f = supportFragmentManager.findFragmentByTag("create_registration")
+            if (f is DialogFragment) {
+                f.dismiss()
+            }
         }
-        task.setParams(arrayOf<String>(mName!!, phoneNumber, countryCode))
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
+
     }
 
     private val currentFragment: Fragment?
@@ -160,44 +150,28 @@ class SignUpActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
     private fun verifyPhoneNumber(verifyCode: String) {
         ProgressDialogFragment.show(this, "update_registration")
-        val task = object : AbstractTask<Pair<CreateRegistrationResult, String>, TaskResponse<AccessToken>, SignUpActivity>() {
-
-            public override fun doLongOperation(args: Pair<CreateRegistrationResult, String>): TaskResponse<AccessToken> {
-                val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
-                try {
-                    val result = args.first
-                    return TaskResponse(yep.updateRegistration(result.mobile,
-                            result.phoneCode, args.second, Client.OFFICIAL, 0))
-                } catch (e: YepException) {
-                    return TaskResponse<AccessToken>(exception = e)
-                }
-
+        task {
+            val yep = YepAPIFactory.getInstanceWithToken(this@SignUpActivity, null)
+            val result = mCreateRegistrationResult!!
+            yep.updateRegistration(result.mobile, result.phoneCode, verifyCode, Client.OFFICIAL, 0)
+        }.successUi {
+            setUpdateRegistrationResult(it)
+            gotoNextPage()
+        }.failUi {
+            @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+            val exception = it as? YepException
+            val error = exception?.error
+            if (TextUtils.isEmpty(error)) {
+                Toast.makeText(this, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
             }
-
-            public override fun afterExecute(handler: SignUpActivity?, result: TaskResponse<AccessToken>) {
-                val f = handler!!.supportFragmentManager.findFragmentByTag("update_registration")
-                if (f is DialogFragment) {
-                    f.dismiss()
-                }
-                if (result.data != null) {
-                    handler.setUpdateRegistrationResult(result.data)
-                    handler.gotoNextPage()
-                } else {
-                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-                    val exception = result.exception as YepException
-                    val error = exception.error
-                    if (TextUtils.isEmpty(error)) {
-                        Toast.makeText(handler, R.string.unable_to_verify_phone, Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(handler, error, Toast.LENGTH_SHORT).show()
-                    }
-                }
+        }.alwaysUi {
+            val f = supportFragmentManager.findFragmentByTag("update_registration")
+            if (f is DialogFragment) {
+                f.dismiss()
             }
-
         }
-        task.setParams(Pair.create<CreateRegistrationResult, String>(mCreateRegistrationResult, verifyCode))
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
     }
 
     private fun setUpdateRegistrationResult(result: AccessToken) {

@@ -25,7 +25,6 @@ import android.support.v4.view.ViewPager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,13 +34,18 @@ import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
 import catchla.yep.fragment.MessageDialogFragment
 import catchla.yep.fragment.ProgressDialogFragment
-import catchla.yep.model.*
+import catchla.yep.model.AccessToken
+import catchla.yep.model.Client
+import catchla.yep.model.VerificationMethod
+import catchla.yep.model.YepException
 import catchla.yep.util.YepAPIFactory
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import kotlinx.android.synthetic.main.activity_sign_in_sign_up.*
 import me.philio.pinentry.PinEntryView
-import org.mariotaku.abstask.library.AbstractTask
-import org.mariotaku.abstask.library.TaskStarter
+import nl.komponents.kovenant.task
+import nl.komponents.kovenant.ui.alwaysUi
+import nl.komponents.kovenant.ui.failUi
+import nl.komponents.kovenant.ui.successUi
 import java.util.*
 
 class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListener, View.OnClickListener {
@@ -110,45 +114,28 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
     private fun sendVerifyCode(phoneNumber: String, countryCode: String) {
         ProgressDialogFragment.show(this, "send_verify")
-        val task = object : AbstractTask<Array<String>, TaskResponse<Pair<String, String>>, SignInActivity>() {
-
-            public override fun doLongOperation(args: Array<String>): TaskResponse<Pair<String, String>> {
-                val yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
-                try {
-                    val code = yep.sendVerifyCode(args[0], args[1], VerificationMethod.SMS)
-                    System.identityHashCode(code)
-                    return TaskResponse(Pair.create(args[0], args[1]))
-                } catch (e: YepException) {
-                    return TaskResponse(exception = e)
-                }
-
+        task {
+            val yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
+            yep.sendVerifyCode(phoneNumber, countryCode, VerificationMethod.SMS)
+        }.successUi {
+            setPhoneNumber(phoneNumber, countryCode)
+            gotoNextPage()
+        }.failUi {
+            @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+            val exception = it as? YepException
+            val error = exception?.error
+            if (error != null && !TextUtils.isEmpty(error)) {
+                MessageDialogFragment.show(this, error, "unable_to_verify_phone")
+            } else {
+                MessageDialogFragment.show(this, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
             }
-
-            override fun afterExecute(handler: SignInActivity?, result: TaskResponse<Pair<String, String>>) {
-                val f = handler!!.supportFragmentManager.findFragmentByTag("send_verify")
-                if (f is DialogFragment) {
-                    f.dismiss()
-                }
-                if (result.data != null) {
-                    val data = result.data
-                    handler.setPhoneNumber(data.first, data.second)
-                    handler.gotoNextPage()
-                } else {
-                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-                    val exception = result.exception as YepException
-                    val error = exception.error
-                    if (TextUtils.isEmpty(error)) {
-                        MessageDialogFragment.show(handler, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
-                    } else {
-                        MessageDialogFragment.show(handler, error, "unable_to_verify_phone")
-                    }
-                }
+        }.alwaysUi {
+            val f = supportFragmentManager.findFragmentByTag("send_verify")
+            if (f is DialogFragment) {
+                f.dismiss()
             }
-
         }
-        task.setParams(arrayOf(phoneNumber, countryCode))
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
+
     }
 
     private fun setPhoneNumber(phoneNumber: String, countryCode: String) {
@@ -158,50 +145,36 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
 
     private fun verifyPhoneNumber(verifyCode: String) {
         ProgressDialogFragment.show(this, TAG_VERIFY_PHONE)
-        val task = object : AbstractTask<Array<String>, TaskResponse<AccessToken>, SignInActivity>() {
-
-            public override fun doLongOperation(args: Array<String>): TaskResponse<AccessToken> {
-                var yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
-                try {
-                    val token = yep.tokenByMobile(args[0], args[1], args[2],
-                            Client.OFFICIAL, 0)
-                    yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, token.accessToken)
-                    token.user = yep.getUser()
-                    return TaskResponse(token)
-                } catch (e: YepException) {
-                    return TaskResponse<AccessToken>(exception = e)
-                }
-
+        task {
+            var yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
+            val token = yep.tokenByMobile(mPhoneNumber!!, mCountryCode!!, verifyCode,
+                    Client.OFFICIAL, 0)
+            yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, token.accessToken)
+            token.user = yep.getUser()
+            return@task token
+        }.successUi {
+            finishAddAddAccount(it)
+            gotoNextPage()
+        }.failUi {
+            @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+            val exception = it as? YepException
+            val error = exception?.error
+            if (error != null && !TextUtils.isEmpty(error)) {
+                MessageDialogFragment.show(this, error, "unable_to_verify_phone")
+            } else {
+                MessageDialogFragment.show(this, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
             }
-
-            public override fun afterExecute(handler: SignInActivity?, result: TaskResponse<AccessToken>) {
-                val f = handler!!.supportFragmentManager.findFragmentByTag(TAG_VERIFY_PHONE)
-                if (f is DialogFragment) {
-                    f.dismiss()
-                }
-                if (result.data != null) {
-                    handler.finishAddAddAccount(result.data)
-                    handler.gotoNextPage()
-                } else {
-                    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-                    val exception = result.exception as YepException
-                    val error = exception.error
-                    if (TextUtils.isEmpty(error)) {
-                        MessageDialogFragment.show(handler, getString(R.string.unable_to_verify_phone), "unable_to_verify_phone")
-                    } else {
-                        MessageDialogFragment.show(handler, error, "unable_to_verify_phone")
-                    }
-                    val fragment = handler.currentFragment
-                    if (fragment is VerifyPhoneNumberFragment) {
-                        fragment.clearPin()
-                    }
-                }
+            val fragment = currentFragment
+            if (fragment is VerifyPhoneNumberFragment) {
+                fragment.clearPin()
             }
-
+        }.alwaysUi {
+            val f = supportFragmentManager.findFragmentByTag(TAG_VERIFY_PHONE)
+            if (f is DialogFragment) {
+                f.dismiss()
+            }
         }
-        task.setParams(arrayOf<String>(mPhoneNumber!!, mCountryCode!!, verifyCode))
-        task.setResultHandler(this)
-        TaskStarter.execute(task)
+
     }
 
     private val currentFragment: Fragment?
