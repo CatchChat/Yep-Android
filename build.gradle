@@ -30,14 +30,14 @@ buildscript {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "catchla.yep"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 8
-        versionName "0.9.5"
+        versionCode 9
+        versionName "0.9.6"
     }
     productFlavors {
         staging {
