@@ -37,6 +37,9 @@ public interface Constants {
     String EXTRA_RESID = "resid";
     String EXTRA_TOKEN = "token";
     String EXTRA_ACCOUNT = "account";
+    String EXTRA_ID = "id";
+    String EXTRA_REPORT_TYPE = "report_type";
+    String EXTRA_ITEM_TYPE = "item_type";
     String EXTRA_TOPIC = "topic";
     String EXTRA_CIRCLE = "circle";
     String EXTRA_USER = "user";

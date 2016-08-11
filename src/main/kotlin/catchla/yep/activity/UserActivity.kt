@@ -21,6 +21,8 @@ import android.widget.EditText
 import catchla.yep.Constants
 import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.annotation.ItemType
+import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Friendships
@@ -312,6 +314,11 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                         blockUser(currentUser.id)
                     }
                 }
+                return true
+            }
+            R.id.report_user -> {
+                ReportTypeDialogFragment.show(supportFragmentManager, account, currentUser.id,
+                        ItemType.USER)
                 return true
             }
         }

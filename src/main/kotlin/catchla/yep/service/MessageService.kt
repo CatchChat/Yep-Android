@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
 import android.support.v4.util.SimpleArrayMap
 import android.text.TextUtils
@@ -14,6 +15,7 @@ import catchla.yep.message.FriendshipsRefreshedEvent
 import catchla.yep.message.MessageRefreshedEvent
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.*
+import catchla.yep.util.BusHandler
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
@@ -31,7 +33,7 @@ import javax.inject.Inject
 class MessageService : Service(), Constants {
 
     @Inject
-    lateinit var bus: Bus
+    lateinit var bus: BusHandler
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -97,7 +99,7 @@ class MessageService : Service(), Constants {
             cr.delete(Friendships.CONTENT_URI, null, null)
             cr.bulkInsertSliced(Friendships.CONTENT_URI, values)
         }.successUi {
-            bus.post(FriendshipsRefreshedEvent())
+            bus.postHandler(FriendshipsRefreshedEvent())
         }
     }
 
@@ -111,7 +113,7 @@ class MessageService : Service(), Constants {
             val conversations = yep.getConversations(paging)
             insertConversations(this@MessageService, conversations, accountUser.id)
         }.successUi {
-            bus.post(MessageRefreshedEvent())
+            bus.postHandler(MessageRefreshedEvent())
         }
     }
 
@@ -125,7 +127,7 @@ class MessageService : Service(), Constants {
             val accountId = accountUser.id
             insertCircles(this@MessageService, circles, accountId)
         }.successUi {
-            bus.post(MessageRefreshedEvent())
+            bus.postHandler(MessageRefreshedEvent())
         }
     }
 

@@ -255,7 +255,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             return subType
         }
 
-        private fun getItemViewSubType(mediaType: String): Int {
+        private fun getItemViewSubType(mediaType: String?): Int {
             if (Message.MediaType.LOCATION == mediaType)
                 return VIEW_SUBTYPE_MESSAGE_LOCATION
             else if (Message.MediaType.IMAGE == mediaType)

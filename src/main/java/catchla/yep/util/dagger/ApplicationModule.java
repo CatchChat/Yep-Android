@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 
 import catchla.yep.BuildConfig;
 import catchla.yep.Constants;
+import catchla.yep.util.BusHandler;
 import catchla.yep.util.ImageLoaderWrapper;
 import catchla.yep.util.OkMediaDownloader;
 import catchla.yep.util.UILFileCache;
@@ -137,5 +138,11 @@ public class ApplicationModule implements Constants {
     @Singleton
     public OkHttpClient okHttpClient() {
         return YepAPIFactory.getOkHttpClient(application);
+    }
+
+    @Provides
+    @Singleton
+    public BusHandler busHandler(final Bus bus) {
+        return new BusHandler(bus);
     }
 }

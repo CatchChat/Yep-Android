@@ -132,15 +132,15 @@ interface YepAPI {
 
     @POST("users/{id}/reports")
     @Throws(YepException::class)
-    fun reportUser(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String): ResponseCode
+    fun reportUser(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String?): ResponseCode
 
     @POST("messages/{id}/reports")
     @Throws(YepException::class)
-    fun reportMessage(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String): ResponseCode
+    fun reportMessage(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String?): ResponseCode
 
     @POST("topics/{id}/reports")
     @Throws(YepException::class)
-    fun reportTopic(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String): ResponseCode
+    fun reportTopic(@Path("id") id: String, @Param("report_type") reportType: Int, @Param("reason") reason: String?): ResponseCode
 
     @DELETE("do_not_disturb_users/{user_id}")
     @Throws(YepException::class)

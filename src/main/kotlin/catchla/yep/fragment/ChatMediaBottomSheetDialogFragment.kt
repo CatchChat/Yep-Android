@@ -18,41 +18,30 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import catchla.yep.R
 import catchla.yep.adapter.BaseRecyclerViewAdapter
+import kotlinx.android.synthetic.main.dialog_bottom_sheet_chat_media.*
 
 /**
  * Created by mariotaku on 16/3/14.
  */
 class ChatMediaBottomSheetDialogFragment : BottomSheetDialogFragment(), LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
-    private var mGalleryAdapter: GalleryAdapter? = null
-    private var mMediaGallery: RecyclerView? = null
-    private var mGalleryButton: View? = null
-    private var mLocationButton: View? = null
-    private var mCancelButton: View? = null
+    private var galleryAdapter: GalleryAdapter? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.dialog_bottom_sheet_chat_media, container, false)
-    }
-
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mMediaGallery = view!!.findViewById(R.id.media_gallery) as RecyclerView
-        mGalleryButton = view.findViewById(R.id.gallery)
-        mLocationButton = view.findViewById(R.id.location)
-        mCancelButton = view.findViewById(R.id.cancel)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.dialog_bottom_sheet_chat_media, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val context = context
-        mGalleryAdapter = GalleryAdapter(this, context)
+        galleryAdapter = GalleryAdapter(this, context)
         val layout = LinearLayoutManager(context)
         layout.orientation = LinearLayoutManager.HORIZONTAL
-        mMediaGallery!!.layoutManager = layout
-        mMediaGallery!!.adapter = mGalleryAdapter
+        mediaGallery.layoutManager = layout
+        mediaGallery.adapter = galleryAdapter
 
-        mGalleryButton!!.setOnClickListener(this)
-        mLocationButton!!.setOnClickListener(this)
-        mCancelButton!!.setOnClickListener { dismiss() }
+        gallery.setOnClickListener(this)
+        location.setOnClickListener(this)
+        cancel.setOnClickListener { dismiss() }
 
         val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         requestPermissions(permissions, REQUEST_REQUEST_STORAGE_PERMISSION)
@@ -80,11 +69,11 @@ class ChatMediaBottomSheetDialogFragment : BottomSheetDialogFragment(), LoaderMa
     }
 
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor) {
-        mGalleryAdapter!!.setCursor(data)
+        galleryAdapter!!.setCursor(data)
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        mGalleryAdapter!!.setCursor(null)
+        galleryAdapter!!.setCursor(null)
     }
 
     override fun onClick(v: View) {

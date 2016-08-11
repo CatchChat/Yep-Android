@@ -6,7 +6,10 @@ import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.annotation.ItemType
+import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.fragment.TopicChatListFragment
 import catchla.yep.model.Topic
 import catchla.yep.util.Utils
@@ -28,14 +31,14 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
 
         val ft = supportFragmentManager.beginTransaction()
         val args = Bundle()
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        args.putParcelable(Constants.EXTRA_TOPIC, topic)
+        args.putParcelable(EXTRA_ACCOUNT, account)
+        args.putParcelable(EXTRA_TOPIC, topic)
         ft.replace(R.id.chatList, Fragment.instantiate(this, TopicChatListFragment::class.java.name, args))
         ft.commit()
     }
 
     private val topic: Topic
-        get() = intent.getParcelableExtra<Topic>(Constants.EXTRA_TOPIC)
+        get() = intent.getParcelableExtra<Topic>(EXTRA_TOPIC)
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_topic_chat, menu)
@@ -64,10 +67,7 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
                 return true
             }
             R.id.report_topic -> {
-                task {
-//                    val yep = YepAPIFactory.getInstance(this@TopicChatActivity, account)
-//                    yep.reportTopic(topic.id, )
-                }
+                ReportTypeDialogFragment.show(supportFragmentManager, account, topic.id, ItemType.TOPIC)
                 return true
             }
             R.id.notifications -> {
