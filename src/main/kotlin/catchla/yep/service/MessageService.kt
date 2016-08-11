@@ -5,7 +5,6 @@ import android.app.Service
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
 import android.os.IBinder
 import android.support.v4.util.SimpleArrayMap
 import android.text.TextUtils
@@ -19,7 +18,6 @@ import catchla.yep.util.BusHandler
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
-import com.squareup.otto.Bus
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.ui.successUi
 import org.mariotaku.ktextension.bulkInsertSliced

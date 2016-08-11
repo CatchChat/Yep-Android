@@ -29,7 +29,6 @@ import catchla.yep.service.MessageService
 import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.util.support.WindowSupport
-import catchla.yep.util.view.ViewSupport
 import catchla.yep.view.TabPagerIndicator
 import catchla.yep.view.iface.PagerIndicator
 import kotlinx.android.synthetic.main.activity_home.*
