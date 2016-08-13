@@ -16,22 +16,31 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/element_spacing_normal"
+        android:paddingRight="@dimen/element_spacing_normal"
         android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="?android:textColorPrimary"/>
+        android:textColor="?android:textColorPrimary"
+        tools:text="Name"/>
 
     <TextView
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/element_spacing_small"
-        android:textColor="?android:textColorTertiary"/>
+        android:paddingLeft="@dimen/element_spacing_normal"
+        android:paddingRight="@dimen/element_spacing_normal"
+        android:textColor="?android:textColorTertiary"
+        tools:text="username"/>
 
     <TextView
         android:id="@+id/introduction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/element_spacing_normal"
-        android:textColor="?android:textColorSecondary"/>
+        android:paddingLeft="@dimen/element_spacing_normal"
+        android:paddingRight="@dimen/element_spacing_normal"
+        android:textColor="?android:textColorSecondary"
+        tools:text="Introduction Introduction Introduction"/>
 
     <TextView
         android:id="@+id/masterLabel"
