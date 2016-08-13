@@ -24,6 +24,7 @@ import catchla.yep.model.DribbbleAttachment;
 import catchla.yep.model.FileAttachment;
 import catchla.yep.model.GithubAttachment;
 import catchla.yep.model.LocationAttachment;
+import catchla.yep.model.WebPageAttachment;
 import catchla.yep.provider.YepDataStore.Messages;
 import catchla.yep.util.Utils;
 
@@ -88,6 +89,8 @@ public class MessageAttachmentsConverter implements CursorFieldConverter<List<At
             case "video":
             case "audio":
                 return LoganSquare.mapperFor(FileAttachment.class);
+            case "web_page":
+                return LoganSquare.mapperFor(WebPageAttachment.class);
             default:
                 return LoganSquare.mapperFor(Attachment.class);
         }

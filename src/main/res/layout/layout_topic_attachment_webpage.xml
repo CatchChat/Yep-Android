@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:id="@+id/attachmentView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/text"
+    android:layout_alignStart="@+id/text"
+    android:layout_below="@+id/text"
+    android:layout_marginEnd="@dimen/element_spacing_xlarge"
+    android:layout_marginRight="@dimen/element_spacing_xlarge"
+    android:clickable="true"
+    android:foreground="@drawable/bg_topic_attachment"
+    android:outlineProvider="background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="?selectableItemBackground"
+        android:duplicateParentState="true"
+        android:paddingBottom="@dimen/element_spacing_mlarge"
+        android:paddingLeft="@dimen/element_spacing_small"
+        android:paddingRight="@dimen/element_spacing_small"
+        android:paddingTop="@dimen/element_spacing_mlarge"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/websiteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"
+            tools:text="iTunes"/>
+
+        <TextView
+            android:id="@+id/websiteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/websiteName"
+            android:layout_alignStart="@+id/websiteName"
+            android:layout_below="@+id/websiteName"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorPrimary"
+            tools:text="Justin Bieber on iTunes"/>
+
+        <TextView
+            android:id="@+id/websiteDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/websiteName"
+            android:layout_alignStart="@+id/websiteName"
+            android:layout_below="@+id/websiteTitle"
+            android:layout_marginTop="@dimen/element_spacing_normal"
+            android:layout_toLeftOf="@+id/websiteImage"
+            android:layout_toStartOf="@+id/websiteImage"
+            android:textColor="?android:textColorSecondary"
+            tools:text="Preview and download songs and albums by Justin Bieber, including “Purpose (Deluxe),” “My World..."/>
+
+
+        <ImageView
+            android:id="@+id/websiteImage"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/websiteDescription"
+            android:src="@drawable/ic_github_repo"/>
+
+    </RelativeLayout>
+</FrameLayout>

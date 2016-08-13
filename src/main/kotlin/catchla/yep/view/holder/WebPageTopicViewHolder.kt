@@ -4,18 +4,19 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.view.View
-import android.widget.TextView
 import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.GithubAttachment
 import catchla.yep.model.Topic
+import catchla.yep.model.WebPageAttachment
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
+import kotlinx.android.synthetic.main.layout_topic_attachment_webpage.view.*
 
 /**
  * Created by mariotaku on 15/12/9.
  */
-class GithubTopicViewHolder(
+class WebPageTopicViewHolder(
         topicsAdapter: TopicsAdapter,
         itemView: View,
         context: Context,
@@ -23,19 +24,19 @@ class GithubTopicViewHolder(
         listener: TopicsAdapter.TopicClickListener?
 ) : TopicViewHolder(topicsAdapter, itemView, context, imageLoader, listener) {
 
-    private val repoName: TextView
-    private val repoDescription: TextView
+    private val websiteName by lazy { itemView.websiteName }
+    private val websiteDescription by lazy { itemView.websiteDescription }
+    private val websiteTitle by lazy { itemView.websiteTitle }
+    private val websiteImage by lazy { itemView.websiteImage }
 
     init {
-        repoName = itemView.findViewById(R.id.repo_name) as TextView
-        repoDescription = itemView.findViewById(R.id.repo_description) as TextView
         itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.attachmentView -> {
-                val attachment = adapter.getTopic(layoutPosition).attachments[0] as GithubAttachment
+                val attachment = adapter.getTopic(layoutPosition).attachments[0] as WebPageAttachment
                 Utils.openUri(adapter.context as Activity, Uri.parse(attachment.url))
                 return
             }
@@ -45,8 +46,9 @@ class GithubTopicViewHolder(
 
     override fun displayTopic(topic: Topic) {
         super.displayTopic(topic)
-        val attachment = topic.attachments[0] as GithubAttachment
-        repoName.text = attachment.name
-        repoDescription.text = attachment.description
+        val attachment = topic.attachments.firstOrNull() as WebPageAttachment
+        websiteName.text = attachment.siteName
+        websiteTitle.text = attachment.title
+        websiteDescription.text = attachment.description
     }
 }

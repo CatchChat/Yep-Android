@@ -69,6 +69,11 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                 inflater.inflate(R.layout.layout_topic_attachment_image, view as ViewGroup)
                 return SingleImageTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
+            ITEM_VIEW_TYPE_WEB_PAGE -> {
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_webpage, view as ViewGroup)
+                return WebPageTopicViewHolder(this, view, context, imageLoader, clickListener)
+            }
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
@@ -81,20 +86,18 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         if (position == topicsCount) return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
         val topic = getTopic(position)
         val kind = topic.kind
-        if (Topic.Kind.IMAGE == kind) {
-            if (topic.attachments.size > 1) {
+        when (kind) {
+            Topic.Kind.IMAGE -> if (topic.attachments.size > 1) {
                 return ITEM_VIEW_TYPE_MEDIA_GALLERY
             } else {
                 return ITEM_VIEW_TYPE_SINGLE_IMAGE
             }
-        } else if (Topic.Kind.GITHUB == kind) {
-            return ITEM_VIEW_TYPE_GITHUB
-        } else if (Topic.Kind.DRIBBBLE == kind) {
-            return ITEM_VIEW_TYPE_DRIBBBLE
-        } else if (Topic.Kind.LOCATION == kind) {
-            return ITEM_VIEW_TYPE_LOCATION
+            Topic.Kind.GITHUB -> return ITEM_VIEW_TYPE_GITHUB
+            Topic.Kind.DRIBBBLE -> return ITEM_VIEW_TYPE_DRIBBBLE
+            Topic.Kind.LOCATION -> return ITEM_VIEW_TYPE_LOCATION
+            Topic.Kind.WEB_PAGE -> return ITEM_VIEW_TYPE_WEB_PAGE
+            else -> return ITEM_VIEW_TYPE_BASIC
         }
-        return ITEM_VIEW_TYPE_BASIC
     }
 
 
@@ -103,7 +106,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
             }
             ITEM_VIEW_TYPE_BASIC, ITEM_VIEW_TYPE_MEDIA_GALLERY, ITEM_VIEW_TYPE_GITHUB,
-            ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE -> {
+            ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE,
+            ITEM_VIEW_TYPE_WEB_PAGE -> {
                 val topicViewHolder = holder as TopicViewHolder
                 topicViewHolder.displayTopic(topics!![position])
             }
@@ -149,5 +153,6 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         private val ITEM_VIEW_TYPE_DRIBBBLE = 4
         private val ITEM_VIEW_TYPE_LOCATION = 5
         private val ITEM_VIEW_TYPE_SINGLE_IMAGE = 6
+        private val ITEM_VIEW_TYPE_WEB_PAGE = 7
     }
 }

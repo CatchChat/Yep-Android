@@ -218,13 +218,14 @@ public class Topic implements Parcelable {
         attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
     }
 
-    @StringDef({Kind.GITHUB, Kind.DRIBBBLE, Kind.LOCATION, Kind.IMAGE, Kind.TEXT})
+    @StringDef({Kind.GITHUB, Kind.DRIBBBLE, Kind.LOCATION, Kind.IMAGE, Kind.TEXT, Kind.WEB_PAGE})
     public @interface Kind {
         String GITHUB = "github";
         String DRIBBBLE = "dribbble";
         String LOCATION = "location";
         String IMAGE = "image";
         String TEXT = "text";
+        String WEB_PAGE = "web_page";
     }
 
     public static class Converter implements TypeConverter<Topic> {
