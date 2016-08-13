@@ -44,6 +44,7 @@ public interface Constants {
     String EXTRA_CIRCLE = "circle";
     String EXTRA_USER = "user";
     String EXTRA_USER_ID = "user_id";
+    String EXTRA_SKILL_ID = "skill_id";
     String EXTRA_CONVERSATION = "conversation";
     String EXTRA_SKILL = "skill";
     String EXTRA_NEW_TOPIC_TYPE = "new_topic_type";

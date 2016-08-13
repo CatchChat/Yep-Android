@@ -59,9 +59,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         showProgress()
     }
 
-    override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Topic>?> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<Topic>?> {
         val cachingEnabled = isCachingEnabled
-        val readCache = args!!.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
+        val readCache = args.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
         val readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled
         val maxId = args.getString(EXTRA_MAX_ID)
         val paging = Paging()
@@ -75,7 +75,8 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             oldData = null
         }
         return DiscoverTopicsLoader(activity, account, arguments.getString(EXTRA_USER_ID),
-                paging, sortOrder, readCache, cachingEnabled, oldData)
+                arguments.getString(EXTRA_SKILL_ID), paging, sortOrder, readCache, cachingEnabled,
+                oldData)
     }
 
     private val sortOrder: String

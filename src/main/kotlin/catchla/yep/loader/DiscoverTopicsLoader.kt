@@ -14,6 +14,7 @@ class DiscoverTopicsLoader(
         context: Context,
         account: Account,
         private val userId: String?,
+        private val skillId: String?,
         private val paging: Paging,
         @TopicSortOrder
         private val sortBy: String,
@@ -35,7 +36,7 @@ class DiscoverTopicsLoader(
         if (userId != null) {
             topics = yep.getTopics(userId, paging)
         } else {
-            topics = yep.getDiscoverTopics(sortBy, paging)
+            topics = yep.getDiscoverTopics(sortBy, paging, skillId)
         }
         for (topic in topics) {
             list.remove(topic)
