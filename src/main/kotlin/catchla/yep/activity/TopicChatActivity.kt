@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import catchla.yep.Constants
-import catchla.yep.Constants.*
+import catchla.yep.Constants.EXTRA_ACCOUNT
+import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
 import catchla.yep.fragment.ReportTypeDialogFragment
@@ -26,7 +27,6 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_topic_chat)
-
         displayTopic(topic)
 
         val ft = supportFragmentManager.beginTransaction()

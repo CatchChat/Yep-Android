@@ -26,17 +26,19 @@
 
     <include layout="@layout/layout_content_recyclerview_common"/>
 
-    <RelativeLayout
+    <catchla.yep.view.ExtendedRelativeLayout
+        android:id="@+id/chatTopic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/chat_topic"
         android:background="?android:colorBackground"
-        android:elevation="8dp">
+        android:clickable="true"
+        android:elevation="8dp"
+        android:padding="@dimen/element_spacing_normal">
 
-        <ImageView
-            android:id="@+id/topic_icon"
-            android:layout_width="@dimen/element_size_normal"
-            android:layout_height="@dimen/element_size_normal"
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/topicProfileImage"
+            android:layout_width="@dimen/chat_topic_icon_size"
+            android:layout_height="@dimen/chat_topic_icon_size"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"/>
 
@@ -44,23 +46,38 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/topic_icon"
-            android:layout_toRightOf="@+id/topic_icon"
-            android:orientation="vertical">
+            android:layout_toEndOf="@id/topicProfileImage"
+            android:layout_toLeftOf="@+id/topicIcon"
+            android:layout_toRightOf="@+id/topicProfileImage"
+            android:layout_toStartOf="@id/topicIcon"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/element_spacing_normal"
+            android:paddingRight="@dimen/element_spacing_normal">
 
             <TextView
-                android:id="@+id/topic_title"
+                android:id="@+id/topicTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?colorAccent"
                 tools:text="Title"/>
 
             <TextView
-                android:id="@+id/topic_summary"
+                android:id="@+id/topicSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:text="Summary"/>
         </LinearLayout>
 
-    </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/topicIcon"
+            android:layout_width="@dimen/chat_topic_icon_size"
+            android:layout_height="@dimen/chat_topic_icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"/>
+
+    </catchla.yep.view.ExtendedRelativeLayout>
 
 </FrameLayout>

@@ -25,22 +25,24 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
-import android.support.v4.graphics.ColorUtils
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 import catchla.yep.R
 import catchla.yep.util.Utils
-import catchla.yep.util.support.WindowSupport
 import catchla.yep.view.iface.TintedStatusLayout
 
 /**
  * Created by mariotaku on 14/11/26.
  */
-class TintedStatusFrameLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ExtendedFrameLayout(context, attrs, defStyleAttr), TintedStatusLayout {
+class TintedStatusFrameLayout @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+) : ExtendedFrameLayout(context, attrs, defStyleAttr), TintedStatusLayout {
 
     private val mColorPaint: Paint
-    private var mSetPadding: Boolean = false
+    override var setPaddingEnabled: Boolean = false
 
     private var mStatusBarHeight: Int = 0
     private val mSystemWindowsInsets: Rect
@@ -48,7 +50,7 @@ class TintedStatusFrameLayout @JvmOverloads constructor(context: Context, attrs:
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.TintedStatusLayout)
-        setSetPaddingEnabled(a.getBoolean(R.styleable.TintedStatusLayout_setPadding, false))
+        setPaddingEnabled = a.getBoolean(R.styleable.TintedStatusLayout_setPadding, false)
         a.recycle()
         mColorPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mSystemWindowsInsets = Rect()
@@ -60,7 +62,7 @@ class TintedStatusFrameLayout @JvmOverloads constructor(context: Context, attrs:
                 val left = insets.systemWindowInsetLeft
                 val right = insets.systemWindowInsetRight
                 val bottom = insets.systemWindowInsetBottom
-                if (mSetPadding) {
+                if (setPaddingEnabled) {
                     setPadding(left, top, right, bottom)
                 }
                 setStatusBarHeight(top)
@@ -77,10 +79,6 @@ class TintedStatusFrameLayout @JvmOverloads constructor(context: Context, attrs:
         mColorPaint.color = 0xFF000000.toInt() or Utils.getColorDark(color)
         mColorPaint.alpha = Color.alpha(color)
         invalidate()
-    }
-
-    override fun setSetPaddingEnabled(enabled: Boolean) {
-        mSetPadding = enabled
     }
 
     fun setStatusBarHeight(height: Int) {

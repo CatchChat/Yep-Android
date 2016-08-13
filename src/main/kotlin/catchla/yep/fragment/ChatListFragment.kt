@@ -31,6 +31,9 @@ import catchla.yep.util.Utils
 import catchla.yep.view.AudioSampleView
 import catchla.yep.view.MediaSizeImageView
 import catchla.yep.view.StaticMapView
+import catchla.yep.view.iface.IExtendedView
+import kotlinx.android.synthetic.main.fragment_chat_list.*
+import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.ui.successUi
 import okhttp3.OkHttpClient
@@ -50,9 +53,6 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
     private var mediaPlayer: MediaPlayer? = null
     var jumpToLast: Boolean = false
 
-    private lateinit var topicTitle: TextView
-    private lateinit var topicSummary: TextView
-    private lateinit var chatTopic: View
 
     override fun onScrollToPositionWithOffset(layoutManager: LinearLayoutManager, position: Int, offset: Int) {
         layoutManager.scrollToPositionWithOffset(position, offset)
@@ -60,13 +60,6 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater!!.inflate(R.layout.fragment_chat_list, container, false)
-    }
-
-    override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onBaseViewCreated(view, savedInstanceState)
-        chatTopic = view.findViewById(R.id.chat_topic)
-        topicTitle = view.findViewById(R.id.topic_title) as TextView
-        topicSummary = view.findViewById(R.id.topic_summary) as TextView
     }
 
     override fun isRefreshing(): Boolean {
@@ -101,8 +94,25 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         val topic = topic
         if (topic != null) {
             chatTopic.visibility = View.VISIBLE
+            val image = topic.attachments.firstOrNull() as? FileAttachment
+            if (image != null) {
+                imageLoader.displayProviderPreviewImage(image.file.url, topicIcon)
+                topicIcon.scaleType = ImageView.ScaleType.CENTER_CROP
+            } else {
+                topicIcon.setImageResource(R.drawable.ic_feed_placeholder_text)
+                topicIcon.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            }
             topicTitle.text = Utils.getDisplayName(topic.user)
             topicSummary.text = topic.body
+            imageLoader.displayProfileImage(topic.user.avatar?.thumbUrl, topicProfileImage)
+            val paddingTopBackup = recyclerView.paddingTop
+            chatTopic.onSizeChangedListener = object : IExtendedView.OnSizeChangedListener {
+
+                override fun onSizeChanged(view: View, w: Int, h: Int, oldw: Int, oldh: Int) {
+                    recyclerView.setPadding(recyclerView.paddingLeft, paddingTopBackup + h,
+                            recyclerView.paddingRight, recyclerView.paddingBottom);
+                }
+            }
         } else {
             chatTopic.visibility = View.GONE
         }
@@ -110,7 +120,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         showProgress()
     }
 
-    private val topic: Topic?
+    val topic: Topic?
         get() = arguments.getParcelable<Topic>(Constants.EXTRA_TOPIC)
 
     override fun onLoadFinished(loader: Loader<List<Message>?>, data: List<Message>?) {

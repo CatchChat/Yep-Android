@@ -17,7 +17,6 @@ import javax.inject.Inject
 
 open class ContentActivity : AppCompatActivity(), IBaseActivity {
 
-    protected val mainContent by lazy { findViewById(R.id.mainContent) as TintedStatusFrameLayout? }
     @Inject
     lateinit var bus: Bus
     @Inject
@@ -63,11 +62,12 @@ open class ContentActivity : AppCompatActivity(), IBaseActivity {
 
     private fun setupTintStatusBar() {
         val actionBar = supportActionBar
+        val mainContent = findViewById(R.id.mainContent) as TintedStatusFrameLayout?
         if (mainContent == null || actionBar == null || !isTintBarEnabled) return
 
         val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
         actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-        mainContent!!.setStatusBarColorDarken(primaryColor)
+        mainContent.setStatusBarColorDarken(primaryColor)
     }
 
 }
