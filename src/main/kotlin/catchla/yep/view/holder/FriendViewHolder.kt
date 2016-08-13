@@ -17,9 +17,11 @@ import catchla.yep.model.User
 /**
  * Created by mariotaku on 15/4/29.
  */
-class FriendViewHolder(itemView: View,
-                       val adapter: BaseRecyclerViewAdapter<RecyclerView.ViewHolder>,
-                       val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class FriendViewHolder(
+        itemView: View,
+        val adapter: BaseRecyclerViewAdapter<RecyclerView.ViewHolder>,
+        val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val profileImageView: ImageView
     private val nameView: TextView

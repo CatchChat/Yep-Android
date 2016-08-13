@@ -204,7 +204,8 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
     }
 
     override fun onMessageSentFinished(result: TaskResponse<Message>) {
-
+        val f = chatListFragment
+        f.scrollToStart()
     }
 
     @Subscribe
@@ -245,9 +246,9 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
     }
 
     override fun onMessageSentStarted(newMessage: NewMessage) {
-        val chatListFragment = supportFragmentManager.findFragmentById(R.id.listContainer) as ChatListFragment
-        chatListFragment.scrollToStart()
-        chatListFragment.jumpToLast = true
+        val f = chatListFragment
+        f.scrollToStart()
+        f.jumpToLast = true
     }
 
     override fun onTypingText() {
@@ -266,4 +267,8 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
     override fun onServiceDisconnected(name: ComponentName) {
         fayeService = null
     }
+
+    val chatListFragment: ChatListFragment
+        get() = supportFragmentManager.findFragmentById(R.id.listContainer) as ChatListFragment
+
 }

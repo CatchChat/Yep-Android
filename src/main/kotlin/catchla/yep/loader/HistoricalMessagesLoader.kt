@@ -36,6 +36,7 @@ class HistoricalMessagesLoader(
             list.remove(topic)
             list.add(topic)
         }
+        list.sortByDescending { it.createdAt }
         return list
     }
 

@@ -75,7 +75,9 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
     }
 
     override fun onCreateLayoutManager(context: Context): LinearLayoutManager {
-        return FixedLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
+        val lm = FixedLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
+        lm.stackFromEnd = true
+        return lm
     }
 
     override fun onStop() {
@@ -314,23 +316,27 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 protected val adapter: ChatAdapter
         ) : RecyclerView.ViewHolder(itemView) {
 
-            private val profileImageView: ImageView?
+            private val profileImageView by lazy { itemView.findViewById(R.id.profileImage) as ImageView? }
             private val stateView: ImageView?
             private val text1: TextView
 
             init {
                 text1 = itemView.findViewById(android.R.id.text1) as TextView
                 stateView = itemView.findViewById(R.id.state) as ImageView?
-                profileImageView = itemView.findViewById(R.id.profileImage) as ImageView?
                 stateView?.setOnClickListener { adapter.notifyStateClicked(layoutPosition) }
             }
 
             open fun displayMessage(message: Message) {
                 text1.text = message.textContent
                 text1.visibility = if (text1.length() > 0) View.VISIBLE else View.GONE
+                val profileImageView = profileImageView
                 if (profileImageView != null) {
-                    adapter.imageLoader.displayProfileImage(message.sender.avatarUrl,
-                            profileImageView)
+                    val sender = message.sender
+                    if (sender.avatarThumbUrl != profileImageView.tag || profileImageView.drawable == null) {
+                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl,
+                                profileImageView)
+                    }
+                    profileImageView.tag = sender.avatarThumbUrl
                 }
                 when (message.state) {
                     MessageState.READ -> {
@@ -458,4 +464,5 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
 
     }
+
 }
