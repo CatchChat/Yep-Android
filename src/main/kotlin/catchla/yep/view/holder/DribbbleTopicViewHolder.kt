@@ -26,7 +26,7 @@ class DribbbleTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, cont
     private val titleView: TextView
 
     init {
-        itemView.findViewById(R.id.attachment_view).setOnClickListener(this)
+        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
         mediaPreviewView = itemView.findViewById(R.id.media_preview) as ImageView
         titleView = itemView.findViewById(R.id.title) as TextView
     }

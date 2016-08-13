@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    android:id="@+id/attachment_view"
+    android:id="@+id/attachmentView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,14 +10,20 @@
     android:layout_below="@+id/text"
     android:layout_marginEnd="@dimen/element_spacing_xlarge"
     android:layout_marginRight="@dimen/element_spacing_xlarge"
-    android:background="?selectableItemBackground"
     android:clickable="true"
-    android:minHeight="96dp">
+    android:foreground="@drawable/bg_topic_attachment"
+    android:outlineProvider="background">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="?selectableItemBackground"
+        android:duplicateParentState="true"
+        android:paddingBottom="@dimen/element_spacing_mlarge"
+        android:paddingLeft="@dimen/element_spacing_small"
+        android:paddingRight="@dimen/element_spacing_small"
+        android:paddingTop="@dimen/element_spacing_mlarge"
         tools:ignore="UselessParent">
 
         <ImageView

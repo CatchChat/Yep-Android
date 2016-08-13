@@ -25,12 +25,12 @@ class GithubTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, contex
     init {
         repoName = itemView.findViewById(R.id.repo_name) as TextView
         repoDescription = itemView.findViewById(R.id.repo_description) as TextView
-        itemView.findViewById(R.id.attachment_view).setOnClickListener(this)
+        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.attachment_view -> {
+            R.id.attachmentView -> {
                 val attachment = adapter.getTopic(layoutPosition).attachments[0] as GithubAttachment
                 Utils.openUri(adapter.context as Activity, Uri.parse(attachment.url))
                 return

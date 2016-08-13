@@ -247,7 +247,7 @@ class Utils : Constants {
 
         fun inflateSkillItemView(context: Context, inflater: LayoutInflater, skill: Skill, parent: ViewGroup): View {
             val view = inflater.inflate(R.layout.layout_skill_label_button, parent, false)
-            val button = view.findViewById(R.id.skill_button) as TextView
+            val button = view.findViewById(R.id.skillButton) as TextView
             button.text = skill.nameString
             return view
         }

@@ -129,7 +129,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         learningSkills.removeAllViews()
         user.learningSkills?.forEach { skill ->
             val view = Utils.inflateSkillItemView(this@UserActivity, inflater, skill, learningSkills)
-            val skillButton = view.findViewById(R.id.skill_button)
+            val skillButton = view.findViewById(R.id.skillButton)
             skillButton.tag = skill
             skillButton.setOnClickListener(skillOnClickListener)
             learningSkills.addView(view)
@@ -146,7 +146,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
         masterSkills.removeAllViews()
         user.masterSkills?.forEach { skill ->
             val view = Utils.inflateSkillItemView(this@UserActivity, inflater, skill, masterSkills)
-            val skillButton = view.findViewById(R.id.skill_button)
+            val skillButton = view.findViewById(R.id.skillButton)
             skillButton.tag = skill
             skillButton.setOnClickListener(skillOnClickListener)
             masterSkills.addView(view)

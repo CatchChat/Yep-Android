@@ -44,7 +44,7 @@ class FriendGridViewHolder(
             R.id.item_content -> {
                 listener?.invoke(adapterPosition, this)
             }
-            R.id.skill_button -> {
+            R.id.skillButton -> {
                 val skill = v.tag as Skill
                 skillClickListener?.invoke(adapterPosition, skill, this)
             }

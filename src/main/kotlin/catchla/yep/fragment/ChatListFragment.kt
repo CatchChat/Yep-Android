@@ -223,19 +223,19 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                     return MessageViewHolder(baseView, isOutgoing, this)
                 }
                 VIEW_SUBTYPE_MESSAGE_LOCATION -> {
-                    val attachmentContainer = baseView.findViewById(R.id.attachment_view) as ViewGroup
+                    val attachmentContainer = baseView.findViewById(R.id.attachmentView) as ViewGroup
                     attachmentContainer.visibility = View.VISIBLE
                     View.inflate(attachmentContainer.context, R.layout.layout_message_attachment_location, attachmentContainer)
                     return LocationChatViewHolder(baseView, isOutgoing, this)
                 }
                 VIEW_SUBTYPE_MESSAGE_IMAGE -> {
-                    val attachmentContainer = baseView.findViewById(R.id.attachment_view) as ViewGroup
+                    val attachmentContainer = baseView.findViewById(R.id.attachmentView) as ViewGroup
                     attachmentContainer.visibility = View.VISIBLE
                     View.inflate(attachmentContainer.context, R.layout.layout_message_attachment_image, attachmentContainer)
                     return ImageChatViewHolder(baseView, isOutgoing, this)
                 }
                 VIEW_SUBTYPE_MESSAGE_AUDIO -> {
-                    val attachmentContainer = baseView.findViewById(R.id.attachment_view) as ViewGroup
+                    val attachmentContainer = baseView.findViewById(R.id.attachmentView) as ViewGroup
                     attachmentContainer.visibility = View.VISIBLE
                     View.inflate(attachmentContainer.context, R.layout.layout_message_attachment_audio, attachmentContainer)
                     return AudioChatViewHolder(baseView, isOutgoing, this)

@@ -159,7 +159,7 @@ public class Topic implements Parcelable {
         return kind;
     }
 
-    public String getAttachmentKind() {
+    private String getAttachmentKind() {
         if (attachments == null) return null;
         //noinspection LoopStatementThatDoesntLoop
         for (final Attachment attachment : attachments) {

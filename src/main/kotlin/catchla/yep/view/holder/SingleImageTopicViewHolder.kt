@@ -23,13 +23,13 @@ class SingleImageTopicViewHolder(adapter: TopicsAdapter, itemView: View, context
     private val mediaPreviewView: ImageView
 
     init {
-        itemView.findViewById(R.id.attachment_view).setOnClickListener(this)
+        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
         mediaPreviewView = itemView.findViewById(R.id.image) as ImageView
     }
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.attachment_view -> {
+            R.id.attachmentView -> {
                 val attachments = adapter.getTopic(layoutPosition).attachments
                 listener!!.onMediaClick(attachments.toTypedArray(),
                         attachments[0], v)

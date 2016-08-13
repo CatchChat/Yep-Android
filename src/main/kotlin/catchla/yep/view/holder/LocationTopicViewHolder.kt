@@ -30,7 +30,7 @@ class LocationTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, cont
     private val placeView: TextView
 
     init {
-        itemView.findViewById(R.id.attachment_view).setOnClickListener(this)
+        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
         mapView = itemView.findViewById(R.id.map_view) as StaticMapView
         placeView = itemView.findViewById(R.id.place) as TextView
         mapView.setProvider(StaticMapUrlGenerator.AMapProvider(Constants.AMAP_WEB_API_KEY))

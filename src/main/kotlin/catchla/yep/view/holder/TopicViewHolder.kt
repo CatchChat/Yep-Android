@@ -41,13 +41,13 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
             itemView.setOnClickListener(this)
         }
         profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
-        providerIcon = itemView.findViewById(R.id.provider_icon) as ImageView
+        providerIcon = itemView.findViewById(R.id.providerIcon) as ImageView
         nameView = itemView.findViewById(R.id.name) as TextView
         textView = itemView.findViewById(R.id.text) as TextView
         timeView = itemView.findViewById(R.id.time) as ShortTimeView
         distanceView = itemView.findViewById(R.id.distance) as TextView
-        messagesCountView = itemView.findViewById(R.id.messages_count) as TextView
-        skillButton = itemView.findViewById(R.id.skill_button) as TextView
+        messagesCountView = itemView.findViewById(R.id.messagesCount) as TextView
+        skillButton = itemView.findViewById(R.id.skillButton) as TextView
         currentLocation = Utils.getCachedLocation(context)
         tempLocation = Location("")
 
@@ -88,17 +88,18 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
             skillButton.visibility = View.GONE
         }
 
-        val attachmentKind = topic.attachmentKind
-        if (Attachment.Kind.GITHUB == attachmentKind) {
-            providerIcon.setImageResource(R.drawable.ic_provider_github)
-            providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.context,
-                    R.color.color_github))
-        } else if (Attachment.Kind.DRIBBBLE == attachmentKind) {
-            providerIcon.setImageResource(R.drawable.ic_provider_dribbble)
-            providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.context,
-                    R.color.color_dribbble))
-        } else {
-            providerIcon.setImageDrawable(null)
+        when (topic.kind) {
+            Attachment.Kind.GITHUB -> {
+                providerIcon.setImageResource(R.drawable.ic_provider_github)
+                providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.context,
+                        R.color.color_github))
+            }
+            Attachment.Kind.DRIBBBLE -> {
+                providerIcon.setImageResource(R.drawable.ic_provider_dribbble)
+                providerIcon.setColorFilter(ContextCompat.getColor(providerIcon.context,
+                        R.color.color_dribbble))
+            }
+            else -> providerIcon.setImageDrawable(null)
         }
 
     }
@@ -108,13 +109,13 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
             R.id.item_content -> {
                 listener!!.onItemClick(layoutPosition, this)
             }
-            R.id.skill_button -> {
+            R.id.skillButton -> {
                 listener!!.onSkillClick(layoutPosition, this)
             }
             R.id.profileImage, R.id.name -> {
                 run { listener!!.onUserClick(layoutPosition, this) }
             }
-            R.id.attachment_view -> {
+            R.id.attachmentView -> {
                 onAttachmentClick()
             }
         }

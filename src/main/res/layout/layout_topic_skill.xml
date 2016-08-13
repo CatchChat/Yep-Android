@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView
-    android:id="@+id/skill_button"
+    android:id="@+id/skillButton"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -11,4 +12,5 @@
     android:minWidth="32dp"
     android:padding="@dimen/element_spacing_small"
     android:textColor="?colorPrimary"
-    android:textSize="@dimen/text_size_friend_grid_skill_label"/>
+    android:textSize="@dimen/text_size_friend_grid_skill_label"
+    tools:text="Skill"/>

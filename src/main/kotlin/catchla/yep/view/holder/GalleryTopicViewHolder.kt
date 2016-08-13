@@ -26,7 +26,7 @@ class GalleryTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, conte
     private val topicMediaAdapter: TopicAttachmentsAdapter
 
     init {
-        mediaGallery = itemView.findViewById(R.id.attachment_view) as RecyclerView
+        mediaGallery = itemView.findViewById(R.id.attachmentView) as RecyclerView
         mediaGallery.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         topicMediaAdapter = GalleryTopicViewHolder.TopicAttachmentsAdapter(context, listener)
         mediaGallery.adapter = topicMediaAdapter
