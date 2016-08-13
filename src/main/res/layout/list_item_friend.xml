@@ -42,8 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/update_time"
-            android:layout_toStartOf="@+id/update_time"
+            android:layout_toLeftOf="@+id/updateTime"
+            android:layout_toStartOf="@+id/updateTime"
             android:baselineAligned="true"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -80,14 +80,15 @@
             android:textColor="?android:textColorSecondary"
             tools:text="Description"/>
 
-        <TextView
-            android:id="@+id/update_time"
+        <catchla.yep.view.ShortTimeView
+            android:id="@+id/updateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/name_container"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:singleLine="true"
+            android:text="@string/last_seen_time"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="?android:textColorTertiary"
             tools:text="update time"/>

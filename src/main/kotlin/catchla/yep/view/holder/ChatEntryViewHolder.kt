@@ -30,12 +30,11 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
         profileImageView = itemView.findViewById(R.id.profileImage) as ImageView
 
         nameView = itemView.findViewById(R.id.name) as TextView
-        timeView = itemView.findViewById(R.id.update_time) as ShortTimeView
+        timeView = itemView.findViewById(R.id.updateTime) as ShortTimeView
         messageView = itemView.findViewById(R.id.message) as TextView
-        itemView.setOnClickListener(View.OnClickListener {
-            if (listener == null) return@OnClickListener
-            listener.invoke(adapterPosition, this@ChatEntryViewHolder)
-        })
+        itemView.setOnClickListener {
+            listener?.invoke(adapterPosition, this)
+        }
     }
 
     fun displayConversation(conversation: Conversation) {
@@ -44,13 +43,13 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
         val imageLoader = adapter.imageLoader
         imageLoader.displayProfileImage(Utils.getConversationAvatarUrl(conversation), profileImageView)
         messageView.text = getConversationSummary(adapter.context, conversation)
-        timeView.setTime(Utils.getTime(conversation.updatedAt))
+        timeView.time = Utils.getTime(conversation.updatedAt)
     }
 
     fun displayCirclesEntry(conversation: Conversation) {
         nameView.setText(R.string.circles)
         messageView.text = getConversationSummary(adapter.context, conversation)
-        timeView.setTime(Utils.getTime(conversation.updatedAt))
+        timeView.time = Utils.getTime(conversation.updatedAt)
     }
 
     private fun getConversationSummary(context: Context, conversation: Conversation): String? {

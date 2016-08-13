@@ -257,7 +257,6 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         } catch (e: RemoteException) {
             Log.w(Constants.LOGTAG, e)
         }
-
     }
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {

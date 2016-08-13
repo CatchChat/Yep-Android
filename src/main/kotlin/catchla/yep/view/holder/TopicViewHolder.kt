@@ -67,7 +67,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         textView.text = topic.body
         val createdAt = topic.createdAt
         if (createdAt != null) {
-            timeView.setTime(createdAt.time)
+            timeView.time = createdAt.time
         }
         val userLocation = topic.user.location
         if (currentLocation != null && userLocation != null) {

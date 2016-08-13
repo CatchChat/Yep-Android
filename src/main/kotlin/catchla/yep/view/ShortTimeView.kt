@@ -22,22 +22,29 @@ package catchla.yep.view
 import android.content.Context
 import android.os.SystemClock
 import android.support.v7.widget.AppCompatTextView
+import android.text.TextUtils
 import android.util.AttributeSet
 import catchla.yep.util.Utils
 
-class ShortTimeView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = android.R.attr.textViewStyle) : AppCompatTextView(context, attrs, defStyle) {
+class ShortTimeView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = android.R.attr.textViewStyle
+) : AppCompatTextView(context, attrs, defStyle) {
 
 
     private val ticker: Runnable
-    private var mTime: Long = 0
+    private var textBackup: CharSequence? = null
+    private var textBackupIsTemplate = false
+
+    var time: Long = 0
+        set(value) {
+            field = value
+            invalidateTime()
+        }
 
     init {
         ticker = TickerRunnable(this)
-    }
-
-    fun setTime(time: Long) {
-        mTime = time
-        invalidateTime()
     }
 
     override fun onAttachedToWindow() {
@@ -51,7 +58,19 @@ class ShortTimeView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun invalidateTime() {
-        text = Utils.formatSameDayTime(context, mTime)
+        if (textBackup == null) {
+            textBackup = text
+        }
+        if (TextUtils.isEmpty(textBackup)) {
+            text = Utils.formatSameDayTime(context, time)
+        } else if (!textBackupIsTemplate) {
+            text = Utils.formatSameDayTime(context, time)
+        } else try {
+            text = String.format(textBackup!!.toString(), Utils.formatSameDayTime(context, time))
+        } catch (e: Exception) {
+            textBackupIsTemplate = false
+            text = Utils.formatSameDayTime(context, time)
+        }
     }
 
     private class TickerRunnable constructor(val textView: ShortTimeView) : Runnable {
