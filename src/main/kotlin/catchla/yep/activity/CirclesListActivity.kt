@@ -4,6 +4,7 @@ import android.os.Bundle
 
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.fragment.ConversationsListFragment
 import catchla.yep.model.Message
 

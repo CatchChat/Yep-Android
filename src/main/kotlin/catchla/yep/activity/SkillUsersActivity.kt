@@ -7,6 +7,7 @@ import android.view.View
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
+import catchla.yep.extension.account
 import catchla.yep.fragment.DiscoverFragment
 import catchla.yep.graphic.EmptyDrawable
 import catchla.yep.model.Skill

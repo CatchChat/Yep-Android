@@ -25,6 +25,7 @@ import android.widget.BaseAdapter
 import android.widget.GridView
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.fragment.BaseDialogFragment
 import catchla.yep.model.ProfileUpdate
 import catchla.yep.model.User
@@ -96,7 +97,6 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
     }
 
     private fun loadUser() {
-        val account = account
         displayUser(Utils.getAccountUser(this, account))
     }
 

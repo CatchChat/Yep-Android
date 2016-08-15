@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.LoaderManager
+import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
@@ -24,9 +25,12 @@ import catchla.yep.R
 import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
+import catchla.yep.extension.account
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverTopicsLoader
 import catchla.yep.model.*
+import catchla.yep.util.YepAPIFactory
+import catchla.yep.view.holder.SkillTopicRelatedUsersViewHolder
 import catchla.yep.view.holder.TopicViewHolder
 
 /**
@@ -35,6 +39,20 @@ import catchla.yep.view.holder.TopicViewHolder
 class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         LoaderManager.LoaderCallbacks<List<Topic>?>, TopicsAdapter.TopicClickListener,
         IActionButtonSupportFragment {
+    val relatedUsersLoaderCallback = object : LoaderManager.LoaderCallbacks<List<User>?> {
+        override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>?> {
+            return RelatedUsersLoader(context, account, skill!!)
+        }
+
+        override fun onLoaderReset(loader: Loader<List<User>?>) {
+
+        }
+
+        override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {
+            adapter.relatedUsers = data
+        }
+
+    }
 
     @TopicSortOrder
     private var mSortBy: String? = null
@@ -55,6 +73,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             loaderArgs.putBoolean(EXTRA_READ_CACHE, true)
         }
         loaderManager.initLoader(0, loaderArgs, this)
+        skill?.let {
+            loaderManager.initLoader(1, null, relatedUsersLoaderCallback)
+        }
         adapter.clickListener = this
         adapter.showSkillLabel = skill == null
         showProgress()
@@ -107,6 +128,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     override fun onLoaderReset(loader: Loader<List<Topic>?>) {
 
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
@@ -212,6 +234,13 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         startActivity(intent)
     }
 
+    override fun onRelatedUsersClick(position: Int, holder: SkillTopicRelatedUsersViewHolder) {
+        val intent = Intent(context, SkillUsersActivity::class.java)
+        intent.putExtra(EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_SKILL, skill)
+        startActivity(intent)
+    }
+
     override fun onMediaClick(attachments: Array<Attachment>, attachment: Attachment, clickedView: View) {
         val intent = Intent(context, MediaViewerActivity::class.java)
         intent.putExtra(EXTRA_MEDIA, attachments)
@@ -263,12 +292,31 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             return builder.create()
         }
 
-        private val account: Account
-            get() = arguments.getParcelable<Account>(EXTRA_ACCOUNT)
     }
 
     companion object {
 
         private val REQUEST_NEW_LOCATION_TOPIC = 102
     }
+
+    class RelatedUsersLoader(
+            context: Context,
+            val account: Account,
+            val skill: Skill
+    ) : AsyncTaskLoader<List<User>?>(context) {
+
+        override fun loadInBackground(): List<User>? {
+            val yep = YepAPIFactory.getInstance(context, account)
+            try {
+                return yep.getMasteredUsers(skill.id)
+            } catch (e: YepException) {
+                return null
+            }
+        }
+
+        override fun onStartLoading() {
+            forceLoad()
+        }
+    }
+
 }

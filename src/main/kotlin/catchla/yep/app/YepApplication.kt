@@ -36,7 +36,7 @@ class YepApplication : Application(), Constants {
                 foregroundActivitiesCount++
                 if (activity is IAccountActivity) {
                     val fayeIntent = Intent(this@YepApplication, FayeService::class.java)
-                    val account = activity.account
+                    val account = activity.currentAccount
                     fayeIntent.putExtra(Constants.EXTRA_ACCOUNT, account)
                     startedService = startService(fayeIntent)
                 }

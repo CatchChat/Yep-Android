@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import catchla.yep.Constants.EXTRA_ACCOUNT
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.fragment.BlockedUsersFragment
 
 /**

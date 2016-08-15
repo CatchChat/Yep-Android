@@ -15,6 +15,7 @@ import android.widget.Toast
 import catchla.yep.BuildConfig
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.model.Provider
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_provider_oauth.*

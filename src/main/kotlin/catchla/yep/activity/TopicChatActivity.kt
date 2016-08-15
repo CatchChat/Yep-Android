@@ -10,6 +10,7 @@ import catchla.yep.Constants.EXTRA_ACCOUNT
 import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
+import catchla.yep.extension.account
 import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.fragment.TopicChatListFragment
 import catchla.yep.model.Topic

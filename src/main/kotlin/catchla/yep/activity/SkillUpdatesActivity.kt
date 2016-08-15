@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.fragment.TopicsListFragment
 import catchla.yep.model.Skill
 

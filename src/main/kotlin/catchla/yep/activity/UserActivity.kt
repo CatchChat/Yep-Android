@@ -22,6 +22,7 @@ import catchla.yep.Constants
 import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
+import catchla.yep.extension.account
 import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
@@ -110,7 +111,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
 
         val skillOnClickListener = View.OnClickListener { v ->
             val skill = v.tag as Skill
-            val intent = Intent(this@UserActivity, SkillUsersActivity::class.java)
+            val intent = Intent(this@UserActivity, SkillUpdatesActivity::class.java)
             intent.putExtra(EXTRA_ACCOUNT, account)
             intent.putExtra(EXTRA_SKILL, skill)
             startActivity(intent)

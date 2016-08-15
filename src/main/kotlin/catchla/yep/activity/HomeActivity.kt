@@ -46,6 +46,12 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val account = currentAccount ?: run {
+            finish()
+            return
+        }
+
         WindowSupport.setStatusBarColor(window, Color.TRANSPARENT)
         val actionBar = supportActionBar!!
         actionBar.setDisplayShowCustomEnabled(true)
@@ -66,7 +72,6 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
 
         val args = Bundle()
         args.putBoolean(Constants.EXTRA_CACHING_ENABLED, true)
-        val account = account
         args.putParcelable(Constants.EXTRA_ACCOUNT, account)
 
         adapter.addTab(ConversationsListFragment::class.java, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args)
@@ -80,7 +85,7 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
 
         val intent = Intent(this, MessageService::class.java)
         intent.action = MessageService.ACTION_REFRESH_FRIENDSHIPS
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        intent.putExtra(Constants.EXTRA_ACCOUNT, currentAccount)
         startService(intent)
     }
 
@@ -125,7 +130,7 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         return true
     }
 
-    override val account: Account?
+    override val currentAccount: Account?
         get() = Utils.getCurrentAccount(this)
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {

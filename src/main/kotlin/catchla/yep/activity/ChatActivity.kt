@@ -18,6 +18,7 @@ import catchla.yep.Constants
 import catchla.yep.IFayeService
 import catchla.yep.R
 import catchla.yep.annotation.PathRecipientType
+import catchla.yep.extension.account
 import catchla.yep.fragment.ChatInputBarFragment
 import catchla.yep.fragment.ChatListFragment
 import catchla.yep.fragment.ConversationChatListFragment

@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.util.ThemeUtils
 import com.commonsware.cwac.merge.MergeAdapter
 import kotlinx.android.synthetic.main.activity_find_friend.*

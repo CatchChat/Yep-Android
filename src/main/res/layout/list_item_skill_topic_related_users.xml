@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<catchla.yep.view.InstagramProviderWidgetContainer
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:minHeight="?listPreferredItemHeight"
     android:padding="@dimen/element_spacing_normal">
 
-    <LinearLayout
-        android:id="@+id/widgetContent"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/profileImages"
+        android:layout_toStartOf="@+id/profileImages"
+        android:text="@string/related_users"/>
+
+    <LinearLayout
+        android:id="@+id/profileImages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:gravity="center"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/mediaPreview0"
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/profileImage0"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:gravity="center_vertical"
             android:scaleType="centerCrop"/>
 
-        <ImageView
-            android:id="@+id/mediaPreview1"
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/profileImage1"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
@@ -28,8 +43,8 @@
             android:gravity="center_vertical"
             android:scaleType="centerCrop"/>
 
-        <ImageView
-            android:id="@+id/mediaPreview2"
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/profileImage2"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="@dimen/element_spacing_small"
@@ -38,11 +53,4 @@
             android:scaleType="centerCrop"/>
 
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/loadProgress"
-        style="?android:progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
-</catchla.yep.view.InstagramProviderWidgetContainer>
+</RelativeLayout>

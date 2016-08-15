@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_feedback.*
 import nl.komponents.kovenant.task

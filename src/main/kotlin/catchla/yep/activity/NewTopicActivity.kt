@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.account
 import catchla.yep.fragment.NewTopicGalleryFragment
 import catchla.yep.fragment.NewTopicLocationFragment
 import catchla.yep.fragment.NewTopicMediaFragment

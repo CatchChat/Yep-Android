@@ -126,6 +126,10 @@ interface YepAPI {
     @Throws(YepException::class)
     fun addMasterSkill(@Param("skill_id") id: String): ResponseCode
 
+    @GET("master_skills/{skill_id}/users")
+    @Throws(YepException::class)
+    fun getMasteredUsers(@Path("skill_id") skillId: String): ResponseList<User>
+
     @POST("do_not_disturb_users")
     @Throws(YepException::class)
     fun addDoNotDisturb(@Param("user_id") id: String): ResponseCode

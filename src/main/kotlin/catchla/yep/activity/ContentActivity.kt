@@ -1,10 +1,8 @@
 package catchla.yep.activity
 
-import android.accounts.Account
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.activity.iface.IBaseActivity
 import catchla.yep.util.ImageLoaderWrapper
@@ -34,9 +32,6 @@ open class ContentActivity : AppCompatActivity(), IBaseActivity {
         super.onPostCreate(savedInstanceState)
         setupTintStatusBar()
     }
-
-    val account: Account
-        get() = intent.getParcelableExtra<Account>(Constants.EXTRA_ACCOUNT)
 
     override fun onContentChanged() {
         super.onContentChanged()

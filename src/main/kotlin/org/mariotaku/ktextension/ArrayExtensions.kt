@@ -10,3 +10,7 @@ fun <T : Any?> Array<T>.toStringArray(): Array<String?> {
     }
     return result
 }
+
+fun Array<*>?.nullOrEmpty(): Boolean {
+    return this == null || this.isEmpty()
+}

@@ -14,7 +14,9 @@ import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
 import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Attachment
 import catchla.yep.model.Topic
+import catchla.yep.model.User
 import catchla.yep.view.holder.*
+import org.mariotaku.ktextension.nullOrEmpty
 
 /**
  * Created by mariotaku on 15/4/29.
@@ -27,6 +29,14 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     var clickListener: TopicClickListener? = null
         set
+
+    var relatedUsers: List<User>? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    internal val itemCounts = IntArray(4)
 
     var topics: List<Topic>? = null
         set(value) {
@@ -76,6 +86,10 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                 inflater.inflate(R.layout.layout_topic_attachment_webpage, view as ViewGroup)
                 return WebPageTopicViewHolder(this, view, context, imageLoader, clickListener)
             }
+            ITEM_VIEW_TYPE_RELATED_USERS -> {
+                val view = inflater.inflate(R.layout.list_item_skill_topic_related_users, parent, false)
+                return SkillTopicRelatedUsersViewHolder(this, view, context, imageLoader, clickListener)
+            }
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
@@ -85,21 +99,27 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (position == topicsCount) return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
-        val topic = getTopic(position)
-        val kind = topic.kind
-        when (kind) {
-            Topic.Kind.IMAGE -> if (topic.attachments.size > 1) {
-                return ITEM_VIEW_TYPE_MEDIA_GALLERY
-            } else {
-                return ITEM_VIEW_TYPE_SINGLE_IMAGE
+        when (getItemCountIndex(position)) {
+            0, 3 -> return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
+            1 -> return ITEM_VIEW_TYPE_RELATED_USERS
+            2 -> {
+                val topic = getTopic(position)
+                val kind = topic.kind
+                when (kind) {
+                    Topic.Kind.IMAGE -> if (topic.attachments.size > 1) {
+                        return ITEM_VIEW_TYPE_MEDIA_GALLERY
+                    } else {
+                        return ITEM_VIEW_TYPE_SINGLE_IMAGE
+                    }
+                    Topic.Kind.GITHUB -> return ITEM_VIEW_TYPE_GITHUB
+                    Topic.Kind.DRIBBBLE -> return ITEM_VIEW_TYPE_DRIBBBLE
+                    Topic.Kind.LOCATION -> return ITEM_VIEW_TYPE_LOCATION
+                    Topic.Kind.WEB_PAGE -> return ITEM_VIEW_TYPE_WEB_PAGE
+                    else -> return ITEM_VIEW_TYPE_BASIC
+                }
             }
-            Topic.Kind.GITHUB -> return ITEM_VIEW_TYPE_GITHUB
-            Topic.Kind.DRIBBBLE -> return ITEM_VIEW_TYPE_DRIBBBLE
-            Topic.Kind.LOCATION -> return ITEM_VIEW_TYPE_LOCATION
-            Topic.Kind.WEB_PAGE -> return ITEM_VIEW_TYPE_WEB_PAGE
-            else -> return ITEM_VIEW_TYPE_BASIC
         }
+        throw AssertionError()
     }
 
 
@@ -111,36 +131,44 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE,
             ITEM_VIEW_TYPE_WEB_PAGE -> {
                 val topicViewHolder = holder as TopicViewHolder
-                topicViewHolder.displayTopic(topics!![position])
+                topicViewHolder.displayTopic(getTopic(position))
+            }
+            ITEM_VIEW_TYPE_RELATED_USERS -> {
+                (holder as SkillTopicRelatedUsersViewHolder).display(relatedUsers!!)
             }
         }
     }
 
     override fun getItemCount(): Int {
         val position = loadMoreIndicatorPosition
-        var count = 0
-        if (position and ILoadMoreSupportAdapter.IndicatorPosition.START != 0) {
-            count += 1
+        itemCounts[0] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.START != 0) 1 else 0
+        itemCounts[1] = if (!topics.nullOrEmpty() && !relatedUsers.nullOrEmpty()) 1 else 0
+        itemCounts[2] = topicsCount
+        itemCounts[3] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.END != 0) 1 else 0
+        return itemCounts.sum()
+    }
+
+    fun getItemCountIndex(position: Int): Int {
+        var sum: Int = 0
+        itemCounts.forEachIndexed { idx, count ->
+            sum += count
+            if (position < sum) {
+                return idx
+            }
         }
-        count += topicsCount
-        if (position and ILoadMoreSupportAdapter.IndicatorPosition.END != 0) {
-            count += 1
-        }
-        return count
+        return -1
     }
 
     val topicsCount: Int
-        get() {
-            if (topics == null) return 0
-            return topics!!.size
-        }
-
+        get() = topics?.size ?: 0
 
     fun getTopic(position: Int): Topic {
-        return topics!![position]
+        return topics!![position - itemCounts[0] - itemCounts[1]]
     }
 
     interface TopicClickListener : ItemClickListener {
+        fun onRelatedUsersClick(position: Int, holder: SkillTopicRelatedUsersViewHolder)
+
         fun onSkillClick(position: Int, holder: TopicViewHolder)
 
         fun onUserClick(position: Int, holder: TopicViewHolder)
@@ -156,6 +184,9 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         private val ITEM_VIEW_TYPE_LOCATION = 5
         private val ITEM_VIEW_TYPE_SINGLE_IMAGE = 6
         private val ITEM_VIEW_TYPE_WEB_PAGE = 7
+
+        private val ITEM_VIEW_TYPE_RELATED_USERS = 10
     }
 
 }
+
