@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import catchla.yep.Constants
-
 import catchla.yep.R
 import catchla.yep.model.LocationAttachment
 import catchla.yep.model.NewTopic
@@ -14,13 +13,12 @@ import catchla.yep.model.Topic
 import catchla.yep.model.YepException
 import catchla.yep.util.StaticMapUrlGenerator
 import catchla.yep.util.YepAPI
-import catchla.yep.view.StaticMapView
+import kotlinx.android.synthetic.main.layout_topic_attachment_location_content.*
 
 /**
  * Created by mariotaku on 16/1/6.
  */
 class NewTopicLocationFragment : NewTopicMediaFragment() {
-    private lateinit var mapView: StaticMapView
 
     override fun hasMedia(): Boolean {
         return attachment != null
@@ -39,28 +37,23 @@ class NewTopicLocationFragment : NewTopicMediaFragment() {
     val attachment: LocationAttachment?
         get() = arguments.getParcelable<LocationAttachment>(Constants.EXTRA_ATTACHMENT)
 
-    override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onBaseViewCreated(view, savedInstanceState)
-        mapView = view.findViewById(R.id.map_view) as StaticMapView
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mapView.setProvider(StaticMapUrlGenerator.AMapProvider(Constants.AMAP_WEB_API_KEY))
         mapView.setScaleToDensity(true)
 
-        val attachment = attachment
-
-        if (attachment != null) {
+        attachment?.let {
             val location = Location("")
-            location.latitude = attachment.latitude
-            location.longitude = attachment.longitude
+            location.latitude = it.latitude
+            location.longitude = it.longitude
+            place.text = it.place
             mapView.display(location, 12)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.fragment_new_topic_attachment_location, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_new_topic_attachment_location, container, false)
     }
 
     override fun clearDraft() {
