@@ -80,7 +80,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         }
         messagesCountView.text = if (topic.messageCount > 0) topic.messageCount.toString() else null
         val skill = topic.skill
-        if (skill != null) {
+        if (skill != null && adapter.showSkillLabel) {
             skillButton.text = Utils.getDisplayName(skill)
             skillButton.visibility = View.VISIBLE
         } else {

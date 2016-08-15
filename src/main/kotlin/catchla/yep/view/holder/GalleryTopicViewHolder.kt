@@ -19,9 +19,13 @@ import catchla.yep.util.ImageLoaderWrapper
 /**
  * Created by mariotaku on 15/12/9.
  */
-class GalleryTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, context: Context,
-                             imageLoader: ImageLoaderWrapper,
-                             listener: TopicsAdapter.TopicClickListener?) : TopicViewHolder(topicsAdapter, itemView, context, imageLoader, listener) {
+class GalleryTopicViewHolder(
+        topicsAdapter: TopicsAdapter,
+        itemView: View,
+        context: Context,
+        imageLoader: ImageLoaderWrapper,
+        listener: TopicsAdapter.TopicClickListener?
+) : TopicViewHolder(topicsAdapter, itemView, context, imageLoader, listener) {
     private val mediaGallery: RecyclerView
     private val topicMediaAdapter: TopicAttachmentsAdapter
 

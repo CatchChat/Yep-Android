@@ -123,7 +123,9 @@ public class ContentListScrollListener extends OnScrollListener {
                 position |= IndicatorPosition.START;
             }
             resetScrollDirection();
-            mContentListSupport.onLoadMoreContents(position);
+            if (position != 0) {
+                mContentListSupport.onLoadMoreContents(position);
+            }
         }
     }
 

@@ -23,6 +23,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     private val inflater: LayoutInflater
 
+    var showSkillLabel: Boolean = true
+
     var clickListener: TopicClickListener? = null
         set
 
@@ -155,4 +157,5 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         private val ITEM_VIEW_TYPE_SINGLE_IMAGE = 6
         private val ITEM_VIEW_TYPE_WEB_PAGE = 7
     }
+
 }

@@ -22,7 +22,7 @@ class SkillUpdatesActivity : SwipeBackContentActivity() {
         val ft = supportFragmentManager.beginTransaction()
         val args = Bundle()
         args.putParcelable(EXTRA_ACCOUNT, account)
-        args.putString(EXTRA_SKILL_ID, skill.id)
+        args.putParcelable(EXTRA_SKILL, skill)
         ft.replace(R.id.mainContent, Fragment.instantiate(this, TopicsListFragment::class.java.name, args))
         ft.commit()
     }

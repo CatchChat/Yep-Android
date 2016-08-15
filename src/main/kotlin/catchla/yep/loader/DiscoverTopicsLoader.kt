@@ -17,14 +17,14 @@ class DiscoverTopicsLoader(
         private val skillId: String?,
         private val paging: Paging,
         @TopicSortOrder
-        private val sortBy: String,
+        private val sortBy: String?,
         readCache: Boolean,
         writeCache: Boolean,
         oldData: List<Topic>?
 ) : CachedYepListLoader<Topic>(context, account, Topic::class.java, oldData, readCache, writeCache), Constants {
 
     override val cacheFileName: String
-        get() = "discover_topics_cache_" + account.name + "_sort_by_" + sortBy
+        get() = "discover_topics_cache_${account.name}_sort_by_${sortBy}_skill_id_${skillId}_user_id_${skillId}"
 
     @Throws(YepException::class)
     override fun requestData(yep: YepAPI, oldData: List<Topic>?): List<Topic> {

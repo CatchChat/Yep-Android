@@ -56,13 +56,14 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         }
         loaderManager.initLoader(0, loaderArgs, this)
         adapter.clickListener = this
+        adapter.showSkillLabel = skill == null
         showProgress()
     }
 
     override fun onCreateLoader(id: Int, args: Bundle): Loader<List<Topic>?> {
         val cachingEnabled = isCachingEnabled
         val readCache = args.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
-        val readOld = args.getBoolean(EXTRA_READ_OLD, readCache) && cachingEnabled
+        val readOld = args.getBoolean(EXTRA_READ_OLD, readCache)
         val maxId = args.getString(EXTRA_MAX_ID)
         val paging = Paging()
         if (maxId != null) {
@@ -75,8 +76,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             oldData = null
         }
         return DiscoverTopicsLoader(activity, account, arguments.getString(EXTRA_USER_ID),
-                arguments.getString(EXTRA_SKILL_ID), paging, sortOrder, readCache, cachingEnabled,
-                oldData)
+                skill?.id, paging, sortOrder, readCache, cachingEnabled, oldData)
     }
 
     private val sortOrder: String
@@ -85,6 +85,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             if (hasUserId()) return TopicSortOrder.TIME
             return if (mSortBy != null) mSortBy!! else TopicSortOrder.TIME
         }
+
+    private val skill: Skill?
+        get() = arguments.getParcelable(EXTRA_SKILL)
 
     private fun hasUserId(): Boolean {
         val fragmentArgs = arguments
