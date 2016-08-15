@@ -34,7 +34,7 @@ class ProviderOAuthActivity : ContentActivity(), Constants {
         val url = YepAPIFactory.getProviderOAuthUrl(providerName)
         val headers = HashMap<String, String>()
         headers.put("Authorization", YepAPIFactory.getAuthorizationHeaderValue(
-                YepAPIFactory.getAuthToken(this, account)))
+                YepAPIFactory.getAuthToken(this, account)!!))
         title = getString(R.string.sign_in_to_provider_name, Provider.getProviderName(this, providerName))
         webView.loadUrl(url, headers)
         webView.setWebViewClient(object : WebViewClient() {

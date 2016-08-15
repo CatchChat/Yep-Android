@@ -187,7 +187,6 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
     }
 
     private fun sendMessage(sendMessageHandler: SendMessageHandler) {
-        val account = Utils.getCurrentAccount(context) ?: return
         val conversation = this.conversation ?: return
         val task = object : SendMessageTask<ChatInputBarFragment>(context, account) {
             override val mediaType: String

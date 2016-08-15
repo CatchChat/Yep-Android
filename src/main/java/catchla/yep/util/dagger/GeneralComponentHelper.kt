@@ -17,20 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package catchla.yep.util.dagger;
+package catchla.yep.util.dagger
 
-import android.content.Context;
-import android.support.annotation.NonNull;
+import android.content.Context
 
 /**
  * Created by mariotaku on 15/12/31.
  */
-public class GeneralComponentHelper {
-    private static GeneralComponent sGeneralComponent;
+object GeneralComponentHelper {
+    private var sGeneralComponent: GeneralComponent? = null
 
-    @NonNull
-    public static GeneralComponent build(@NonNull Context context) {
-        if (sGeneralComponent != null) return sGeneralComponent;
-        return sGeneralComponent = DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build();
+    fun build(context: Context): GeneralComponent {
+        if (sGeneralComponent != null) return sGeneralComponent!!
+        sGeneralComponent = DaggerGeneralComponent.builder().applicationModule(ApplicationModule[context]).build()
+        return sGeneralComponent!!
     }
 }

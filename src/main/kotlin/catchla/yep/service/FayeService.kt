@@ -100,7 +100,7 @@ class FayeService : Service(), Constants {
         val client = YepAPIFactory.getOkHttpClient(this)
         val builder = Request.Builder()
         builder.url(BuildConfig.API_ENDPOINT_FAYE)
-        val authToken = YepAPIFactory.getAuthToken(this, account)
+        val authToken = YepAPIFactory.getAuthToken(this, account)!!
         val accountId = Utils.getAccountId(this, account)!!
 
         fayeClient = Faye.create(client, WebSocketCall.create(client, builder.build()))

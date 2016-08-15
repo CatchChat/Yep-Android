@@ -1,9 +1,8 @@
 package catchla.yep.activity
 
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
-
+import android.support.v4.app.Fragment
+import catchla.yep.Constants.EXTRA_ACCOUNT
 import catchla.yep.R
 import catchla.yep.fragment.BlockedUsersFragment
 
@@ -16,7 +15,9 @@ class BlockedUsersActivity : SwipeBackContentActivity() {
         setContentView(R.layout.activity_fragment_content)
         val fm = supportFragmentManager
         val ft = fm.beginTransaction()
-        ft.replace(R.id.mainContent, BlockedUsersFragment())
+        val fragmentArgs = Bundle()
+        fragmentArgs.putParcelable(EXTRA_ACCOUNT, account)
+        ft.replace(R.id.mainContent, Fragment.instantiate(this, BlockedUsersFragment::class.java.name, fragmentArgs))
         ft.commit()
     }
 }

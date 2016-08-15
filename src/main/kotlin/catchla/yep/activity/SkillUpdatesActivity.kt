@@ -18,7 +18,7 @@ class SkillUpdatesActivity : SwipeBackContentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_skill_update)
-        title = skill.name
+        title = skill.nameString
         val ft = supportFragmentManager.beginTransaction()
         val args = Bundle()
         args.putParcelable(EXTRA_ACCOUNT, account)

@@ -70,7 +70,7 @@ class TopicsWidgetContainer : ProviderWidgetContainer<ResponseList<Topic>> {
 
     @Throws(YepException::class)
     override fun doRequest(): ResponseList<Topic> {
-        val yep = YepAPIFactory.getInstance(context, account)
+        val yep = YepAPIFactory.getInstance(context, account!!)
         val paging = Paging()
         paging.perPage(4)
         return yep.getTopics(user!!.id, paging)

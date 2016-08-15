@@ -1,5 +1,6 @@
 package catchla.yep.activity
 
+import android.accounts.Account
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
 import catchla.yep.loader.SkillCategoriesLoader
@@ -33,18 +35,24 @@ class SkillSelectorActivity : ContentActivity(), Constants {
 
     private lateinit var mSelectedSkills: ArrayList<Skill>
 
+    private val skills: ArrayList<Skill>
+        get() = intent.getParcelableArrayListExtra<Skill>(EXTRA_SKILLS)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_skill)
 
-        mSelectedSkills = intent.getParcelableArrayListExtra<Skill>(Constants.EXTRA_SKILLS)
+        mSelectedSkills = skills
 
         adapter = TabsAdapter(this, supportFragmentManager)
         viewPager.isEnabled = false
         viewPager.adapter = adapter
 
-        adapter.addTab(CategoriesFragment::class.java, null, 0, null)
-        adapter.addTab(SkillsFragment::class.java, null, 0, null)
+        val fragmentArgs = Bundle()
+        fragmentArgs.putParcelable(EXTRA_ACCOUNT, account)
+
+        adapter.addTab(CategoriesFragment::class.java, null, 0, fragmentArgs)
+        adapter.addTab(SkillsFragment::class.java, null, 0, fragmentArgs)
     }
 
     override fun onBackPressed() {
@@ -55,13 +63,17 @@ class SkillSelectorActivity : ContentActivity(), Constants {
             return
         }
         val data = Intent()
-        data.putParcelableArrayListExtra(Constants.EXTRA_SKILLS, mSelectedSkills)
+        data.putParcelableArrayListExtra(EXTRA_SKILLS, mSelectedSkills)
         setResult(Activity.RESULT_OK, data)
         super.onBackPressed()
     }
 
     class CategoriesFragment : ListFragment(), LoaderManager.LoaderCallbacks<TaskResponse<List<SkillCategory>>> {
         private lateinit var adapter: CategoriesAdapter
+
+        val account: Account
+            get() = arguments.getParcelable(EXTRA_ACCOUNT)
+
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
@@ -72,7 +84,7 @@ class SkillSelectorActivity : ContentActivity(), Constants {
         }
 
         override fun onCreateLoader(id: Int, args: Bundle?): Loader<TaskResponse<List<SkillCategory>>> {
-            return SkillCategoriesLoader(activity, Utils.getCurrentAccount(activity)!!, false, false)
+            return SkillCategoriesLoader(activity, account, false, false)
         }
 
         override fun onLoadFinished(loader: Loader<TaskResponse<List<SkillCategory>>>, data: TaskResponse<List<SkillCategory>>) {

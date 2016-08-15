@@ -123,7 +123,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
             } finally {
                 incoming.close()
             }
-            val yep = YepAPIFactory.getInstance(this@ChatActivity, Utils.getCurrentAccount(this@ChatActivity))
+            val yep = YepAPIFactory.getInstance(this@ChatActivity, account)
             val lastReadAt = lastId?.let {
                 val recipientType = conversation.recipientType
                 val recipientId = conversation.recipientId

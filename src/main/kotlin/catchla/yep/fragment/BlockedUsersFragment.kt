@@ -1,14 +1,14 @@
 package catchla.yep.fragment
 
+import android.accounts.Account
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
-
+import catchla.yep.Constants
 import catchla.yep.adapter.UsersAdapter
 import catchla.yep.loader.BlockedUsersLoader
 import catchla.yep.model.User
-import catchla.yep.util.Utils
 
 /**
  * Created by mariotaku on 15/10/10.
@@ -35,8 +35,11 @@ class BlockedUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(),
         return UsersAdapter(context)
     }
 
+    val account: Account
+        get() = arguments.getParcelable(Constants.EXTRA_ACCOUNT)
+
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<User>?> {
-        return BlockedUsersLoader(activity, Utils.getCurrentAccount(activity)!!)
+        return BlockedUsersLoader(activity, account)
     }
 
     override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {

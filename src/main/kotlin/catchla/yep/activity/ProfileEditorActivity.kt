@@ -171,7 +171,7 @@ class ProfileEditorActivity : ContentActivity(), UpdateProfileTask.Callback, Con
             update.setBadge((editBadge.tag as? User.Badge)?.value ?: "")
         }
         if (changed) {
-            mTask = UpdateProfileTask(this, Utils.getCurrentAccount(this)!!, update, mProfileImageUri)
+            mTask = UpdateProfileTask(this, account, update, mProfileImageUri)
             mTask!!.execute()
             return
         }
