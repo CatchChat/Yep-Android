@@ -98,11 +98,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             chatTopic.visibility = View.VISIBLE
             val image = topic.attachments.firstOrNull() as? FileAttachment
             if (image != null) {
-                imageLoader.displayProviderPreviewImage(image.file.url, topicIcon)
                 topicIcon.scaleType = ImageView.ScaleType.CENTER_CROP
+                imageLoader.displayProviderPreviewImage(image.file.url, topicIcon)
             } else {
-                topicIcon.setImageResource(R.drawable.ic_feed_placeholder_text)
                 topicIcon.scaleType = ImageView.ScaleType.CENTER_INSIDE
+                topicIcon.setImageResource(R.drawable.ic_feed_placeholder_text)
             }
             topicTitle.text = Utils.getDisplayName(topic.user)
             topicSummary.text = topic.body

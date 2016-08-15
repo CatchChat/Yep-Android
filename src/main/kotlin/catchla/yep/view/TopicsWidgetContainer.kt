@@ -46,11 +46,11 @@ class TopicsWidgetContainer : ProviderWidgetContainer<ResponseList<Topic>> {
                     val topic = result.data[index]
                     val image = topic.attachments.firstOrNull() as? FileAttachment
                     if (image != null) {
-                        imageLoader.displayProviderPreviewImage(image.file.url, view)
                         view.scaleType = ImageView.ScaleType.CENTER_CROP
+                        imageLoader.displayProviderPreviewImage(image.file.url, view)
                     } else {
-                        view.setImageResource(R.drawable.ic_feed_placeholder_text)
                         view.scaleType = ImageView.ScaleType.CENTER_INSIDE
+                        view.setImageResource(R.drawable.ic_feed_placeholder_text)
                     }
                     view.visibility = View.VISIBLE
                 } else {
