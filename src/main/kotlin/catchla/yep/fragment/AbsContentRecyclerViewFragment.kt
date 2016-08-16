@@ -43,7 +43,10 @@ import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
 /**
  * Created by mariotaku on 15/10/26.
  */
-abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<RecyclerView.ViewHolder>, L : RecyclerView.LayoutManager> : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HeaderDrawerLayout.DrawerCallback, RefreshScrollTopInterface, IControlBarActivity.ControlBarOffsetListener, ContentListScrollListener.ContentListSupport {
+abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<RecyclerView.ViewHolder>,
+        L : RecyclerView.LayoutManager> : BaseFragment(), SwipeRefreshLayout.OnRefreshListener,
+        HeaderDrawerLayout.DrawerCallback, RefreshScrollTopInterface,
+        IControlBarActivity.ControlBarOffsetListener, ContentListScrollListener.ContentListSupport {
 
 
     lateinit var layoutManager: L
@@ -98,9 +101,8 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         return true
     }
 
-    override fun getContentAdapter(): Any? {
-        return adapter
-    }
+    override val contentAdapter: Any?
+        get() = adapter
 
     protected abstract fun onScrollToPositionWithOffset(layoutManager: L, position: Int, offset: Int)
 
@@ -123,26 +125,28 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         mDrawerCallback!!.topChanged(offset)
     }
 
-    abstract override fun isRefreshing(): Boolean
-
-    fun setRefreshing(refreshing: Boolean) {
-        val currentRefreshing = swipeLayout!!.isRefreshing
-        if (!currentRefreshing) {
-            updateRefreshProgressOffset()
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            val currentRefreshing = swipeLayout!!.isRefreshing
+            if (!currentRefreshing) {
+                updateRefreshProgressOffset()
+            }
+            if (refreshing == currentRefreshing) return
+            val layoutRefreshing = refreshing && adapter.loadMoreIndicatorPosition != IndicatorPosition.NONE
+            swipeLayout!!.isRefreshing = layoutRefreshing
         }
-        if (refreshing == currentRefreshing) return
-        val layoutRefreshing = refreshing && adapter.loadMoreIndicatorPosition != IndicatorPosition.NONE
-        swipeLayout!!.isRefreshing = layoutRefreshing
-    }
 
     override fun onLoadMoreContents(@IndicatorPosition position: Int) {
-        setLoadMoreIndicatorPosition(position)
-        setRefreshEnabled(position == IndicatorPosition.NONE)
+        loadMoreIndicatorPosition = position
+        refreshEnabled = position == IndicatorPosition.NONE
     }
 
-    open fun setLoadMoreIndicatorPosition(@IndicatorPosition position: Int) {
-        adapter.loadMoreIndicatorPosition = position
-    }
+    @IndicatorPosition open var loadMoreIndicatorPosition: Int
+        get() = adapter.loadMoreIndicatorPosition
+        set(value) {
+            adapter.loadMoreIndicatorPosition = value
+        }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -209,9 +213,11 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         updateRefreshProgressOffset()
     }
 
-    fun setRefreshEnabled(enabled: Boolean) {
-        swipeLayout.isEnabled = enabled
-    }
+    var refreshEnabled: Boolean
+        get() = swipeLayout.isEnabled
+        set(value) {
+            swipeLayout.isEnabled = value
+        }
 
     override fun triggerRefresh(): Boolean {
         return false
@@ -265,7 +271,7 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
         val insets = this.systemWindowsInsets
         val layout = this.swipeLayout
         if (activity !is IControlBarActivity || insets.top == 0 || layout == null
-                || isRefreshing) {
+                || refreshing) {
             return
         }
         val progressCircleDiameter = layout.progressCircleDiameter

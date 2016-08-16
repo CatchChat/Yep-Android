@@ -39,9 +39,11 @@ class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), 
     private val account: Account
         get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
 
-    override fun isRefreshing(): Boolean {
-        return false
-    }
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun onCreateAdapter(context: Context): UsersAdapter {
         return UsersAdapter(context)
@@ -55,7 +57,7 @@ class SearchUsersFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(), 
     override fun onLoadFinished(loader: Loader<List<User>?>, data: List<User>?) {
         adapter.users = data
         showContent()
-        isRefreshing = false
+        refreshing = false
     }
 
     override fun onLoaderReset(loader: Loader<List<User>?>) {

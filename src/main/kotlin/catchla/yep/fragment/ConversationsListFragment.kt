@@ -67,7 +67,7 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
 
     @Subscribe
     fun onMessageRefreshed(event: MessageRefreshedEvent) {
-        isRefreshing = false
+        refreshing = false
         val loaderArgs = Bundle()
         loaderArgs.putString(EXTRA_RECIPIENT_TYPE, recipientType)
         loaderManager.restartLoader(0, loaderArgs, this)
@@ -88,9 +88,11 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
         super.onBaseViewCreated(view, savedInstanceState)
     }
 
-    override fun isRefreshing(): Boolean {
-        return false
-    }
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Conversation>> {
         val recipientType = recipientType

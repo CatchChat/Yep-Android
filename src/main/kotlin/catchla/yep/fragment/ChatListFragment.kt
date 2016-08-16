@@ -20,6 +20,7 @@ import android.widget.TextView
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.LoadMoreSupportAdapter
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
 import catchla.yep.message.AudioPlayEvent
 import catchla.yep.model.FileAttachment
 import catchla.yep.model.Message
@@ -62,9 +63,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         return inflater!!.inflate(R.layout.fragment_chat_list, container, false)
     }
 
-    override fun isRefreshing(): Boolean {
-        return false
-    }
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun onCreateAdapter(context: Context): ChatAdapter {
         return ChatAdapter(this)
@@ -118,6 +121,8 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         } else {
             chatTopic.visibility = View.GONE
         }
+        refreshEnabled = false
+        loadMoreIndicatorPosition = ILoadMoreSupportAdapter.IndicatorPosition.START
         loaderManager.initLoader(0, null, this)
         showProgress()
     }
@@ -194,13 +199,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         }
     }
 
-    override fun isReachingEnd(): Boolean {
-        return layoutManager.findLastCompletelyVisibleItemPosition() >= layoutManager.itemCount - 1
-    }
+    override val reachingEnd: Boolean
+        get() = layoutManager.findLastCompletelyVisibleItemPosition() >= layoutManager.itemCount - 1
 
-    override fun isReachingStart(): Boolean {
-        return layoutManager.findFirstCompletelyVisibleItemPosition() <= 0
-    }
+    override val reachingStart: Boolean
+        get() = layoutManager.findFirstCompletelyVisibleItemPosition() <= 0
 
     private fun onStateClicked(message: Message?) {
         if (MessageState.FAILED == message?.state) {
@@ -317,6 +320,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         ) : RecyclerView.ViewHolder(itemView) {
 
             private val profileImageView by lazy { itemView.findViewById(R.id.profileImage) as ImageView? }
+            private val profileImageViewOutgoing by lazy { itemView.findViewById(R.id.profileImageOutgoing) as ImageView? }
             private val stateView: ImageView?
             private val text1: TextView
 
@@ -329,14 +333,19 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             open fun displayMessage(message: Message) {
                 text1.text = message.textContent
                 text1.visibility = if (text1.length() > 0) View.VISIBLE else View.GONE
-                val profileImageView = profileImageView
-                if (profileImageView != null) {
+                profileImageView?.let {
                     val sender = message.sender
-                    if (sender.avatarThumbUrl != profileImageView.tag || profileImageView.drawable == null) {
-                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl,
-                                profileImageView)
+                    if (sender.avatarThumbUrl != it.tag || it.drawable == null) {
+                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl, it)
                     }
-                    profileImageView.tag = sender.avatarThumbUrl
+                    it.tag = sender.avatarThumbUrl
+                }
+                profileImageViewOutgoing?.let {
+                    val sender = message.sender
+                    if (sender.avatarThumbUrl != it.tag || it.drawable == null) {
+                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl, it)
+                    }
+                    it.tag = sender.avatarThumbUrl
                 }
                 when (message.state) {
                     MessageState.READ -> {

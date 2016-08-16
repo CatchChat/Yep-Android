@@ -120,9 +120,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         adapter.topics = data
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) IndicatorPosition.END else IndicatorPosition.NONE
         showContent()
-        isRefreshing = false
-        setRefreshEnabled(true)
-        setLoadMoreIndicatorPosition(IndicatorPosition.NONE)
+        refreshing = false
+        refreshEnabled = true
+        loadMoreIndicatorPosition = IndicatorPosition.NONE
     }
 
     override fun onLoaderReset(loader: Loader<List<Topic>?>) {
@@ -171,9 +171,11 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
-    override fun isRefreshing(): Boolean {
-        return loaderManager.hasRunningLoaders()
-    }
+    override var refreshing: Boolean
+        get() = loaderManager.hasRunningLoaders()
+        set(value) {
+            super.refreshing = value
+        }
 
     val isCachingEnabled: Boolean
         get() = arguments.getBoolean(EXTRA_CACHING_ENABLED)

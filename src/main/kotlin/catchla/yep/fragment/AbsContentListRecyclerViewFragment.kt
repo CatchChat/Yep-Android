@@ -42,12 +42,14 @@ abstract class AbsContentListRecyclerViewFragment<A : LoadMoreSupportAdapter<Rec
         recyclerView.addItemDecoration(itemDecoration)
     }
 
-    override fun setLoadMoreIndicatorPosition(@IndicatorPosition position: Int) {
-        itemDecoration?.let {
-            it.setDecorationEndOffset(if (position == IndicatorPosition.END) 1 else 0)
+    @IndicatorPosition override var loadMoreIndicatorPosition: Int
+        get() = super.loadMoreIndicatorPosition
+        set(value) {
+            itemDecoration?.let {
+                it.setDecorationEndOffset(if (value == IndicatorPosition.END) 1 else 0)
+            }
+            super.loadMoreIndicatorPosition = value
         }
-        super.setLoadMoreIndicatorPosition(position)
-    }
 
 
     override fun onScrollToPositionWithOffset(layoutManager: LinearLayoutManager, position: Int, offset: Int) {
@@ -58,11 +60,11 @@ abstract class AbsContentListRecyclerViewFragment<A : LoadMoreSupportAdapter<Rec
         return FixedLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
 
-    override fun isReachingEnd(): Boolean {
+    override val reachingEnd: Boolean get() {
         return layoutManager.findLastCompletelyVisibleItemPosition() >= layoutManager.itemCount - 1
     }
 
-    override fun isReachingStart(): Boolean {
+    override val reachingStart: Boolean get() {
         return layoutManager.findFirstCompletelyVisibleItemPosition() <= 0
     }
 

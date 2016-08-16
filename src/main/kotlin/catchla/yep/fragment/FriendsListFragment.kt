@@ -19,7 +19,6 @@ import catchla.yep.R
 import catchla.yep.activity.FindFriendActivity
 import catchla.yep.activity.UserActivity
 import catchla.yep.adapter.FriendsListAdapter
-import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.FriendshipsLoader
 import catchla.yep.message.FriendshipsRefreshedEvent
@@ -68,10 +67,11 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
         super.onBaseViewCreated(view, savedInstanceState)
     }
 
-    override fun isRefreshing(): Boolean {
-        return false
-    }
-
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Friendship>> {
         return FriendshipsLoader(activity, account)
@@ -94,7 +94,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
 
     @Subscribe
     fun onMessageRefreshed(event: FriendshipsRefreshedEvent) {
-        isRefreshing = false
+        refreshing = false
         loaderManager.restartLoader(0, null, this)
     }
 

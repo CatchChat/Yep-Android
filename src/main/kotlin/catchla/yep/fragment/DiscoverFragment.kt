@@ -121,9 +121,9 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         adapter.users = data
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) IndicatorPosition.END else IndicatorPosition.NONE
         showContent()
-        isRefreshing = false
-        setRefreshEnabled(true)
-        setLoadMoreIndicatorPosition(IndicatorPosition.NONE)
+        refreshing = false
+        refreshEnabled = true
+        loadMoreIndicatorPosition = IndicatorPosition.NONE
     }
 
     override fun onLoaderReset(loader: Loader<List<User>?>) {
@@ -159,7 +159,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
-    override fun isReachingEnd(): Boolean {
+    override val reachingEnd: Boolean get() {
         val lm = layoutManager
         if (lm is LinearLayoutManager) {
             return lm.findFirstCompletelyVisibleItemPosition() >= layoutManager.itemCount - 1
@@ -171,7 +171,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         return false
     }
 
-    override fun isReachingStart(): Boolean {
+    override val reachingStart: Boolean get() {
         val lm = layoutManager
         if (lm is LinearLayoutManager) {
             return lm.findFirstCompletelyVisibleItemPosition() <= 0
@@ -187,9 +187,11 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         layoutManager.scrollToPosition(position)
     }
 
-    override fun isRefreshing(): Boolean {
-        return loaderManager.hasRunningLoaders()
-    }
+    override var refreshing: Boolean
+        get() = loaderManager.hasRunningLoaders()
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun getActionIcon(): Int {
         return 0

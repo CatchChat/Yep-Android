@@ -15,12 +15,12 @@ import catchla.yep.model.Paging
 class TopicChatListFragment : ChatListFragment() {
     override fun onLoadFinished(loader: Loader<List<Message>?>, data: List<Message>?) {
         super.onLoadFinished(loader, data)
-        setRefreshEnabled(false)
+        refreshEnabled = false
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        setRefreshEnabled(false)
+        refreshEnabled = false
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<List<Message>?> {

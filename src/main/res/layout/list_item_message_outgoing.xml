@@ -17,7 +17,6 @@
         android:scaleType="center"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
-        android:id="@+id/message_bubble_outgoing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/element_spacing_normal"
@@ -31,4 +30,10 @@
 
         <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/profileImageOutgoing"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:scaleType="centerCrop"/>
 </LinearLayout>

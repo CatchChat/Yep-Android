@@ -27,9 +27,11 @@ class ContactFriendsFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(
         loaderManager.initLoader(0, null, this)
     }
 
-    override fun isRefreshing(): Boolean {
-        return false
-    }
+    override var refreshing: Boolean
+        get() = false
+        set(value) {
+            super.refreshing = value
+        }
 
     override fun onCreateAdapter(context: Context): UsersAdapter {
         return UsersAdapter(context)
@@ -45,7 +47,7 @@ class ContactFriendsFragment : AbsContentListRecyclerViewFragment<UsersAdapter>(
     override fun onLoadFinished(loader: Loader<TaskResponse<List<User>>>, data: TaskResponse<List<User>>) {
         adapter.users = data.data
         showContent()
-        isRefreshing = false
+        refreshing = false
     }
 
     override fun onLoaderReset(loader: Loader<TaskResponse<List<User>>>) {
