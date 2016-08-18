@@ -18,6 +18,7 @@ import catchla.yep.R
 import catchla.yep.activity.ChatActivity
 import catchla.yep.activity.CirclesListActivity
 import catchla.yep.adapter.ChatsListAdapter
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.ConversationsLoader
 import catchla.yep.message.MessageRefreshedEvent
@@ -49,8 +50,9 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
                 startActivity(intent)
             }
         }
-        val loaderArgs = Bundle()
-        loaderArgs.putString(EXTRA_RECIPIENT_TYPE, recipientType)
+        val loaderArgs = Bundle {
+            putString(EXTRA_RECIPIENT_TYPE, recipientType)
+        }
         loaderManager.initLoader(0, loaderArgs, this)
         showProgress()
     }
@@ -68,8 +70,9 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
     @Subscribe
     fun onMessageRefreshed(event: MessageRefreshedEvent) {
         refreshing = false
-        val loaderArgs = Bundle()
-        loaderArgs.putString(EXTRA_RECIPIENT_TYPE, recipientType)
+        val loaderArgs = Bundle {
+            putString(EXTRA_RECIPIENT_TYPE, recipientType)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 

@@ -11,6 +11,7 @@ import catchla.yep.BuildConfig
 import catchla.yep.Constants
 import catchla.yep.activity.SignInActivity
 import catchla.yep.activity.WelcomeActivity
+import catchla.yep.extension.Bundle
 import catchla.yep.model.YepException
 import catchla.yep.util.YepAPIFactory
 import java.io.IOException
@@ -41,11 +42,11 @@ class AccountService : Service(), Constants {
         @Throws(NetworkErrorException::class)
         override fun addAccount(response: AccountAuthenticatorResponse, accountType: String,
                                 authTokenType: String, requiredFeatures: Array<String>, options: Bundle): Bundle {
-            val reply = Bundle()
-            val intent = Intent(context, WelcomeActivity::class.java)
-            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-            reply.putParcelable(AccountManager.KEY_INTENT, intent)
-            return reply
+            return Bundle {
+                val intent = Intent(context, WelcomeActivity::class.java)
+                intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+                putParcelable(AccountManager.KEY_INTENT, intent)
+            }
         }
 
         @Throws(NetworkErrorException::class)
@@ -54,14 +55,14 @@ class AccountService : Service(), Constants {
             try {
                 val yep = YepAPIFactory.getInstance(context, account)
                 yep.getUser()
-                val result = Bundle()
-                result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
-                return result
+                return Bundle {
+                    putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
+                }
             } catch (e: YepException) {
                 if (e.cause is IOException) throw NetworkErrorException(e)
-                val result = Bundle()
-                result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
-                return result
+                return Bundle {
+                    putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
+                }
             }
 
         }
@@ -69,11 +70,11 @@ class AccountService : Service(), Constants {
         @Throws(NetworkErrorException::class)
         override fun getAuthToken(response: AccountAuthenticatorResponse, account: Account,
                                   authTokenType: String, options: Bundle): Bundle {
-            val result = Bundle()
-            val intent = Intent(context, SignInActivity::class.java)
-            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-            result.putParcelable(AccountManager.KEY_INTENT, intent)
-            return result
+            return Bundle {
+                val intent = Intent(context, SignInActivity::class.java)
+                intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+                putParcelable(AccountManager.KEY_INTENT, intent)
+            }
         }
 
         override fun getAuthTokenLabel(authTokenType: String): String? {
@@ -83,19 +84,19 @@ class AccountService : Service(), Constants {
         @Throws(NetworkErrorException::class)
         override fun updateCredentials(response: AccountAuthenticatorResponse, account: Account,
                                        authTokenType: String, options: Bundle): Bundle {
-            val result = Bundle()
-            val intent = Intent(context, SignInActivity::class.java)
-            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
-            result.putParcelable(AccountManager.KEY_INTENT, intent)
-            return result
+            return Bundle {
+                val intent = Intent(context, SignInActivity::class.java)
+                intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response)
+                putParcelable(AccountManager.KEY_INTENT, intent)
+            }
         }
 
         @Throws(NetworkErrorException::class)
         override fun hasFeatures(response: AccountAuthenticatorResponse, account: Account,
                                  features: Array<String>): Bundle {
-            val result = Bundle()
-            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
-            return result
+            return Bundle {
+                putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
+            }
         }
 
         @Throws(NetworkErrorException::class)

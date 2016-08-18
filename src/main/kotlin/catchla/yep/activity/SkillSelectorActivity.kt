@@ -14,9 +14,11 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import catchla.yep.Constants
-import catchla.yep.Constants.*
+import catchla.yep.Constants.EXTRA_ACCOUNT
+import catchla.yep.Constants.EXTRA_SKILLS
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
+import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.loader.SkillCategoriesLoader
 import catchla.yep.model.Skill
@@ -49,8 +51,9 @@ class SkillSelectorActivity : ContentActivity(), Constants {
         viewPager.isEnabled = false
         viewPager.adapter = adapter
 
-        val fragmentArgs = Bundle()
-        fragmentArgs.putParcelable(EXTRA_ACCOUNT, account)
+        val fragmentArgs = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+        }
 
         adapter.addTab(CategoriesFragment::class.java, null, 0, fragmentArgs)
         adapter.addTab(SkillsFragment::class.java, null, 0, fragmentArgs)

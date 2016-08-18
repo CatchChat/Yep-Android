@@ -21,6 +21,7 @@ import catchla.yep.R
 import catchla.yep.activity.iface.IAccountActivity
 import catchla.yep.activity.iface.IControlBarActivity
 import catchla.yep.adapter.TabsAdapter
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.*
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.fragment.iface.RefreshScrollTopInterface
@@ -70,9 +71,10 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
         mainContent.setStatusBarColorDarken(primaryColor)
         floatingActionButton.setOnClickListener(this)
 
-        val args = Bundle()
-        args.putBoolean(Constants.EXTRA_CACHING_ENABLED, true)
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
+        val args = Bundle {
+            putBoolean(Constants.EXTRA_CACHING_ENABLED, true)
+            putParcelable(Constants.EXTRA_ACCOUNT, account)
+        }
 
         adapter.addTab(ConversationsListFragment::class.java, getString(R.string.tab_title_chats), R.drawable.ic_action_chat, args)
         adapter.addTab(FriendsListFragment::class.java, getString(R.string.tab_title_friends), R.drawable.ic_action_contact, args)
@@ -118,8 +120,9 @@ class HomeActivity : AppCompatActivity(), Constants, IAccountActivity, ViewPager
                     R.id.development -> {
                         val intent = Intent(this@HomeActivity, SettingsActivity::class.java)
                         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment::class.java.name)
-                        val args = Bundle()
-                        args.putInt(Constants.EXTRA_RESID, R.xml.pref_dev)
+                        val args = Bundle {
+                            putInt(Constants.EXTRA_RESID, R.xml.pref_dev)
+                        }
                         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args)
                         startActivity(intent)
                     }

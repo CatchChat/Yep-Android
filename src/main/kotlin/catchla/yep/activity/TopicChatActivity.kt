@@ -11,6 +11,7 @@ import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
 import catchla.yep.extension.account
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.fragment.TopicChatListFragment
 import catchla.yep.model.Topic
@@ -31,9 +32,10 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
         displayTopic(topic)
 
         val ft = supportFragmentManager.beginTransaction()
-        val args = Bundle()
-        args.putParcelable(EXTRA_ACCOUNT, account)
-        args.putParcelable(EXTRA_TOPIC, topic)
+        val args = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+            putParcelable(EXTRA_TOPIC, topic)
+        }
         ft.replace(R.id.chatList, Fragment.instantiate(this, TopicChatListFragment::class.java.name, args))
         ft.commit()
     }

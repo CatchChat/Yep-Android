@@ -13,6 +13,7 @@ import android.view.View
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.UserRankFragment
 import catchla.yep.fragment.UserSuggestionsFragment
 import catchla.yep.model.AccessToken
@@ -31,16 +32,18 @@ class WelcomeActivity : AccountAuthenticatorActivity(), Constants, View.OnClickL
                 val token = data!!.getParcelableExtra<AccessToken>(Constants.EXTRA_TOKEN)
                 val user = token.user
                 val account = Account(user!!.mobile, Constants.ACCOUNT_TYPE)
-                val userData = Bundle()
-                Utils.writeUserToUserData(user, userData)
+                val userData = Bundle {
+                    Utils.writeUserToUserData(user, this)
+                }
                 val am = AccountManager.get(this)
                 am.addAccountExplicitly(account, null, userData)
                 am.setAuthToken(account, Constants.AUTH_TOKEN_TYPE, token.accessToken)
                 if (Utils.getCurrentAccount(this) == null) {
                     Utils.setCurrentAccount(this, account)
                 }
-                val result = Bundle()
-                result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
+                val result = Bundle {
+                    putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
+                }
                 setAccountAuthenticatorResult(result)
                 if (!intent.hasExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE)) {
                     val launcherIntent = Intent(this, MainActivity::class.java)

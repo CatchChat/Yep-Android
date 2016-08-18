@@ -23,6 +23,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import catchla.yep.extension.Bundle
 
 /**
  * Created by mariotaku on 14-6-24.
@@ -43,18 +44,18 @@ class MessageDialogFragment : BaseDialogFragment() {
 
         fun show(activity: FragmentActivity, message: String, tag: String): MessageDialogFragment {
             val df = MessageDialogFragment()
-            val args = Bundle()
-            args.putString(EXTRA_MESSAGE, message)
-            df.arguments = args
+            df.arguments = Bundle {
+                putString(EXTRA_MESSAGE, message)
+            }
             df.show(activity.supportFragmentManager, tag)
             return df
         }
 
         fun create(message: String): MessageDialogFragment {
             val df = MessageDialogFragment()
-            val args = Bundle()
-            args.putString(EXTRA_MESSAGE, message)
-            df.arguments = args
+            df.arguments = Bundle {
+                putString(EXTRA_MESSAGE, message)
+            }
             return df
         }
     }

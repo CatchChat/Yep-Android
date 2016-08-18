@@ -18,6 +18,7 @@ import catchla.yep.Constants
 import catchla.yep.IFayeService
 import catchla.yep.R
 import catchla.yep.annotation.PathRecipientType
+import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.ChatInputBarFragment
 import catchla.yep.fragment.ChatListFragment
@@ -60,15 +61,15 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         val conversation = conversation!!
         title = Utils.getConversationName(conversation)
 
-        val fragmentArgs = Bundle()
-
-        val circle = conversation.circle
-
-        fragmentArgs.putParcelable(Constants.EXTRA_CONVERSATION, conversation)
-        fragmentArgs.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        if (circle != null) {
-            fragmentArgs.putParcelable(Constants.EXTRA_TOPIC, circle.topic)
+        val fragmentArgs = Bundle {
+            val circle = conversation.circle
+            putParcelable(Constants.EXTRA_CONVERSATION, conversation)
+            putParcelable(Constants.EXTRA_ACCOUNT, account)
+            if (circle != null) {
+                putParcelable(Constants.EXTRA_TOPIC, circle.topic)
+            }
         }
+
         val chatListFragment = Fragment.instantiate(this,
                 ConversationChatListFragment::class.java.name, fragmentArgs)
         val chatInputBarFragment = Fragment.instantiate(this,

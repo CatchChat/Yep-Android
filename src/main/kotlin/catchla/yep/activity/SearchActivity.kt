@@ -2,7 +2,10 @@ package catchla.yep.activity
 
 import android.os.Bundle
 import catchla.yep.Constants
+import catchla.yep.Constants.EXTRA_ACCOUNT
+import catchla.yep.Constants.EXTRA_QUERY
 import catchla.yep.R
+import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.SearchUsersFragment
 
@@ -16,9 +19,10 @@ class SearchActivity : SwipeBackContentActivity(), Constants {
 
         val fm = supportFragmentManager
         val f = SearchUsersFragment()
-        val args = Bundle()
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        args.putString(Constants.EXTRA_QUERY, intent.getStringExtra(Constants.EXTRA_QUERY))
+        val args = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+            putString(EXTRA_QUERY, intent.getStringExtra(EXTRA_QUERY))
+        }
         f.arguments = args
         fm.beginTransaction().replace(R.id.mainContent, f).commit()
     }

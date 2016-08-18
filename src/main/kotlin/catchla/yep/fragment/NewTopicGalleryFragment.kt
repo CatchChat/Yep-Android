@@ -20,6 +20,7 @@ import catchla.yep.R
 import catchla.yep.activity.ThemedImagePickerActivity
 import catchla.yep.adapter.LoadMoreSupportAdapter
 import catchla.yep.annotation.AttachableType
+import catchla.yep.extension.Bundle
 import catchla.yep.model.*
 import catchla.yep.util.JsonSerializer
 import catchla.yep.util.YepAPI
@@ -74,7 +75,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
     @WorkerThread
     @Throws(YepException::class)
     override fun uploadMedia(yep: YepAPI, newTopic: NewTopic) {
-        val media = topicMediaAdapter!!.media
+        val media = topicMediaAdapter.media
         val files = ArrayList<FileAttachment>()
         for (mediaItem in media) {
             val path = Uri.parse(mediaItem).path
@@ -124,9 +125,9 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
 
     private fun requestRemoveMedia(media: String) {
         val df = RemoveMediaConfirmDialogFragment()
-        val args = Bundle()
-        args.putString(EXTRA_MEDIA, media)
-        df.arguments = args
+        df.arguments = Bundle {
+            putString(EXTRA_MEDIA, media)
+        }
         df.show(childFragmentManager, "remove_topic_media_confirm")
     }
 

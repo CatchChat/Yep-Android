@@ -5,9 +5,11 @@ import android.support.v4.view.ViewPager
 import android.view.Menu
 import android.view.View
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
 import catchla.yep.extension.account
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.DiscoverFragment
 import catchla.yep.graphic.EmptyDrawable
 import catchla.yep.model.Skill
@@ -55,12 +57,14 @@ class SkillUsersActivity : SwipeBackContentActivity(), Constants {
 
         val skill = skill
         displaySkill(skill)
-        val masterArgs = Bundle()
-        masterArgs.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        masterArgs.putStringArray(Constants.EXTRA_MASTER, arrayOf(skill.id))
-        val learningArgs = Bundle()
-        learningArgs.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        learningArgs.putStringArray(Constants.EXTRA_LEARNING, arrayOf(skill.id))
+        val masterArgs = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+            putStringArray(EXTRA_MASTER, arrayOf(skill.id))
+        }
+        val learningArgs = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+            putStringArray(EXTRA_LEARNING, arrayOf(skill.id))
+        }
         mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.master), 0, masterArgs)
         mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.learning), 0, learningArgs)
 
@@ -71,7 +75,7 @@ class SkillUsersActivity : SwipeBackContentActivity(), Constants {
     }
 
     private val skill: Skill
-        get() = intent.getParcelableExtra<Skill>(Constants.EXTRA_SKILL)
+        get() = intent.getParcelableExtra<Skill>(EXTRA_SKILL)
 
     private fun displaySkill(skill: Skill) {
         title = skill.nameString

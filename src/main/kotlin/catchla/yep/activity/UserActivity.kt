@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v4.view.ViewCompat
@@ -23,13 +24,14 @@ import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
 import catchla.yep.extension.account
+import catchla.yep.extension.Bundle
+import catchla.yep.fragment.BlockUserConfirmDialogFragment
 import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.loader.UserLoader
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.Friendships
 import catchla.yep.util.JsonSerializer
 import catchla.yep.util.Utils
-import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.support.WindowSupport
 import catchla.yep.util.task.UpdateProfileTask
 import kotlinx.android.synthetic.main.activity_user.*
@@ -310,11 +312,12 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                 return true
             }
             R.id.block_user -> {
-                task {
-                    with(YepAPIFactory.getInstance(this@UserActivity, account)) {
-                        blockUser(currentUser.id)
-                    }
+                val arguments = Bundle {
+                    putParcelable(EXTRA_ACCOUNT, account)
+                    putParcelable(EXTRA_USER, currentUser)
                 }
+                val df = Fragment.instantiate(this, BlockUserConfirmDialogFragment::class.java.name, arguments) as DialogFragment
+                df.show(supportFragmentManager, "block_user_confirm")
                 return true
             }
             R.id.report_user -> {

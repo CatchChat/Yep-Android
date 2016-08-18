@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
-import catchla.yep.Constants.*
+import catchla.yep.Constants.EXTRA_ACCOUNT
+import catchla.yep.Constants.EXTRA_SKILL
 import catchla.yep.R
+import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.TopicsListFragment
 import catchla.yep.model.Skill
@@ -21,9 +23,10 @@ class SkillUpdatesActivity : SwipeBackContentActivity() {
         setContentView(R.layout.activity_skill_update)
         title = skill.nameString
         val ft = supportFragmentManager.beginTransaction()
-        val args = Bundle()
-        args.putParcelable(EXTRA_ACCOUNT, account)
-        args.putParcelable(EXTRA_SKILL, skill)
+        val args = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+            putParcelable(EXTRA_SKILL, skill)
+        }
         ft.replace(R.id.mainContent, Fragment.instantiate(this, TopicsListFragment::class.java.name, args))
         ft.commit()
     }

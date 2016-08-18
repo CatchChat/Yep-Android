@@ -26,6 +26,7 @@ import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.extension.account
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverTopicsLoader
 import catchla.yep.model.*
@@ -166,8 +167,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     }
 
     override fun onRefresh() {
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
@@ -196,10 +198,10 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     }
 
     override fun onActionPerformed() {
-        val args = Bundle()
-        args.putParcelable(EXTRA_ACCOUNT, account)
         val df = NewTopicTypeDialogFragment()
-        df.arguments = args
+        df.arguments = Bundle {
+            putParcelable(EXTRA_ACCOUNT, account)
+        }
         df.show(childFragmentManager, "new_topic_type")
     }
 
@@ -211,9 +213,10 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         // Only supports load from end, skip START flag
         if (position and IndicatorPosition.START != 0) return
         super.onLoadMoreContents(position)
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(EXTRA_READ_OLD, true)
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+            putBoolean(EXTRA_READ_OLD, true)
+        }
         val adapter = adapter
         val topicsCount = adapter.topicsCount
         if (topicsCount > 0) {
@@ -260,9 +263,10 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
         mSortBy = sortBy
         preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply()
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(EXTRA_READ_OLD, false)
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+            putBoolean(EXTRA_READ_OLD, false)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
         showProgress()
     }

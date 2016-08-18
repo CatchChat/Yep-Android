@@ -23,7 +23,9 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.extension.Bundle
 import catchla.yep.util.AMapModelUtils
 import catchla.yep.util.Utils
 import com.amap.api.maps2d.AMap
@@ -86,10 +88,10 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
                     val position = marker!!.position
                     location.latitude = position.latitude
                     location.longitude = position.longitude
-                    data.putExtra(Constants.EXTRA_LOCATION, location)
-                    data.putExtra(Constants.EXTRA_NAME, marker!!.title)
+                    data.putExtra(EXTRA_LOCATION, location)
+                    data.putExtra(EXTRA_NAME, marker!!.title)
                 } else if (myLocation != null) {
-                    data.putExtra(Constants.EXTRA_LOCATION, myLocation)
+                    data.putExtra(EXTRA_LOCATION, myLocation)
                 } else {
                     setResult(Activity.RESULT_CANCELED)
                     finish()
@@ -138,9 +140,10 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
 
     private fun searchNearbyPoi(position: CameraPosition) {
         val lm = supportLoaderManager
-        val args = Bundle()
-        args.putParcelable(Constants.POSITION, position.target)
-        args.putParcelable(Constants.BOUNDS, map!!.projection.visibleRegion.latLngBounds)
+        val args = Bundle {
+            putParcelable(POSITION, position.target)
+            putParcelable(BOUNDS, map!!.projection.visibleRegion.latLngBounds)
+        }
         if (loaderInitialized) {
             lm.restartLoader(0, args, this)
         } else {
@@ -224,8 +227,8 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     }
 
     override fun onCreateLoader(id: Int, args: Bundle): Loader<PoiResult> {
-        val position = args.getParcelable<LatLng>(Constants.POSITION)
-        val region = args.getParcelable<LatLngBounds>(Constants.BOUNDS)
+        val position = args.getParcelable<LatLng>(POSITION)
+        val region = args.getParcelable<LatLngBounds>(BOUNDS)
         return NearByPoiLoader(this, position, region)
     }
 

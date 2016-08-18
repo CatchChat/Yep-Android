@@ -16,7 +16,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.text.TextUtils
 import android.view.*
-import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.SkillUpdatesActivity
 import catchla.yep.activity.UserActivity
@@ -24,6 +24,7 @@ import catchla.yep.adapter.UsersAdapter
 import catchla.yep.adapter.UsersGridAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverUsersLoader
 import catchla.yep.model.*
@@ -44,22 +45,22 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
         if (fragmentArgs != null) {
-            loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, !fragmentArgs.containsKey(Constants.EXTRA_LEARNING) && !fragmentArgs.containsKey(Constants.EXTRA_MASTER))
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING) && !fragmentArgs.containsKey(EXTRA_MASTER))
         } else {
-            loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, true)
+            loaderArgs.putBoolean(EXTRA_READ_CACHE, true)
         }
         loaderManager.initLoader(0, loaderArgs, this)
         adapter.itemClickListener = { position: Int, holder: RecyclerView.ViewHolder ->
             val user = adapter.getUser(position)
             val intent = Intent(activity, UserActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_USER, user)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_USER, user)
             startActivity(intent)
         }
         (adapter as UsersGridAdapter).skillClickListener = { position: Int, skill: Skill, holder: FriendGridViewHolder ->
             val intent = Intent(activity, SkillUpdatesActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_SKILL, skill)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_SKILL, skill)
             startActivity(intent)
         }
         showProgress()
@@ -91,18 +92,18 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     override fun onCreateLoader(id: Int, args: Bundle): Loader<List<User>?> {
         val query = DiscoverQuery()
         val fragmentArgs = arguments
-        val readCache = args.getBoolean(Constants.EXTRA_READ_CACHE)
-        val readOld = args.getBoolean(Constants.EXTRA_READ_OLD, readCache)
+        val readCache = args.getBoolean(EXTRA_READ_CACHE)
+        val readOld = args.getBoolean(EXTRA_READ_OLD, readCache)
         val paging = Paging()
-        paging.page(args.getInt(Constants.EXTRA_PAGE, 1))
+        paging.page(args.getInt(EXTRA_PAGE, 1))
         var writeCache = true
         if (fragmentArgs != null) {
-            if (fragmentArgs.containsKey(Constants.EXTRA_LEARNING)) {
-                query.learningSkills(fragmentArgs.getStringArray(Constants.EXTRA_LEARNING))
+            if (fragmentArgs.containsKey(EXTRA_LEARNING)) {
+                query.learningSkills(fragmentArgs.getStringArray(EXTRA_LEARNING))
                 writeCache = false
             }
-            if (fragmentArgs.containsKey(Constants.EXTRA_MASTER)) {
-                query.masterSkills(fragmentArgs.getStringArray(Constants.EXTRA_MASTER))
+            if (fragmentArgs.containsKey(EXTRA_MASTER)) {
+                query.masterSkills(fragmentArgs.getStringArray(EXTRA_MASTER))
                 writeCache = false
             }
         }
@@ -143,8 +144,9 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     }
 
     override fun onRefresh() {
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
@@ -152,10 +154,11 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
         // Only supports load from end, skip START flag
         if (position and IndicatorPosition.START != 0) return
         super.onLoadMoreContents(position)
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, true)
-        loaderArgs.putInt(Constants.EXTRA_PAGE, ++page)
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+            putBoolean(EXTRA_READ_OLD, true)
+            putInt(EXTRA_PAGE, ++page)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
     }
 
@@ -203,15 +206,16 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     override fun getActionMenuFragment(): Class<out DiscoverMenuFragment> = DiscoverMenuFragment::class.java
 
     private val account: Account
-        get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
+        get() = arguments.getParcelable<Account>(EXTRA_ACCOUNT)
 
     fun reloadWithSortOrder(sortOrder: String) {
         if (TextUtils.equals(sortOrder, this.sortOrder)) return
         this.sortOrder = sortOrder
-        preferences.edit().putString(Constants.KEY_TOPICS_SORT_ORDER, sortOrder).apply()
-        val loaderArgs = Bundle()
-        loaderArgs.putBoolean(Constants.EXTRA_READ_CACHE, false)
-        loaderArgs.putBoolean(Constants.EXTRA_READ_OLD, false)
+        preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortOrder).apply()
+        val loaderArgs = Bundle {
+            putBoolean(EXTRA_READ_CACHE, false)
+            putBoolean(EXTRA_READ_OLD, false)
+        }
         loaderManager.restartLoader(0, loaderArgs, this)
         showProgress()
     }

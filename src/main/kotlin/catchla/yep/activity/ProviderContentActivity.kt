@@ -3,7 +3,9 @@ package catchla.yep.activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.DribbbleShotsFragment
 import catchla.yep.fragment.GithubUserInfoFragment
 import catchla.yep.fragment.InstagramMediaFragment
@@ -17,7 +19,7 @@ class ProviderContentActivity : SwipeBackContentActivity(), Constants {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_provider_content)
-        val providerName = intent.getStringExtra(Constants.EXTRA_PROVIDER_NAME)
+        val providerName = intent.getStringExtra(EXTRA_PROVIDER_NAME)
         val fragment: Fragment
         when (providerName) {
             Provider.PROVIDER_DRIBBBLE -> fragment = Fragment.instantiate(this, DribbbleShotsFragment::class.java.name)
@@ -28,12 +30,11 @@ class ProviderContentActivity : SwipeBackContentActivity(), Constants {
                 return
             }
         }
-        val args = Bundle()
-        args.putParcelable(Constants.EXTRA_ACCOUNT, intent.getParcelableExtra(Constants.EXTRA_ACCOUNT))
-        args.putParcelable(Constants.EXTRA_USER, intent.getParcelableExtra(Constants.EXTRA_USER))
-        fragment.arguments = args
-        val fm = supportFragmentManager
-        val ft = fm.beginTransaction()
+        fragment.arguments = Bundle {
+            putParcelable(EXTRA_ACCOUNT, intent.getParcelableExtra(EXTRA_ACCOUNT))
+            putParcelable(EXTRA_USER, intent.getParcelableExtra(EXTRA_USER))
+        }
+        val ft = supportFragmentManager.beginTransaction()
         ft.replace(R.id.mainContent, fragment)
         ft.commit()
     }

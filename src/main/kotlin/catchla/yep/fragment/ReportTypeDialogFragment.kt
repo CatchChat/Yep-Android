@@ -13,6 +13,7 @@ import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
 import catchla.yep.annotation.ReportType
+import catchla.yep.extension.Bundle
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.dialog_bottom_sheet_report.*
 import nl.komponents.kovenant.task
@@ -53,12 +54,12 @@ class ReportTypeDialogFragment : BottomSheetDialogFragment() {
                 ReportType.OTHER -> {
                     // TODO open reason input
                     val df = ReportReasonDialogFragment()
-                    val args = Bundle()
-                    args.putParcelable(EXTRA_ACCOUNT, account)
-                    args.putInt(EXTRA_ITEM_TYPE, itemType)
-                    args.putString(EXTRA_ID, reportId)
-                    args.putInt(EXTRA_REPORT_TYPE, reportTypeValue)
-                    df.arguments = args
+                    df.arguments = Bundle {
+                        putParcelable(EXTRA_ACCOUNT, account)
+                        putInt(EXTRA_ITEM_TYPE, itemType)
+                        putString(EXTRA_ID, reportId)
+                        putInt(EXTRA_REPORT_TYPE, reportTypeValue)
+                    }
                     df.show(fragmentManager, "report_reason")
                     dismiss()
                 }
@@ -74,11 +75,11 @@ class ReportTypeDialogFragment : BottomSheetDialogFragment() {
 
         fun show(fragmentManager: FragmentManager, account: Account, id: String, @ItemType itemType: Int): ReportTypeDialogFragment {
             val df = ReportTypeDialogFragment()
-            val args = Bundle()
-            args.putString(EXTRA_ID, id)
-            args.putInt(EXTRA_ITEM_TYPE, itemType)
-            args.putParcelable(EXTRA_ACCOUNT, account)
-            df.arguments = args
+            df.arguments = Bundle {
+                putString(EXTRA_ID, id)
+                putInt(EXTRA_ITEM_TYPE, itemType)
+                putParcelable(EXTRA_ACCOUNT, account)
+            }
             df.show(fragmentManager, "report_type")
             return df
         }

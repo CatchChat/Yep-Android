@@ -4,6 +4,7 @@ import android.os.Bundle
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.extension.account
+import catchla.yep.extension.Bundle
 import catchla.yep.fragment.TopicsListFragment
 import catchla.yep.model.User
 
@@ -17,10 +18,10 @@ class UserTopicsActivity : SwipeBackContentActivity(), Constants {
 
         val fm = supportFragmentManager
         val f = TopicsListFragment()
-        val args = Bundle()
-        args.putParcelable(Constants.EXTRA_ACCOUNT, account)
-        args.putString(Constants.EXTRA_USER_ID, user.id)
-        f.arguments = args
+        f.arguments = Bundle {
+            putParcelable(Constants.EXTRA_ACCOUNT, account)
+            putString(Constants.EXTRA_USER_ID, user.id)
+        }
         fm.beginTransaction().replace(R.id.mainContent, f).commit()
     }
 

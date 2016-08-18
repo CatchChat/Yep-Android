@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.NewTopicGalleryFragment
 import catchla.yep.fragment.NewTopicLocationFragment
@@ -93,9 +94,9 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
                 val fm = supportFragmentManager
                 val ft = fm.beginTransaction()
                 val fragment = NewTopicLocationFragment()
-                val args = Bundle()
-                args.putParcelable(Constants.EXTRA_ATTACHMENT, intent.getParcelableExtra<Parcelable>(Constants.EXTRA_ATTACHMENT))
-                fragment.arguments = args
+                fragment.arguments = Bundle {
+                    putParcelable(Constants.EXTRA_ATTACHMENT, intent.getParcelableExtra<Parcelable>(Constants.EXTRA_ATTACHMENT))
+                }
                 ft.replace(R.id.new_topic_media, fragment)
                 ft.commit()
             }
