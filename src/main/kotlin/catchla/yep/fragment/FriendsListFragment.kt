@@ -123,6 +123,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
                                       recyclerView: RecyclerView,
                                       layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
         val decoration = super.createItemDecoration(context, recyclerView, layoutManager) as DividerItemDecoration
+        decoration.setDecorationStart(1)
         val leftPadding = resources.getDimensionPixelSize(R.dimen.icon_size_status_profile_image) +
                 resources.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
         decoration.setPadding(leftPadding, 0, 0, 0)

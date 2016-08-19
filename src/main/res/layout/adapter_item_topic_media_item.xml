@@ -5,16 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/element_spacing_normal"
+    android:background="@drawable/bg_topic_attachment_media"
     android:clickable="true"
     android:foreground="?selectableItemBackground"
-    tools:layout_height="128dp">
+    tools:layout_height="112dp">
 
     <ImageView
         android:id="@+id/media_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/element_spacing_normal"
-        android:background="#FAFAFA"
         android:scaleType="centerCrop"/>
 
     <ImageView

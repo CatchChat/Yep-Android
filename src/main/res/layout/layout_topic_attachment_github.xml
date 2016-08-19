@@ -8,10 +8,10 @@
     android:layout_alignLeft="@+id/text"
     android:layout_alignStart="@+id/text"
     android:layout_below="@+id/text"
-    android:layout_marginEnd="@dimen/element_spacing_xlarge"
-    android:layout_marginRight="@dimen/element_spacing_xlarge"
+    android:layout_marginEnd="@dimen/spacing_end_topic_attachment_app"
+    android:layout_marginRight="@dimen/spacing_end_topic_attachment_app"
+    android:background="@drawable/bg_topic_attachment_rounded"
     android:clickable="true"
-    android:foreground="@drawable/bg_topic_attachment"
     android:outlineProvider="background">
 
     <RelativeLayout
@@ -33,7 +33,7 @@
             android:src="@drawable/ic_github_repo"/>
 
         <TextView
-            android:id="@+id/repo_name"
+            android:id="@+id/repoName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/element_spacing_normal"
@@ -47,12 +47,12 @@
             tools:text="YAW"/>
 
         <TextView
-            android:id="@+id/repo_description"
+            android:id="@+id/repoDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/repo_name"
-            android:layout_alignStart="@+id/repo_name"
-            android:layout_below="@+id/repo_name"
+            android:layout_alignLeft="@+id/repoName"
+            android:layout_alignStart="@+id/repoName"
+            android:layout_below="@+id/repoName"
             android:textColor="?android:textColorSecondary"
             tools:text="Yet Another Wheel"/>
     </RelativeLayout>

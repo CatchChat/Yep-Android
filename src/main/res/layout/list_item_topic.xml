@@ -30,6 +30,7 @@
         android:gravity="center_vertical"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="?android:textColorLink"
+        android:textSize="@dimen/text_size_topic_name"
         tools:text="Name"/>
 
     <LinearLayout
@@ -47,9 +48,9 @@
             android:id="@+id/providerIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:padding="@dimen/element_spacing_xsmall"
             android:layout_marginEnd="@dimen/element_spacing_normal"
             android:layout_marginRight="@dimen/element_spacing_normal"
+            android:padding="@dimen/element_spacing_xsmall"
             android:scaleType="centerInside"/>
 
         <LinearLayout
@@ -71,6 +72,8 @@
         android:layout_marginBottom="@dimen/element_spacing_normal"
         android:autoLink="email|map|web"
         android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="@dimen/text_size_topic_content"
         tools:text="Blah blah blah"/>
 
 

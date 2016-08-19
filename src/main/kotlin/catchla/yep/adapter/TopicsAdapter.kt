@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import catchla.yep.R
+import catchla.yep.adapter.iface.IItemCountsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.*
 import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Attachment
 import catchla.yep.model.Topic
@@ -21,7 +23,8 @@ import org.mariotaku.ktextension.nullOrEmpty
 /**
  * Created by mariotaku on 15/4/29.
  */
-class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(context) {
+class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(context),
+        IItemCountsAdapter {
 
     private val inflater: LayoutInflater
 
@@ -42,7 +45,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             notifyDataSetChanged()
         }
 
-    internal val itemCounts = IntArray(5)
+    override val itemCounts = IntArray(5)
 
     var topics: List<Topic>? = null
         set(value) {
@@ -97,10 +100,10 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                 return SkillTopicRelatedUsersViewHolder(this, view, context, imageLoader, clickListener)
             }
             ITEM_VIEW_TYPE_SEARCH_BOX -> {
-                val view = inflater.inflate(R.layout.list_item_topic_search_box, parent, false)
-                return TopicSearchBoxViewHolder(this, view, clickListener)
+                val view = inflater.inflate(R.layout.list_item_search_box, parent, false)
+                return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), null)
             }
-            ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
+            ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
             }
@@ -110,7 +113,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     override fun getItemViewType(position: Int): Int {
         when (getItemCountIndex(position)) {
-            0, 4 -> return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
+            0, 4 -> return ITEM_VIEW_TYPE_LOAD_INDICATOR
             1 -> return ITEM_VIEW_TYPE_SEARCH_BOX
             2 -> return ITEM_VIEW_TYPE_RELATED_USERS
             3 -> {
@@ -136,7 +139,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
+            ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
             }
             ITEM_VIEW_TYPE_BASIC, ITEM_VIEW_TYPE_MEDIA_GALLERY, ITEM_VIEW_TYPE_GITHUB,
             ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE,
@@ -152,25 +155,13 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     override fun getItemCount(): Int {
         val position = loadMoreIndicatorPosition
-        itemCounts[0] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.START != 0) 1 else 0
+        itemCounts[0] = if (position and IndicatorPosition.START != 0) 1 else 0
         itemCounts[1] = if (showSearchBox) 1 else 0
         itemCounts[2] = if (!topics.nullOrEmpty() && !relatedUsers.nullOrEmpty()) 1 else 0
         itemCounts[3] = topicsCount
-        itemCounts[4] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.END != 0) 1 else 0
+        itemCounts[4] = if (position and IndicatorPosition.END != 0) 1 else 0
         return itemCounts.sum()
     }
-
-    fun getItemCountIndex(position: Int): Int {
-        var sum: Int = 0
-        itemCounts.forEachIndexed { idx, count ->
-            sum += count
-            if (position < sum) {
-                return idx
-            }
-        }
-        return -1
-    }
-
     val topicsCount: Int
         get() = topics?.size ?: 0
 

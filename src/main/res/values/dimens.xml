@@ -28,5 +28,8 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-    <dimen name="text_size_friend_grid_skill_label">10sp</dimen>
+    <dimen name="text_size_friend_grid_skill_label">12sp</dimen>
+    <dimen name="text_size_topic_content">16sp</dimen>
+    <dimen name="text_size_topic_name">15sp</dimen>
+    <dimen name="spacing_end_topic_attachment_app">64dp</dimen>
 </resources>

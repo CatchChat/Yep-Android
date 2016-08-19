@@ -8,13 +8,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.RelativeLayout
 
-class SquareFrameLayout @JvmOverloads constructor(
+class SquareRelativeLayout @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyle: Int = 0
-) : FrameLayout(context, attrs, defStyle) {
+) : RelativeLayout(context, attrs, defStyle) {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = View.MeasureSpec.getSize(widthMeasureSpec)

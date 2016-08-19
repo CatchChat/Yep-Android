@@ -6,4 +6,9 @@
         android:color="#80808080"/>
     <corners android:radius="4dp"/>
     <solid android:color="@android:color/transparent"/>
+    <padding
+        android:bottom="0.5dp"
+        android:left="0.5dp"
+        android:right="0.5dp"
+        android:top="0.5dp"/>
 </shape>

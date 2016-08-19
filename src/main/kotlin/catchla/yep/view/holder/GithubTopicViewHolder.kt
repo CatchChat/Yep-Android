@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.view.View
-import android.widget.TextView
 import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.GithubAttachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
+import catchla.yep.util.view.ViewSupport
+import kotlinx.android.synthetic.main.layout_topic_attachment_github.view.*
 
 /**
  * Created by mariotaku on 15/12/9.
@@ -23,13 +24,13 @@ class GithubTopicViewHolder(
         listener: TopicsAdapter.TopicClickListener?
 ) : TopicViewHolder(topicsAdapter, itemView, context, imageLoader, listener) {
 
-    private val repoName: TextView
-    private val repoDescription: TextView
+    private val attachmentView by lazy { itemView.attachmentView }
+    private val repoName by lazy { itemView.repoName }
+    private val repoDescription by lazy { itemView.repoDescription }
 
     init {
-        repoName = itemView.findViewById(R.id.repo_name) as TextView
-        repoDescription = itemView.findViewById(R.id.repo_description) as TextView
-        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
+        attachmentView.setOnClickListener(this)
+        ViewSupport.setClipToOutline(attachmentView, true)
     }
 
     override fun onClick(v: View) {

@@ -2,18 +2,15 @@ package catchla.yep.view.holder
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-
-import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.model.DribbbleAttachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
+import catchla.yep.util.view.ViewSupport
+import kotlinx.android.synthetic.main.layout_topic_attachment_dribbble.view.*
 
 /**
  * Created by mariotaku on 15/12/9.
@@ -21,14 +18,13 @@ import catchla.yep.util.Utils
 class DribbbleTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, context: Context,
                               imageLoader: ImageLoaderWrapper,
                               listener: TopicsAdapter.TopicClickListener?) : TopicViewHolder(topicsAdapter, itemView, context, imageLoader, listener) {
-
-    private val mediaPreviewView: ImageView
-    private val titleView: TextView
+    private val attachmentView by lazy { itemView.attachmentView }
+    private val mediaPreviewView by lazy { itemView.mediaPreview }
+    private val titleView by lazy { itemView.title }
 
     init {
-        itemView.findViewById(R.id.attachmentView).setOnClickListener(this)
-        mediaPreviewView = itemView.findViewById(R.id.media_preview) as ImageView
-        titleView = itemView.findViewById(R.id.title) as TextView
+        attachmentView.setOnClickListener(this)
+        ViewSupport.setClipToOutline(attachmentView, true)
     }
 
     override fun displayTopic(topic: Topic) {

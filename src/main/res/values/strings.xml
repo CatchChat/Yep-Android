@@ -127,4 +127,5 @@
     <string name="report_type_title">Report type</string>
     <string name="report_reason_title">Report reason</string>
     <string name="search_topics">Search topics</string>
+    <string name="search_friends">Search friends</string>
 </resources>

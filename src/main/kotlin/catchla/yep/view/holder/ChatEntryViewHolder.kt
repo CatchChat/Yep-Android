@@ -19,7 +19,11 @@ import catchla.yep.view.ShortTimeView
 /**
  * Created by mariotaku on 15/4/29.
  */
-class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter, listener: ((Int, RecyclerView.ViewHolder) -> Unit)?) : RecyclerView.ViewHolder(itemView) {
+class ChatEntryViewHolder(
+        itemView: View,
+        private val adapter: ChatsListAdapter,
+        listener: ((Int, RecyclerView.ViewHolder) -> Unit)?
+) : RecyclerView.ViewHolder(itemView) {
 
     private val profileImageView: ImageView
     private val nameView: TextView
@@ -60,7 +64,7 @@ class ChatEntryViewHolder(itemView: View, private val adapter: ChatsListAdapter,
         } else if (Message.MediaType.AUDIO.equals(conversation.mediaType, ignoreCase = true)) {
             return context.getString(R.string.audio)
         } else {
-            return conversation.textContent
+            return conversation.textContent ?: context.getString(R.string.no_content)
         }
     }
 }

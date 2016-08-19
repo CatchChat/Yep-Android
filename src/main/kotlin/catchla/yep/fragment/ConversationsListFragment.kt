@@ -34,11 +34,15 @@ import com.squareup.otto.Subscribe
  * Created by mariotaku on 15/4/29.
  */
 class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAdapter>(), Constants, LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
+    val showSearchBox: Boolean
+        get() = arguments.getBoolean(Constants.EXTRA_SHOW_SEARCH_BOX, true)
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
 
+        adapter.showSearchBox = showSearchBox
         adapter.itemClickListener = { position, holder ->
             val adapter = adapter
             if (adapter.getItemViewType(position) == ChatsListAdapter.ITEM_VIEW_TYPE_CIRCLES_ENTRY) {
@@ -140,6 +144,7 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
                                       recyclerView: RecyclerView,
                                       layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
         val decoration = super.createItemDecoration(context, recyclerView, layoutManager) as DividerItemDecoration
+        decoration.setDecorationStart(1)
         val leftPadding = resources.getDimensionPixelSize(R.dimen.icon_size_status_profile_image) +
                 resources.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
         decoration.setPadding(leftPadding, 0, 0, 0)

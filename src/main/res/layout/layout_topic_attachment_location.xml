@@ -7,10 +7,11 @@
     android:layout_alignLeft="@+id/text"
     android:layout_alignStart="@+id/text"
     android:layout_below="@+id/text"
-    android:layout_marginEnd="@dimen/element_spacing_xlarge"
-    android:layout_marginRight="@dimen/element_spacing_xlarge"
-    android:background="@drawable/bg_topic_attachment"
+    android:layout_marginEnd="@dimen/spacing_end_topic_attachment_app"
+    android:layout_marginRight="@dimen/spacing_end_topic_attachment_app"
+    android:background="@drawable/bg_topic_attachment_rounded"
     android:clickable="true"
+    android:foreground="?selectableItemBackground"
     android:outlineProvider="background">
 
     <LinearLayout
