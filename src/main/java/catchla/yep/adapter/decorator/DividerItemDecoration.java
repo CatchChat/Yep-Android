@@ -87,6 +87,11 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         mPadding.set(left, top, right, bottom);
     }
 
+    public void setPaddingRelative(int start, int top, int end, int bottom) {
+        int left = start, right = end;
+        mPadding.set(left, top, right, bottom);
+    }
+
     public void drawVertical(Canvas c, RecyclerView parent) {
         if (mDivider == null) return;
         final int left = parent.getPaddingLeft();

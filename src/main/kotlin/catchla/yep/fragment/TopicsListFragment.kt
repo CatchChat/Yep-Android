@@ -25,6 +25,7 @@ import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
+import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
@@ -62,6 +63,19 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     val isCachingEnabled: Boolean
         get() = arguments.getBoolean(EXTRA_CACHING_ENABLED)
 
+    val showSearchBox: Boolean
+        get() = arguments.getBoolean(EXTRA_SHOW_SEARCH_BOX, true)
+
+    private val sortOrder: String
+        @TopicSortOrder
+        get() {
+            if (hasUserId()) return TopicSortOrder.TIME
+            return if (sortBy != null) sortBy!! else TopicSortOrder.TIME
+        }
+
+    private val skill: Skill?
+        get() = arguments.getParcelable(EXTRA_SKILL)
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
@@ -69,15 +83,11 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
-        if (fragmentArgs != null) {
-            loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING) && !fragmentArgs.containsKey(EXTRA_MASTER))
-            if (fragmentArgs.containsKey(EXTRA_USER_ID)) {
-                loaderArgs.putString(EXTRA_USER_ID, fragmentArgs.getString(EXTRA_USER_ID))
-            }
-            adapter.showSearchBox = loaderArgs.getBoolean(EXTRA_SHOW_SEARCH_BOX, true)
-        } else {
-            loaderArgs.putBoolean(EXTRA_READ_CACHE, true)
+        loaderArgs.putBoolean(EXTRA_READ_CACHE, !fragmentArgs.containsKey(EXTRA_LEARNING) && !fragmentArgs.containsKey(EXTRA_MASTER))
+        if (fragmentArgs.containsKey(EXTRA_USER_ID)) {
+            loaderArgs.putString(EXTRA_USER_ID, fragmentArgs.getString(EXTRA_USER_ID))
         }
+        adapter.showSearchBox = showSearchBox
         loaderManager.initLoader(0, loaderArgs, this)
         skill?.let {
             loaderManager.initLoader(1, null, relatedUsersLoaderCallback)
@@ -106,16 +116,6 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
                 skill?.id, paging, sortOrder, readCache, cachingEnabled, oldData)
     }
 
-    private val sortOrder: String
-        @TopicSortOrder
-        get() {
-            if (hasUserId()) return TopicSortOrder.TIME
-            return if (sortBy != null) sortBy!! else TopicSortOrder.TIME
-        }
-
-    private val skill: Skill?
-        get() = arguments.getParcelable(EXTRA_SKILL)
-
     private fun hasUserId(): Boolean {
         val fragmentArgs = arguments
         return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID)
@@ -134,7 +134,6 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     override fun onLoaderReset(loader: Loader<List<Topic>?>) {
 
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
@@ -192,9 +191,6 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         intent.putExtra(EXTRA_TOPIC, topic)
         startActivity(intent)
     }
-
-    private val account: Account
-        get() = arguments.getParcelable<Account>(EXTRA_ACCOUNT)
 
     override fun getActionIcon(): Int {
         return R.drawable.ic_action_edit
@@ -265,7 +261,11 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     override fun createItemDecoration(context: Context,
                                       recyclerView: RecyclerView,
                                       layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
-        return super.createItemDecoration(context, recyclerView, layoutManager)
+        val decoration = super.createItemDecoration(context, recyclerView, layoutManager) as DividerItemDecoration
+        if (showSearchBox) {
+            decoration.setDecorationStart(1)
+        }
+        return decoration
     }
 
     fun reloadWithSortOrder(@TopicSortOrder sortBy: String) {

@@ -4,12 +4,13 @@
 
 package catchla.yep.fragment
 
-import android.accounts.Account
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -18,7 +19,9 @@ import catchla.yep.R
 import catchla.yep.activity.ChatActivity
 import catchla.yep.activity.CirclesListActivity
 import catchla.yep.adapter.ChatsListAdapter
+import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.extension.Bundle
+import catchla.yep.extension.account
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.ConversationsLoader
 import catchla.yep.message.MessageRefreshedEvent
@@ -121,9 +124,6 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
         activity.startService(intent)
     }
 
-    private val account: Account
-        get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
-
     override fun getActionIcon(): Int {
         return R.drawable.ic_action_search
     }
@@ -134,6 +134,16 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
 
     override fun getActionMenuFragment(): Class<out FloatingActionMenuFragment>? {
         return null
+    }
+
+    override fun createItemDecoration(context: Context,
+                                      recyclerView: RecyclerView,
+                                      layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
+        val decoration = super.createItemDecoration(context, recyclerView, layoutManager) as DividerItemDecoration
+        val leftPadding = resources.getDimensionPixelSize(R.dimen.icon_size_status_profile_image) +
+                resources.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
+        decoration.setPadding(leftPadding, 0, 0, 0)
+        return decoration
     }
 
     companion object {
