@@ -63,9 +63,10 @@ public interface Constants {
     String EXTRA_SNAPSHOT = "snapshot";
     String EXTRA_LOCATION = "location";
     String EXTRA_NAME = "name";
-    String BOUNDS = "bounds";
+    String EXTRA_BOUNDS = "bounds";
     String EXTRA_ATTACHMENT = "attachment";
-    String POSITION = "position";
+    String EXTRA_POSITION = "position";
+    String EXTRA_SHOW_SEARCH_BOX = "show_search_box";
 
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;

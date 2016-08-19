@@ -36,7 +36,13 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             notifyDataSetChanged()
         }
 
-    internal val itemCounts = IntArray(4)
+    var showSearchBox: Boolean = false
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    internal val itemCounts = IntArray(5)
 
     var topics: List<Topic>? = null
         set(value) {
@@ -90,6 +96,10 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                 val view = inflater.inflate(R.layout.list_item_skill_topic_related_users, parent, false)
                 return SkillTopicRelatedUsersViewHolder(this, view, context, imageLoader, clickListener)
             }
+            ITEM_VIEW_TYPE_SEARCH_BOX -> {
+                val view = inflater.inflate(R.layout.list_item_topic_search_box, parent, false)
+                return TopicSearchBoxViewHolder(this, view, clickListener)
+            }
             ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
@@ -100,9 +110,10 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
     override fun getItemViewType(position: Int): Int {
         when (getItemCountIndex(position)) {
-            0, 3 -> return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
-            1 -> return ITEM_VIEW_TYPE_RELATED_USERS
-            2 -> {
+            0, 4 -> return ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
+            1 -> return ITEM_VIEW_TYPE_SEARCH_BOX
+            2 -> return ITEM_VIEW_TYPE_RELATED_USERS
+            3 -> {
                 val topic = getTopic(position)
                 val kind = topic.kind
                 when (kind) {
@@ -142,9 +153,10 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
     override fun getItemCount(): Int {
         val position = loadMoreIndicatorPosition
         itemCounts[0] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.START != 0) 1 else 0
-        itemCounts[1] = if (!topics.nullOrEmpty() && !relatedUsers.nullOrEmpty()) 1 else 0
-        itemCounts[2] = topicsCount
-        itemCounts[3] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.END != 0) 1 else 0
+        itemCounts[1] = if (showSearchBox) 1 else 0
+        itemCounts[2] = if (!topics.nullOrEmpty() && !relatedUsers.nullOrEmpty()) 1 else 0
+        itemCounts[3] = topicsCount
+        itemCounts[4] = if (position and ILoadMoreSupportAdapter.IndicatorPosition.END != 0) 1 else 0
         return itemCounts.sum()
     }
 
@@ -185,7 +197,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         private val ITEM_VIEW_TYPE_SINGLE_IMAGE = 6
         private val ITEM_VIEW_TYPE_WEB_PAGE = 7
 
-        private val ITEM_VIEW_TYPE_RELATED_USERS = 10
+        private val ITEM_VIEW_TYPE_SEARCH_BOX = 10
+        private val ITEM_VIEW_TYPE_RELATED_USERS = 11
     }
 
 }

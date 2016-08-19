@@ -15,6 +15,7 @@ import android.support.v4.app.LoaderManager
 import android.support.v4.content.AsyncTaskLoader
 import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.Menu
@@ -25,8 +26,8 @@ import catchla.yep.R
 import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
-import catchla.yep.extension.account
 import catchla.yep.extension.Bundle
+import catchla.yep.extension.account
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverTopicsLoader
 import catchla.yep.model.*
@@ -56,12 +57,15 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     }
 
     @TopicSortOrder
-    private var mSortBy: String? = null
+    private var sortBy: String? = null
+
+    val isCachingEnabled: Boolean
+        get() = arguments.getBoolean(EXTRA_CACHING_ENABLED)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
-        mSortBy = preferences.getString(KEY_TOPICS_SORT_ORDER, TopicSortOrder.DEFAULT)
+        sortBy = preferences.getString(KEY_TOPICS_SORT_ORDER, TopicSortOrder.DEFAULT)
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
@@ -70,6 +74,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             if (fragmentArgs.containsKey(EXTRA_USER_ID)) {
                 loaderArgs.putString(EXTRA_USER_ID, fragmentArgs.getString(EXTRA_USER_ID))
             }
+            adapter.showSearchBox = loaderArgs.getBoolean(EXTRA_SHOW_SEARCH_BOX, true)
         } else {
             loaderArgs.putBoolean(EXTRA_READ_CACHE, true)
         }
@@ -105,7 +110,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         @TopicSortOrder
         get() {
             if (hasUserId()) return TopicSortOrder.TIME
-            return if (mSortBy != null) mSortBy!! else TopicSortOrder.TIME
+            return if (sortBy != null) sortBy!! else TopicSortOrder.TIME
         }
 
     private val skill: Skill?
@@ -179,8 +184,6 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             super.refreshing = value
         }
 
-    val isCachingEnabled: Boolean
-        get() = arguments.getBoolean(EXTRA_CACHING_ENABLED)
 
     override fun onItemClick(position: Int, holder: RecyclerView.ViewHolder) {
         val topic = adapter.getTopic(position)
@@ -259,9 +262,15 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         ActivityCompat.startActivity(activity, intent, options)
     }
 
+    override fun createItemDecoration(context: Context,
+                                      recyclerView: RecyclerView,
+                                      layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
+        return super.createItemDecoration(context, recyclerView, layoutManager)
+    }
+
     fun reloadWithSortOrder(@TopicSortOrder sortBy: String) {
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
-        mSortBy = sortBy
+        this.sortBy = sortBy
         preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply()
         val loaderArgs = Bundle {
             putBoolean(EXTRA_READ_CACHE, false)

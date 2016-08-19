@@ -141,8 +141,8 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     private fun searchNearbyPoi(position: CameraPosition) {
         val lm = supportLoaderManager
         val args = Bundle {
-            putParcelable(POSITION, position.target)
-            putParcelable(BOUNDS, map!!.projection.visibleRegion.latLngBounds)
+            putParcelable(EXTRA_POSITION, position.target)
+            putParcelable(EXTRA_BOUNDS, map!!.projection.visibleRegion.latLngBounds)
         }
         if (loaderInitialized) {
             lm.restartLoader(0, args, this)
@@ -227,8 +227,8 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
     }
 
     override fun onCreateLoader(id: Int, args: Bundle): Loader<PoiResult> {
-        val position = args.getParcelable<LatLng>(POSITION)
-        val region = args.getParcelable<LatLngBounds>(BOUNDS)
+        val position = args.getParcelable<LatLng>(EXTRA_POSITION)
+        val region = args.getParcelable<LatLngBounds>(EXTRA_BOUNDS)
         return NearByPoiLoader(this, position, region)
     }
 

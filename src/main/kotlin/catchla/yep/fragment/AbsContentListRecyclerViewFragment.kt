@@ -35,17 +35,25 @@ import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
  */
 abstract class AbsContentListRecyclerViewFragment<A : LoadMoreSupportAdapter<RecyclerView.ViewHolder>> : AbsContentRecyclerViewFragment<A, LinearLayoutManager>() {
 
-    private var itemDecoration: DividerItemDecoration? = null
+    private var itemDecoration: RecyclerView.ItemDecoration? = null
+
+    open fun createItemDecoration(context: Context,
+                                  recyclerView: RecyclerView,
+                                  layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
+        return DividerItemDecoration(context, layoutManager.orientation)
+    }
 
     override fun setupRecyclerView(context: Context, recyclerView: RecyclerView, layoutManager: LinearLayoutManager) {
-        itemDecoration = DividerItemDecoration(context, layoutManager.orientation)
-        recyclerView.addItemDecoration(itemDecoration)
+        itemDecoration = createItemDecoration(context, recyclerView, layoutManager)
+        if (itemDecoration != null) {
+            recyclerView.addItemDecoration(itemDecoration)
+        }
     }
 
     @IndicatorPosition override var loadMoreIndicatorPosition: Int
         get() = super.loadMoreIndicatorPosition
         set(value) {
-            itemDecoration?.let {
+            (itemDecoration as? DividerItemDecoration)?.let {
                 it.setDecorationEndOffset(if (value == IndicatorPosition.END) 1 else 0)
             }
             super.loadMoreIndicatorPosition = value
