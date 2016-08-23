@@ -291,7 +291,7 @@ class LocationPickerActivity : ContentActivity(), Constants, LocationListener, L
                 val geocodeSearch = GeocodeSearch(context)
                 val address = geocodeSearch.getFromLocation(RegeocodeQuery(
                         LatLonPoint(latLng.latitude, latLng.longitude), 0f, GeocodeSearch.GPS))
-                val poiSearch = PoiSearch(context, PoiSearch.Query("", "景点",
+                val poiSearch = PoiSearch(context, PoiSearch.Query("", "景点|交通|公共设施|地名地址信息",
                         address.adCode))
                 poiSearch.bound = AMapModelUtils.toSearchBound(bounds)
                 return poiSearch.searchPOI()
