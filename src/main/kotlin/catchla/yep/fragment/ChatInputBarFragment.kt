@@ -26,8 +26,11 @@ import catchla.yep.activity.ThemedImagePickerActivity
 import catchla.yep.annotation.AttachableType
 import catchla.yep.model.*
 import catchla.yep.util.*
+import catchla.yep.util.task.SendMessageDelegate
 import catchla.yep.util.task.SendMessageTask
+import catchla.yep.util.task.sendMessagePromise
 import kotlinx.android.synthetic.main.layout_chat_input_panel.*
+import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.ArrayUtils
 import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.commons.parcel.ViewUtils
@@ -188,26 +191,6 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
     private fun sendMessage(sendMessageHandler: SendMessageHandler) {
         val conversation = this.conversation ?: return
-        val task = object : SendMessageTask<ChatInputBarFragment>(context, account) {
-            override val mediaType: String
-                get() = sendMessageHandler.mediaType
-
-            @Throws(YepException::class)
-            override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
-                return sendMessageHandler.uploadAttachment(yep, newMessage)
-            }
-
-            override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
-                return sendMessageHandler.getLocalMetadata(newMessage)
-            }
-
-            override fun afterExecute(handler: ChatInputBarFragment?, result: TaskResponse<Message>) {
-                if (result.data != null) {
-                    handler!!.listener!!.onMessageSentFinished(result)
-                    // TODO Reload messages
-                }
-            }
-        }
         val newMessage = NewMessage()
         newMessage.textContent(editText.text.toString())
         newMessage.accountId(conversation.accountId)
@@ -219,10 +202,22 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         newMessage.user(conversation.user)
         newMessage.createdAt(System.currentTimeMillis())
         newMessage.randomId(Utils.generateRandomId(16))
-        task.setParams(newMessage)
-        task.setResultHandler(this)
         listener!!.onMessageSentStarted(newMessage)
-        TaskStarter.execute(task)
+        sendMessagePromise(context, account, newMessage, object : SendMessageDelegate {
+            override val mediaType: String
+                get() = sendMessageHandler.mediaType
+
+            @Throws(YepException::class)
+            override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
+                return sendMessageHandler.uploadAttachment(yep, newMessage)
+            }
+
+            override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
+                return sendMessageHandler.getLocalMetadata(newMessage)
+            }
+        }).successUi { body ->
+            listener?.onMessageSentFinished(body)
+        }
         editText.setText("")
     }
 
@@ -277,7 +272,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
         fun onRecordStopped()
 
-        fun onMessageSentFinished(result: TaskResponse<Message>)
+        fun onMessageSentFinished(result: Message)
 
         fun onMessageSentStarted(newMessage: NewMessage)
 

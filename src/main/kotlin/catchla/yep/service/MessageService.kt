@@ -18,6 +18,7 @@ import catchla.yep.util.BusHandler
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
+import com.squareup.otto.Bus
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.ui.successUi
 import org.mariotaku.ktextension.bulkInsertSliced
@@ -31,7 +32,7 @@ import javax.inject.Inject
 class MessageService : Service(), Constants {
 
     @Inject
-    lateinit var bus: BusHandler
+    lateinit var bus: Bus
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -97,7 +98,7 @@ class MessageService : Service(), Constants {
             cr.delete(Friendships.CONTENT_URI, null, null)
             cr.bulkInsertSliced(Friendships.CONTENT_URI, values)
         }.successUi {
-            bus.postHandler(FriendshipsRefreshedEvent())
+            bus.post(FriendshipsRefreshedEvent())
         }
     }
 
@@ -111,7 +112,7 @@ class MessageService : Service(), Constants {
             val conversations = yep.getConversations(paging)
             insertConversations(this@MessageService, conversations, accountUser.id)
         }.successUi {
-            bus.postHandler(MessageRefreshedEvent())
+            bus.post(MessageRefreshedEvent())
         }
     }
 
@@ -125,7 +126,7 @@ class MessageService : Service(), Constants {
             val accountId = accountUser.id
             insertCircles(this@MessageService, circles, accountId)
         }.successUi {
-            bus.postHandler(MessageRefreshedEvent())
+            bus.post(MessageRefreshedEvent())
         }
     }
 

@@ -29,7 +29,7 @@ object GeneralComponentHelper {
 
     fun build(context: Context): GeneralComponent {
         if (sGeneralComponent != null) return sGeneralComponent!!
-        sGeneralComponent = DaggerGeneralComponent.builder().applicationModule(ApplicationModule[context]).build()
+        sGeneralComponent = DaggerGeneralComponent.builder().applicationModule(ApplicationModule.get(context)).build()
         return sGeneralComponent!!
     }
 }

@@ -125,7 +125,7 @@ class ApplicationModule internal constructor(private val application: Applicatio
 
         private var sInstance: ApplicationModule? = null
 
-        operator fun get(context: Context): ApplicationModule {
+        fun get(context: Context): ApplicationModule {
             if (sInstance != null) return sInstance!!
             sInstance = ApplicationModule(context.applicationContext as Application)
             return sInstance!!

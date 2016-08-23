@@ -205,7 +205,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         voiceWaveView.stopRecording()
     }
 
-    override fun onMessageSentFinished(result: TaskResponse<Message>) {
+    override fun onMessageSentFinished(result: Message) {
         val f = chatListFragment
         f.scrollToStart()
     }

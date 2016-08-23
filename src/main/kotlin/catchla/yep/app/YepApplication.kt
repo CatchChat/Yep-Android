@@ -12,6 +12,8 @@ import catchla.yep.util.DebugModeUtils
 import catchla.yep.util.dagger.ApplicationModule
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
+import nl.komponents.kovenant.android.startKovenant
+import nl.komponents.kovenant.android.stopKovenant
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -20,6 +22,7 @@ class YepApplication : Application(), Constants {
 
     override fun onCreate() {
         super.onCreate()
+        startKovenant()
         ApplicationModule.get(this)
         Fabric.with(this, Crashlytics())
         DebugModeUtils.initForApplication(this)
@@ -67,4 +70,8 @@ class YepApplication : Application(), Constants {
         })
     }
 
+    override fun onTerminate() {
+        super.onTerminate()
+        stopKovenant()
+    }
 }

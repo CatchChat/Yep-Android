@@ -43,8 +43,10 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import kotlinx.android.synthetic.main.activity_sign_in_sign_up.*
 import me.philio.pinentry.PinEntryView
 import nl.komponents.kovenant.task
+import nl.komponents.kovenant.then
 import nl.komponents.kovenant.ui.alwaysUi
 import nl.komponents.kovenant.ui.failUi
+import nl.komponents.kovenant.ui.promiseOnUi
 import nl.komponents.kovenant.ui.successUi
 import java.util.*
 
@@ -113,8 +115,9 @@ class SignInActivity : ContentActivity(), Constants, ViewPager.OnPageChangeListe
     }
 
     private fun sendVerifyCode(phoneNumber: String, countryCode: String) {
-        ProgressDialogFragment.show(this, "send_verify")
-        task {
+        promiseOnUi {
+            ProgressDialogFragment.show(this, "send_verify")
+        }.then {
             val yep = YepAPIFactory.getInstanceWithToken(this@SignInActivity, null)
             yep.sendVerifyCode(phoneNumber, countryCode, VerificationMethod.SMS)
         }.successUi {
