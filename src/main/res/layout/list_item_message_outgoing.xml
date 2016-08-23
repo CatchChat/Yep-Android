@@ -2,10 +2,12 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end|center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="@dimen/element_spacing_normal">
 
 
     <ImageView
@@ -14,26 +16,27 @@
         android:layout_height="16dp"
         android:layout_gravity="end|center_vertical"
         android:layout_margin="@dimen/element_spacing_small"
+        android:layout_marginEnd="@dimen/element_spacing_normal"
+        android:layout_marginRight="@dimen/element_spacing_normal"
         android:scaleType="center"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/element_spacing_normal"
-        android:minHeight="16dp"
-        android:minWidth="16dp"
+        android:layout_marginEnd="@dimen/element_spacing_normal"
+        android:layout_marginRight="@dimen/element_spacing_normal"
+        android:minHeight="@dimen/message_bubble_minimum_height"
+        android:minWidth="@dimen/message_bubble_minimum_width"
         app:bubbleColor="#40C4FF"
-        app:caretHeight="4dp"
-        app:caretPosition="bottomEnd"
-        app:caretWidth="4dp"
-        app:cornerRadius="2dp">
+        app:cornerRadius="@dimen/message_bubble_corner_radius">
 
         <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/profileImageOutgoing"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:scaleType="centerCrop"/>
+        android:layout_width="@dimen/icon_size_message_bubble_profile_image"
+        android:layout_height="@dimen/icon_size_message_bubble_profile_image"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_profile_image_default"/>
 </LinearLayout>

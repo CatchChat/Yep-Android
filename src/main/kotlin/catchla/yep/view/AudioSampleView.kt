@@ -1,27 +1,37 @@
 package catchla.yep.view
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-
 import catchla.yep.R
 
 /**
  * Created by mariotaku on 15/8/25.
  */
 class AudioSampleView : View {
+    private val linePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     var samples: FloatArray? = null
-        set(samples) {
-            field = samples
+        set(value) {
+            field = value
             requestLayout()
         }
-    private var linePaint: Paint? = null
-    private var lineColor: Int = 0
-    private var lineColorPlayed: Int = 0
+
+    var lineColor: Int = Color.TRANSPARENT
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    var lineColorPlayed: Int = Color.TRANSPARENT
+        set(value) {
+            field = value
+            invalidate()
+        }
+
     var playedIndex: Int = 0
         set(idx) {
             field = idx
@@ -42,19 +52,22 @@ class AudioSampleView : View {
 
     private fun init(context: Context, attrs: AttributeSet?, defStyleAttr: Int) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.AudioSampleView)
-        linePaint = Paint(Paint.ANTI_ALIAS_FLAG)
         val defWidth = context.resources.displayMetrics.density * 2
-        linePaint!!.strokeWidth = a.getDimension(R.styleable.AudioSampleView_asvLineWidth, defWidth)
-        linePaint!!.strokeCap = Paint.Cap.ROUND
+        linePaint.strokeWidth = a.getDimension(R.styleable.AudioSampleView_asvLineWidth, defWidth)
+        linePaint.strokeCap = Paint.Cap.ROUND
         lineColor = a.getColor(R.styleable.AudioSampleView_asvLineColor, Color.WHITE)
         lineColorPlayed = a.getColor(R.styleable.AudioSampleView_asvLineColorPlayed, Color.BLACK)
         a.recycle()
+
+        if (isInEditMode) {
+            samples = floatArrayOf(0.0f, 0.0f, 0.0f, 0.2f, 0.3f, 0.1f, 0.5f, 0.5f, 0.6f, 0.4f, 0.2f, 0.6f, 0f, 0f)
+        }
     }
 
     private val samplesWidth: Int
         get() {
             if (this.samples == null) return 0
-            return Math.round(linePaint!!.strokeWidth * 2f * this.samples!!.size.toFloat())
+            return Math.round(linePaint.strokeWidth * 2f * this.samples!!.size.toFloat())
         }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -64,19 +77,19 @@ class AudioSampleView : View {
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (this.samples == null) return
+        val samples = samples ?: return
+        val playedIndex = this.playedIndex
         val height = height
         val contentHeight = height - paddingTop - paddingBottom
-        val center = paddingTop + contentHeight / 2
-        val strokeWidth = linePaint!!.strokeWidth
-        var i = 0
-        val j = this.samples!!.size
-        while (i < j) {
-            val x = strokeWidth * 2f * i.toFloat() + strokeWidth / 2
-            val lineH = contentHeight * this.samples!![i]
-            linePaint!!.color = if (i < this.playedIndex) lineColor else lineColorPlayed
-            canvas.drawLine(x, center - lineH / 2, x, center + lineH / 2, linePaint!!)
-            i++
+        val center = paddingTop + contentHeight / 2f
+        val strokeWidth = linePaint.strokeWidth
+        samples.forEachIndexed { i, value ->
+            val x = strokeWidth * 2f * i + strokeWidth / 2
+            val lineH = Math.max(1f, contentHeight * value)
+            val currentPaintColor = if (i < playedIndex) lineColor else lineColorPlayed
+            linePaint.color = currentPaintColor
+            linePaint.alpha = Color.alpha(currentPaintColor)
+            canvas.drawLine(x, center - lineH / 2, x, center + lineH / 2, linePaint)
         }
     }
 }

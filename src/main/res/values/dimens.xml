@@ -21,7 +21,6 @@
     <dimen name="waver_width">2dp</dimen>
     <dimen name="waver_width_min">1dp</dimen>
     <dimen name="icon_size_topic_item_profile_image">48dp</dimen>
-    <dimen name="icon_size_chat_bubble_profile_image">48dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -32,4 +31,8 @@
     <dimen name="text_size_topic_content">16sp</dimen>
     <dimen name="text_size_topic_name">15sp</dimen>
     <dimen name="spacing_end_topic_attachment_app">64dp</dimen>
+    <dimen name="icon_size_message_bubble_profile_image">40dp</dimen>
+    <dimen name="message_bubble_minimum_height">40dp</dimen>
+    <dimen name="message_bubble_minimum_width">64dp</dimen>
+    <dimen name="message_bubble_corner_radius">20dp</dimen>
 </resources>

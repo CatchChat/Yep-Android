@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_vertical"
+    android:layout_gravity="center"
     android:orientation="vertical"
     tools:showIn="@layout/list_item_message_outgoing">
 
@@ -13,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_margin="@dimen/element_spacing_normal"/>
+        android:layout_margin="@dimen/element_spacing_normal"
+        tools:text="Hello"/>
 
     <FrameLayout
         android:id="@+id/attachmentView"

@@ -29,12 +29,12 @@ import catchla.yep.provider.YepDataStore.Messages.MessageState
 import catchla.yep.util.JsonSerializer
 import catchla.yep.util.StaticMapUrlGenerator
 import catchla.yep.util.Utils
-import catchla.yep.view.AudioSampleView
 import catchla.yep.view.MediaSizeImageView
 import catchla.yep.view.StaticMapView
 import catchla.yep.view.iface.IExtendedView
 import kotlinx.android.synthetic.main.fragment_chat_list.*
 import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
+import kotlinx.android.synthetic.main.layout_message_attachment_audio.view.*
 import nl.komponents.kovenant.task
 import nl.komponents.kovenant.ui.successUi
 import okhttp3.OkHttpClient
@@ -420,15 +420,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 adapter: ChatAdapter
         ) : MessageViewHolder(itemView, outgoing, adapter), View.OnClickListener {
 
-            private val playPauseView: TextView
-            private val audioLengthView: TextView
-            private val sampleView: AudioSampleView
+            private val playPauseView by lazy { itemView.playPause }
+            private val audioLengthView by lazy { itemView.audioLength }
+            private val sampleView by lazy { itemView.audioSample }
 
             init {
-                playPauseView = itemView.findViewById(R.id.play_pause) as TextView
-                audioLengthView = itemView.findViewById(R.id.audio_length) as TextView
-                sampleView = itemView.findViewById(R.id.audio_sample) as AudioSampleView
-
                 playPauseView.setOnClickListener(this)
             }
 

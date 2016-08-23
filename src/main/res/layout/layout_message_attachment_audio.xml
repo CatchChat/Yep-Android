@@ -2,33 +2,46 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="48dp"
-    android:orientation="horizontal">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/element_spacing_normal"
+    android:paddingRight="@dimen/element_spacing_normal"
+    tools:background="@color/branding_color">
 
-    <Button
-        android:id="@+id/play_pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <catchla.yep.view.ActionIconView
+        android:id="@+id/playPause"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?selectableItemBackground"
+        android:scaleType="center"
+        android:src="@drawable/ic_btn_audio_play"
+        tools:color="@android:color/white"/>
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <catchla.yep.view.AudioSampleView
-            android:id="@+id/audio_sample"
+            android:id="@+id/audioSample"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="36dp"
             android:layout_gravity="center"
-            android:padding="@dimen/element_spacing_small"
+            android:paddingBottom="@dimen/element_spacing_small"
+            android:paddingTop="@dimen/element_spacing_small"
             app:asvLineColor="#40000000"
             app:asvLineColorPlayed="#ff000000"
             app:asvLineWidth="2dp"/>
 
         <TextView
-            android:id="@+id/audio_length"
+            android:id="@+id/audioLength"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:textColor="?android:textColorPrimary"
+            tools:text="1.7&quot;"
+            tools:textColor="@android:color/white"/>
     </FrameLayout>
 </LinearLayout>

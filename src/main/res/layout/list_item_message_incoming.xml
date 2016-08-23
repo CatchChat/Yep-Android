@@ -10,8 +10,8 @@
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/profileImage"
-        android:layout_width="@dimen/icon_size_chat_bubble_profile_image"
-        android:layout_height="@dimen/icon_size_chat_bubble_profile_image"
+        android:layout_width="@dimen/icon_size_message_bubble_profile_image"
+        android:layout_height="@dimen/icon_size_message_bubble_profile_image"
         android:scaleType="centerCrop"
         app:border="false"
         app:shadow="false"
@@ -20,14 +20,12 @@
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/element_spacing_minus_small"
-        android:layout_marginStart="@dimen/element_spacing_minus_small"
-        android:minHeight="@dimen/icon_size_chat_bubble_profile_image"
+        android:layout_marginLeft="@dimen/element_spacing_normal"
+        android:layout_marginStart="@dimen/element_spacing_normal"
+        android:minHeight="@dimen/message_bubble_minimum_height"
+        android:minWidth="@dimen/message_bubble_minimum_width"
         app:bubbleColor="#dddddd"
-        app:caretHeight="6dp"
-        app:caretPosition="topStart"
-        app:caretWidth="6dp"
-        app:cornerRadius="2dp">
+        app:cornerRadius="@dimen/message_bubble_corner_radius">
 
         <include layout="@layout/layout_message_item_common"/>
     </org.mariotaku.messagebubbleview.library.MessageBubbleView>

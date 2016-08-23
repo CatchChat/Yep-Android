@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>ic_btn_audio_pause-mdpi</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ic_btn_audio_pause-mdpi">
+            <path d="M14,13 L16,13 L16,23 L14,23 L14,13 Z M20,13 L22,13 L22,23 L20,23 L20,13 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+            <circle id="Oval-24" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" cx="18" cy="18" r="14"></circle>
+        </g>
+    </g>
+</svg>
