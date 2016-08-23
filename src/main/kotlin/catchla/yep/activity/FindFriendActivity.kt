@@ -45,7 +45,7 @@ class FindFriendActivity : SwipeBackContentActivity(), Constants {
         val searchView = MenuItemCompat.getActionView(menu.findItem(R.id.search)) as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                val intent = Intent(this@FindFriendActivity, SearchActivity::class.java)
+                val intent = Intent(this@FindFriendActivity, SearchUsersActivity::class.java)
                 intent.putExtra(Constants.EXTRA_ACCOUNT, account)
                 intent.putExtra(Constants.EXTRA_QUERY, query)
                 startActivity(intent)

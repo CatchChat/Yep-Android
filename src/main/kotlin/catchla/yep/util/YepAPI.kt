@@ -212,6 +212,14 @@ interface YepAPI {
     @Throws(YepException::class)
     fun getTopics(@Path("id") userId: String, @Query paging: Paging): ResponseList<Topic>
 
+    @GET("topics/search")
+    @Throws(YepException::class)
+    fun searchTopics(@Query("q") query: String,
+                     @Query("user_id") userId: String? = null,
+                     @Query("skill_id") skillId: String? = null,
+                     @Query("recommended") recommended: Boolean? = null,
+                     @Query paging: Paging): ResponseList<Topic>
+
     @POST("topics")
     @Throws(YepException::class)
     fun postTopic(@Raw topic: NewTopic): Topic
@@ -246,6 +254,9 @@ interface YepAPI {
     @Throws(YepException::class)
     fun getConversations(@Query("max_id", "per_page") paging: Paging): ConversationsResponse
 
+    @GET("hot_words")
+    @Throws(YepException::class)
+    fun getHotWords(): ResponseList<String>
 
     @DELETE("auth/logout")
     @Throws(YepException::class)

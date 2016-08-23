@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import catchla.yep.R
 import catchla.yep.adapter.iface.IItemCountsAdapter
+import catchla.yep.adapter.iface.SearchBoxClickListener
 import catchla.yep.model.Conversation
 import catchla.yep.model.Message
 import catchla.yep.view.holder.ChatEntryViewHolder
@@ -23,8 +24,10 @@ class ChatsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.V
 
     private val inflater: LayoutInflater
     private var conversations: List<Conversation>? = null
-    var itemClickListener: ((position: Int, holder: RecyclerView.ViewHolder) -> Unit)? = null
     private var circleLength: Int = 0
+
+    var itemClickListener: ((position: Int, holder: RecyclerView.ViewHolder) -> Unit)? = null
+    var searchBoxClickListener: SearchBoxClickListener? = null
 
     var showSearchBox: Boolean = false
         set(value) {
@@ -51,7 +54,8 @@ class ChatsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.V
             }
             ITEM_VIEW_TYPE_SEARCH_BOX -> {
                 val view = inflater.inflate(R.layout.list_item_search_box, parent, false)
-                return TopicSearchBoxViewHolder(view, context.getString(R.string.search), null)
+                return TopicSearchBoxViewHolder(view, context.getString(R.string.search),
+                        searchBoxClickListener)
             }
         }
         throw UnsupportedOperationException("Unknown viewType " + viewType)

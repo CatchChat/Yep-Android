@@ -26,7 +26,6 @@ import catchla.yep.model.Conversation
 import catchla.yep.model.Message
 import catchla.yep.model.NewMessage
 import catchla.yep.service.FayeService
-import catchla.yep.util.ThemeUtils
 import kotlinx.android.synthetic.main.activity_chat.*
 
 /**
@@ -42,11 +41,6 @@ abstract class AbsChatActivity : SwipeBackContentActivity(), ChatInputBarFragmen
         setContentView(R.layout.activity_chat)
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
-
-        val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
-        actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-
-        mainContent?.setStatusBarColorDarken(primaryColor)
 
         val chatListFragment = instantiateChatListFragment()
         val chatInputBarFragment = instantiateChatInputBarFragment()

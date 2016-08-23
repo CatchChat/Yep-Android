@@ -38,8 +38,9 @@ abstract class CachedYepLoader<T>(
 
     override fun loadInBackground(): T? {
         val yep = YepAPIFactory.getInstance(context, account)
+        val cacheFileName = cacheFileName
         try {
-            if (readCache) {
+            if (readCache && cacheFileName != null) {
                 var fis: FileInputStream? = null
                 try {
                     val cacheFile = fileCache.get(cacheFileName)
@@ -55,7 +56,7 @@ abstract class CachedYepLoader<T>(
                 }
             }
             val data = requestData(yep, oldData)
-            if (writeCache) {
+            if (writeCache && cacheFileName != null) {
                 var pos: PipedOutputStream? = null
                 var pis: PipedInputStream? = null
                 try {
@@ -101,7 +102,7 @@ abstract class CachedYepLoader<T>(
     @Throws(IOException::class)
     protected abstract fun deserialize(st: InputStream): T?
 
-    protected abstract val cacheFileName: String
+    protected abstract val cacheFileName: String?
 
     @Throws(YepException::class)
     protected abstract fun requestData(yep: YepAPI, oldData: T?): T

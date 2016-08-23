@@ -32,41 +32,44 @@ import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 /**
  * Created by mariotaku on 15/3/15.
  */
-class ContentListScrollListener(private val mContentListSupport: ContentListScrollListener.ContentListSupport, private val mViewCallback: ContentListScrollListener.ViewCallback?) : OnScrollListener() {
-    private val mTouchListener: TouchListener
+class ContentListScrollListener(
+        private val contentListSupport: ContentListScrollListener.ContentListSupport,
+        private val viewCallback: ContentListScrollListener.ViewCallback?
+) : OnScrollListener() {
+    private val touchListener: TouchListener
 
-    private var mScrollState: Int = 0
-    private var mScrollSum: Int = 0
-    private var mTouchSlop: Int = 0
+    private var scrollState: Int = 0
+    private var scrollSum: Int = 0
+    private var touchSlop: Int = 0
 
-    private var mScrollDirection: Int = 0
+    private var scrollDirection: Int = 0
 
     init {
-        mTouchListener = TouchListener(this)
+        touchListener = TouchListener(this)
     }
 
     override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-        if (mContentListSupport is Fragment) {
-            if (mContentListSupport.context == null) return
+        if (contentListSupport is Fragment) {
+            if (contentListSupport.context == null) return
         }
-        if (mScrollState != RecyclerView.SCROLL_STATE_IDLE) {
+        if (scrollState != RecyclerView.SCROLL_STATE_IDLE) {
             postNotifyScrollStateChanged()
         }
-        mScrollState = newState
+        scrollState = newState
     }
 
     override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-        if (mContentListSupport is Fragment) {
-            if (mContentListSupport.context == null) return
+        if (contentListSupport is Fragment) {
+            if (contentListSupport.context == null) return
         }
         //Reset mScrollSum when scrolling in reverse direction
-        if (dy * mScrollSum < 0) {
-            mScrollSum = 0
+        if (dy * scrollSum < 0) {
+            scrollSum = 0
         }
-        mScrollSum += dy
-        if (Math.abs(mScrollSum) > mTouchSlop) {
-            mContentListSupport.setControlVisible(dy < 0)
-            mScrollSum = 0
+        scrollSum += dy
+        if (Math.abs(scrollSum) > touchSlop) {
+            contentListSupport.setControlVisible(dy < 0)
+            scrollSum = 0
         }
         if (recyclerView!!.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
             postNotifyScrollStateChanged()
@@ -74,18 +77,18 @@ class ContentListScrollListener(private val mContentListSupport: ContentListScro
     }
 
     fun setTouchSlop(touchSlop: Int) {
-        mTouchSlop = touchSlop
+        this.touchSlop = touchSlop
     }
 
     private fun postNotifyScrollStateChanged() {
-        if (mContentListSupport is Fragment) {
-            if (mContentListSupport.context == null) return
+        if (contentListSupport is Fragment) {
+            if (contentListSupport.context == null) return
         }
-        if (mViewCallback != null) {
-            mViewCallback.post(object : Runnable {
+        if (viewCallback != null) {
+            viewCallback.post(object : Runnable {
                 override fun run() {
-                    if (mViewCallback.isComputingLayout) {
-                        mViewCallback.post(this)
+                    if (viewCallback.isComputingLayout) {
+                        viewCallback.post(this)
                     } else {
                         notifyScrollStateChanged()
                     }
@@ -97,29 +100,29 @@ class ContentListScrollListener(private val mContentListSupport: ContentListScro
     }
 
     private fun notifyScrollStateChanged() {
-        if (mContentListSupport is Fragment) {
-            if (mContentListSupport.context == null) return
+        if (contentListSupport is Fragment) {
+            if (contentListSupport.context == null) return
         }
-        val adapter = mContentListSupport.contentAdapter
+        val adapter = contentListSupport.contentAdapter
         if (adapter !is ILoadMoreSupportAdapter) return
-        if (!mContentListSupport.refreshing && adapter.loadMoreSupportedPosition != IndicatorPosition.NONE
+        if (!contentListSupport.refreshing && adapter.loadMoreSupportedPosition != IndicatorPosition.NONE
                 && adapter.loadMoreIndicatorPosition == IndicatorPosition.NONE) {
             var position = 0
-            if (mContentListSupport.reachingEnd && mScrollDirection >= 0) {
+            if (contentListSupport.reachingEnd && scrollDirection >= 0) {
                 position = position or IndicatorPosition.END
             }
-            if (mContentListSupport.reachingStart && mScrollDirection <= 0) {
+            if (contentListSupport.reachingStart && scrollDirection <= 0) {
                 position = position or IndicatorPosition.START
             }
             resetScrollDirection()
             if (position != 0) {
-                mContentListSupport.onLoadMoreContents(position)
+                contentListSupport.onLoadMoreContents(position)
             }
         }
     }
 
     val onTouchListener: View.OnTouchListener
-        get() = mTouchListener
+        get() = touchListener
 
     internal class TouchListener(private val listener: ContentListScrollListener) : View.OnTouchListener {
         private var mLastY: Float = 0.toFloat()
@@ -144,11 +147,11 @@ class ContentListScrollListener(private val mContentListSupport: ContentListScro
     }
 
     private fun setScrollDirection(direction: Int) {
-        mScrollDirection = direction
+        scrollDirection = direction
     }
 
     private fun resetScrollDirection() {
-        mScrollDirection = 0
+        scrollDirection = 0
     }
 
     interface ViewCallback {
@@ -178,8 +181,8 @@ class ContentListScrollListener(private val mContentListSupport: ContentListScro
         override val isComputingLayout: Boolean
             get() = recyclerView.isComputingLayout
 
-        override fun post(action: Runnable) {
-            recyclerView.post(action)
+        override fun post(runnable: Runnable) {
+            recyclerView.post(runnable)
         }
     }
 }

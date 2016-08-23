@@ -13,11 +13,6 @@ inline fun Bundle(action: Bundle.() -> Unit): Bundle {
     return bundle
 }
 
-operator fun <T> Bundle.get(key: String): T? {
-    @Suppress("UNCHECKED_CAST")
-    return get(key) as? T
-}
-
 operator fun Bundle.set(key: String, value: Int) {
     return putInt(key, value)
 }

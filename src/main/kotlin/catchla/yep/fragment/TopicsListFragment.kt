@@ -31,9 +31,11 @@ import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverTopicsLoader
+import catchla.yep.loader.UserTopicsLoader
 import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.view.holder.SkillTopicRelatedUsersViewHolder
+import catchla.yep.view.holder.TopicSearchBoxViewHolder
 import catchla.yep.view.holder.TopicViewHolder
 
 /**
@@ -97,6 +99,11 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         showProgress()
     }
 
+    private fun hasUserId(): Boolean {
+        val fragmentArgs = arguments
+        return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID)
+    }
+
     override fun onCreateLoader(id: Int, args: Bundle): Loader<List<Topic>?> {
         val cachingEnabled = isCachingEnabled
         val readCache = args.getBoolean(EXTRA_READ_CACHE) && cachingEnabled
@@ -112,13 +119,14 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         } else {
             oldData = null
         }
-        return DiscoverTopicsLoader(activity, account, arguments.getString(EXTRA_USER_ID),
-                skill?.id, paging, sortOrder, readCache, cachingEnabled, oldData)
-    }
-
-    private fun hasUserId(): Boolean {
-        val fragmentArgs = arguments
-        return fragmentArgs != null && fragmentArgs.containsKey(EXTRA_USER_ID)
+        val userId: String? = arguments.getString(EXTRA_USER_ID)
+        if (userId != null) {
+            return UserTopicsLoader(activity, account, userId, paging, sortOrder,
+                    readCache, cachingEnabled, oldData)
+        } else {
+            return DiscoverTopicsLoader(activity, account, skill?.id, paging, sortOrder,
+                    readCache, cachingEnabled, oldData)
+        }
     }
 
     override fun onLoadFinished(loader: Loader<List<Topic>?>, data: List<Topic>?) {
@@ -162,8 +170,8 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         return TopicsAdapter(context)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater!!.inflate(R.menu.menu_fragment_chats_list, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_fragment_chats_list, menu)
     }
 
     override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -256,6 +264,12 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         val options = ActivityOptionsCompat.makeScaleUpAnimation(clickedView, 0, 0,
                 clickedView.width, clickedView.height).toBundle()
         ActivityCompat.startActivity(activity, intent, options)
+    }
+
+    override fun onSearchBoxClick(holder: TopicSearchBoxViewHolder) {
+        val intent = Intent(context, TopicsSearchActivity::class.java)
+        intent.putExtra(EXTRA_ACCOUNT, account)
+        startActivity(intent)
     }
 
     override fun createItemDecoration(context: Context,

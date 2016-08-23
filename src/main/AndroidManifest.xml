@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="catchla.yep"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest package="catchla.yep"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        tools:overrideLibrary="android.support.customtabs,net.kibotu.android.recyclerviewpresenter"/>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.READ_PROFILE"/>
@@ -22,10 +25,6 @@
     <!-- Required by AMap -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        tools:overrideLibrary="android.support.customtabs"/>
 
     <application
         android:name=".app.YepApplication"
@@ -128,9 +127,9 @@
                 android:value="catchla.yep.activity.MainActivity"/>
         </activity>
         <activity
-            android:name=".activity.SearchActivity"
+            android:name=".activity.SearchUsersActivity"
             android:label="@string/search"
-            android:theme="@style/Theme.Yep.Content">
+            android:theme="@style/Theme.Yep.Content.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="catchla.yep.activity.MainActivity"/>
@@ -232,6 +231,11 @@
         <activity
             android:name=".activity.ThemedImageCropperActivity"
             android:theme="@android:style/Theme.DeviceDefault.Light"/>
+        <activity
+            android:name=".activity.TopicsSearchActivity"
+            android:label="@string/search_topics"
+            android:theme="@style/Theme.Yep.Content.NoActionBar"
+            android:windowSoftInputMode="adjustNothing"/>
 
         <provider
             android:name=".provider.YepDataProvider"
@@ -259,6 +263,7 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3030ba006e21bcf8eb4a2127b6a7931ea6667486"/>
+
     </application>
 
 </manifest>

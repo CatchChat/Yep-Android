@@ -63,7 +63,8 @@ public final class ResponseList$$JsonObjectMapper<T> extends JsonMapper<Response
             case "circles":
             case "messages":
             case "friendships":
-            case "categories": {
+            case "categories":
+            case "hot_words": {
                 instance.addAll(elementJsonMapper.parseList(jsonParser));
                 break;
             }

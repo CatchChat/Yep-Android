@@ -12,7 +12,7 @@ import catchla.yep.fragment.SearchUsersFragment
 /**
  * Created by mariotaku on 15/9/2.
  */
-class SearchActivity : SwipeBackContentActivity(), Constants {
+class SearchUsersActivity : SwipeBackContentActivity(), Constants {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragment_content)

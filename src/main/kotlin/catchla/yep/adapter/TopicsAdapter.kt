@@ -11,9 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import catchla.yep.R
 import catchla.yep.adapter.iface.IItemCountsAdapter
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
-import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.*
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
+import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.adapter.iface.ItemClickListener
+import catchla.yep.adapter.iface.SearchBoxClickListener
 import catchla.yep.model.Attachment
 import catchla.yep.model.Topic
 import catchla.yep.model.User
@@ -101,7 +102,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             }
             ITEM_VIEW_TYPE_SEARCH_BOX -> {
                 val view = inflater.inflate(R.layout.list_item_search_box, parent, false)
-                return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), null)
+                return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), clickListener)
             }
             ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
@@ -162,6 +163,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         itemCounts[4] = if (position and IndicatorPosition.END != 0) 1 else 0
         return itemCounts.sum()
     }
+
     val topicsCount: Int
         get() = topics?.size ?: 0
 
@@ -169,7 +171,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         return topics!![position - itemCounts[0] - itemCounts[1]]
     }
 
-    interface TopicClickListener : ItemClickListener {
+    interface TopicClickListener : ItemClickListener, SearchBoxClickListener {
         fun onRelatedUsersClick(position: Int, holder: SkillTopicRelatedUsersViewHolder)
 
         fun onSkillClick(position: Int, holder: TopicViewHolder)
@@ -177,6 +179,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         fun onUserClick(position: Int, holder: TopicViewHolder)
 
         fun onMediaClick(attachments: Array<Attachment>, attachment: Attachment, clickedView: View)
+
     }
 
     companion object {
