@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils
 import org.mariotaku.ktextension.setMenuGroupAvailability
 
 class TopicChatActivity : AbsChatActivity() {
+
     override val conversation: Conversation by lazy {
         val topic = topic
         val obj = Conversation()
@@ -57,6 +58,11 @@ class TopicChatActivity : AbsChatActivity() {
 
     override fun onTypingText() {
 
+    }
+
+    override fun onMessageSentFinished(result: Message) {
+        val f = chatListFragment as TopicChatListFragment
+        f.addMessage(result)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

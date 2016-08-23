@@ -132,8 +132,8 @@ abstract class AbsContentRecyclerViewFragment<A : LoadMoreSupportAdapter<Recycle
             if (!currentRefreshing) {
                 updateRefreshProgressOffset()
             }
-            if (refreshing == currentRefreshing) return
-            val layoutRefreshing = refreshing && adapter.loadMoreIndicatorPosition != IndicatorPosition.NONE
+            if (value == currentRefreshing) return
+            val layoutRefreshing = value && adapter.loadMoreIndicatorPosition != IndicatorPosition.NONE
             swipeLayout.isRefreshing = layoutRefreshing
         }
 

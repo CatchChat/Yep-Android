@@ -7,6 +7,7 @@ import catchla.yep.extension.account
 import catchla.yep.loader.HistoricalMessagesLoader
 import catchla.yep.model.Message
 import catchla.yep.model.Paging
+import java.util.*
 
 /**
  * Created by mariotaku on 15/12/10.
@@ -27,6 +28,13 @@ class TopicChatListFragment : ChatListFragment() {
         val recipientId = topic.circle.id
         return HistoricalMessagesLoader(context, account, PathRecipientType.CIRCLES,
                 recipientId, Paging(), false, false, adapter.data)
+    }
+
+    fun addMessage(result: Message) {
+        val list = adapter.data?.toMutableList() ?: ArrayList()
+        list.add(result)
+        list.sortByDescending { it.createdAt }
+        adapter.data = list
     }
 
 }
