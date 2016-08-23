@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<catchla.yep.view.SquareFrameLayout
     android:id="@+id/attachmentView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -13,10 +13,10 @@
     android:clickable="true"
     android:foreground="?selectableItemBackground">
 
-    <catchla.yep.view.SquareImageView
+    <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"/>
 
-</FrameLayout>
+</catchla.yep.view.SquareFrameLayout>

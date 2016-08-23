@@ -39,7 +39,9 @@
             android:layout_marginLeft="@dimen/element_spacing_normal"
             android:layout_marginStart="@dimen/element_spacing_normal"
             android:layout_toEndOf="@+id/repo_icon"
+            android:layout_toLeftOf="@+id/endCaret"
             android:layout_toRightOf="@+id/repo_icon"
+            android:layout_toStartOf="@+id/endCaret"
             android:gravity="center_vertical"
             android:minHeight="32dp"
             android:textAppearance="?android:textAppearanceMedium"
@@ -53,7 +55,20 @@
             android:layout_alignLeft="@+id/repoName"
             android:layout_alignStart="@+id/repoName"
             android:layout_below="@+id/repoName"
+            android:layout_toLeftOf="@+id/endCaret"
+            android:layout_toStartOf="@+id/endCaret"
             android:textColor="?android:textColorSecondary"
             tools:text="Yet Another Wheel"/>
+
+
+        <ImageView
+            android:id="@+id/endCaret"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_caret_right"/>
     </RelativeLayout>
 </FrameLayout>

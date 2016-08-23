@@ -19,11 +19,15 @@
             android:src="@drawable/ic_map_marker"/>
     </catchla.yep.view.LocationContainerFrameLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.2dp"
+        android:background="?dividerVertical"/>
+
     <TextView
         android:id="@+id/place"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/element_spacing_normal"/>
-
 
 </merge>

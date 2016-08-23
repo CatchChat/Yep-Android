@@ -47,7 +47,7 @@ class LocationTopicViewHolder(
         val location = Location("")
         location.latitude = attachment.latitude
         location.longitude = attachment.longitude
-        mapView.display(location, 15)
+        mapView.display(location, 12)
     }
 
     private fun getLocationAttachment(topic: Topic): LocationAttachment {

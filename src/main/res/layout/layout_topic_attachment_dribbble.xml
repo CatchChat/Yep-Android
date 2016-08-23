@@ -20,9 +20,16 @@
         android:id="@+id/mediaPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/infoContainer"
+        android:layout_above="@+id/infoDivider"
         android:layout_alignParentTop="true"
         android:scaleType="centerCrop"/>
+
+    <View
+        android:id="@+id/infoDivider"
+        android:layout_width="match_parent"
+        android:layout_height="0.2dp"
+        android:layout_above="@+id/infoContainer"
+        android:background="?dividerVertical"/>
 
     <LinearLayout
         android:id="@+id/infoContainer"
@@ -51,5 +58,10 @@
             android:singleLine="true"
             tools:text="Title"/>
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:src="@drawable/ic_caret_right"/>
     </LinearLayout>
 </catchla.yep.view.SquareRelativeLayout>
