@@ -241,6 +241,7 @@ class UserActivity : SwipeBackContentActivity(), Constants, View.OnClickListener
                     startActivity(intent)
                 } else {
                     val intent = Intent(this, ChatActivity::class.java)
+                    intent.putExtra(EXTRA_ACCOUNT, account)
                     intent.putExtra(EXTRA_CONVERSATION, Conversation.fromUser(currentUser,
                             Utils.getAccountId(this, account)))
                     startActivity(intent)

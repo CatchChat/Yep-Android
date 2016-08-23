@@ -40,6 +40,7 @@ import catchla.yep.BuildConfig
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.activity.SettingsActivity
+import catchla.yep.extension.getUser
 import catchla.yep.fragment.SettingsDetailsFragment
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.*
@@ -117,24 +118,7 @@ class Utils : Constants {
         }
 
         fun getAccountUser(context: Context, account: Account): User {
-            val am = AccountManager.get(context)
-            val user = User()
-            user.id = am.getUserData(account, Constants.USER_DATA_ID)
-            user.nickname = am.getUserData(account, Constants.USER_DATA_NICKNAME)
-            user.avatarUrl = am.getUserData(account, Constants.USER_DATA_AVATAR)
-            user.phoneCode = am.getUserData(account, Constants.USER_DATA_COUNTRY_CODE)
-            user.mobile = am.getUserData(account, Constants.USER_DATA_PHONE_NUMBER)
-            user.introduction = am.getUserData(account, Constants.USER_DATA_INTRODUCTION)
-            user.username = am.getUserData(account, Constants.USER_DATA_USERNAME)
-            user.websiteUrl = am.getUserData(account, Constants.USER_DATA_WEBSITE)
-            val learningJson = am.getUserData(account, Constants.USER_DATA_LEARNING_SKILLS)
-            user.learningSkills = JsonSerializer.parseList(learningJson, Skill::class.java)
-            val masterJson = am.getUserData(account, Constants.USER_DATA_MASTER_SKILLS)
-            user.masterSkills = JsonSerializer.parseList(masterJson, Skill::class.java)
-            val providersJson = am.getUserData(account, Constants.USER_DATA_PROVIDERS)
-            user.providers = JsonSerializer.parseList(providersJson, Provider::class.java)
-            user.badge = User.Badge.parse(am.getUserData(account, Constants.USER_DATA_BADGE))
-            return user
+            return account.getUser(context)
         }
 
         fun setCurrentAccount(context: Context, account: Account?) {

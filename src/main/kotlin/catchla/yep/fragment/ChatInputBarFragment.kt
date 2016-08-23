@@ -1,7 +1,6 @@
 package catchla.yep.fragment
 
 import android.Manifest
-import android.accounts.Account
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -20,19 +19,19 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.LocationPickerActivity
 import catchla.yep.activity.ThemedImagePickerActivity
 import catchla.yep.annotation.AttachableType
+import catchla.yep.extension.account
 import catchla.yep.model.*
 import catchla.yep.util.*
 import catchla.yep.util.task.SendMessageDelegate
-import catchla.yep.util.task.SendMessageTask
 import catchla.yep.util.task.sendMessagePromise
 import kotlinx.android.synthetic.main.layout_chat_input_panel.*
 import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.ArrayUtils
-import org.mariotaku.abstask.library.TaskStarter
 import org.mariotaku.commons.parcel.ViewUtils
 import java.io.File
 import java.io.IOException
@@ -45,12 +44,10 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDialogFragment.Callback {
 
-    companion object {
-        val REQUEST_PICK_IMAGE = 101
-        val REQUEST_TAKE_PHOTO = 102
-        val REQUEST_PICK_LOCATION = 103
-        val REQUEST_REQUEST_RECORD_PERMISSION = 104
-    }
+    lateinit var listener: Listener
+
+    private val conversation: Conversation?
+        get() = arguments.getParcelable<Conversation>(EXTRA_CONVERSATION)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -70,9 +67,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 attachmentSend.setImageResource(if (s.length > 0) R.drawable.ic_action_send else R.drawable.ic_action_attachment)
-                if (listener != null) {
-                    listener!!.onTypingText()
-                }
+                listener.onTypingText()
             }
 
             override fun afterTextChanged(s: Editable) {
@@ -99,8 +94,8 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.layout_chat_input_panel, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater.inflate(R.layout.layout_chat_input_panel, container, false)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -122,21 +117,12 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
             REQUEST_PICK_LOCATION -> {
                 if (resultCode != Activity.RESULT_OK) return
-                val location = data!!.getParcelableExtra<Location>(Constants.EXTRA_LOCATION)
+                val location = data!!.getParcelableExtra<Location>(EXTRA_LOCATION)
                 sendLocation(location)
                 return
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    private fun sendTextMessage() {
-        sendMessage(object : SendMessageHandler() {
-
-            override val mediaType: String
-                get() = Message.MediaType.TEXT
-
-        })
     }
 
     private fun openAttachmentMenu() {
@@ -145,13 +131,22 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         df.show(fragmentManager, "pick_media")
     }
 
+    private fun sendTextMessage() {
+        sendMessage(object : SendMessageDelegate {
+
+            override val mediaType: String
+                get() = Message.MediaType.TEXT
+
+        })
+    }
+
     private fun sendLocation(location: Location?) {
         if (location == null) return
         // Show error if location is null
-        sendMessage(object : SendMessageHandler() {
+        sendMessage(object : SendMessageDelegate {
             @Throws(YepException::class)
-            public override fun uploadAttachment(yep: YepAPI, message: NewMessage): FileAttachment? {
-                message.location(location.latitude, location.longitude)
+            override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
+                newMessage.location(location.latitude, location.longitude)
                 return null
             }
 
@@ -162,12 +157,12 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
     }
 
     private fun sendImage(imageUri: Uri) {
-        sendMessage(object : SendMessageHandler() {
+        sendMessage(object : SendMessageDelegate {
             @Throws(YepException::class)
-            public override fun uploadAttachment(yep: YepAPI, message: NewMessage): FileAttachment? {
+            override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
                 val path = imageUri.path
-                val mimeType = message.getMetadataValue("mime_type", null)
-                val metadata = message.getMetadataValue("metadata", null)
+                val mimeType = newMessage.getMetadataValue("mime_type", null)
+                val metadata = newMessage.getMetadataValue("metadata", null)
                 return yep.uploadAttachment(AttachmentUpload.create(File(path), mimeType,
                         AttachableType.MESSAGE, metadata))
             }
@@ -189,43 +184,28 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         })
     }
 
-    private fun sendMessage(sendMessageHandler: SendMessageHandler) {
+    private fun sendMessage(sendMessageHandler: SendMessageDelegate) {
         val conversation = this.conversation ?: return
+        val accountUser = Utils.getAccountUser(context, account)
         val newMessage = NewMessage()
         newMessage.textContent(editText.text.toString())
-        newMessage.accountId(conversation.accountId)
+        newMessage.accountId(accountUser.accountId)
+        newMessage.sender(accountUser)
+
         newMessage.conversationId(conversation.id)
         newMessage.recipientId(conversation.recipientId)
         newMessage.recipientType(conversation.recipientType)
         newMessage.circle(conversation.circle)
-        newMessage.sender(Utils.getAccountUser(context, account))
         newMessage.user(conversation.user)
+
         newMessage.createdAt(System.currentTimeMillis())
         newMessage.randomId(Utils.generateRandomId(16))
-        listener!!.onMessageSentStarted(newMessage)
-        sendMessagePromise(context, account, newMessage, object : SendMessageDelegate {
-            override val mediaType: String
-                get() = sendMessageHandler.mediaType
-
-            @Throws(YepException::class)
-            override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
-                return sendMessageHandler.uploadAttachment(yep, newMessage)
-            }
-
-            override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
-                return sendMessageHandler.getLocalMetadata(newMessage)
-            }
-        }).successUi { body ->
-            listener?.onMessageSentFinished(body)
+        listener.onMessageSentStarted(newMessage)
+        sendMessagePromise(context, account, newMessage, sendMessageHandler).successUi { body ->
+            listener.onMessageSentFinished(body)
         }
         editText.setText("")
     }
-
-    private val conversation: Conversation?
-        get() = arguments.getParcelable<Conversation>(Constants.EXTRA_CONVERSATION)
-
-    private val account: Account
-        get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
 
     override fun onButtonClick(id: Int) {
         when (id) {
@@ -235,7 +215,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
             R.id.location -> {
                 val intent = Intent(context, LocationPickerActivity::class.java)
-                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                intent.putExtra(EXTRA_ACCOUNT, account)
                 startActivityForResult(intent, REQUEST_PICK_LOCATION)
             }
         }
@@ -248,19 +228,6 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
     override fun onMediaClick(id: Long, data: String) {
         sendImage(Uri.parse("file://" + data))
-    }
-
-    internal abstract class SendMessageHandler {
-        @Throws(YepException::class)
-        internal open fun uploadAttachment(yep: YepAPI, message: NewMessage): FileAttachment? {
-            return null
-        }
-
-        internal abstract val mediaType: String
-
-        internal open fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
-            return null
-        }
     }
 
     interface Listener {
@@ -279,7 +246,6 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         fun onTypingText()
     }
 
-    var listener: Listener? = null
 
     internal class SampleRecorder {
 
@@ -352,7 +318,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             timerTask = task
             task.start()
             this.recorder = recorder
-            fragment.listener?.onRecordStarted()
+            fragment.listener.onRecordStarted()
             fragment.voiceRecord.setText(R.string.release_to_send)
             sampleRecorder.start()
             return true
@@ -370,7 +336,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         }
 
         private fun stopRecording(cancel: Boolean) {
-            fragment.listener?.onRecordStopped()
+            fragment.listener.onRecordStopped()
             fragment.voiceRecord.setText(R.string.ptt_hint)
             val samples = sampleRecorder.get()
             val recorder = this.recorder ?: return
@@ -388,7 +354,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
                 }
                 return
             }
-            fragment.sendMessage(object : SendMessageHandler() {
+            fragment.sendMessage(object : SendMessageDelegate {
                 override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
                     val player = MediaPlayer.create(fragment.context, Uri.parse(recordPath))
                     val metadataItem = FileAttachment.AudioMetadata()
@@ -403,10 +369,10 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
                 }
 
                 @Throws(YepException::class)
-                public override fun uploadAttachment(yep: YepAPI, message: NewMessage): FileAttachment? {
+                override fun uploadAttachment(yep: YepAPI, newMessage: NewMessage): FileAttachment? {
                     val file = File(recordPath!!)
                     return yep.uploadAttachment(AttachmentUpload.create(file, "audio/mp4",
-                            AttachableType.MESSAGE, message.getMetadataValue("metadata", null)))
+                            AttachableType.MESSAGE, newMessage.getMetadataValue("metadata", null)))
                 }
 
                 override val mediaType: String
@@ -444,12 +410,19 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
                     return System.currentTimeMillis() - callStart
                 }
                 val maxAmplitude = recorder.maxAmplitude
-                listener.fragment.listener!!.postSetAmplitude(maxAmplitude)
+                listener.fragment.listener.postSetAmplitude(maxAmplitude)
                 listener.fragment.activity.runOnUiThread { listener.sampleRecorder.put(maxAmplitude / Short.MAX_VALUE.toFloat()) }
                 return System.currentTimeMillis() - callStart
             }
 
         }
+    }
+
+    companion object {
+        val REQUEST_PICK_IMAGE = 101
+        val REQUEST_TAKE_PHOTO = 102
+        val REQUEST_PICK_LOCATION = 103
+        val REQUEST_REQUEST_RECORD_PERMISSION = 104
     }
 
 }

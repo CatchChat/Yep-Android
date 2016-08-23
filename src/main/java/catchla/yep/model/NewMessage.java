@@ -6,41 +6,60 @@ import android.support.annotation.NonNull;
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 
+import org.mariotaku.library.objectcursor.annotation.CursorField;
+import org.mariotaku.library.objectcursor.annotation.CursorObject;
+
 import java.util.Date;
 
 import catchla.yep.model.iface.JsonBody;
+import catchla.yep.model.util.LoganSquareCursorFieldConverter;
 import catchla.yep.provider.YepDataStore.Messages;
-import catchla.yep.util.JsonSerializer;
 
 /**
  * Created by mariotaku on 15/6/12.
  */
 @JsonObject
+@CursorObject(valuesCreator = true, cursorIndices = false)
 public class NewMessage implements JsonBody {
 
-    String conversationId;
-    long createdAt;
-    Circle circle;
-    User sender;
-    User user;
-    Message.LocalMetadata[] localMetadata;
+    @CursorField(Messages.ACCOUNT_ID)
     String accountId;
+    @CursorField(Messages.CONVERSATION_ID)
+    String conversationId;
+    @CursorField(Messages.CREATED_AT)
+    long createdAt;
+    @CursorField(value = Messages.CIRCLE, converter = LoganSquareCursorFieldConverter.class)
+    Circle circle;
+    @CursorField(value = Messages.SENDER, converter = LoganSquareCursorFieldConverter.class)
+    User sender;
 
+    User user;
+    @CursorField(value = Messages.LOCAL_METADATA, converter = LoganSquareCursorFieldConverter.class)
+    Message.LocalMetadata[] localMetadata;
+
+    @CursorField(Messages.RECIPIENT_ID)
     String recipientId;
+    @CursorField(Messages.RECIPIENT_TYPE)
     String recipientType;
     @JsonField(name = "parent_id")
+    @CursorField(Messages.PARENT_ID)
     String parentId;
     @JsonField(name = "latitude")
+    @CursorField(Messages.LATITUDE)
     double latitude;
     @JsonField(name = "longitude")
+    @CursorField(Messages.LONGITUDE)
     double longitude;
     @JsonField(name = "text_content")
+    @CursorField(Messages.TEXT_CONTENT)
     String textContent;
     @JsonField(name = "media_type")
+    @CursorField(Messages.MEDIA_TYPE)
     String mediaType;
     @JsonField(name = "attachment_id")
     String attachmentId;
     @JsonField(name = "random_id")
+    @CursorField(Messages.RANDOM_ID)
     String randomId;
 
     public NewMessage recipientId(String recipientId) {
@@ -172,22 +191,8 @@ public class NewMessage implements JsonBody {
 
     public ContentValues toDraftValues() {
         final ContentValues values = new ContentValues();
-        values.put(Messages.ACCOUNT_ID, accountId);
-        values.put(Messages.RECIPIENT_ID, recipientId);
-        values.put(Messages.TEXT_CONTENT, textContent);
-        values.put(Messages.CREATED_AT, createdAt);
-        values.put(Messages.SENDER, JsonSerializer.serialize(sender, User.class));
-        values.put(Messages.RECIPIENT_TYPE, recipientType);
-        values.put(Messages.CIRCLE, JsonSerializer.serialize(circle, Circle.class));
-        values.put(Messages.PARENT_ID, parentId);
-        values.put(Messages.CONVERSATION_ID, conversationId);
+        NewMessageValuesCreator.writeTo(this, values);
         values.put(Messages.STATE, Messages.MessageState.SENDING);
-        values.put(Messages.LATITUDE, latitude);
-        values.put(Messages.LONGITUDE, longitude);
-        values.put(Messages.MEDIA_TYPE, mediaType);
-        values.put(Messages.LOCAL_METADATA, JsonSerializer.serializeArray(localMetadata,
-                Message.LocalMetadata.class));
-        values.put(Messages.RANDOM_ID, randomId);
         return values;
     }
 

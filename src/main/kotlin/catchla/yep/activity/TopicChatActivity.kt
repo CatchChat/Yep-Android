@@ -1,19 +1,21 @@
 package catchla.yep.activity
 
 import android.content.Intent
-import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
-import catchla.yep.Constants
 import catchla.yep.Constants.EXTRA_ACCOUNT
 import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.annotation.ItemType
-import catchla.yep.extension.account
 import catchla.yep.extension.Bundle
+import catchla.yep.extension.account
+import catchla.yep.extension.getUser
+import catchla.yep.fragment.ChatListFragment
 import catchla.yep.fragment.ReportTypeDialogFragment
 import catchla.yep.fragment.TopicChatListFragment
+import catchla.yep.model.Conversation
+import catchla.yep.model.Message
 import catchla.yep.model.Topic
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
@@ -24,28 +26,37 @@ import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.StringUtils
 import org.mariotaku.ktextension.setMenuGroupAvailability
 
-class TopicChatActivity : SwipeBackContentActivity(), Constants {
+class TopicChatActivity : AbsChatActivity() {
+    override val conversation: Conversation by lazy {
+        val topic = topic
+        val obj = Conversation()
+        val accountUser = account.getUser(this)
+        obj.accountId = accountUser.id
+        obj.circle = topic.circle
+        obj.recipientType = Message.RecipientType.CIRCLE
+        obj.id = Conversation.generateId(Message.RecipientType.CIRCLE, topic.circle.id)
+        return@lazy obj
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_topic_chat)
-        displayTopic(topic)
+    private val topic: Topic by lazy {
+        intent.getParcelableExtra<Topic>(EXTRA_TOPIC)
+    }
 
-        val ft = supportFragmentManager.beginTransaction()
+    override fun instantiateChatListFragment(): ChatListFragment {
         val args = Bundle {
             putParcelable(EXTRA_ACCOUNT, account)
             putParcelable(EXTRA_TOPIC, topic)
         }
-        ft.replace(R.id.chatList, Fragment.instantiate(this, TopicChatListFragment::class.java.name, args))
-        ft.commit()
+        return Fragment.instantiate(this, TopicChatListFragment::class.java.name, args) as ChatListFragment
     }
-
-    private val topic: Topic
-        get() = intent.getParcelableExtra<Topic>(EXTRA_TOPIC)
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_topic_chat, menu)
         return true
+    }
+
+    override fun onTypingText() {
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -91,10 +102,4 @@ class TopicChatActivity : SwipeBackContentActivity(), Constants {
         return super.onPrepareOptionsMenu(menu)
     }
 
-    private fun displayTopic(topic: Topic) {
-    }
-
-    override fun onContentChanged() {
-        super.onContentChanged()
-    }
 }

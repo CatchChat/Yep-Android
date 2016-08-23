@@ -1,111 +1,113 @@
-/*
- * Copyright (c) 2015. Catch Inc,
- */
-
 package catchla.yep.activity
 
-import android.content.*
-import android.os.*
-import android.support.annotation.WorkerThread
+import android.content.ContentValues
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.RemoteException
 import android.support.v4.app.Fragment
 import android.text.TextUtils
-import android.text.format.DateUtils
+import android.text.format.DateUtils.getRelativeTimeSpanString
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import catchla.yep.Constants
-import catchla.yep.IFayeService
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.annotation.PathRecipientType
 import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
-import catchla.yep.fragment.ChatInputBarFragment
+import catchla.yep.extension.set
+import catchla.yep.extension.subtitle
 import catchla.yep.fragment.ChatListFragment
 import catchla.yep.fragment.ConversationChatListFragment
-import catchla.yep.model.*
+import catchla.yep.model.Conversation
+import catchla.yep.model.InstantStateMessage
+import catchla.yep.model.LastReadResponse
 import catchla.yep.model.Message
 import catchla.yep.model.message.LastSeenMessage
 import catchla.yep.provider.YepDataStore.Conversations
 import catchla.yep.provider.YepDataStore.Messages
-import catchla.yep.service.FayeService
-import catchla.yep.util.ThemeUtils
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import com.squareup.otto.Subscribe
-import kotlinx.android.synthetic.main.activity_chat.*
 import nl.komponents.kovenant.task
 import org.mariotaku.sqliteqb.library.Expression
 import org.mariotaku.sqliteqb.library.OrderBy
 import java.util.*
 
 /**
- * Created by mariotaku on 15/4/30.
+ * Created by mariotaku on 16/8/23.
  */
-class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment.Listener, ServiceConnection {
+class ChatActivity : AbsChatActivity() {
 
     private val handler by lazy { Handler(Looper.getMainLooper()) }
-    private var fayeService: IFayeService? = null
+
+    override var conversation: Conversation
+        get () = intent.getParcelableExtra<Conversation>(EXTRA_CONVERSATION)
+        set(value) {
+            intent.putExtra(EXTRA_CONVERSATION, value)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
-        val actionBar = supportActionBar!!
-        actionBar.setDisplayHomeAsUpEnabled(true)
 
-        val primaryColor = ThemeUtils.getColorFromAttribute(this, R.attr.colorPrimary, 0)
-        actionBar.setBackgroundDrawable(ThemeUtils.getActionBarBackground(primaryColor, true))
-
-        mainContent?.setStatusBarColorDarken(primaryColor)
-
-        val conversation = conversation!!
         title = Utils.getConversationName(conversation)
-
-        val fragmentArgs = Bundle {
-            val circle = conversation.circle
-            putParcelable(Constants.EXTRA_CONVERSATION, conversation)
-            putParcelable(Constants.EXTRA_ACCOUNT, account)
-            if (circle != null) {
-                putParcelable(Constants.EXTRA_TOPIC, circle.topic)
-            }
-        }
-
-        val chatListFragment = Fragment.instantiate(this,
-                ConversationChatListFragment::class.java.name, fragmentArgs)
-        val chatInputBarFragment = Fragment.instantiate(this,
-                ChatInputBarFragment::class.java.name, fragmentArgs) as ChatInputBarFragment
-
-        chatInputBarFragment.listener = this
-
-        val ft = supportFragmentManager.beginTransaction()
-        ft.replace(R.id.listContainer, chatListFragment)
-        ft.replace(R.id.inputPanel, chatInputBarFragment)
-        ft.commit()
 
         if (savedInstanceState == null) {
             markAsRead(conversation)
         }
-        title = Utils.getConversationName(conversation)
         displayLastSeen()
     }
 
-    private fun displayLastSeen() {
-        val conversation = conversation ?: return
-        val lastSeenAt = conversation.lastSeenAt
-        if (lastSeenAt != null) {
-            setSubtitle(DateUtils.getRelativeTimeSpanString(lastSeenAt.time))
-        } else {
-            setSubtitle(null)
+    override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        bus.register(this)
+    }
+
+    override fun onStop() {
+        bus.unregister(this)
+        super.onStop()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_chat, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.profile -> {
+                val intent = Intent(this, UserActivity::class.java)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+                intent.putExtra(EXTRA_USER, conversation.user)
+                startActivity(intent)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onTypingText() {
+        try {
+            fayeService?.instantState(conversation, "typing")
+        } catch (e: RemoteException) {
+            Log.w(LOGTAG, e)
         }
     }
 
-    private fun setSubtitle(subtitle: CharSequence?) {
-        val actionBar = supportActionBar ?: return
-        actionBar.subtitle = subtitle
+    override fun instantiateChatListFragment(): ChatListFragment {
+        val args = Bundle {
+            this[EXTRA_CONVERSATION] = conversation
+            this[EXTRA_ACCOUNT] = account
+        }
+        return Fragment.instantiate(this, ConversationChatListFragment::class.java.name, args) as ChatListFragment
     }
-
-    private val conversation: Conversation?
-        get() = intent.getParcelableExtra<Conversation>(Constants.EXTRA_CONVERSATION)
 
     private fun markAsRead(conversation: Conversation) {
         task {
@@ -125,7 +127,7 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
             } finally {
                 incoming.close()
             }
-            val yep = YepAPIFactory.getInstance(this@ChatActivity, account)
+            val yep = YepAPIFactory.getInstance(this, account)
             val lastReadAt = lastId?.let {
                 val recipientType = conversation.recipientType
                 val recipientId = conversation.recipientId
@@ -154,7 +156,8 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
                         Expression.equalsArgs(Messages.STATE),
                         Expression.lesserEqualsArgs(Messages.CREATED_AT),
                         Expression.isNotArgs(Messages.RECIPIENT_ID))
-                val outgoingWhereArgs = arrayOf(conversation.accountId, conversation.id, Messages.MessageState.UNREAD, lastReadAt.time.toString(), conversation.accountId)
+                val outgoingWhereArgs = arrayOf(conversation.accountId, conversation.id,
+                        Messages.MessageState.UNREAD, lastReadAt.time.toString(), conversation.accountId)
                 cr.update(Messages.CONTENT_URI, markAsReadValues, outgoingWhere.sql,
                         outgoingWhereArgs)
 
@@ -171,51 +174,20 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
         }
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.profile -> {
-                val intent = Intent(this, UserActivity::class.java)
-                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-                intent.putExtra(Constants.EXTRA_USER, conversation!!.user)
-                startActivity(intent)
-                return true
-            }
+    private fun displayLastSeen() {
+        val lastSeenAt = conversation.lastSeenAt
+        if (lastSeenAt != null) {
+            subtitle = (getRelativeTimeSpanString(lastSeenAt.time))
+        } else {
+            subtitle = null
         }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_chat, menu)
-        return true
-    }
-
-    override fun onRecordStarted() {
-        voiceWaveContainer.visibility = View.VISIBLE
-        voiceWaveView.startRecording()
-    }
-
-    @WorkerThread
-    override fun postSetAmplitude(amplitude: Int) {
-        runOnUiThread { voiceWaveView.amplitude = amplitude }
-    }
-
-    override fun onRecordStopped() {
-        voiceWaveContainer.visibility = View.GONE
-        voiceWaveView.stopRecording()
-    }
-
-    override fun onMessageSentFinished(result: Message) {
-        val f = chatListFragment
-        f.scrollToStart()
     }
 
     @Subscribe
     fun onReceivedInstantStateMessage(message: InstantStateMessage) {
-        val conversation = conversation
-        if (Message.RecipientType.USER == conversation!!.recipientType) {
+        if (Message.RecipientType.USER == conversation.recipientType) {
             if (TextUtils.equals(conversation.user.id, message.user.id)) {
-                setSubtitle(getString(R.string.typing))
+                subtitle = getString(R.string.typing)
                 handler.postDelayed({ displayLastSeen() }, 2000)
             }
         }
@@ -223,53 +195,9 @@ class ChatActivity : SwipeBackContentActivity(), Constants, ChatInputBarFragment
 
     @Subscribe
     fun onReceivedLastSeenMessage(message: LastSeenMessage) {
-        val conversation = conversation
-        if (conversation == null || !message.isConversation(conversation)) return
+        if (!message.isConversation(conversation)) return
         conversation.lastSeenAt = Date(message.lastSeen)
-        intent.putExtra(Constants.EXTRA_CONVERSATION, conversation)
+        this.conversation = conversation
         displayLastSeen()
     }
-
-    override fun onDestroy() {
-        handler.removeCallbacksAndMessages(null)
-        super.onDestroy()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        bindService(Intent(this, FayeService::class.java), this, Context.BIND_AUTO_CREATE)
-        bus.register(this)
-    }
-
-    override fun onStop() {
-        bus.unregister(this)
-        unbindService(this)
-        super.onStop()
-    }
-
-    override fun onMessageSentStarted(newMessage: NewMessage) {
-        val f = chatListFragment
-        f.scrollToStart()
-        f.jumpToLast = true
-    }
-
-    override fun onTypingText() {
-        try {
-            fayeService?.instantState(conversation, "typing")
-        } catch (e: RemoteException) {
-            Log.w(Constants.LOGTAG, e)
-        }
-    }
-
-    override fun onServiceConnected(name: ComponentName, service: IBinder) {
-        fayeService = IFayeService.Stub.asInterface(service)
-    }
-
-    override fun onServiceDisconnected(name: ComponentName) {
-        fayeService = null
-    }
-
-    val chatListFragment: ChatListFragment
-        get() = supportFragmentManager.findFragmentById(R.id.listContainer) as ChatListFragment
-
 }

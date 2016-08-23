@@ -1,10 +1,9 @@
 package catchla.yep.fragment
 
-import android.accounts.Account
 import android.os.Bundle
 import android.support.v4.content.Loader
-import catchla.yep.Constants
 import catchla.yep.annotation.PathRecipientType
+import catchla.yep.extension.account
 import catchla.yep.loader.HistoricalMessagesLoader
 import catchla.yep.model.Message
 import catchla.yep.model.Paging
@@ -30,6 +29,4 @@ class TopicChatListFragment : ChatListFragment() {
                 recipientId, Paging(), false, false, adapter.data)
     }
 
-    val account: Account
-        get() = arguments.getParcelable<Account>(Constants.EXTRA_ACCOUNT)
 }

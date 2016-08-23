@@ -2,6 +2,7 @@ package catchla.yep.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.StringDef;
 import android.text.TextUtils;
 
 import com.bluelinelabs.logansquare.JsonMapper;
@@ -282,7 +283,8 @@ public class Message implements Parcelable {
     }
 
 
-    public interface RecipientType {
+    @StringDef({RecipientType.CIRCLE, RecipientType.USER})
+    public @interface RecipientType {
         String USER = "User";
         String CIRCLE = "Circle";
     }
