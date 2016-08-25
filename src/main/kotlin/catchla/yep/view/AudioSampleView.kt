@@ -32,7 +32,7 @@ class AudioSampleView : View {
             invalidate()
         }
 
-    var playedIndex: Int = 0
+    var playedIndex: Int = -1
         set(idx) {
             field = idx
             invalidate()
@@ -86,7 +86,7 @@ class AudioSampleView : View {
         samples.forEachIndexed { i, value ->
             val x = strokeWidth * 2f * i + strokeWidth / 2
             val lineH = Math.max(1f, contentHeight * value)
-            val currentPaintColor = if (i < playedIndex) lineColor else lineColorPlayed
+            val currentPaintColor = if (i > playedIndex) lineColor else lineColorPlayed
             linePaint.color = currentPaintColor
             linePaint.alpha = Color.alpha(currentPaintColor)
             canvas.drawLine(x, center - lineH / 2, x, center + lineH / 2, linePaint)

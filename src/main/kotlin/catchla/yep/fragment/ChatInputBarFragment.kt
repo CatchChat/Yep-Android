@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.media.MediaPlayer
+import android.media.MediaMetadataRetriever
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +15,7 @@ import android.support.annotation.WorkerThread
 import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -30,11 +31,14 @@ import catchla.yep.util.*
 import catchla.yep.util.task.SendMessageDelegate
 import catchla.yep.util.task.sendMessagePromise
 import kotlinx.android.synthetic.main.layout_chat_input_panel.*
+import nl.komponents.kovenant.ui.failUi
 import nl.komponents.kovenant.ui.successUi
 import org.apache.commons.lang3.ArrayUtils
 import org.mariotaku.commons.parcel.ViewUtils
+import org.mariotaku.ktextension.toInt
 import java.io.File
 import java.io.IOException
+import java.io.RandomAccessFile
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -189,7 +193,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         val accountUser = Utils.getAccountUser(context, account)
         val newMessage = NewMessage()
         newMessage.textContent(editText.text.toString())
-        newMessage.accountId(accountUser.accountId)
+        newMessage.accountId(accountUser.id)
         newMessage.sender(accountUser)
 
         newMessage.conversationId(conversation.id)
@@ -203,6 +207,8 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         listener.onMessageSentStarted(newMessage)
         sendMessagePromise(context, account, newMessage, sendMessageHandler).successUi { body ->
             listener.onMessageSentFinished(body)
+        }.failUi {
+            Log.w(LOGTAG, it)
         }
         editText.setText("")
     }
@@ -302,6 +308,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
         @RequiresPermission(Manifest.permission.RECORD_AUDIO)
         private fun startRecording(): Boolean {
             val recorder = MediaRecorder()
+            val recordFilePath = newRecordFilePath()
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             recorder.setOutputFile(recordFilePath)
@@ -324,8 +331,9 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             return true
         }
 
-        private val recordFilePath: String
-            get() = File(fragment.context.cacheDir, "record_" + System.currentTimeMillis()).absolutePath
+        private fun newRecordFilePath(): String {
+            return File(fragment.context.cacheDir, "record_" + System.currentTimeMillis()).absolutePath
+        }
 
         override fun onUp(event: MotionEvent) {
             stopRecording(!ViewUtils.hitView(event.rawX, event.rawY, fragment.voiceRecord))
@@ -356,15 +364,17 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             }
             fragment.sendMessage(object : SendMessageDelegate {
                 override fun getLocalMetadata(newMessage: NewMessage): Array<Message.LocalMetadata>? {
-                    val player = MediaPlayer.create(fragment.context, Uri.parse(recordPath))
-                    val metadataItem = FileAttachment.AudioMetadata()
-                    metadataItem.duration = player.duration / 1000f
-                    metadataItem.samples = samples
+                    val retriever = MediaMetadataRetriever()
                     try {
+                        retriever.setDataSource(recordPath)
+                        val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        val metadataItem = FileAttachment.AudioMetadata()
+                        metadataItem.duration = (durationStr?.toInt(-1) ?: 0) / 1000f
+                        metadataItem.samples = samples
                         return arrayOf(Message.LocalMetadata("metadata",
                                 JsonSerializer.serialize(metadataItem, FileAttachment.AudioMetadata::class.java)))
                     } finally {
-                        player.release()
+                        retriever.release()
                     }
                 }
 

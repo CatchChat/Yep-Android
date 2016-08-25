@@ -99,6 +99,12 @@ class ApplicationModule internal constructor(private val application: Applicatio
         return BusHandler(bus)
     }
 
+    @Provides
+    @Singleton
+    fun messageAudioPlayer(bus: Bus): MessageAudioPlayer {
+        return MessageAudioPlayer(bus)
+    }
+
     private fun createDiskCache(): DiskCache {
         try {
             return LruDiskCache(application.cacheDir, Md5FileNameGenerator(), 256 * 1024 * 1024.toLong())

@@ -2,9 +2,6 @@ package catchla.yep.fragment
 
 import android.content.Context
 import android.location.Location
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
@@ -17,7 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.LoadMoreSupportAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
@@ -32,16 +29,10 @@ import catchla.yep.util.Utils
 import catchla.yep.view.MediaSizeImageView
 import catchla.yep.view.StaticMapView
 import catchla.yep.view.iface.IExtendedView
+import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_chat_list.*
 import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
 import kotlinx.android.synthetic.main.layout_message_attachment_audio.view.*
-import nl.komponents.kovenant.task
-import nl.komponents.kovenant.ui.successUi
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okio.BufferedSink
-import okio.Okio
-import java.io.File
 import java.util.*
 
 /**
@@ -51,48 +42,13 @@ import java.util.*
 abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragment.ChatAdapter,
         LinearLayoutManager>(), LoaderManager.LoaderCallbacks<List<Message>?> {
 
-    private var mediaPlayer: MediaPlayer? = null
     var jumpToLast: Boolean = false
-
-
-    override fun onScrollToPositionWithOffset(layoutManager: LinearLayoutManager, position: Int, offset: Int) {
-        layoutManager.scrollToPositionWithOffset(position, offset)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.fragment_chat_list, container, false)
-    }
 
     override var refreshing: Boolean
         get() = false
         set(value) {
             super.refreshing = value
         }
-
-    override fun onCreateAdapter(context: Context): ChatAdapter {
-        return ChatAdapter(this)
-    }
-
-    override fun setupRecyclerView(context: Context, recyclerView: RecyclerView, layoutManager: LinearLayoutManager) {
-        layoutManager.stackFromEnd = false
-    }
-
-    override fun onCreateLayoutManager(context: Context): LinearLayoutManager {
-        val lm = FixedLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
-        lm.stackFromEnd = true
-        return lm
-    }
-
-    override fun onStop() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer!!.isPlaying) {
-                mediaPlayer!!.stop()
-            }
-            mediaPlayer!!.release()
-            mediaPlayer = null
-        }
-        super.onStop()
-    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -127,8 +83,46 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         showProgress()
     }
 
+    override fun onStart() {
+        super.onStart()
+        bus.register(this)
+    }
+
+    override fun onStop() {
+        bus.unregister(this)
+        super.onStop()
+    }
+
+    @Subscribe
+    fun onAudioPlayEvent(event: AudioPlayEvent) {
+        Log.d(LOGTAG, event.toString())
+    }
+
+    override fun onScrollToPositionWithOffset(layoutManager: LinearLayoutManager, position: Int, offset: Int) {
+        layoutManager.scrollToPositionWithOffset(position, offset)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater!!.inflate(R.layout.fragment_chat_list, container, false)
+    }
+
+
+    override fun onCreateAdapter(context: Context): ChatAdapter {
+        return ChatAdapter(this)
+    }
+
+    override fun setupRecyclerView(context: Context, recyclerView: RecyclerView, layoutManager: LinearLayoutManager) {
+        layoutManager.stackFromEnd = false
+    }
+
+    override fun onCreateLayoutManager(context: Context): LinearLayoutManager {
+        val lm = FixedLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, true)
+        lm.stackFromEnd = true
+        return lm
+    }
+
     val topic: Topic?
-        get() = arguments.getParcelable<Topic>(Constants.EXTRA_TOPIC)
+        get() = arguments.getParcelable<Topic>(EXTRA_TOPIC)
 
     override fun onLoadFinished(loader: Loader<List<Message>?>, data: List<Message>?) {
         val backupPosition = layoutManager.findFirstVisibleItemPosition()
@@ -157,46 +151,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
     }
 
     private fun playAudio(attachment: FileAttachment) {
-        if ("audio" != attachment.kind) return
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer()
-            mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-            mediaPlayer!!.setOnCompletionListener { bus.post(AudioPlayEvent.end(attachment)) }
-        }
-        if (mediaPlayer!!.isPlaying) {
-            mediaPlayer!!.stop()
-            bus.post(AudioPlayEvent.end(attachment))
-        }
-        task {
-            var sink: BufferedSink? = null
-            var tempFile: File? = null
-            try {
-                tempFile = File.createTempFile("voice_dl" + System.currentTimeMillis(), "m4a")
-                if (tempFile!!.length() > 0) {
-                    mediaPlayer!!.setDataSource(tempFile.absolutePath)
-                } else {
-                    val client = OkHttpClient()
-                    val response = client.newCall(Request.Builder().url(attachment.file.url).build()).execute()
-                    sink = Okio.buffer(Okio.sink(tempFile))
-                    sink!!.writeAll(response.body().source())
-                    sink.flush()
-                    mediaPlayer!!.setDataSource(context, Uri.parse(attachment.file.url))
-                }
-                mediaPlayer!!.prepare()
-            } catch (e: Exception) {
-                Log.w(Constants.LOGTAG, e)
-                tempFile?.delete()
-            } catch (t: Throwable) {
-                Log.wtf(Constants.LOGTAG, t)
-            } finally {
-                Utils.closeSilently(sink)
-            }
-        }.successUi {
-            mediaPlayer?.let {
-                it.start()
-                bus.post(AudioPlayEvent.start(attachment))
-            }
-        }
+        messageAudioPlayer.play(attachment.file.url)
     }
 
     override val reachingEnd: Boolean
@@ -369,7 +324,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
             init {
                 mapView = itemView.findViewById(R.id.map_view) as StaticMapView
-                mapView.setProvider(StaticMapUrlGenerator.AMapProvider(Constants.AMAP_WEB_API_KEY))
+                mapView.setProvider(StaticMapUrlGenerator.AMapProvider(AMAP_WEB_API_KEY))
                 mapView.setScaleToDensity(true)
             }
 
@@ -432,7 +387,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 super.displayMessage(message)
                 val metadata = getAudioMetadata(message)
                 if (metadata != null) {
-                    audioLengthView.text = String.format(Locale.ROOT, "%.1f", metadata.duration)
+                    audioLengthView.text = String.format(Locale.US, "%.1f\"", metadata.duration)
                     sampleView.samples = metadata.samples
                 }
             }
@@ -451,10 +406,10 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             }
 
             override fun onClick(v: View) {
-                val message = adapter.getMessage(layoutPosition)
-                val attachments = message!!.attachments
-                if (attachments == null || attachments.isEmpty()) return
-                adapter.playAudio(attachments[0] as FileAttachment)
+                val message = adapter.getMessage(layoutPosition) ?: return
+                if (message.mediaType != "audio") return
+                val attachment = message.attachments?.firstOrNull() as? FileAttachment ?: return
+                adapter.playAudio(attachment)
             }
         }
 

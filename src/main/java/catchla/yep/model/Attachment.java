@@ -3,10 +3,8 @@ package catchla.yep.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
-import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 /**
  * Created by mariotaku on 15/10/14.
@@ -25,9 +23,6 @@ public class Attachment implements Parcelable {
             return new Attachment[size];
         }
     };
-    @ParcelableThisPlease
-    @JsonField(name = "kind")
-    String kind;
 
     protected Attachment(Parcel in) {
         AttachmentParcelablePlease.readFromParcel(this, in);
@@ -39,13 +34,7 @@ public class Attachment implements Parcelable {
 
     @Override
     public String toString() {
-        return "Attachment{" +
-                "kind='" + kind + '\'' +
-                '}';
-    }
-
-    public String getKind() {
-        return kind;
+        return "Attachment{}";
     }
 
     @Override

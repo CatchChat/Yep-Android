@@ -51,8 +51,7 @@ fun sendMessagePromise(context: Context, account: Account, newMessage: NewMessag
         fun updateSentMessage(draftId: String, message: Message) {
             val cr = context.contentResolver
             val values = ContentValues()
-            values.put(Messages.ATTACHMENTS, JsonSerializer.serialize(message.attachments,
-                    Attachment::class.java))
+            values.put(Messages.ATTACHMENTS, message.attachmentsJson)
             values.put(Messages.STATE, Messages.MessageState.UNREAD)
             values.put(Messages.MESSAGE_ID, message.id)
             values.put(Messages.CREATED_AT, message.createdAt.time)

@@ -25,8 +25,6 @@ public class AppleMediaAttachment extends Attachment implements Parcelable {
             return new AppleMediaAttachment[size];
         }
     };
-    @JsonField(name = "kind")
-    String kind;
     @JsonField(name = "title")
     String title;
     @JsonField(name = "description")
@@ -46,11 +44,6 @@ public class AppleMediaAttachment extends Attachment implements Parcelable {
 
     protected AppleMediaAttachment(final Parcel in) {
         AppleMediaAttachmentParcelablePlease.readFromParcel(this, in);
-    }
-
-    @Override
-    public String getKind() {
-        return kind;
     }
 
     public String getTitle() {
@@ -90,7 +83,6 @@ public class AppleMediaAttachment extends Attachment implements Parcelable {
     @Override
     public String toString() {
         return "AppleMediaAttachment{" +
-                "kind='" + kind + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", poster='" + poster + '\'' +

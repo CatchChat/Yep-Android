@@ -423,15 +423,20 @@ object Utils {
     fun getFilename(file: File, mimeType: String): String {
         val name = file.name
         val dotIndex = name.indexOf(".")
-        val mimeTypeMap = MimeTypeMap.getSingleton()
-        var extension: String? = mimeTypeMap.getExtensionFromMimeType(mimeType)
-        if (extension == null) {
-            extension = MediaType.parse(mimeType).subtype()
+        val extension: String
+        when (mimeType) {
+            "audio/mp4" -> {
+                extension = "m4a"
+            }
+            else -> {
+                val mimeTypeMap = MimeTypeMap.getSingleton()
+                extension = mimeTypeMap.getExtensionFromMimeType(mimeType) ?: MediaType.parse(mimeType).subtype() ?: "bin"
+            }
         }
         if (dotIndex < 0) {
             return name + "." + extension
         }
-        return name.substring(0, dotIndex + 1) + extension!!
+        return name.substring(0, dotIndex + 1) + extension
     }
 
     fun getMarkerBitmap(context: Context): Bitmap {

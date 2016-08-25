@@ -154,6 +154,10 @@ public class User implements Parcelable {
         return accountId;
     }
 
+    public void setAccountId(final String accountId) {
+        this.accountId = accountId;
+    }
+
     public LatLng getLocation() {
         return location;
     }

@@ -82,20 +82,22 @@ public class FileAttachment extends Attachment implements Parcelable {
 
         final FileAttachment that = (FileAttachment) o;
 
-        if (kind != null ? !kind.equals(that.kind) : that.kind != null) return false;
-        return !(file != null ? !file.equals(that.file) : that.file != null);
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null)
+            return false;
+        return file != null ? file.equals(that.file) : that.file == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = kind != null ? kind.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
         result = 31 * result + (file != null ? file.hashCode() : 0);
         return result;
     }
 
     public interface Metadata {
-
     }
 
     @JsonObject

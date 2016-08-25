@@ -243,6 +243,10 @@ public class Message implements Parcelable {
         this.state = state;
     }
 
+    public String getAttachmentsJson() {
+        return attachmentsJson;
+    }
+
     @Override
     public String toString() {
         return "Message{" +

@@ -112,7 +112,7 @@ class MessageService : Service(), Constants {
             val conversations = yep.getConversations(paging)
             insertConversations(this@MessageService, conversations, accountUser.id)
         }.successUi {
-            bus.post(MessageRefreshedEvent())
+            bus.post(MessageRefreshedEvent(account))
         }
     }
 
@@ -126,7 +126,7 @@ class MessageService : Service(), Constants {
             val accountId = accountUser.id
             insertCircles(this@MessageService, circles, accountId)
         }.successUi {
-            bus.post(MessageRefreshedEvent())
+            bus.post(MessageRefreshedEvent(account))
         }
     }
 

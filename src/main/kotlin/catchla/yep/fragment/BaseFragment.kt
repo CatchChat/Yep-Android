@@ -13,6 +13,7 @@ import android.view.View
 import catchla.yep.Constants
 import catchla.yep.fragment.iface.IBaseFragment
 import catchla.yep.util.ImageLoaderWrapper
+import catchla.yep.util.MessageAudioPlayer
 import catchla.yep.util.dagger.GeneralComponentHelper
 import com.squareup.otto.Bus
 import javax.inject.Inject
@@ -26,6 +27,13 @@ open class BaseFragment : Fragment(), IBaseFragment, Constants {
     lateinit var imageLoader: ImageLoaderWrapper
     @Inject
     lateinit var preferences: SharedPreferences
+    @Inject
+    lateinit var messageAudioPlayer: MessageAudioPlayer
+
+    override fun onStop() {
+        messageAudioPlayer.stop()
+        super.onStop()
+    }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

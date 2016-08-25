@@ -17,6 +17,7 @@ fun Account.getUser(context: Context): User {
     val am = AccountManager.get(context)
     val user = User()
     user.id = am.getUserData(this, Constants.USER_DATA_ID)
+    user.accountId = user.id
     user.nickname = am.getUserData(this, Constants.USER_DATA_NICKNAME)
     user.avatarUrl = am.getUserData(this, Constants.USER_DATA_AVATAR)
     user.phoneCode = am.getUserData(this, Constants.USER_DATA_COUNTRY_CODE)
