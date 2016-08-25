@@ -39,8 +39,8 @@ class SingleImageTopicViewHolder(adapter: TopicsAdapter, itemView: View, context
         super.onClick(v)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachment = topic.attachments[0] as FileAttachment
         val mediaUrl = attachment.file.url
         if (mediaUrl != mediaPreviewView.tag) {

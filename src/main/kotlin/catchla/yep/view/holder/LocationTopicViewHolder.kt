@@ -40,8 +40,8 @@ class LocationTopicViewHolder(
         mapView.setScaleToDensity(true)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachment = getLocationAttachment(topic)
         placeView.text = attachment.place
         val location = Location("")

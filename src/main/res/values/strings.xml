@@ -129,4 +129,6 @@
     <string name="search_topics">Search topics</string>
     <string name="search_friends">Search friends</string>
     <string name="hot_word_suggestion_hint">Try these</string>
+    <string name="friends">Friends</string>
+    <string name="users">Users</string>
 </resources>

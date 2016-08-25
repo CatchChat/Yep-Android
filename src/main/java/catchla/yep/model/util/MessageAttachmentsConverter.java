@@ -69,7 +69,7 @@ public class MessageAttachmentsConverter implements CursorFieldConverter<List<At
             }
             // Ignore
         } finally {
-            Utils.Companion.closeSilently(sw);
+            Utils.INSTANCE.closeSilently(sw);
         }
     }
 

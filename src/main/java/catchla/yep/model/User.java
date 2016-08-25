@@ -216,6 +216,11 @@ public class User implements Parcelable {
         return username;
     }
 
+    public String getDisplayUsername() {
+        if (username == null) return null;
+        return "@" + username;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }

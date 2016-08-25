@@ -161,7 +161,7 @@ public class FileAttachment extends Attachment implements Parcelable {
                 Log.w(Constants.LOGTAG, e);
             } finally {
                 downScaledBitmap.recycle();
-                Utils.Companion.closeSilently(os);
+                Utils.INSTANCE.closeSilently(os);
             }
             return metadata;
         }

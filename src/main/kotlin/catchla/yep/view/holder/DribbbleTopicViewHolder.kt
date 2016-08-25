@@ -27,8 +27,8 @@ class DribbbleTopicViewHolder(topicsAdapter: TopicsAdapter, itemView: View, cont
         ViewSupport.setClipToOutline(attachmentView, true)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachment = getDribbbleAttachment(topic)
         imageLoader.displayImage(attachment.mediaUrl, mediaPreviewView)
         titleView.text = attachment.title

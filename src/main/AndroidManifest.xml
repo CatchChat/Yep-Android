@@ -230,6 +230,15 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
+            android:name=".activity.FriendsSearchActivity"
+            android:label="@string/search_friends"
+            android:theme="@style/Theme.Yep.Content.NoActionBar"
+            android:windowSoftInputMode="adjustNothing">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
             android:name=".activity.LocationPickerActivity"
             android:label="@string/location"
             android:theme="@style/Theme.Yep.Content"/>

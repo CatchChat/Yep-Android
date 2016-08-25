@@ -169,6 +169,7 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
         resultsListProgress.hide()
         val adapter = topicsAdapter
         adapter.topics = data
+        adapter.highlight = searchView.query?.toString()
         adapter.loadMoreSupportedPosition = if (data != null && !data.isEmpty()) {
             IndicatorPosition.END
         } else {

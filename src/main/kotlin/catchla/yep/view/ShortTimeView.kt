@@ -24,6 +24,7 @@ import android.os.SystemClock
 import android.support.v7.widget.AppCompatTextView
 import android.text.TextUtils
 import android.util.AttributeSet
+import catchla.yep.R
 import catchla.yep.util.Utils
 
 class ShortTimeView @JvmOverloads constructor(
@@ -34,8 +35,8 @@ class ShortTimeView @JvmOverloads constructor(
 
 
     private val ticker: Runnable
-    private var textBackup: CharSequence? = null
-    private var textBackupIsTemplate = false
+    private val timeTemplate: String?
+    private var timeTemplateValid = false
 
     var time: Long = 0
         set(value) {
@@ -45,6 +46,9 @@ class ShortTimeView @JvmOverloads constructor(
 
     init {
         ticker = TickerRunnable(this)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.ShortTimeView)
+        timeTemplate = a.getString(R.styleable.ShortTimeView_timeTemplate)
+        a.recycle()
     }
 
     override fun onAttachedToWindow() {
@@ -58,17 +62,14 @@ class ShortTimeView @JvmOverloads constructor(
     }
 
     private fun invalidateTime() {
-        if (textBackup == null) {
-            textBackup = text
-        }
-        if (TextUtils.isEmpty(textBackup)) {
+        if (TextUtils.isEmpty(timeTemplate)) {
             text = Utils.formatSameDayTime(context, time)
-        } else if (!textBackupIsTemplate) {
+        } else if (!timeTemplateValid) {
             text = Utils.formatSameDayTime(context, time)
         } else try {
-            text = String.format(textBackup!!.toString(), Utils.formatSameDayTime(context, time))
+            text = String.format(timeTemplate!!, Utils.formatSameDayTime(context, time))
         } catch (e: Exception) {
-            textBackupIsTemplate = false
+            timeTemplateValid = false
             text = Utils.formatSameDayTime(context, time)
         }
     }

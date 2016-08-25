@@ -13,17 +13,20 @@ import catchla.yep.model.Attachment
 import catchla.yep.model.Topic
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
+import catchla.yep.util.highlightedString
 import catchla.yep.view.ShortTimeView
 import org.apache.commons.lang3.ObjectUtils
 
 /**
  * Created by mariotaku on 15/10/12.
  */
-open class TopicViewHolder(protected val adapter: TopicsAdapter,
-                           itemView: View,
-                           val context: Context,
-                           val imageLoader: ImageLoaderWrapper,
-                           protected val listener: TopicsAdapter.TopicClickListener?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+open class TopicViewHolder(
+        protected val adapter: TopicsAdapter,
+        itemView: View,
+        val context: Context,
+        val imageLoader: ImageLoaderWrapper,
+        protected val listener: TopicsAdapter.TopicClickListener?
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     private val profileImageView: ImageView
     private val providerIcon: ImageView
@@ -56,7 +59,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         skillButton.setOnClickListener(this)
     }
 
-    open fun displayTopic(topic: Topic) {
+    open fun displayTopic(topic: Topic, highlight: String?) {
         val user = topic.user
         val avatarUrl = user.avatarThumbUrl
         if (ObjectUtils.notEqual(avatarUrl, profileImageView.tag)) {
@@ -64,7 +67,7 @@ open class TopicViewHolder(protected val adapter: TopicsAdapter,
         }
         profileImageView.tag = avatarUrl
         nameView.text = Utils.getDisplayName(user)
-        textView.text = topic.body
+        textView.text = topic.body?.highlightedString(highlight)
         val createdAt = topic.createdAt
         if (createdAt != null) {
             timeView.time = createdAt.time

@@ -14,7 +14,6 @@ import catchla.yep.adapter.iface.IItemCountsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.adapter.iface.ItemClickListener
-import catchla.yep.adapter.iface.SearchBoxClickListener
 import catchla.yep.model.Attachment
 import catchla.yep.model.Topic
 import catchla.yep.model.User
@@ -32,7 +31,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
     var showSkillLabel: Boolean = true
 
     var clickListener: TopicClickListener? = null
-        set
+    var searchBoxClickListener: ((TopicSearchBoxViewHolder) -> Unit)? = null
 
     var relatedUsers: List<User>? = null
         set(value) {
@@ -49,6 +48,12 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
     override val itemCounts = IntArray(5)
 
     var topics: List<Topic>? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    var highlight: String? = null
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -102,7 +107,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             }
             ITEM_VIEW_TYPE_SEARCH_BOX -> {
                 val view = inflater.inflate(R.layout.list_item_search_box, parent, false)
-                return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), clickListener)
+                return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), searchBoxClickListener)
             }
             ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
@@ -146,7 +151,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE,
             ITEM_VIEW_TYPE_WEB_PAGE -> {
                 val topicViewHolder = holder as TopicViewHolder
-                topicViewHolder.displayTopic(getTopic(position))
+                topicViewHolder.displayTopic(getTopic(position), highlight)
             }
             ITEM_VIEW_TYPE_RELATED_USERS -> {
                 (holder as SkillTopicRelatedUsersViewHolder).display(relatedUsers!!)
@@ -171,7 +176,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         return topics!![position - itemCounts[0] - itemCounts[1]]
     }
 
-    interface TopicClickListener : ItemClickListener, SearchBoxClickListener {
+    interface TopicClickListener : ItemClickListener {
         fun onRelatedUsersClick(position: Int, holder: SkillTopicRelatedUsersViewHolder)
 
         fun onSkillClick(position: Int, holder: TopicViewHolder)

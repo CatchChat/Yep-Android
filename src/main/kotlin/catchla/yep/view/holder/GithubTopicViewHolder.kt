@@ -44,8 +44,8 @@ class GithubTopicViewHolder(
         super.onClick(v)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachment = topic.attachments[0] as GithubAttachment
         repoName.text = attachment.name
         repoDescription.text = attachment.description

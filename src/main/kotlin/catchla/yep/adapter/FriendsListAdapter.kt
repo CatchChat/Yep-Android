@@ -12,7 +12,6 @@ import catchla.yep.R
 import catchla.yep.adapter.iface.IItemCountsAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_INDICATOR
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
-import catchla.yep.adapter.iface.SearchBoxClickListener
 import catchla.yep.model.Friendship
 import catchla.yep.view.holder.FriendViewHolder
 import catchla.yep.view.holder.LoadIndicatorViewHolder
@@ -41,7 +40,7 @@ class FriendsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView
     override val itemCounts = IntArray(4)
 
     var itemClickListener: ((Int, RecyclerView.ViewHolder) -> Unit)? = null
-    var searchBoxClickListener: SearchBoxClickListener? = null
+    var searchBoxClickListener: ((TopicSearchBoxViewHolder) -> Unit)? = null
 
     val friendshipsCount: Int
         get() = friendships?.size ?: 0

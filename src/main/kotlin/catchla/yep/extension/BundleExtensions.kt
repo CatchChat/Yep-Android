@@ -17,6 +17,14 @@ operator fun Bundle.set(key: String, value: Int) {
     return putInt(key, value)
 }
 
+operator fun Bundle.set(key: String, value: String) {
+    return putString(key, value)
+}
+
+operator fun Bundle.set(key: String, value: Boolean) {
+    return putBoolean(key, value)
+}
+
 operator fun <T : Parcelable> Bundle.set(key: String, value: T?) {
     return putParcelable(key, value)
 }

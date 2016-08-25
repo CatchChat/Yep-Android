@@ -46,8 +46,8 @@ class WebPageTopicViewHolder(
         super.onClick(v)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachment = topic.attachments.firstOrNull() as WebPageAttachment
         websiteName.text = attachment.siteName
         websiteTitle.text = attachment.title

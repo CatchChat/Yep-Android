@@ -19,13 +19,16 @@
     <declare-styleable name="TintedStatusLayout">
         <attr name="setPadding" format="boolean"/>
     </declare-styleable>
-    <attr name="tabDisplayOption">
-        <flag name="label" value="0x1"/>
-        <flag name="icon" value="0x2"/>
-    </attr>
     <declare-styleable name="AudioSampleView">
         <attr name="asvLineWidth" format="dimension"/>
         <attr name="asvLineColor" format="color"/>
         <attr name="asvLineColorPlayed" format="color"/>
     </declare-styleable>
+    <declare-styleable name="ShortTimeView">
+        <attr name="timeTemplate" format="string"/>
+    </declare-styleable>
+    <attr name="tabDisplayOption">
+        <flag name="label" value="0x1"/>
+        <flag name="icon" value="0x2"/>
+    </attr>
 </resources>

@@ -41,8 +41,8 @@ class GalleryTopicViewHolder(
         mediaGallery.setPadding(decorPaddingLeft, 0, 0, 0)
     }
 
-    override fun displayTopic(topic: Topic) {
-        super.displayTopic(topic)
+    override fun displayTopic(topic: Topic, highlight: String?) {
+        super.displayTopic(topic, highlight)
         val attachments = topic.attachments
         topicMediaAdapter.attachments = attachments
         if (attachments == null || attachments.isEmpty()) {

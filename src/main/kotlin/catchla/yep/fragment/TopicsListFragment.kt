@@ -35,7 +35,6 @@ import catchla.yep.loader.UserTopicsLoader
 import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.view.holder.SkillTopicRelatedUsersViewHolder
-import catchla.yep.view.holder.TopicSearchBoxViewHolder
 import catchla.yep.view.holder.TopicViewHolder
 
 /**
@@ -95,6 +94,14 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
             loaderManager.initLoader(1, null, relatedUsersLoaderCallback)
         }
         adapter.clickListener = this
+        adapter.searchBoxClickListener = { holder ->
+            val intent = Intent(context, TopicsSearchActivity::class.java)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            if (arguments.containsKey(EXTRA_USER_ID)) {
+                intent.putExtra(EXTRA_USER_ID, arguments.getString(EXTRA_USER_ID))
+            }
+            startActivity(intent)
+        }
         adapter.showSkillLabel = skill == null
         showProgress()
     }
@@ -266,14 +273,6 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         ActivityCompat.startActivity(activity, intent, options)
     }
 
-    override fun onSearchBoxClick(holder: TopicSearchBoxViewHolder) {
-        val intent = Intent(context, TopicsSearchActivity::class.java)
-        intent.putExtra(EXTRA_ACCOUNT, account)
-        if (arguments.containsKey(EXTRA_USER_ID)) {
-            intent.putExtra(EXTRA_USER_ID, arguments.getString(EXTRA_USER_ID))
-        }
-        startActivity(intent)
-    }
 
     override fun createItemDecoration(context: Context,
                                       recyclerView: RecyclerView,

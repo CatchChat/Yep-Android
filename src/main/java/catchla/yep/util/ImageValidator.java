@@ -99,7 +99,7 @@ public class ImageValidator {
         } catch (final IOException e) {
             return INVALID;
         } finally {
-            Utils.Companion.closeSilently(raf);
+            Utils.INSTANCE.closeSilently(raf);
         }
         return VALID_FOR_ALL;
     }

@@ -18,6 +18,7 @@ import android.view.View
 import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.activity.FindFriendActivity
+import catchla.yep.activity.FriendsSearchActivity
 import catchla.yep.activity.UserActivity
 import catchla.yep.adapter.FriendsListAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
@@ -32,7 +33,8 @@ import com.squareup.otto.Subscribe
 /**
  * Created by mariotaku on 15/4/29.
  */
-class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapter>(), LoaderManager.LoaderCallbacks<List<Friendship>>, IActionButtonSupportFragment {
+class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapter>(),
+        LoaderManager.LoaderCallbacks<List<Friendship>>, IActionButtonSupportFragment {
 
     override var refreshing: Boolean
         get() = false
@@ -47,7 +49,13 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
             val friendship = adapter.getFriendship(position)
             val intent = Intent(activity, UserActivity::class.java)
             intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_USER, friendship!!.friend)
+            intent.putExtra(Constants.EXTRA_USER, friendship.friend)
+            startActivity(intent)
+        }
+
+        adapter.searchBoxClickListener = { holder ->
+            val intent = Intent(context, FriendsSearchActivity::class.java)
+            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
             startActivity(intent)
         }
         loaderManager.initLoader(0, null, this)

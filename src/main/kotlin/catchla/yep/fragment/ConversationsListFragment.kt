@@ -14,7 +14,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.ChatActivity
 import catchla.yep.activity.CirclesListActivity
@@ -33,9 +33,10 @@ import com.squareup.otto.Subscribe
 /**
  * Created by mariotaku on 15/4/29.
  */
-class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAdapter>(), Constants, LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
+class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAdapter>(),
+        LoaderManager.LoaderCallbacks<List<Conversation>>, IActionButtonSupportFragment {
     val showSearchBox: Boolean
-        get() = arguments.getBoolean(Constants.EXTRA_SHOW_SEARCH_BOX, true)
+        get() = arguments.getBoolean(EXTRA_SHOW_SEARCH_BOX, true)
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -47,13 +48,13 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
             val adapter = adapter
             if (adapter.getItemViewType(position) == ChatsListAdapter.ITEM_VIEW_TYPE_CIRCLES_ENTRY) {
                 val intent = Intent(context, CirclesListActivity::class.java)
-                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+                intent.putExtra(EXTRA_ACCOUNT, account)
                 startActivity(intent)
             } else {
                 val conversation = adapter.getConversation(position)
                 val intent = Intent(context, ChatActivity::class.java)
-                intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-                intent.putExtra(Constants.EXTRA_CONVERSATION, conversation)
+                intent.putExtra(EXTRA_ACCOUNT, account)
+                intent.putExtra(EXTRA_CONVERSATION, conversation)
                 startActivity(intent)
             }
         }
@@ -124,7 +125,7 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
         val activity = activity
         val intent = Intent(activity, MessageService::class.java)
         intent.action = MessageService.ACTION_REFRESH_MESSAGES
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_ACCOUNT, account)
         activity.startService(intent)
     }
 
@@ -144,7 +145,9 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
                                       recyclerView: RecyclerView,
                                       layoutManager: LinearLayoutManager): RecyclerView.ItemDecoration? {
         val decoration = super.createItemDecoration(context, recyclerView, layoutManager) as DividerItemDecoration
-        decoration.setDecorationStart(1)
+        if (showSearchBox) {
+            decoration.setDecorationStart(1)
+        }
         val leftPadding = resources.getDimensionPixelSize(R.dimen.icon_size_status_profile_image) +
                 resources.getDimensionPixelSize(R.dimen.element_spacing_normal) * 2
         decoration.setPadding(leftPadding, 0, 0, 0)
