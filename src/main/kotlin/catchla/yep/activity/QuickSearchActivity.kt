@@ -11,8 +11,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.iface.IBaseRecyclerViewAdapter
@@ -20,15 +22,16 @@ import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.extension.set
 import catchla.yep.model.*
-import catchla.yep.provider.YepDataStore.Friendships
-import catchla.yep.provider.YepDataStore.Messages
+import catchla.yep.provider.YepDataStore.*
 import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
-import catchla.yep.view.holder.FriendViewHolder
 import catchla.yep.view.holder.SearchSectionHeaderViewHolder
 import catchla.yep.view.holder.SimpleMessageViewHolder
+import catchla.yep.view.holder.SimpleTopicViewHolder
+import catchla.yep.view.holder.SimpleUserViewHolder
+import catchla.yep.view.iface.IExtendedView
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter
 import kotlinx.android.synthetic.main.activity_search.*
 import org.mariotaku.sqliteqb.library.Columns.Column
@@ -78,8 +81,8 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             override fun onQueryTextChange(newText: String): Boolean {
                 searchView.removeCallbacks(laterSearchRunnable)
                 performSearch(newText, false)
-                // Perform network operation enabled search after 1 second
-                searchView.postDelayed(laterSearchRunnable, 1000L)
+                // Perform network operation enabled search after 0.5 second
+                searchView.postDelayed(laterSearchRunnable, 500L)
                 return true
             }
         })
@@ -97,8 +100,24 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             intent.putExtra(EXTRA_USER, user)
             startActivity(intent)
         }
+        adapter.conversationClickListener = { conversation, holder ->
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_CONVERSATION, conversation)
+            startActivity(intent)
+        }
+        adapter.messageClickListener = { message, holder ->
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_CONVERSATION, Conversation.fromMessage(message, message.accountId))
+            startActivity(intent)
+        }
+
         resultsList.adapter = adapter
         resultsList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        resultsListContainer.touchInterceptor = HideInputOnTouchListener(this, searchView)
+        suggestionsListContainer.touchInterceptor = HideInputOnTouchListener(this, searchView)
 
         suggestionsListContainer.visibility = View.GONE
         resultsListContainer.visibility = View.VISIBLE
@@ -131,7 +150,7 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             this[EXTRA_QUERY] = query
             this[EXTRA_INCLUDE_USER] = performNetworkRequest && includeUser
             this[EXTRA_INCLUDE_CHAT_HISTORY] = includeChatHistory
-            this[EXTRA_INCLUDE_TOPICS] = performNetworkRequest && includeTopics
+            this[EXTRA_INCLUDE_TOPICS] = includeTopics
         }
         if (!loaderInitialized) {
             loaderInitialized = true
@@ -146,7 +165,7 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             val query: String,
             val friends: List<Friendship>,
             val messages: List<Message>? = null,
-            val topics: List<Topic>? = null,
+            val topicConversations: List<Conversation>? = null,
             val users: List<User>? = null
     ) {
         var sections: Int = 0
@@ -169,7 +188,7 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
                 messageSection = sections
                 sections += 1
             }
-            if (topics?.isNotEmpty() ?: false) {
+            if (topicConversations?.isNotEmpty() ?: false) {
                 topicsSection = sections
                 sections += 1
             }
@@ -192,8 +211,10 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
                 notifyDataSetChanged()
             }
 
-        var friendshipClickListener: ((Friendship, FriendViewHolder) -> Unit)? = null
-        var userClickListener: ((User, FriendViewHolder) -> Unit)? = null
+        var friendshipClickListener: ((Friendship, SimpleUserViewHolder) -> Unit)? = null
+        var userClickListener: ((User, SimpleUserViewHolder) -> Unit)? = null
+        var conversationClickListener: ((Conversation, SimpleTopicViewHolder) -> Unit)? = null
+        var messageClickListener: ((Message, SimpleMessageViewHolder) -> Unit)? = null
 
         private val inflater: LayoutInflater
 
@@ -212,7 +233,7 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             when (section) {
                 data.friendSection -> return data.friends.size
                 data.messageSection -> return data.messages?.size ?: 0
-                data.topicsSection -> return data.topics?.size ?: 0
+                data.topicsSection -> return data.topicConversations?.size ?: 0
                 data.usersSection -> return data.users?.size ?: 0
             }
             throw AssertionError()
@@ -241,20 +262,24 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             val data = data ?: return
             when (section) {
                 data.friendSection -> {
-                    val h = holder as FriendViewHolder
+                    val h = holder as SimpleUserViewHolder
                     h.dataPosition = relativePosition
-                    h.displayFriendship(data.friends[relativePosition], data.query)
+                    h.display(data.friends[relativePosition].friend, data.query)
                 }
                 data.usersSection -> {
-                    val h = holder as FriendViewHolder
+                    val h = holder as SimpleUserViewHolder
                     h.dataPosition = relativePosition
-                    h.displayUser(data.users!![relativePosition], data.query)
+                    h.display(data.users!![relativePosition], data.query)
                 }
                 data.messageSection -> {
                     val h = holder as SimpleMessageViewHolder
-                    h.display(data.messages!![relativePosition])
+                    h.dataPosition = relativePosition
+                    h.display(data.messages!![relativePosition], data.query)
                 }
                 data.topicsSection -> {
+                    val h = holder as SimpleTopicViewHolder
+                    h.dataPosition = relativePosition
+                    h.display(data.topicConversations!![relativePosition].circle.topic, data.query)
                 }
             }
         }
@@ -281,29 +306,28 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
                     return SearchSectionHeaderViewHolder(view)
                 }
                 ITEM_VIEW_TYPE_FRIENDSHIP -> {
-                    val view = inflater.inflate(R.layout.list_item_friend, parent, false)
-                    return FriendViewHolder(view, this, displayUsername = true, displayLastSeen = false,
-                            displayBadge = false) { position, holder ->
-                        val h = holder as FriendViewHolder
-                        friendshipClickListener?.invoke(data!!.friends[h.dataPosition], h)
+                    val view = inflater.inflate(R.layout.list_item_user_simple, parent, false)
+                    return SimpleUserViewHolder(view, this, displayLastSeen = true) { position, holder ->
+                        friendshipClickListener?.invoke(data!!.friends[holder.dataPosition], holder)
                     }
                 }
                 ITEM_VIEW_TYPE_USER -> {
-                    val view = inflater.inflate(R.layout.list_item_friend, parent, false)
-                    return FriendViewHolder(view, this, displayUsername = true, displayLastSeen = false,
-                            displayBadge = false) { position, holder ->
-                        val h = holder as FriendViewHolder
-                        userClickListener?.invoke(data!!.users!![h.dataPosition], h)
+                    val view = inflater.inflate(R.layout.list_item_user_simple, parent, false)
+                    return SimpleUserViewHolder(view, this, displayLastSeen = false) { position, holder ->
+                        userClickListener?.invoke(data!!.users!![holder.dataPosition], holder)
                     }
                 }
                 ITEM_VIEW_TYPE_MESSAGE -> {
                     val view = inflater.inflate(R.layout.list_item_message_simple, parent, false)
                     return SimpleMessageViewHolder(view, this) { position, holder ->
-
+                        messageClickListener?.invoke(data!!.messages!![holder.dataPosition], holder)
                     }
                 }
                 ITEM_VIEW_TYPE_TOPIC -> {
-
+                    val view = inflater.inflate(R.layout.list_item_topic_simple, parent, false)
+                    return SimpleTopicViewHolder(view, this) { position, holder ->
+                        conversationClickListener?.invoke(data!!.topicConversations!![holder.dataPosition], holder)
+                    }
                 }
             }
             throw AssertionError()
@@ -354,7 +378,7 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             }
             var messages: List<Message>? = null
             var users: List<User>? = null
-            var topics: List<Topic>? = null
+            var topicConversations: List<Conversation>? = null
             if (includeChatHistory) {
                 val messageWhere = Expression.and(
                         Expression.equalsArgs(Messages.ACCOUNT_ID),
@@ -374,7 +398,26 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
                 }
             }
             if (includeTopics) {
-
+                val messageWhere = Expression.and(
+                        Expression.equalsArgs(Conversations.ACCOUNT_ID),
+                        Expression.equalsArgs(Conversations.RECIPIENT_TYPE),
+                        Expression.likeRaw(Column(Conversations.TITLE), pattern, escape)
+                ).sql
+                val messageWhereArgs = arrayOf(accountId, Message.RecipientType.CIRCLE, escapedQuery)
+                topicConversations = context.contentResolver.query(Conversations.CONTENT_URI, ConversationTableInfo.COLUMNS,
+                        messageWhere, messageWhereArgs, null).use {
+                    val indices = ConversationCursorIndices(it)
+                    val list = ArrayList<Conversation>()
+                    it.moveToFirst()
+                    while (!it.isAfterLast) {
+                        val conversation = indices.newObject(it)
+                        if (conversation?.circle?.topic != null) {
+                            list.add(conversation)
+                        }
+                        it.moveToNext()
+                    }
+                    return@use list
+                }
             }
             if (includeUser) {
                 try {
@@ -390,11 +433,21 @@ class QuickSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Qui
             if (includeTopics) {
 
             }
-            return FriendSearchResult(query, friends, messages, topics, users)
+            return FriendSearchResult(query, friends, messages, topicConversations, users)
         }
 
         override fun onStartLoading() {
             forceLoad()
+        }
+    }
+
+    class HideInputOnTouchListener(val context: Context, val targetView: View) : IExtendedView.TouchInterceptor {
+        override fun dispatchTouchEvent(view: View, event: MotionEvent): Boolean {
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(targetView.windowToken, 0)
+            }
+            return super.dispatchTouchEvent(view, event)
         }
     }
 

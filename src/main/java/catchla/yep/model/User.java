@@ -107,6 +107,9 @@ public class User implements Parcelable {
     @CursorField(Users.CONTACT_NAME)
     String contactName;
     @ParcelableThisPlease
+    @JsonField(name = "remarked_name")
+    String remarkedName;
+    @ParcelableThisPlease
     @JsonField(name = "providers", typeConverter = ProviderConverter.class)
     @CursorField(value = Users.PROVIDERS, converter = LoganSquareCursorFieldConverter.class)
     List<Provider> providers;
@@ -305,6 +308,14 @@ public class User implements Parcelable {
 
     public void setUpdatedAt(final Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getRemarkedName() {
+        return remarkedName;
+    }
+
+    public void setRemarkedName(final String remarkedName) {
+        this.remarkedName = remarkedName;
     }
 
     @Override

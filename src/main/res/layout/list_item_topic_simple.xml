@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:minHeight="?listPreferredItemHeight"
+    android:padding="@dimen/element_spacing_normal">
+
+    <ImageView
+        android:id="@+id/topicImage"
+        android:layout_width="@dimen/icon_size_topic_item_profile_image"
+        android:layout_height="@dimen/icon_size_topic_item_profile_image"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/element_spacing_normal"
+        android:layout_marginStart="@dimen/element_spacing_normal"
+        android:layout_toEndOf="@+id/topicImage"
+        android:layout_toRightOf="@+id/topicImage"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="?android:textColorPrimary"
+        android:textStyle="bold"
+        tools:text="A quick brown fix jumps over the lazy dog"/>
+
+</RelativeLayout>

@@ -1,6 +1,7 @@
 package catchla.yep.model;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,9 +10,12 @@ import android.text.TextUtils;
 
 import com.bluelinelabs.logansquare.annotation.JsonField;
 import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
+import org.mariotaku.library.objectcursor.annotation.AfterCursorObjectCreated;
+import org.mariotaku.library.objectcursor.annotation.BeforeWriteContentValues;
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
 import org.mariotaku.sqliteqb.library.Expression;
@@ -24,6 +28,7 @@ import catchla.yep.model.util.TimestampToDateConverter;
 import catchla.yep.model.util.YepTimestampDateConverter;
 import catchla.yep.provider.YepDataStore;
 import catchla.yep.provider.YepDataStore.Conversations;
+import catchla.yep.util.Utils;
 
 /**
  * Created by mariotaku on 15/5/29.
@@ -86,6 +91,10 @@ public class Conversation implements Parcelable {
     @CursorField(Conversations.TEXT_CONTENT)
     String textContent;
     @ParcelableThisPlease
+    @JsonField(name = "title")
+    @CursorField(Conversations.TITLE)
+    String title;
+    @ParcelableThisPlease
     @JsonField(name = "id")
     @CursorField(Conversations.CONVERSATION_ID)
     String id;
@@ -119,6 +128,15 @@ public class Conversation implements Parcelable {
         conversation.setId(generateId(Message.RecipientType.USER, user.getId()));
         conversation.setRecipientType(Message.RecipientType.USER);
         conversation.setUser(user);
+        return conversation;
+    }
+
+
+    public static Conversation fromMessage(Message message, String accountId) {
+        final Conversation conversation = new Conversation();
+        conversation.setAccountId(accountId);
+        conversation.setId(generateId(message, accountId));
+        conversation.setRecipientType(message.recipientType);
         return conversation;
     }
 
@@ -197,6 +215,14 @@ public class Conversation implements Parcelable {
         this.id = id;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
     public String getRecipientId() {
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) {
             return circle.getId();
@@ -256,6 +282,27 @@ public class Conversation implements Parcelable {
         if (Message.RecipientType.CIRCLE.equalsIgnoreCase(recipientType)) return circle != null;
         if (Message.RecipientType.USER.equalsIgnoreCase(recipientType)) return user != null;
         return true;
+    }
+
+    @AfterCursorObjectCreated
+    void afterCursorObjectCreated() {
+        if (title == null) {
+            setTitle(Utils.INSTANCE.getConversationName(this));
+        }
+    }
+
+    @OnJsonParseComplete
+    void onJsonParseComplete() {
+        if (title == null) {
+            setTitle(Utils.INSTANCE.getConversationName(this));
+        }
+    }
+
+    @BeforeWriteContentValues
+    void beforeCreateValues(ContentValues values) {
+        if (title == null) {
+            setTitle(Utils.INSTANCE.getConversationName(this));
+        }
     }
 
     public static Conversation query(final ContentResolver cr, final String accountId, final String conversationId) {

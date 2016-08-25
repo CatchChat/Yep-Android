@@ -20,6 +20,8 @@ class SimpleMessageViewHolder(
         listener: ((Int, SimpleMessageViewHolder) -> Unit)?
 ) : RecyclerView.ViewHolder(itemView) {
 
+    var dataPosition: Int = RecyclerView.NO_POSITION
+
     val nameView: TextView by lazy { itemView.name }
     val messageView: TextView by lazy { itemView.message }
     val timeView: ShortTimeView by lazy { itemView.time }
@@ -27,7 +29,7 @@ class SimpleMessageViewHolder(
 
     init {
         itemView.setOnClickListener {
-            listener?.invoke(layoutPosition, this)
+            listener?.invoke(dataPosition, this)
         }
     }
 

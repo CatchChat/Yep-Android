@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,8 +20,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/element_spacing_normal"
         android:layout_marginStart="@dimen/element_spacing_normal"
@@ -35,26 +34,44 @@
 
             <TextView
                 android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="?android:textColorPrimary"
-                tools:text="Name"/>
-
-            <catchla.yep.view.ShortTimeView
-                android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                tools:text="time"/>
+                android:singleLine="true"
+                android:textColor="?android:textColorPrimary"
+                android:textStyle="bold"
+                tools:text="Name"/>
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/element_spacing_small"
+                android:layout_marginStart="@dimen/element_spacing_small"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:textColor="?android:textColorSecondary"
+                tools:text="\@username"/>
+
+            <catchla.yep.view.ShortTimeView
+                android:id="@+id/lastSeen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/element_spacing_small"
+                android:layout_marginStart="@dimen/element_spacing_small"
+                android:layout_weight="0"
+                android:singleLine="true"
+                android:textColor="?android:textColorSecondary"
+                app:timeTemplate="@string/last_seen_time"
+                tools:text="last seen"/>
         </LinearLayout>
 
-
         <TextView
-            android:id="@+id/message"
+            android:id="@+id/summary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/element_spacing_small"
+            android:singleLine="true"
             tools:text="A quick brown fix jumps over the lazy dog"/>
     </LinearLayout>
-
 </RelativeLayout>

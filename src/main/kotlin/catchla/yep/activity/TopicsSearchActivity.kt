@@ -14,6 +14,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import catchla.yep.Constants.*
 import catchla.yep.R
+import catchla.yep.activity.QuickSearchActivity.HideInputOnTouchListener
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
@@ -121,6 +122,9 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
                 searchView.setQuery(item, true)
             }
         }
+
+        resultsListContainer.touchInterceptor = HideInputOnTouchListener(this, searchView)
+        suggestionsListContainer.touchInterceptor = HideInputOnTouchListener(this, searchView)
 
         suggestionsListContainer.visibility = View.VISIBLE
         resultsListContainer.visibility = View.GONE

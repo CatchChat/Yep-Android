@@ -26,11 +26,11 @@ interface IExtendedView {
 
     interface TouchInterceptor {
 
-        fun dispatchTouchEvent(view: View, event: MotionEvent): Boolean
+        fun dispatchTouchEvent(view: View, event: MotionEvent): Boolean = false
 
-        fun onInterceptTouchEvent(view: View, event: MotionEvent): Boolean
+        fun onInterceptTouchEvent(view: View, event: MotionEvent): Boolean = false
 
-        fun onTouchEvent(view: View, event: MotionEvent): Boolean
+        fun onTouchEvent(view: View, event: MotionEvent): Boolean = false
 
     }
 }

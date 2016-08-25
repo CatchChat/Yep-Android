@@ -466,7 +466,7 @@ object Utils {
 }
 
 fun String.highlightedString(highlight: String?): CharSequence {
-    if (highlight == null) return this
+    if (highlight == null || highlight.isEmpty()) return this
     val spannable = SpannableString.valueOf(this)
     indexOf(highlight, ignoreCase = true) {
         spannable.setSpan(FriendViewHolder.HighlightSpan, it, it + highlight.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

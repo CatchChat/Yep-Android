@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:foreground="?android:windowContentOverlay">
 
-            <FrameLayout
+            <catchla.yep.view.ExtendedFrameLayout
                 android:id="@+id/resultsListContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -59,9 +59,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"/>
-            </FrameLayout>
+            </catchla.yep.view.ExtendedFrameLayout>
 
-            <FrameLayout
+            <catchla.yep.view.ExtendedFrameLayout
                 android:id="@+id/suggestionsListContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -71,7 +71,7 @@
                     android:id="@+id/suggestionsList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
-            </FrameLayout>
+            </catchla.yep.view.ExtendedFrameLayout>
         </FrameLayout>
     </LinearLayout>
 

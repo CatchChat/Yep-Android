@@ -126,11 +126,18 @@ public class Friendship implements Parcelable {
     void onJsonParseComplete() {
         userId = friend.getId();
         userUpdatedAt = friend.getUpdatedAt();
+        if (friend.contactName == null) {
+            friend.setContactName(contactName);
+        }
     }
 
     @AfterCursorObjectCreated
     void afterCursorObjectCreated() {
         userId = friend.getId();
+        friend.setRemarkedName(remarkedName);
+        if (friend.contactName == null) {
+            friend.setContactName(contactName);
+        }
     }
 
 }

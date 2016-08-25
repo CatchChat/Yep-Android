@@ -104,7 +104,7 @@ class MessageService : Service(), Constants {
 
     private fun refreshMessages() {
         val account = Utils.getCurrentAccount(this) ?: return
-        val accountUser = Utils.getAccountUser(this, account) ?: return
+        val accountUser = Utils.getAccountUser(this, account)
         task {
             val yep = YepAPIFactory.getInstance(application, account)
             val paging = Paging()
@@ -118,7 +118,7 @@ class MessageService : Service(), Constants {
 
     private fun refreshCircles() {
         val account = Utils.getCurrentAccount(this) ?: return
-        val accountUser = Utils.getAccountUser(this, account) ?: return
+        val accountUser = Utils.getAccountUser(this, account)
         task {
             val yep = YepAPIFactory.getInstance(application, account)
             val paging = Paging()
@@ -238,7 +238,7 @@ class MessageService : Service(), Constants {
 
         private fun greaterThen(createdAt: Date?, updatedAt: Date?): Boolean {
             if (updatedAt == null) return createdAt != null
-            return createdAt != null && createdAt.compareTo(updatedAt) > 0
+            return createdAt != null && createdAt > updatedAt
         }
 
         private fun getMessageCircle(context: Context, message: Message,

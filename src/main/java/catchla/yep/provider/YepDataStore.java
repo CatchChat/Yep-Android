@@ -59,6 +59,7 @@ public interface YepDataStore {
         String ACCOUNT_ID = "account_id";
         String CONVERSATION_ID = "conversation_id";
         String TEXT_CONTENT = "text_content";
+        String TITLE = "title";
         String USER = "user";
         String CIRCLE = "circle";
         String UPDATED_AT = "updated_at";
