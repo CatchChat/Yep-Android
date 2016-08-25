@@ -50,8 +50,10 @@ public interface YepDataStore {
     interface Conversations extends BaseColumns {
 
         String CONTENT_PATH = "conversations";
+        String CONTENT_PATH_SEARCH = "conversations/search";
         String TABLE_NAME = "conversations";
         Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
+        Uri CONTENT_URI_SEARCH = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH_SEARCH);
 
 
         String ACCOUNT_ID = "account_id";

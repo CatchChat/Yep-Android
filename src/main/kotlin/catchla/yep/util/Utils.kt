@@ -39,7 +39,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import catchla.yep.BuildConfig
-import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.SettingsActivity
 import catchla.yep.extension.getUser
@@ -69,14 +69,15 @@ object Utils {
     private val sRandom = Random()
 
     init {
-        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Friendships.CONTENT_PATH, Constants.TABLE_ID_FRIENDSHIPS)
-        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH, Constants.TABLE_ID_MESSAGES)
-        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Conversations.CONTENT_PATH, Constants.TABLE_ID_CONVERSATIONS)
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Friendships.CONTENT_PATH, TABLE_ID_FRIENDSHIPS)
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH, TABLE_ID_MESSAGES)
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Conversations.CONTENT_PATH, TABLE_ID_CONVERSATIONS)
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Conversations.CONTENT_PATH_SEARCH + "/*/*", VIRTUAL_TABLE_ID_CONVERSATIONS)
 
-        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH + "/*/*", Constants.TABLE_ID_CONVERSATION_MESSAGES)
-        TABLE_NAMES.append(Constants.TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME)
-        TABLE_NAMES.append(Constants.TABLE_ID_MESSAGES, Messages.TABLE_NAME)
-        TABLE_NAMES.append(Constants.TABLE_ID_CONVERSATIONS, Conversations.TABLE_NAME)
+        DATABASE_URI_MATCHER.addURI(BuildConfig.APPLICATION_ID, Messages.CONTENT_PATH + "/*/*", TABLE_ID_CONVERSATION_MESSAGES)
+        TABLE_NAMES.append(TABLE_ID_FRIENDSHIPS, Friendships.TABLE_NAME)
+        TABLE_NAMES.append(TABLE_ID_MESSAGES, Messages.TABLE_NAME)
+        TABLE_NAMES.append(TABLE_ID_CONVERSATIONS, Conversations.TABLE_NAME)
     }
 
     val PATTERN_XML_RESOURCE_IDENTIFIER = Pattern.compile("res/xml/([\\w_]+)\\.xml")
@@ -97,10 +98,10 @@ object Utils {
 
     fun getCurrentAccount(context: Context): Account? {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val currentAccountName = prefs.getString(Constants.KEY_CURRENT_ACCOUNT, null)
+        val currentAccountName = prefs.getString(KEY_CURRENT_ACCOUNT, null)
         if (TextUtils.isEmpty(currentAccountName)) return null
         val am = AccountManager.get(context)
-        for (account in am.getAccountsByType(Constants.ACCOUNT_TYPE)) {
+        for (account in am.getAccountsByType(ACCOUNT_TYPE)) {
             if (currentAccountName == account.name) return account
         }
         return null
@@ -128,9 +129,9 @@ object Utils {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val editor = prefs.edit()
         if (account != null) {
-            editor.putString(Constants.KEY_CURRENT_ACCOUNT, account.name)
+            editor.putString(KEY_CURRENT_ACCOUNT, account.name)
         } else {
-            editor.remove(Constants.KEY_CURRENT_ACCOUNT)
+            editor.remove(KEY_CURRENT_ACCOUNT)
         }
         editor.apply()
     }
@@ -162,18 +163,18 @@ object Utils {
     }
 
     fun writeUserToUserData(user: User, userData: Bundle) {
-        userData.putString(Constants.USER_DATA_ID, user.id)
-        userData.putString(Constants.USER_DATA_AVATAR, user.avatarUrl)
-        userData.putString(Constants.USER_DATA_NICKNAME, user.nickname)
-        userData.putString(Constants.USER_DATA_USERNAME, user.username)
-        userData.putString(Constants.USER_DATA_PHONE_NUMBER, user.mobile)
-        userData.putString(Constants.USER_DATA_COUNTRY_CODE, user.phoneCode)
-        userData.putString(Constants.USER_DATA_INTRODUCTION, user.introduction)
-        userData.putString(Constants.USER_DATA_WEBSITE, user.websiteUrl)
-        userData.putString(Constants.USER_DATA_LEARNING_SKILLS, JsonSerializer.serialize(user.learningSkills, Skill::class.java))
-        userData.putString(Constants.USER_DATA_MASTER_SKILLS, JsonSerializer.serialize(user.masterSkills, Skill::class.java))
-        userData.putString(Constants.USER_DATA_PROVIDERS, JsonSerializer.serialize(user.providers, Provider::class.java))
-        userData.putString(Constants.USER_DATA_BADGE, user.badge?.value)
+        userData.putString(USER_DATA_ID, user.id)
+        userData.putString(USER_DATA_AVATAR, user.avatarUrl)
+        userData.putString(USER_DATA_NICKNAME, user.nickname)
+        userData.putString(USER_DATA_USERNAME, user.username)
+        userData.putString(USER_DATA_PHONE_NUMBER, user.mobile)
+        userData.putString(USER_DATA_COUNTRY_CODE, user.phoneCode)
+        userData.putString(USER_DATA_INTRODUCTION, user.introduction)
+        userData.putString(USER_DATA_WEBSITE, user.websiteUrl)
+        userData.putString(USER_DATA_LEARNING_SKILLS, JsonSerializer.serialize(user.learningSkills, Skill::class.java))
+        userData.putString(USER_DATA_MASTER_SKILLS, JsonSerializer.serialize(user.masterSkills, Skill::class.java))
+        userData.putString(USER_DATA_PROVIDERS, JsonSerializer.serialize(user.providers, Provider::class.java))
+        userData.putString(USER_DATA_BADGE, user.badge?.value)
     }
 
     fun inflateProviderItemView(context: Context, fm: FragmentManager,
@@ -257,7 +258,7 @@ object Utils {
 
     fun saveUserInfo(context: Context, account: Account, user: User) {
         val am = AccountManager.get(context)
-        if (!TextUtils.equals(user.id, am.getUserData(account, Constants.USER_DATA_ID))) return
+        if (!TextUtils.equals(user.id, am.getUserData(account, USER_DATA_ID))) return
         val userData = Bundle()
         writeUserToUserData(user, userData)
         for (key in userData.keySet()) {
@@ -292,9 +293,9 @@ object Utils {
         val intent = Intent(context, SettingsActivity::class.java)
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsDetailsFragment::class.java.name)
         val args = Bundle()
-        args.putInt(Constants.EXTRA_RESID, R.xml.pref_general)
+        args.putInt(EXTRA_RESID, R.xml.pref_general)
         intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_ACCOUNT, account)
         context.startActivity(intent)
     }
 
@@ -356,7 +357,7 @@ object Utils {
     fun getAccountId(context: Context, account: Account?): String? {
         if (account == null) return null
         val am = AccountManager.get(context)
-        return am.getUserData(account, Constants.USER_DATA_ID)
+        return am.getUserData(account, USER_DATA_ID)
     }
 
     fun getDistanceString(distanceMeters: Float): String {

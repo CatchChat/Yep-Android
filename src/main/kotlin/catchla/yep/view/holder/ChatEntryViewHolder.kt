@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import catchla.yep.R
 import catchla.yep.adapter.ChatsListAdapter
+import catchla.yep.adapter.iface.IBaseRecyclerViewAdapter
 import catchla.yep.model.Conversation
 import catchla.yep.model.Message
 import catchla.yep.util.Utils
@@ -21,7 +22,7 @@ import catchla.yep.view.ShortTimeView
  */
 class ChatEntryViewHolder(
         itemView: View,
-        private val adapter: ChatsListAdapter,
+        private val adapter: IBaseRecyclerViewAdapter,
         listener: ((Int, RecyclerView.ViewHolder) -> Unit)?
 ) : RecyclerView.ViewHolder(itemView) {
 
@@ -46,13 +47,13 @@ class ChatEntryViewHolder(
         nameView.text = Utils.getConversationName(conversation)
         val imageLoader = adapter.imageLoader
         imageLoader.displayProfileImage(Utils.getConversationAvatarUrl(conversation), profileImageView)
-        messageView.text = getConversationSummary(adapter.context, conversation)
+        messageView.text = getConversationSummary(itemView.context, conversation)
         timeView.time = Utils.getTime(conversation.updatedAt)
     }
 
     fun displayCirclesEntry(conversation: Conversation) {
         nameView.setText(R.string.circles)
-        messageView.text = getConversationSummary(adapter.context, conversation)
+        messageView.text = getConversationSummary(itemView.context, conversation)
         timeView.time = Utils.getTime(conversation.updatedAt)
     }
 

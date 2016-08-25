@@ -61,7 +61,7 @@ class FriendsListAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView
             }
             ITEM_VIEW_TYPE_FRIEND -> {
                 val view = inflater.inflate(R.layout.list_item_friend, parent, false)
-                return FriendViewHolder(view, this, itemClickListener)
+                return FriendViewHolder(view, this, listener = itemClickListener)
             }
         }
         throw AssertionError()

@@ -131,4 +131,5 @@
     <string name="hot_word_suggestion_hint">Try these</string>
     <string name="friends">Friends</string>
     <string name="users">Users</string>
+    <string name="chat_history">Chat history</string>
 </resources>

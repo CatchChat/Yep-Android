@@ -68,11 +68,18 @@ public interface Constants {
     String EXTRA_POSITION = "position";
     String EXTRA_SHOW_SEARCH_BOX = "show_search_box";
 
+    String EXTRA_INCLUDE_USER = "include_user";
+    String EXTRA_INCLUDE_CHAT_HISTORY = "include_chat_history";
+    String EXTRA_INCLUDE_TOPICS = "include_topics";
+
     int TABLE_ID_FRIENDSHIPS = 1;
     int TABLE_ID_MESSAGES = 11;
     int TABLE_ID_CONVERSATIONS = 12;
 
     int TABLE_ID_CONVERSATION_MESSAGES = 21;
+
+    int VIRTUAL_TABLE_ID_CONVERSATIONS = 111;
+
     String AUTHORITY_YEP_CACHE = BuildConfig.APPLICATION_ID + ".cache";
     String AMAP_WEB_API_KEY = "be626270524e0af680685beabc7c65af";
 }

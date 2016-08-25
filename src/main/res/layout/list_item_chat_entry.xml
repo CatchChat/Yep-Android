@@ -41,7 +41,8 @@
             android:layout_toStartOf="@+id/updateTime"
             android:singleLine="true"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="?android:textColorPrimary"/>
+            android:textColor="?android:textColorPrimary"
+            tools:text="Name"/>
 
         <TextView
             android:id="@+id/message"
@@ -53,7 +54,8 @@
             android:layout_marginTop="@dimen/element_spacing_normal"
             android:maxLines="2"
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorSecondary"/>
+            android:textColor="?android:textColorSecondary"
+            tools:text="A quick brown fox jumps the lazy dog"/>
 
         <catchla.yep.view.ShortTimeView
             android:id="@+id/updateTime"
@@ -64,7 +66,8 @@
             android:layout_alignParentRight="true"
             android:singleLine="true"
             android:textAppearance="?android:textAppearanceSmall"
-            android:textColor="?android:textColorTertiary"/>
+            android:textColor="?android:textColorTertiary"
+            tools:text="updated at"/>
 
 
     </RelativeLayout>

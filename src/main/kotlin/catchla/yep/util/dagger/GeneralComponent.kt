@@ -2,7 +2,7 @@ package catchla.yep.util.dagger
 
 import android.support.v7.widget.RecyclerView
 import catchla.yep.activity.ContentActivity
-import catchla.yep.activity.FriendsSearchActivity
+import catchla.yep.activity.QuickSearchActivity
 import catchla.yep.activity.MediaViewerActivity
 import catchla.yep.adapter.BaseRecyclerViewAdapter
 import catchla.yep.fragment.BaseDialogFragment
@@ -59,6 +59,6 @@ interface GeneralComponent {
 
     fun inject(container: TopicsWidgetContainer)
 
-    fun inject(adapter: FriendsSearchActivity.FriendsSearchAdapter)
+    fun inject(adapter: QuickSearchActivity.FriendsSearchAdapter)
 
 }

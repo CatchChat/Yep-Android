@@ -20,10 +20,10 @@ import kotlinx.android.synthetic.main.list_item_friend.view.*
 class FriendViewHolder(
         itemView: View,
         val adapter: IBaseRecyclerViewAdapter,
-        val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?,
         displayUsername: Boolean = false,
         val displayLastSeen: Boolean = true,
-        val displayBadge: Boolean = true
+        val displayBadge: Boolean = true,
+        val listener: ((Int, RecyclerView.ViewHolder) -> Unit)?
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     var dataPosition: Int = RecyclerView.NO_POSITION

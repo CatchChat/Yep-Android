@@ -149,7 +149,7 @@ dependencies {
     compile 'com.github.mariotaku.MediaViewerLibrary:base:0.9.17'
     compile 'com.github.mariotaku.MediaViewerLibrary:subsample-image-view:0.9.17'
     compile 'com.j256.simplemagic:simplemagic:1.6'
-    compile 'com.github.mariotaku:SQLiteQB:0.9.7'
+    compile 'com.github.mariotaku:SQLiteQB:0.9.8'
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.9'
     compile 'org.osmdroid:osmdroid-android:4.3'
     compile 'org.slf4j:slf4j-simple:1.7.12'

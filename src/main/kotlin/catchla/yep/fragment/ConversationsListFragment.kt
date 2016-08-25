@@ -18,10 +18,12 @@ import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.ChatActivity
 import catchla.yep.activity.CirclesListActivity
+import catchla.yep.activity.QuickSearchActivity
 import catchla.yep.adapter.ChatsListAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
+import catchla.yep.extension.set
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.ConversationsLoader
 import catchla.yep.message.MessageRefreshedEvent
@@ -58,8 +60,17 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
                 startActivity(intent)
             }
         }
+
+        adapter.searchBoxClickListener = { holder ->
+            val intent = Intent(context, QuickSearchActivity::class.java)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_INCLUDE_USER, false)
+            intent.putExtra(EXTRA_INCLUDE_CHAT_HISTORY, true)
+            startActivity(intent)
+        }
+
         val loaderArgs = Bundle {
-            putString(EXTRA_RECIPIENT_TYPE, recipientType)
+            this[EXTRA_RECIPIENT_TYPE] = recipientType
         }
         loaderManager.initLoader(0, loaderArgs, this)
         showProgress()

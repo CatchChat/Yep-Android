@@ -50,7 +50,7 @@ open class UsersAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.
 
     protected open fun onCreateFriendViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = inflater.inflate(R.layout.list_item_friend, parent, false)
-        return FriendViewHolder(view, this, itemClickListener)
+        return FriendViewHolder(view, this, listener = itemClickListener)
     }
 
     override fun getItemViewType(position: Int): Int {

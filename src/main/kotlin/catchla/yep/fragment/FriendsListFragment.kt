@@ -16,9 +16,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import catchla.yep.Constants
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.activity.FindFriendActivity
-import catchla.yep.activity.FriendsSearchActivity
+import catchla.yep.activity.QuickSearchActivity
 import catchla.yep.activity.UserActivity
 import catchla.yep.adapter.FriendsListAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
@@ -48,16 +49,19 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
         adapter.itemClickListener = { position, holder ->
             val friendship = adapter.getFriendship(position)
             val intent = Intent(activity, UserActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
-            intent.putExtra(Constants.EXTRA_USER, friendship.friend)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_USER, friendship.friend)
             startActivity(intent)
         }
 
         adapter.searchBoxClickListener = { holder ->
-            val intent = Intent(context, FriendsSearchActivity::class.java)
-            intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+            val intent = Intent(context, QuickSearchActivity::class.java)
+            intent.putExtra(EXTRA_ACCOUNT, account)
+            intent.putExtra(EXTRA_INCLUDE_USER, true)
+            intent.putExtra(EXTRA_INCLUDE_CHAT_HISTORY, false)
             startActivity(intent)
         }
+
         loaderManager.initLoader(0, null, this)
         showProgress()
     }
@@ -104,7 +108,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
         val activity = activity
         val intent = Intent(activity, MessageService::class.java)
         intent.action = MessageService.ACTION_REFRESH_FRIENDSHIPS
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_ACCOUNT, account)
         activity.startService(intent)
         return true
     }
@@ -119,7 +123,7 @@ class FriendsListFragment : AbsContentListRecyclerViewFragment<FriendsListAdapte
 
     override fun onActionPerformed() {
         val intent = Intent(activity, FindFriendActivity::class.java)
-        intent.putExtra(Constants.EXTRA_ACCOUNT, account)
+        intent.putExtra(EXTRA_ACCOUNT, account)
         startActivity(intent)
     }
 

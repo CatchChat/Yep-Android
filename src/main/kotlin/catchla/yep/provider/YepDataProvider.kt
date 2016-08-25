@@ -5,8 +5,10 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
+import catchla.yep.Constants
 import catchla.yep.util.Utils
 import catchla.yep.util.YepSQLiteOpenHelper
+import catchla.yep.util.content.createChatHistorySearchCursor
 
 /**
  * Created by mariotaku on 15/7/9.
@@ -21,8 +23,18 @@ class YepDataProvider : ContentProvider() {
     }
 
     override fun query(uri: Uri, projection: Array<String>?, selection: String?, selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
-        val table = Utils.getTableName(uri) ?: return null
-        val cursor = db.query(table, projection, selection, selectionArgs, null, null, sortOrder)
+        val cursor: Cursor?
+        when (Utils.getTableId(uri)) {
+            Constants.VIRTUAL_TABLE_ID_CONVERSATIONS -> {
+                val accountId = uri.pathSegments[uri.pathSegments.lastIndex - 1]
+                val query = uri.pathSegments[uri.pathSegments.lastIndex]
+                cursor = createChatHistorySearchCursor(db, accountId, query)
+            }
+            else -> {
+                val table = Utils.getTableName(uri) ?: return null
+                cursor = db.query(table, projection, selection, selectionArgs, null, null, sortOrder)
+            }
+        }
         cursor?.let {
             setNotificationUri(it, uri)
         }
