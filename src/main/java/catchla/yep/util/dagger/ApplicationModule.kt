@@ -21,6 +21,7 @@ import com.squareup.otto.ThreadEnforcer
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import org.mariotaku.kpreferences.KPreferences
 import org.mariotaku.mediaviewer.library.FileCache
 import org.mariotaku.mediaviewer.library.MediaDownloader
 import java.io.IOException
@@ -31,11 +32,11 @@ import javax.inject.Singleton
  */
 @Module
 class ApplicationModule internal constructor(private val application: Application) : Constants {
-
-    val diskCache: DiskCache
-        @Provides
-        @Singleton
-        get() = createDiskCache()
+    @Provides
+    @Singleton
+    fun diskCache(): DiskCache {
+        return createDiskCache()
+    }
 
     @Provides
     @Singleton
@@ -55,16 +56,47 @@ class ApplicationModule internal constructor(private val application: Applicatio
         return OkMediaDownloader(client)
     }
 
-    val sharedPreferences: SharedPreferences
-        @Provides
-        @Singleton
-        get() = PreferenceManager.getDefaultSharedPreferences(application)
+    @Provides
+    @Singleton
+    fun sharedPreferences(): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(application)
+    }
+
+    @Provides
+    @Singleton
+    fun kPreferences(sharedPreferences: SharedPreferences): KPreferences {
+        return KPreferences(sharedPreferences)
+    }
 
     @Provides
     @Singleton
     fun getImageLoaderWrapper(imageLoader: ImageLoader): ImageLoaderWrapper {
         val defaultDisplayImageOptions = createDefaultDisplayImageOptions()
         return ImageLoaderWrapper(application, imageLoader, defaultDisplayImageOptions)
+    }
+
+    @Provides
+    @Singleton
+    fun getImageLoader(imageDownloader: ImageDownloader, diskCache: DiskCache): ImageLoader {
+        return createImageLoader(imageDownloader, diskCache, createDefaultDisplayImageOptions())
+    }
+
+    @Provides
+    @Singleton
+    fun bus(): Bus {
+        return Bus(ThreadEnforcer.MAIN)
+    }
+
+    @Provides
+    @Singleton
+    fun okHttpClient(): OkHttpClient {
+        return YepAPIFactory.getOkHttpClient(application)
+    }
+
+    @Provides
+    @Singleton
+    fun busHandler(bus: Bus): BusHandler {
+        return BusHandler(bus)
     }
 
     private fun createDiskCache(): DiskCache {
@@ -74,6 +106,14 @@ class ApplicationModule internal constructor(private val application: Applicatio
             throw RuntimeException(e)
         }
 
+    }
+
+    private fun createDefaultDisplayImageOptions(): DisplayImageOptions {
+        val builder = DisplayImageOptions.Builder()
+        builder.cacheOnDisk(true)
+        builder.cacheInMemory(true)
+        builder.resetViewBeforeLoading(true)
+        return builder.build()
     }
 
     private fun createImageLoader(downloader: ImageDownloader, cache: DiskCache, defaultDisplayImageOptions: DisplayImageOptions): ImageLoader {
@@ -88,37 +128,6 @@ class ApplicationModule internal constructor(private val application: Applicatio
         L.writeDebugLogs(BuildConfig.DEBUG)
         loader.init(cb.build())
         return loader
-    }
-
-    private fun createDefaultDisplayImageOptions(): DisplayImageOptions {
-        val builder = DisplayImageOptions.Builder()
-        builder.cacheOnDisk(true)
-        builder.cacheInMemory(true)
-        builder.resetViewBeforeLoading(true)
-        return builder.build()
-    }
-
-    @Provides
-    @Singleton
-    fun getImageLoader(imageDownloader: ImageDownloader, diskCache: DiskCache): ImageLoader {
-        return createImageLoader(imageDownloader, diskCache, createDefaultDisplayImageOptions())
-    }
-
-    val bus: Bus
-        @Provides
-        @Singleton
-        get() = Bus(ThreadEnforcer.MAIN)
-
-    @Provides
-    @Singleton
-    fun okHttpClient(): OkHttpClient {
-        return YepAPIFactory.getOkHttpClient(application)
-    }
-
-    @Provides
-    @Singleton
-    fun busHandler(bus: Bus): BusHandler {
-        return BusHandler(bus)
     }
 
     companion object {

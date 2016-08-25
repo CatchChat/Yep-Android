@@ -3,8 +3,10 @@ package catchla.yep.app
 import android.app.Activity
 import android.app.Application
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.multidex.MultiDex
 import catchla.yep.Constants
 import catchla.yep.activity.iface.IAccountActivity
 import catchla.yep.service.FayeService
@@ -73,5 +75,10 @@ class YepApplication : Application(), Constants {
     override fun onTerminate() {
         super.onTerminate()
         stopKovenant()
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
     }
 }

@@ -105,6 +105,7 @@ class ChatActivity : AbsChatActivity() {
         val args = Bundle {
             this[EXTRA_CONVERSATION] = conversation
             this[EXTRA_ACCOUNT] = account
+            this[EXTRA_TOPIC] = conversation.circle?.topic
         }
         return Fragment.instantiate(this, ConversationChatListFragment::class.java.name, args) as ChatListFragment
     }

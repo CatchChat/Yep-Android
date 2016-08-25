@@ -221,6 +221,15 @@
                 android:value="catchla.yep.activity.HomeActivity"/>
         </activity>
         <activity
+            android:name=".activity.TopicsSearchActivity"
+            android:label="@string/search_topics"
+            android:theme="@style/Theme.Yep.Content.NoActionBar"
+            android:windowSoftInputMode="adjustNothing">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="catchla.yep.activity.HomeActivity"/>
+        </activity>
+        <activity
             android:name=".activity.LocationPickerActivity"
             android:label="@string/location"
             android:theme="@style/Theme.Yep.Content"/>
@@ -231,11 +240,6 @@
         <activity
             android:name=".activity.ThemedImageCropperActivity"
             android:theme="@android:style/Theme.DeviceDefault.Light"/>
-        <activity
-            android:name=".activity.TopicsSearchActivity"
-            android:label="@string/search_topics"
-            android:theme="@style/Theme.Yep.Content.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
 
         <provider
             android:name=".provider.YepDataProvider"

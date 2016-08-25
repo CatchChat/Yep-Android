@@ -11,6 +11,7 @@ import catchla.yep.util.dagger.GeneralComponentHelper
 import catchla.yep.util.support.WindowSupport
 import catchla.yep.view.TintedStatusFrameLayout
 import com.squareup.otto.Bus
+import org.mariotaku.kpreferences.KPreferences
 import javax.inject.Inject
 
 open class ContentActivity : AppCompatActivity(), IBaseActivity {
@@ -19,6 +20,8 @@ open class ContentActivity : AppCompatActivity(), IBaseActivity {
     lateinit var bus: Bus
     @Inject
     lateinit var imageLoader: ImageLoaderWrapper
+    @Inject
+    lateinit var preferences: KPreferences
 
     private val actionHelper = IBaseActivity.ActionHelper(this)
 

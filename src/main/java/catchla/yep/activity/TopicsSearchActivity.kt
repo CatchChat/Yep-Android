@@ -12,8 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
-import catchla.yep.Constants.EXTRA_MAX_ID
-import catchla.yep.Constants.EXTRA_QUERY
+import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
@@ -112,7 +111,7 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                performSearch(newText)
+//                performSearch(newText)
                 return true
             }
         })
@@ -126,16 +125,26 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
         suggestionsListContainer.visibility = View.VISIBLE
         resultsListContainer.visibility = View.GONE
 
-        task {
-            val yep = YepAPIFactory.getInstance(this, account)
-            return@task yep.getHotWords()
-        }.successUi {
-            hotWordsAdapter.clear()
-            hotWordsAdapter.add(HotWordTitle, HotWordTitlePresenter::class.java)
-            for (hotWord in it) {
-                hotWordsAdapter.add(hotWord, HotWordPresenter::class.java)
+        if (!intent.hasExtra(EXTRA_USER_ID)) {
+            task {
+                val yep = YepAPIFactory.getInstance(this, account)
+                return@task yep.getHotWords()
+            }.successUi {
+                hotWordsAdapter.clear()
+                hotWordsAdapter.add(HotWordTitle, HotWordTitlePresenter::class.java)
+                for (hotWord in it) {
+                    hotWordsAdapter.add(hotWord, HotWordPresenter::class.java)
+                }
+                hotWordsAdapter.notifyDataSetChanged()
             }
-            hotWordsAdapter.notifyDataSetChanged()
+            suggestionsListContainer.visibility = View.VISIBLE
+            resultsListContainer.visibility = View.GONE
+        } else {
+            suggestionsListContainer.visibility = View.GONE
+            resultsListContainer.visibility = View.VISIBLE
+
+            resultsListProgress.visibility = View.GONE
+            resultsList.visibility = View.VISIBLE
         }
 
     }
@@ -151,7 +160,8 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
             resultsListProgress.show()
         }
         val oldData: List<Topic>? = topicsAdapter.topics
-        return TopicsSearchLoader(this, account, query, paging = paging, oldData = oldData)
+        val userId = intent.getStringExtra(EXTRA_USER_ID)
+        return TopicsSearchLoader(this, account, query, userId = userId, paging = paging, oldData = oldData)
     }
 
     override fun onLoadFinished(loader: Loader<List<Topic>?>, data: List<Topic>?) {

@@ -51,8 +51,6 @@ abstract class AbsChatActivity : SwipeBackContentActivity(), ChatInputBarFragmen
         ft.replace(R.id.listContainer, chatListFragment)
         ft.replace(R.id.inputPanel, chatInputBarFragment)
         ft.commit()
-
-
     }
 
 

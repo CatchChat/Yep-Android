@@ -269,6 +269,9 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     override fun onSearchBoxClick(holder: TopicSearchBoxViewHolder) {
         val intent = Intent(context, TopicsSearchActivity::class.java)
         intent.putExtra(EXTRA_ACCOUNT, account)
+        if (arguments.containsKey(EXTRA_USER_ID)) {
+            intent.putExtra(EXTRA_USER_ID, arguments.getString(EXTRA_USER_ID))
+        }
         startActivity(intent)
     }
 

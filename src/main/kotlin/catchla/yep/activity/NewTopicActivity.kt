@@ -1,9 +1,7 @@
 package catchla.yep.activity
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Parcelable
-import android.preference.PreferenceManager
 import android.support.v4.app.DialogFragment
 import android.text.TextUtils
 import android.util.Log
@@ -17,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.constant.topicDraftKey
 import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.NewTopicGalleryFragment
@@ -25,6 +24,7 @@ import catchla.yep.fragment.NewTopicMediaFragment
 import catchla.yep.fragment.ProgressDialogFragment
 import catchla.yep.model.NewTopic
 import catchla.yep.model.Skill
+import catchla.yep.model.TopicDraft
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import kotlinx.android.synthetic.main.activity_new_topic.*
@@ -38,8 +38,6 @@ import org.apache.commons.lang3.StringUtils
  */
 class NewTopicActivity : SwipeBackContentActivity(), Constants {
     private var mDismissUploadingDialogRunnable: Runnable? = null
-
-    private lateinit var preferences: SharedPreferences
 
     private var draftsSaved: Boolean = false
     private var shouldSkipSaveDrafts: Boolean = false
@@ -68,11 +66,11 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferences = PreferenceManager.getDefaultSharedPreferences(this)
         setContentView(R.layout.activity_new_topic)
 
         if (savedInstanceState == null) {
-            editText.setText(preferences.getString(KEY_TOPIC_DRAFTS_TEXT, null))
+            val draft = preferences[topicDraftKey]
+            editText.setText(draft?.text)
             editText.setSelection(editText.length())
         }
         val intent = intent
@@ -132,13 +130,12 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
             return false
         }
         var draftChanged = false
-        val editor = preferences.edit()
-        if (text != preferences.getString(KEY_TOPIC_DRAFTS_TEXT, null)) {
-            editor.putString(KEY_TOPIC_DRAFTS_TEXT, text)
+        val draft = preferences[topicDraftKey]
+        if (text != draft?.text) {
+            preferences[topicDraftKey] = TopicDraft(text)
             draftChanged = true
         }
         draftChanged = draftChanged or fragment.saveDraft()
-        editor.apply()
         return draftChanged
     }
 
@@ -146,9 +143,7 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
         get() = supportFragmentManager.findFragmentById(R.id.new_topic_media) as NewTopicMediaFragment
 
     private fun clearDraft() {
-        val editor = preferences.edit()
-        editor.remove(KEY_TOPIC_DRAFTS_TEXT)
-        editor.apply()
+        preferences[topicDraftKey] = null
         newTopicMediaFragment.clearDraft()
     }
 
@@ -269,6 +264,5 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
         val TYPE_LOCATION = "location"
 
         private val FRAGMENT_TAG_POSTING_TOPIC = "posting_topic"
-        private val KEY_TOPIC_DRAFTS_TEXT = "topic_drafts_text"
     }
 }
