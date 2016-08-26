@@ -14,8 +14,6 @@ public interface Constants {
     String LOGTAG = "Yep";
 
     String KEY_CURRENT_ACCOUNT = "current_account";
-    String KEY_TOPICS_SORT_ORDER = "topics_sort_order";
-    String KEY_DISCOVER_SORT_ORDER = "discover_sort_order";
 
     String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     String ACCOUNT_TYPE_PREFIX = ACCOUNT_TYPE + ":";

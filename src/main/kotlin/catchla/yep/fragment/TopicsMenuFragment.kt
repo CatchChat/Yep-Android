@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import catchla.yep.Constants
 import catchla.yep.R
+import catchla.yep.constant.topicsSortOrderKey
 import catchla.yep.model.TopicSortOrder
 import kotlinx.android.synthetic.main.fragment_spinner_floating_menu.*
 
@@ -25,7 +25,7 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         adapter.add(Entry(TopicSortOrder.TIME, getString(R.string.time)))
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
-        val sortOrder = preferences.getString(Constants.KEY_TOPICS_SORT_ORDER, null)
+        val sortOrder = preferences[topicsSortOrderKey]
         for (i in 0 until adapter.count) {
             if (adapter.getItem(i).sortBy == sortOrder) {
                 spinner.setSelection(i)

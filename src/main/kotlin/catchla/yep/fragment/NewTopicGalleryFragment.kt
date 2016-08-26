@@ -15,23 +15,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import catchla.yep.Constants
 import catchla.yep.R
 import catchla.yep.activity.ThemedImagePickerActivity
 import catchla.yep.adapter.LoadMoreSupportAdapter
 import catchla.yep.annotation.AttachableType
+import catchla.yep.constant.topicDraftKey
 import catchla.yep.extension.Bundle
+import catchla.yep.extension.set
 import catchla.yep.model.*
 import catchla.yep.util.JsonSerializer
 import catchla.yep.util.YepAPI
+import com.bluelinelabs.logansquare.annotation.JsonField
+import com.bluelinelabs.logansquare.annotation.JsonObject
 import nl.komponents.kovenant.task
+import nz.bradcampbell.paperparcel.PaperParcelable
 import java.io.File
 import java.util.*
 
 /**
  * Created by mariotaku on 16/1/3.
  */
-class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
+class NewTopicGalleryFragment : NewTopicMediaFragment() {
     private lateinit var mTopicMediaView: RecyclerView
     private lateinit var topicMediaAdapter: TopicMediaAdapter
 
@@ -45,31 +49,27 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         mTopicMediaView.adapter = topicMediaAdapter
 
         if (savedInstanceState != null) {
-            topicMediaAdapter.addAllMedia(savedInstanceState.getStringArray(EXTRA_ADAPTER_MEDIA))
+            topicMediaAdapter.addAllMedia(savedInstanceState.getParcelableArrayList<TopicMedia>(EXTRA_ADAPTER_MEDIA))
         } else {
-            topicMediaAdapter.addAllMedia(preferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null))
+            val draft = preferences[topicDraftKey]
+            topicMediaAdapter.addAllMedia(JsonSerializer.parseList(draft?.attachment, TopicMedia::class.java))
         }
     }
 
     override fun hasMedia(): Boolean {
-        return topicMediaAdapter.itemCount > 0
+        return topicMediaAdapter.media.isNotEmpty()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState!!.putStringArray(EXTRA_ADAPTER_MEDIA, topicMediaAdapter.media)
+        outState!!.putParcelableArrayList(EXTRA_ADAPTER_MEDIA, topicMediaAdapter.media)
     }
 
-    override fun saveDraft(): Boolean {
-        val media = topicMediaAdapter.mediaStringSet
-        var draftChanged = false
-        val editor = preferences.edit()
-        if (media != preferences.getStringSet(KEY_TOPIC_DRAFTS_MEDIA, null)) {
-            editor.putStringSet(KEY_TOPIC_DRAFTS_MEDIA, media)
-            draftChanged = true
-        }
-        editor.apply()
-        return draftChanged
+    override fun saveDraft(topicDraft: TopicDraft): Boolean {
+        val media = topicMediaAdapter.media
+        topicDraft.kind = Topic.Kind.IMAGE
+        topicDraft.attachment = JsonSerializer.serialize(media, TopicMedia::class.java)
+        return true
     }
 
     @WorkerThread
@@ -78,7 +78,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         val media = topicMediaAdapter.media
         val files = ArrayList<FileAttachment>()
         for (mediaItem in media) {
-            val path = Uri.parse(mediaItem).path
+            val path = Uri.parse(mediaItem.uri).path
             val metadata = FileAttachment.ImageMetadata.getImageMetadata(path)
             val attachmentId = yep.uploadAttachment(AttachmentUpload.create(File(path),
                     metadata.mimeType, AttachableType.TOPIC, JsonSerializer.serialize<FileAttachment.ImageMetadata>(metadata)))
@@ -90,12 +90,6 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         } else {
             newTopic.kind(Topic.Kind.TEXT)
         }
-    }
-
-    override fun clearDraft() {
-        val editor = preferences.edit()
-        editor.remove(KEY_TOPIC_DRAFTS_MEDIA)
-        editor.apply()
     }
 
     override fun onBaseViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -111,7 +105,9 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         when (requestCode) {
             REQUEST_PICK_IMAGE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    topicMediaAdapter.addMedia(data!!.data.toString())
+                    val media = TopicMedia()
+                    media.uri = data!!.dataString
+                    topicMediaAdapter.addMedia(media)
                 }
                 return
             }
@@ -123,29 +119,39 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
         startActivityForResult(ThemedImagePickerActivity.withThemed(context).build(), REQUEST_PICK_IMAGE)
     }
 
-    private fun requestRemoveMedia(media: String) {
+    private fun requestRemoveMedia(media: TopicMedia) {
         val df = RemoveMediaConfirmDialogFragment()
         df.arguments = Bundle {
-            putString(EXTRA_MEDIA, media)
+            this[EXTRA_MEDIA] = media
         }
         df.show(childFragmentManager, "remove_topic_media_confirm")
     }
 
-    private fun removeMedia(media: String) {
+    private fun removeMedia(media: TopicMedia) {
         topicMediaAdapter.removeMedia(media)
         task {
-            val uri = Uri.parse(media)
+            val uri = Uri.parse(media.uri)
             File(uri.path).delete()
         }
     }
 
-    private class TopicMediaAdapter(private val mFragment: NewTopicGalleryFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(mFragment.context) {
+    @JsonObject
+    data class TopicMedia(
+            @JsonField(name = kotlin.arrayOf("uri"))
+            var uri: String? = null
+    ) : PaperParcelable {
+        companion object {
+            @JvmField val CREATOR = PaperParcelable.Creator(AccessToken::class.java)
+        }
+    }
+
+    private class TopicMediaAdapter(private val fragment: NewTopicGalleryFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(fragment.context) {
         private val mInflater: LayoutInflater
-        private val mMedia: MutableList<String>
+        val media: ArrayList<TopicMedia>
 
         init {
-            mMedia = ArrayList<String>()
-            mInflater = LayoutInflater.from(mFragment.context)
+            this.media = ArrayList<TopicMedia>()
+            mInflater = LayoutInflater.from(fragment.context)
         }
 
         override fun getItemViewType(position: Int): Int {
@@ -171,56 +177,43 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
             when (getItemViewType(position)) {
                 VIEW_TYPE_ITEM -> {
                     val itemHolder = holder as TopicMediaItemHolder
-                    itemHolder.displayMedia(getMedia(position))
+                    itemHolder.displayMedia(getMedia(position).uri!!)
                 }
             }
         }
 
-        private fun getMedia(position: Int): String {
-            return mMedia[position - 1]
+        private fun getMedia(position: Int): TopicMedia {
+            return this.media[position - 1]
         }
 
         override fun getItemCount(): Int {
-            return 1 + mMedia.size
+            return 1 + this.media.size
         }
 
         private fun requestPickMedia() {
-            mFragment.requestPickMedia()
+            fragment.requestPickMedia()
         }
 
-        fun addMedia(data: String) {
-            mMedia.add(data)
+        fun addMedia(data: TopicMedia) {
+            this.media.add(data)
             notifyDataSetChanged()
         }
 
-        val media: Array<String>
-            get() = mMedia.toTypedArray()
-
-        fun removeMedia(media: String) {
-            mMedia.remove(media)
+        fun removeMedia(media: TopicMedia) {
+            this.media.remove(media)
             notifyDataSetChanged()
         }
 
-        private fun requestRemoveMedia(media: String) {
-            mFragment.requestRemoveMedia(media)
+        private fun requestRemoveMedia(media: TopicMedia) {
+            fragment.requestRemoveMedia(media)
         }
 
-        fun addAllMedia(media: Array<String>?) {
+        fun addAllMedia(media: Collection<TopicMedia>?) {
             if (media != null) {
-                Collections.addAll(mMedia, *media)
+                this.media.addAll(media)
             }
             notifyDataSetChanged()
         }
-
-        fun addAllMedia(media: Collection<String>?) {
-            if (media != null) {
-                mMedia.addAll(media)
-            }
-            notifyDataSetChanged()
-        }
-
-        val mediaStringSet: Set<String>
-            get() = HashSet(mMedia)
 
         private inner class TopicMediaItemHolder(itemView: View, private val adapter: TopicMediaAdapter) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
             private val mediaPreviewView: ImageView
@@ -279,7 +272,7 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
                     val activity = parentFragment as NewTopicGalleryFragment ?: return
-                    val media = arguments.getString(EXTRA_MEDIA)
+                    val media = arguments.getParcelable<TopicMedia>(EXTRA_MEDIA)
                     activity.removeMedia(media)
                 }
             }
@@ -290,7 +283,6 @@ class NewTopicGalleryFragment : NewTopicMediaFragment(), Constants {
 
         private val REQUEST_PICK_IMAGE = 102
         private val EXTRA_ADAPTER_MEDIA = "adapter_media"
-        private val KEY_TOPIC_DRAFTS_MEDIA = "topic_drafts_media"
 
         private val EXTRA_MEDIA = "media"
     }

@@ -8,8 +8,8 @@ import catchla.yep.Constants
 import catchla.yep.Constants.*
 import catchla.yep.R
 import catchla.yep.adapter.TabsAdapter
-import catchla.yep.extension.account
 import catchla.yep.extension.Bundle
+import catchla.yep.extension.account
 import catchla.yep.fragment.DiscoverFragment
 import catchla.yep.graphic.EmptyDrawable
 import catchla.yep.model.Skill
@@ -65,8 +65,8 @@ class SkillUsersActivity : SwipeBackContentActivity(), Constants {
             putParcelable(EXTRA_ACCOUNT, account)
             putStringArray(EXTRA_LEARNING, arrayOf(skill.id))
         }
-        mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.master), 0, masterArgs)
-        mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.learning), 0, learningArgs)
+        mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.skill_type_master), 0, masterArgs)
+        mPagerAdapter!!.addTab(DiscoverFragment::class.java, getString(R.string.skill_type_learning), 0, learningArgs)
 
 
         ThemeUtils.initPagerIndicatorAsActionBarTab(this, mPagerTab, mPagerOverlay)

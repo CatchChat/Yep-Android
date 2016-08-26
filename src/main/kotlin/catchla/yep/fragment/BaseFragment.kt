@@ -5,7 +5,6 @@
 package catchla.yep.fragment
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -16,6 +15,7 @@ import catchla.yep.util.ImageLoaderWrapper
 import catchla.yep.util.MessageAudioPlayer
 import catchla.yep.util.dagger.GeneralComponentHelper
 import com.squareup.otto.Bus
+import org.mariotaku.kpreferences.KPreferences
 import javax.inject.Inject
 
 
@@ -26,7 +26,7 @@ open class BaseFragment : Fragment(), IBaseFragment, Constants {
     @Inject
     lateinit var imageLoader: ImageLoaderWrapper
     @Inject
-    lateinit var preferences: SharedPreferences
+    lateinit var preferences: KPreferences
     @Inject
     lateinit var messageAudioPlayer: MessageAudioPlayer
 

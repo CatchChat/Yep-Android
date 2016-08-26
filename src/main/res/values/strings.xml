@@ -8,8 +8,8 @@
     <string name="tab_title_my_profile">My Profile</string>
     <string name="chat">Chat</string>
     <string name="sign_in">Sign In</string>
-    <string name="label_master">Master</string>
-    <string name="label_learning">Learning</string>
+    <string name="skill_type_master">Master</string>
+    <string name="skill_type_learning">Learning</string>
     <string name="icon">Icon</string>
     <string name="menu">Menu</string>
     <string name="about">About</string>
@@ -133,4 +133,5 @@
     <string name="users">Users</string>
     <string name="chat_history">Chat history</string>
     <string name="name_in_contacts"><xliff:g id="name">%1$s</xliff:g> in contacts</string>
+    <string name="record_audio">Record audio</string>
 </resources>

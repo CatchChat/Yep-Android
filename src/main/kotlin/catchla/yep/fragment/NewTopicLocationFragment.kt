@@ -7,10 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import catchla.yep.Constants
 import catchla.yep.R
-import catchla.yep.model.LocationAttachment
-import catchla.yep.model.NewTopic
-import catchla.yep.model.Topic
-import catchla.yep.model.YepException
+import catchla.yep.model.*
 import catchla.yep.util.StaticMapUrlGenerator
 import catchla.yep.util.YepAPI
 import kotlinx.android.synthetic.main.layout_topic_attachment_location_content.*
@@ -24,7 +21,7 @@ class NewTopicLocationFragment : NewTopicMediaFragment() {
         return attachment != null
     }
 
-    override fun saveDraft(): Boolean {
+    override fun saveDraft(topicDraft: TopicDraft): Boolean {
         return false
     }
 
@@ -56,7 +53,4 @@ class NewTopicLocationFragment : NewTopicMediaFragment() {
         return inflater.inflate(R.layout.fragment_new_topic_attachment_location, container, false)
     }
 
-    override fun clearDraft() {
-
-    }
 }

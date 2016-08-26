@@ -129,14 +129,11 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
             clearDraft()
             return false
         }
-        var draftChanged = false
-        val draft = preferences[topicDraftKey]
-        if (text != draft?.text) {
-            preferences[topicDraftKey] = TopicDraft(text)
-            draftChanged = true
+        val draft = TopicDraft(text)
+        fragment.saveDraft(draft)
+        return preferences.edit {
+            this[topicDraftKey] = draft
         }
-        draftChanged = draftChanged or fragment.saveDraft()
-        return draftChanged
     }
 
     private val newTopicMediaFragment: NewTopicMediaFragment
@@ -144,7 +141,6 @@ class NewTopicActivity : SwipeBackContentActivity(), Constants {
 
     private fun clearDraft() {
         preferences[topicDraftKey] = null
-        newTopicMediaFragment.clearDraft()
     }
 
     override fun onDestroy() {

@@ -50,7 +50,7 @@
         android:layout_marginTop="@dimen/element_spacing_normal"
         android:background="?selectableItemBackground"
         android:padding="@dimen/element_spacing_normal"
-        android:text="@string/label_master"
+        android:text="@string/skill_type_master"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorSecondary"
         android:textStyle="bold"/>
@@ -70,7 +70,7 @@
         android:layout_marginTop="@dimen/element_spacing_normal"
         android:background="?selectableItemBackground"
         android:padding="@dimen/element_spacing_normal"
-        android:text="@string/label_learning"
+        android:text="@string/skill_type_learning"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorSecondary"
         android:textStyle="bold"/>

@@ -27,6 +27,7 @@ import catchla.yep.activity.*
 import catchla.yep.adapter.TopicsAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
+import catchla.yep.constant.topicsSortOrderKey
 import catchla.yep.extension.Bundle
 import catchla.yep.extension.account
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
@@ -81,7 +82,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         //noinspection WrongConstant
-        sortBy = preferences.getString(KEY_TOPICS_SORT_ORDER, TopicSortOrder.DEFAULT)
+        sortBy = preferences[topicsSortOrderKey]
         setHasOptionsMenu(true)
         val fragmentArgs = arguments
         val loaderArgs = Bundle()
@@ -292,7 +293,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     fun reloadWithSortOrder(@TopicSortOrder sortBy: String) {
         if (TextUtils.equals(sortOrder, sortBy) || hasUserId()) return
         this.sortBy = sortBy
-        preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortBy).apply()
+        preferences[topicsSortOrderKey] = sortBy
         val loaderArgs = Bundle {
             putBoolean(EXTRA_READ_CACHE, false)
             putBoolean(EXTRA_READ_OLD, false)
@@ -316,12 +317,14 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
                         startActivity(intent)
                     }
                     "audio" -> {
+                        val intent = Intent(context, AudioRecorderActivity::class.java)
+                        intent.putExtra(EXTRA_ACCOUNT, account)
+                        parentFragment.startActivityForResult(intent, REQUEST_NEW_AUDIO_TOPIC)
                     }
                     "location" -> {
-                        val parent = parentFragment
                         val intent = Intent(context, LocationPickerActivity::class.java)
                         intent.putExtra(EXTRA_ACCOUNT, account)
-                        parent.startActivityForResult(intent, REQUEST_NEW_LOCATION_TOPIC)
+                        parentFragment.startActivityForResult(intent, REQUEST_NEW_LOCATION_TOPIC)
                     }
                 }
             }
@@ -333,6 +336,7 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
     companion object {
 
         private val REQUEST_NEW_LOCATION_TOPIC = 102
+        private val REQUEST_NEW_AUDIO_TOPIC = 103
     }
 
     class RelatedUsersLoader(

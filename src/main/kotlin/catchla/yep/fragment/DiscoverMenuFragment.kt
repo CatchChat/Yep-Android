@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import catchla.yep.Constants.KEY_DISCOVER_SORT_ORDER
 import catchla.yep.R
+import catchla.yep.constant.discoverSortOrderKey
 import catchla.yep.model.DiscoverSortOrder
 import kotlinx.android.synthetic.main.fragment_spinner_floating_menu.*
 
@@ -25,7 +25,7 @@ class DiscoverMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSel
         adapter.add(Entry(DiscoverSortOrder.LAST_SIGN_IN_AT, getString(R.string.time)))
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
-        val sortOrder = preferences.getString(KEY_DISCOVER_SORT_ORDER, null)
+        val sortOrder = preferences[discoverSortOrderKey]
         for (i in 0 until adapter.count) {
             if (adapter.getItem(i).sortBy == sortOrder) {
                 spinner.setSelection(i)

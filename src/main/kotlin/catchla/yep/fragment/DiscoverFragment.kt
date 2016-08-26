@@ -24,6 +24,7 @@ import catchla.yep.adapter.UsersAdapter
 import catchla.yep.adapter.UsersGridAdapter
 import catchla.yep.adapter.decorator.DividerItemDecoration
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
+import catchla.yep.constant.topicsSortOrderKey
 import catchla.yep.extension.Bundle
 import catchla.yep.fragment.iface.IActionButtonSupportFragment
 import catchla.yep.loader.DiscoverUsersLoader
@@ -211,7 +212,7 @@ class DiscoverFragment : AbsContentRecyclerViewFragment<UsersAdapter, RecyclerVi
     fun reloadWithSortOrder(sortOrder: String) {
         if (TextUtils.equals(sortOrder, this.sortOrder)) return
         this.sortOrder = sortOrder
-        preferences.edit().putString(KEY_TOPICS_SORT_ORDER, sortOrder).apply()
+        preferences[topicsSortOrderKey] = sortOrder
         val loaderArgs = Bundle {
             putBoolean(EXTRA_READ_CACHE, false)
             putBoolean(EXTRA_READ_OLD, false)
