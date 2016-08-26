@@ -18,6 +18,7 @@
         tools:src="@drawable/ic_profile_image_default"/>
 
     <org.mariotaku.messagebubbleview.library.MessageBubbleView
+        android:id="@+id/messageBubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/element_spacing_normal"

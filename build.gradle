@@ -131,7 +131,7 @@ dependencies {
     compile 'com.android.support:palette-v7:24.2.0'
     compile 'com.android.support:customtabs:24.2.0'
     compile 'com.pkmmte.view:circularimageview:1.1'
-    compile 'com.github.mariotaku:MessageBubbleView:1.2'
+    compile 'com.github.mariotaku:MessageBubbleView:1.3'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'org.apmem.tools:layouts:1.9@aar'
     compile 'com.commonsware.cwac:merge:1.1.1'

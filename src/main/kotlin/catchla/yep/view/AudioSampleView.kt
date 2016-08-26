@@ -20,6 +20,9 @@ class AudioSampleView : View {
             requestLayout()
         }
 
+    val sampleSize: Int
+        get() = samples?.size ?: -1
+
     var lineColor: Int = Color.TRANSPARENT
         set(value) {
             field = value

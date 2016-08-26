@@ -13,6 +13,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelableNoThanks;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
 import org.mariotaku.commons.logansquare.JsonStringConverter;
+import org.mariotaku.library.objectcursor.annotation.AfterCursorObjectCreated;
 import org.mariotaku.library.objectcursor.annotation.CursorField;
 import org.mariotaku.library.objectcursor.annotation.CursorObject;
 
@@ -91,8 +92,10 @@ public class Message implements Parcelable {
     @JsonField(name = "state")
     @CursorField(Messages.STATE)
     String state;
-    @CursorField(value = Messages.ATTACHMENTS, converter = MessageAttachmentsConverter.class)
-    List<Attachment> attachments;
+    @JsonField(name = "attachments", typeConverter = JsonStringConverter.class)
+    @CursorField(value = Messages.ATTACHMENTS)
+    @ParcelableNoThanks
+    String attachmentsJson;
     @JsonField(name = "local_metadata")
     @CursorField(value = Messages.LOCAL_METADATA, converter = LoganSquareCursorFieldConverter.class)
     List<LocalMetadata> localMetadata;
@@ -102,9 +105,8 @@ public class Message implements Parcelable {
     @CursorField(value = Messages.RANDOM_ID)
     String randomId;
 
-    @JsonField(name = "attachments", typeConverter = JsonStringConverter.class)
-    @ParcelableNoThanks
-    String attachmentsJson;
+    List<Attachment> attachments;
+
 
     public String getRandomId() {
         return randomId;
@@ -286,6 +288,16 @@ public class Message implements Parcelable {
         attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
     }
 
+    @AfterCursorObjectCreated
+    void afterCursorObjectCreated() {
+        if (mediaType == null || attachmentsJson == null) return;
+        JsonMapper<? extends Attachment> mapper = MessageAttachmentsConverter.getMapperForKind(mediaType);
+        try {
+            //noinspection unchecked
+            attachments = (List<Attachment>) mapper.parseList(attachmentsJson);
+        } catch (IOException ignore) {
+        }
+    }
 
     @StringDef({RecipientType.CIRCLE, RecipientType.USER})
     public @interface RecipientType {

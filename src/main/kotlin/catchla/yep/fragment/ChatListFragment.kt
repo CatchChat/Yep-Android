@@ -8,13 +8,13 @@ import android.support.v4.content.Loader
 import android.support.v7.widget.FixedLinearLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import catchla.yep.Constants.*
+import catchla.yep.Constants.AMAP_WEB_API_KEY
+import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.adapter.LoadMoreSupportAdapter
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter
@@ -33,6 +33,7 @@ import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_chat_list.*
 import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
 import kotlinx.android.synthetic.main.layout_message_attachment_audio.view.*
+import org.mariotaku.messagebubbleview.library.MessageBubbleView
 import java.util.*
 
 /**
@@ -49,6 +50,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         set(value) {
             super.refreshing = value
         }
+    open val eventSubscriber: Any by lazy { EventSubscriber() }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -85,17 +87,12 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
     override fun onStart() {
         super.onStart()
-        bus.register(this)
+        bus.register(eventSubscriber)
     }
 
     override fun onStop() {
-        bus.unregister(this)
+        bus.unregister(eventSubscriber)
         super.onStop()
-    }
-
-    @Subscribe
-    fun onAudioPlayEvent(event: AudioPlayEvent) {
-        Log.d(LOGTAG, event.toString())
     }
 
     override fun onScrollToPositionWithOffset(layoutManager: LinearLayoutManager, position: Int, offset: Int) {
@@ -166,6 +163,15 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         }
     }
 
+    open inner class EventSubscriber {
+
+        @Subscribe
+        fun onAudioPlayEvent(event: AudioPlayEvent) {
+
+        }
+
+    }
+
     class ChatAdapter internal constructor(private val fragment: ChatListFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(fragment.context) {
         private val inflater: LayoutInflater
         var data: List<Message>? = null
@@ -212,6 +218,13 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 }
             }
             throw UnsupportedOperationException()
+        }
+
+        override fun onViewRecycled(holder: RecyclerView.ViewHolder?) {
+            if (holder is MessageViewHolder) {
+                holder.onRecycled()
+            }
+            super.onViewRecycled(holder)
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -274,10 +287,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 protected val adapter: ChatAdapter
         ) : RecyclerView.ViewHolder(itemView) {
 
-            private val profileImageView by lazy { itemView.findViewById(R.id.profileImage) as ImageView? }
-            private val profileImageViewOutgoing by lazy { itemView.findViewById(R.id.profileImageOutgoing) as ImageView? }
-            private val stateView: ImageView?
-            private val text1: TextView
+            protected val profileImageView by lazy { itemView.findViewById(R.id.profileImage) as ImageView? }
+            protected val profileImageViewOutgoing by lazy { itemView.findViewById(R.id.profileImageOutgoing) as ImageView? }
+            protected val messageBubbleView by lazy { itemView.findViewById(R.id.messageBubble) as MessageBubbleView }
+            protected val stateView: ImageView?
+            protected val text1: TextView
 
             init {
                 text1 = itemView.findViewById(android.R.id.text1) as TextView
@@ -316,6 +330,10 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                         stateView?.setImageDrawable(null)
                     }
                 }
+            }
+
+            open fun onRecycled() {
+
             }
         }
 
@@ -376,8 +394,11 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         ) : MessageViewHolder(itemView, outgoing, adapter), View.OnClickListener {
 
             private val playPauseView by lazy { itemView.playPause }
+            private val playPauseProgressView by lazy { itemView.playPauseProgress }
             private val audioLengthView by lazy { itemView.audioLength }
             private val sampleView by lazy { itemView.audioSample }
+
+            private var playListener: Any? = null
 
             init {
                 playPauseView.setOnClickListener(this)
@@ -385,11 +406,39 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
             override fun displayMessage(message: Message) {
                 super.displayMessage(message)
+                val url = (message.attachments?.firstOrNull() as? FileAttachment)?.file?.url
                 val metadata = getAudioMetadata(message)
                 if (metadata != null) {
                     audioLengthView.text = String.format(Locale.US, "%.1f\"", metadata.duration)
                     sampleView.samples = metadata.samples
                 }
+                playListener = object {
+                    @Subscribe
+                    fun onAudioPlayEvent(event: AudioPlayEvent) {
+                        if (event.url != url) return
+                        when (event.what) {
+                            AudioPlayEvent.START -> {
+                                playPauseView.visibility = View.VISIBLE
+                                playPauseProgressView.visibility = View.GONE
+                                playPauseView.setImageResource(R.drawable.ic_btn_audio_pause)
+                            }
+                            AudioPlayEvent.PROGRESS -> {
+                                val sampleSize = sampleView.sampleSize
+                                if (sampleSize > 0 && !event.progress.isNaN()) {
+                                    sampleView.playedIndex = Math.round(sampleSize * event.progress)
+                                }
+                            }
+                            AudioPlayEvent.END -> {
+                                playPauseView.setImageResource(R.drawable.ic_btn_audio_play)
+                            }
+                            AudioPlayEvent.DOWNLOAD -> {
+                                playPauseView.visibility = View.GONE
+                                playPauseProgressView.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                }
+                adapter.fragment.bus.register(playListener)
             }
 
             private fun getAudioMetadata(message: Message): FileAttachment.AudioMetadata? {
@@ -410,6 +459,13 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 if (message.mediaType != "audio") return
                 val attachment = message.attachments?.firstOrNull() as? FileAttachment ?: return
                 adapter.playAudio(attachment)
+            }
+
+            override fun onRecycled() {
+                if (playListener != null) {
+                    adapter.fragment.bus.unregister(playListener)
+                    playListener = null
+                }
             }
         }
 

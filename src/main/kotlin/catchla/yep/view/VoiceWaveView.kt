@@ -74,7 +74,7 @@ class VoiceWaveView : View {
         for (i in 0 until numberOfWaves) {
 
             val progress = 1.0f - i / numberOfWaves.toFloat()
-            val normedAmplitude = (1.5f * progress - 0.5f) * amplitude / 65536f
+            val normedAmplitude = (1.5f * progress - 0.5f) * amplitude / Short.MAX_VALUE
 
             path.reset()
 
@@ -85,7 +85,9 @@ class VoiceWaveView : View {
                 // We use a parable to scale the sinus wave, that has its peak in the middle of the view.
                 val scaling = -Math.pow((x / viewMid - 1.0f).toDouble(), 2.0) + 1.0f // make center bigger
 
-                val y = scaling * maxAmplitude.toDouble() * normedAmplitude.toDouble() * Math.sin(2.0 * Math.PI * (x / viewWidth).toDouble() * mFrequency.toDouble() + phase) + viewHeight / 2.0
+                val y = scaling * maxAmplitude.toDouble() * normedAmplitude.toDouble() *
+                        Math.sin(2.0 * Math.PI * (x / viewWidth).toDouble() *
+                                mFrequency.toDouble() + phase) + viewHeight / 2.0
 
                 if (x == 0.0f) {
                     path.moveTo(x, y.toFloat())

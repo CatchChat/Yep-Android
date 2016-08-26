@@ -14,7 +14,6 @@ import catchla.yep.message.FriendshipsRefreshedEvent
 import catchla.yep.message.MessageRefreshedEvent
 import catchla.yep.model.*
 import catchla.yep.provider.YepDataStore.*
-import catchla.yep.util.BusHandler
 import catchla.yep.util.Utils
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.util.dagger.GeneralComponentHelper
@@ -159,60 +158,55 @@ class MessageService : Service(), Constants {
             }
             val messageValues = arrayOfNulls<ContentValues>(messages.size)
             val randomIds = SimpleArrayMap<String, ContentValues>()
-            run {
-                var i = 0
-                val j = messages.size
-                while (i < j) {
-                    val message = messages[i]
-                    val recipientType = message.recipientType
-                    val conversationId = Conversation.generateId(message, accountId)
-                    message.accountId = accountId
-                    message.conversationId = conversationId
+            for (i in 0 until messages.size) {
+                val message = messages[i]
+                val recipientType = message.recipientType
+                val conversationId = Conversation.generateId(message, accountId)
+                message.accountId = accountId
+                message.conversationId = conversationId
 
-                    val values = MessageValuesCreator.create(message)
-                    messageValues[i] = values
-                    val randomId = message.randomId
-                    if (randomId != null) {
-                        randomIds.put(randomId, values)
-                    }
+                val values = MessageValuesCreator.create(message)
+                messageValues[i] = values
+                val randomId = message.randomId
+                if (randomId != null) {
+                    randomIds.put(randomId, values)
+                }
 
-                    var conversation: Conversation? = conversationsMap[conversationId]
-                    val newConversation = conversation == null
+                var conversation: Conversation? = conversationsMap[conversationId]
+                val newConversation = conversation == null
+                if (conversation == null) {
+                    conversation = Conversation.query(cr, accountId, conversationId)
                     if (conversation == null) {
-                        conversation = Conversation.query(cr, accountId, conversationId)
-                        if (conversation == null) {
-                            conversation = Conversation()
-                            conversation.accountId = accountId
-                            conversation.id = conversationId
-                        }
+                        conversation = Conversation()
+                        conversation.accountId = accountId
+                        conversation.id = conversationId
                     }
-                    val createdAt = message.createdAt
-                    if (newConversation || greaterThen(createdAt, conversation.updatedAt)) {
-                        conversation.textContent = message.textContent
-                        val sender = message.sender
-                        if (Message.RecipientType.USER == recipientType) {
-                            // Outgoing
-                            if (!TextUtils.equals(accountId, sender.id)) {
-                                conversation.user = sender
-                            } else {
-                                val user = users[message.recipientId]
-                                if (user != null) {
-                                    conversation.user = user
-                                }
-                            }
-                        } else {
+                }
+                val createdAt = message.createdAt
+                if (newConversation || greaterThen(createdAt, conversation.updatedAt)) {
+                    conversation.textContent = message.textContent
+                    val sender = message.sender
+                    if (Message.RecipientType.USER == recipientType) {
+                        // Outgoing
+                        if (!TextUtils.equals(accountId, sender.id)) {
                             conversation.user = sender
+                        } else {
+                            val user = users[message.recipientId]
+                            if (user != null) {
+                                conversation.user = user
+                            }
                         }
-                        conversation.sender = sender
-                        conversation.circle = getMessageCircle(context, message, conversations, accountId)
-                        conversation.updatedAt = createdAt
-                        conversation.recipientType = recipientType
-                        conversation.mediaType = message.mediaType
+                    } else {
+                        conversation.user = sender
                     }
-                    if (newConversation && conversation.user != null) {
-                        conversationsMap.put(conversationId, conversation)
-                    }
-                    i++
+                    conversation.sender = sender
+                    conversation.circle = getMessageCircle(context, message, conversations, accountId)
+                    conversation.updatedAt = createdAt
+                    conversation.recipientType = recipientType
+                    conversation.mediaType = message.mediaType
+                }
+                if (newConversation && conversation.user != null) {
+                    conversationsMap.put(conversationId, conversation)
                 }
             }
 
@@ -225,13 +219,10 @@ class MessageService : Service(), Constants {
             val updateSentSelection = Expression.and(Expression.equalsArgs(Messages.ACCOUNT_ID),
                     Expression.equalsArgs(Messages.RANDOM_ID)).sql
             val updateSentSelectionArgs = arrayOf<String?>(accountId, null)
-            var i = 0
-            val j = randomIds.size()
-            while (i < j) {
+            for (i in 0 until randomIds.size()) {
                 updateSentSelectionArgs[i] = randomIds.keyAt(i)
                 cr.update(Messages.CONTENT_URI, randomIds.valueAt(i), updateSentSelection,
                         updateSentSelectionArgs)
-                i++
             }
             cr.bulkInsertSliced(Messages.CONTENT_URI, messageValues)
         }

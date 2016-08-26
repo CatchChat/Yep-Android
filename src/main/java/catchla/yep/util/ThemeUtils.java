@@ -146,23 +146,4 @@ public class ThemeUtils {
     }
 
 
-    public static Drawable getCompatToolbarOverlay(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return null;
-        final Window window = activity.getWindow();
-        final View view = window.findViewById(android.support.v7.appcompat.R.id.decor_content_parent);
-        if (!(view instanceof ActionBarOverlayLayout)) {
-            final View contentLayout = window.findViewById(android.support.v7.appcompat.R.id.action_bar_activity_content);
-            if (contentLayout instanceof ContentFrameLayout) {
-                return ((ContentFrameLayout) contentLayout).getForeground();
-            }
-            return null;
-        }
-        try {
-            final Field field = ActionBarOverlayLayout.class.getDeclaredField("mWindowContentOverlay");
-            field.setAccessible(true);
-            return (Drawable) field.get(view);
-        } catch (Exception ignore) {
-        }
-        return null;
-    }
 }

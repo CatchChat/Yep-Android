@@ -3,12 +3,14 @@ package catchla.yep.util
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Handler
+import android.os.Looper
+import android.support.annotation.UiThread
 import android.util.Log
-import catchla.yep.Constants
-import catchla.yep.Constants.*
+import catchla.yep.Constants.LOGTAG
 import catchla.yep.message.AudioPlayEvent
 import com.squareup.otto.Bus
-import nl.komponents.kovenant.task
+import nl.komponents.kovenant.then
+import nl.komponents.kovenant.ui.promiseOnUi
 import nl.komponents.kovenant.ui.successUi
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -28,12 +30,13 @@ class MessageAudioPlayer(val bus: Bus) {
     private var stopRequested: Boolean = false
 
     init {
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
         mediaPlayer = MediaPlayer()
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
 
     }
 
+    @UiThread
     fun play(url: String): Boolean {
         if (mediaPlayer.isPlaying) {
             return false
@@ -44,7 +47,9 @@ class MessageAudioPlayer(val bus: Bus) {
             handler.removeCallbacks(progressRunnable)
             bus.post(AudioPlayEvent.end(url))
         }
-        task {
+        promiseOnUi {
+            bus.post(AudioPlayEvent.download(url, 0f))
+        }.then {
             var sink: BufferedSink? = null
             var tempFile: File? = null
             try {
@@ -67,6 +72,7 @@ class MessageAudioPlayer(val bus: Bus) {
                 Utils.closeSilently(sink)
             }
         }.successUi {
+            bus.post(AudioPlayEvent.download(url, 1f))
             if (stopRequested) {
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.stop()
@@ -100,7 +106,7 @@ class MessageAudioPlayer(val bus: Bus) {
         override fun run() {
             val progress = player.currentPosition.toFloat() / player.duration
             bus.post(AudioPlayEvent.progress(url, progress))
-            handler.postDelayed(this, 200)
+            handler.postDelayed(this, 50)
         }
 
     }

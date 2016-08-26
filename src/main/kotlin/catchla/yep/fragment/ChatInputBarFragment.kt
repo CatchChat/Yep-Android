@@ -33,12 +33,10 @@ import catchla.yep.util.task.sendMessagePromise
 import kotlinx.android.synthetic.main.layout_chat_input_panel.*
 import nl.komponents.kovenant.ui.failUi
 import nl.komponents.kovenant.ui.successUi
-import org.apache.commons.lang3.ArrayUtils
 import org.mariotaku.commons.parcel.ViewUtils
 import org.mariotaku.ktextension.toInt
 import java.io.File
 import java.io.IOException
-import java.io.RandomAccessFile
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -255,15 +253,15 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
 
     internal class SampleRecorder {
 
-        private val mSamplesList = ArrayList<Float>()
+        private val samplesList = ArrayList<Float>()
 
         fun start() {
-            mSamplesList.clear()
+            samplesList.clear()
         }
 
         fun get(): FloatArray {
-            val size = mSamplesList.size
-            val rawSamplesArray = ArrayUtils.toPrimitive(mSamplesList.toTypedArray())
+            val size = samplesList.size
+            val rawSamplesArray = samplesList.toFloatArray()
             val idealSampleSize = 20
             if (size < idealSampleSize) {
                 return rawSamplesArray
@@ -276,8 +274,8 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
             return result
         }
 
-        fun put(maxAmplitude: Float) {
-            mSamplesList.add(maxAmplitude / java.lang.Short.MAX_VALUE.toFloat())
+        fun put(maxAmplitude: Int) {
+            samplesList.add(maxAmplitude / Short.MAX_VALUE.toFloat())
         }
     }
 
@@ -421,7 +419,7 @@ class ChatInputBarFragment : BaseFragment(), Constants, ChatMediaBottomSheetDial
                 }
                 val maxAmplitude = recorder.maxAmplitude
                 listener.fragment.listener.postSetAmplitude(maxAmplitude)
-                listener.fragment.activity.runOnUiThread { listener.sampleRecorder.put(maxAmplitude / Short.MAX_VALUE.toFloat()) }
+                listener.fragment.activity.runOnUiThread { listener.sampleRecorder.put(maxAmplitude) }
                 return System.currentTimeMillis() - callStart
             }
 
