@@ -13,28 +13,34 @@ data class AudioPlayEvent(
         val progress: Float = Float.NaN
 ) {
     companion object {
-        const val START = 1
-        const val END = 2
-        const val PROGRESS = 3
-        const val DOWNLOAD = 4
+        const val DOWNLOAD = 1
+        const val START = 2
+        const val PAUSE = 3
+        const val END = 4
+        const val PROGRESS = 5
 
-        fun start(url: String): AudioPlayEvent {
-            return AudioPlayEvent(START, url)
+        fun download(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float): AudioPlayEvent {
+            return AudioPlayEvent(DOWNLOAD, url, progress)
         }
 
-        fun end(url: String): AudioPlayEvent {
-            return AudioPlayEvent(END, url)
+        fun start(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float): AudioPlayEvent {
+            return AudioPlayEvent(START, url, progress)
+        }
+
+        fun pause(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float): AudioPlayEvent {
+            return AudioPlayEvent(PAUSE, url, progress)
+        }
+
+        fun end(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float = 0f): AudioPlayEvent {
+            return AudioPlayEvent(END, url, progress)
         }
 
         fun progress(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float): AudioPlayEvent {
             return AudioPlayEvent(PROGRESS, url, progress)
         }
-
-        fun download(url: String, @FloatRange(from = 0.0, to = 1.0) progress: Float): AudioPlayEvent {
-            return AudioPlayEvent(DOWNLOAD, url, progress)
-        }
     }
 
-    @IntDef(value = *longArrayOf(START.toLong(), END.toLong(), PROGRESS.toLong(), DOWNLOAD.toLong()))
+    @IntDef(value = *longArrayOf(DOWNLOAD.toLong(), START.toLong(), PAUSE.toLong(), END.toLong(),
+            PROGRESS.toLong()))
     annotation class EventType
 }

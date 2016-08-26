@@ -31,6 +31,7 @@
     <dimen name="text_size_topic_content">16sp</dimen>
     <dimen name="text_size_topic_name">15sp</dimen>
     <dimen name="spacing_end_topic_attachment_app">64dp</dimen>
+    <dimen name="spacing_end_topic_attachment_audio">48dp</dimen>
     <dimen name="icon_size_message_bubble_profile_image">48dp</dimen>
     <dimen name="message_bubble_minimum_height">48dp</dimen>
     <dimen name="message_bubble_minimum_width">64dp</dimen>

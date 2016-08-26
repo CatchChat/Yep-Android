@@ -124,6 +124,10 @@ open class TopicViewHolder(
         }
     }
 
+    open fun onRecycled() {
+
+    }
+
     protected open fun onAttachmentClick() {
 
     }

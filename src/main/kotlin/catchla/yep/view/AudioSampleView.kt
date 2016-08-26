@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import catchla.yep.R
 
 /**
@@ -35,7 +36,7 @@ class AudioSampleView : View {
             invalidate()
         }
 
-    var playedIndex: Int = -1
+    var progress: Float = -1f
         set(idx) {
             field = idx
             invalidate()
@@ -69,30 +70,47 @@ class AudioSampleView : View {
 
     private val samplesWidth: Int
         get() {
-            if (this.samples == null) return 0
-            return Math.round(linePaint.strokeWidth * 2f * this.samples!!.size.toFloat())
+            val samples = this.samples ?: return 0
+            return Math.round(linePaint.strokeWidth * 2f * samples.size)
         }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val wSpec = View.MeasureSpec.makeMeasureSpec(samplesWidth + paddingLeft + paddingRight,
-                View.MeasureSpec.EXACTLY)
+        val wSpec = if (layoutParams?.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            View.MeasureSpec.makeMeasureSpec(samplesWidth + paddingLeft + paddingRight,
+                    View.MeasureSpec.AT_MOST)
+        } else {
+            widthMeasureSpec
+        }
         setMeasuredDimension(wSpec, View.getDefaultSize(suggestedMinimumHeight, heightMeasureSpec))
     }
 
     override fun onDraw(canvas: Canvas) {
         val samples = samples ?: return
-        val playedIndex = this.playedIndex
-        val height = height
-        val contentHeight = height - paddingTop - paddingBottom
-        val center = paddingTop + contentHeight / 2f
+
+
         val strokeWidth = linePaint.strokeWidth
-        samples.forEachIndexed { i, value ->
+        val contentWidth = width - paddingLeft - paddingRight
+        val contentHeight = height - paddingTop - paddingBottom
+
+        val sampleCount = samples.size
+
+        val resampleCount = Math.round(contentWidth / strokeWidth / 2f)
+
+        val playedIndex: Int = if (progress >= 0) {
+            Math.round(progress * resampleCount)
+        } else {
+            -1
+        }
+
+        val centerY = paddingTop + contentHeight / 2f
+        for (i in 0..resampleCount - 1) {
+            val value = samples[i * sampleCount / resampleCount]
             val x = strokeWidth * 2f * i + strokeWidth / 2
             val lineH = Math.max(1f, contentHeight * value)
             val currentPaintColor = if (i > playedIndex) lineColor else lineColorPlayed
             linePaint.color = currentPaintColor
             linePaint.alpha = Color.alpha(currentPaintColor)
-            canvas.drawLine(x, center - lineH / 2, x, center + lineH / 2, linePaint)
+            canvas.drawLine(x, centerY - lineH / 2, x, centerY + lineH / 2, linePaint)
         }
     }
 }

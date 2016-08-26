@@ -15,6 +15,7 @@ import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.ITEM_VIEW_TYPE_LOAD_IND
 import catchla.yep.adapter.iface.ILoadMoreSupportAdapter.IndicatorPosition
 import catchla.yep.adapter.iface.ItemClickListener
 import catchla.yep.model.Attachment
+import catchla.yep.model.FileAttachment
 import catchla.yep.model.Topic
 import catchla.yep.model.User
 import catchla.yep.view.holder.*
@@ -109,12 +110,24 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                 val view = inflater.inflate(R.layout.list_item_search_box, parent, false)
                 return TopicSearchBoxViewHolder(view, context.getString(R.string.search_topics), searchBoxClickListener)
             }
+            ITEM_VIEW_TYPE_AUDIO -> {
+                val view = inflater.inflate(R.layout.list_item_topic, parent, false)
+                inflater.inflate(R.layout.layout_topic_attachment_audio, view as ViewGroup)
+                return AudioTopicViewHolder(this, view, context, imageLoader, clickListener)
+            }
             ITEM_VIEW_TYPE_LOAD_INDICATOR -> {
                 val view = inflater.inflate(R.layout.card_item_load_indicator, parent, false)
                 return LoadIndicatorViewHolder(view)
             }
         }
         throw UnsupportedOperationException("Unknown viewType " + viewType)
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder?) {
+        if (holder is TopicViewHolder) {
+            holder.onRecycled()
+        }
+        super.onViewRecycled(holder)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -135,6 +148,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
                     Topic.Kind.DRIBBBLE -> return ITEM_VIEW_TYPE_DRIBBBLE
                     Topic.Kind.LOCATION -> return ITEM_VIEW_TYPE_LOCATION
                     Topic.Kind.WEB_PAGE -> return ITEM_VIEW_TYPE_WEB_PAGE
+                    Topic.Kind.AUDIO -> return ITEM_VIEW_TYPE_AUDIO
                     else -> return ITEM_VIEW_TYPE_BASIC
                 }
             }
@@ -149,7 +163,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
             }
             ITEM_VIEW_TYPE_BASIC, ITEM_VIEW_TYPE_MEDIA_GALLERY, ITEM_VIEW_TYPE_GITHUB,
             ITEM_VIEW_TYPE_DRIBBBLE, ITEM_VIEW_TYPE_LOCATION, ITEM_VIEW_TYPE_SINGLE_IMAGE,
-            ITEM_VIEW_TYPE_WEB_PAGE -> {
+            ITEM_VIEW_TYPE_WEB_PAGE, ITEM_VIEW_TYPE_AUDIO -> {
                 val topicViewHolder = holder as TopicViewHolder
                 topicViewHolder.displayTopic(getTopic(position), highlight)
             }
@@ -185,6 +199,8 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
 
         fun onMediaClick(attachments: Array<Attachment>, attachment: Attachment, clickedView: View)
 
+        fun onAudioClick(attachment: FileAttachment, clickedView: View)
+
     }
 
     companion object {
@@ -195,6 +211,7 @@ class TopicsAdapter(context: Context) : LoadMoreSupportAdapter<RecyclerView.View
         private val ITEM_VIEW_TYPE_LOCATION = 5
         private val ITEM_VIEW_TYPE_SINGLE_IMAGE = 6
         private val ITEM_VIEW_TYPE_WEB_PAGE = 7
+        private val ITEM_VIEW_TYPE_AUDIO = 8
 
         private val ITEM_VIEW_TYPE_SEARCH_BOX = 10
         private val ITEM_VIEW_TYPE_RELATED_USERS = 11

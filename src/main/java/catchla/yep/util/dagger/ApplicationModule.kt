@@ -101,8 +101,8 @@ class ApplicationModule internal constructor(private val application: Applicatio
 
     @Provides
     @Singleton
-    fun messageAudioPlayer(bus: Bus): MessageAudioPlayer {
-        return MessageAudioPlayer(bus)
+    fun messageAudioPlayer(bus: Bus, diskCache: DiskCache): MessageAudioPlayer {
+        return MessageAudioPlayer(bus, diskCache)
     }
 
     private fun createDiskCache(): DiskCache {

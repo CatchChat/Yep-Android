@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.mariotaku.messagebubbleview.library.MessageBubbleView
+    android:id="@+id/attachmentView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="52dp"
+    android:layout_alignLeft="@+id/text"
+    android:layout_alignStart="@+id/text"
+    android:layout_below="@+id/text"
+    android:layout_marginEnd="@dimen/spacing_end_topic_attachment_audio"
+    android:layout_marginRight="@dimen/spacing_end_topic_attachment_audio"
+    android:layout_marginTop="@dimen/element_spacing_normal"
+    app:bubbleColor="#20808080"
+    app:cornerRadius="26dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/element_spacing_small"
+        android:layout_marginRight="@dimen/element_spacing_small"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/element_spacing_msmall"
+        android:paddingRight="@dimen/element_spacing_msmall"
+        tools:ignore="UselessParent">
+
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_weight="0">
+
+            <catchla.yep.view.ActionIconView
+                android:id="@+id/playPause"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:scaleType="center"
+                android:src="@drawable/ic_btn_audio_play"/>
+
+            <ProgressBar
+                android:id="@+id/playPauseProgress"
+                style="?android:progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+        <catchla.yep.view.AudioSampleView
+            android:id="@+id/audioSample"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/element_spacing_small"
+            android:layout_marginStart="@dimen/element_spacing_small"
+            android:layout_weight="1"
+            android:paddingBottom="@dimen/element_spacing_xsmall"
+            android:paddingTop="@dimen/element_spacing_xsmall"
+            app:asvLineColor="#1a000000"
+            app:asvLineColorPlayed="#40000000"
+            app:asvLineWidth="2dp"/>
+
+        <TextView
+            android:id="@+id/audioLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/element_spacing_normal"
+            android:layout_marginStart="@dimen/element_spacing_normal"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"
+            tools:text="00:26"/>
+
+
+    </LinearLayout>
+</org.mariotaku.messagebubbleview.library.MessageBubbleView>

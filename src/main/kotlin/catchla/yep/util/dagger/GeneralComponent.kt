@@ -2,11 +2,12 @@ package catchla.yep.util.dagger
 
 import android.support.v7.widget.RecyclerView
 import catchla.yep.activity.ContentActivity
-import catchla.yep.activity.QuickSearchActivity
 import catchla.yep.activity.MediaViewerActivity
+import catchla.yep.activity.QuickSearchActivity
 import catchla.yep.adapter.BaseRecyclerViewAdapter
 import catchla.yep.fragment.BaseDialogFragment
 import catchla.yep.fragment.BaseFragment
+import catchla.yep.fragment.ChatListFragment
 import catchla.yep.loader.CachedYepLoader
 import catchla.yep.loader.TileImageLoader
 import catchla.yep.menu.HomeMenuActionProvider

@@ -1,7 +1,6 @@
 package catchla.yep.fragment
 
 import android.content.Context
-import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
@@ -12,8 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
-import catchla.yep.Constants.AMAP_WEB_API_KEY
 import catchla.yep.Constants.EXTRA_TOPIC
 import catchla.yep.R
 import catchla.yep.adapter.LoadMoreSupportAdapter
@@ -23,18 +20,16 @@ import catchla.yep.model.FileAttachment
 import catchla.yep.model.Message
 import catchla.yep.model.Topic
 import catchla.yep.provider.YepDataStore.Messages.MessageState
-import catchla.yep.util.JsonSerializer
-import catchla.yep.util.StaticMapUrlGenerator
 import catchla.yep.util.Utils
-import catchla.yep.view.MediaSizeImageView
-import catchla.yep.view.StaticMapView
+import catchla.yep.view.holder.AudioChatViewHolder
+import catchla.yep.view.holder.ImageChatViewHolder
+import catchla.yep.view.holder.LocationChatViewHolder
+import catchla.yep.view.holder.MessageViewHolder
+import catchla.yep.view.holder.iface.clickedPlayPause
 import catchla.yep.view.iface.IExtendedView
 import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.fragment_chat_list.*
 import kotlinx.android.synthetic.main.layout_content_recyclerview_common.*
-import kotlinx.android.synthetic.main.layout_message_attachment_audio.view.*
-import org.mariotaku.messagebubbleview.library.MessageBubbleView
-import java.util.*
 
 /**
  * List component for chat activities
@@ -147,10 +142,6 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
         adapter.data = null
     }
 
-    private fun playAudio(attachment: FileAttachment) {
-        messageAudioPlayer.play(attachment.file.url)
-    }
-
     override val reachingEnd: Boolean
         get() = layoutManager.findLastCompletelyVisibleItemPosition() >= layoutManager.itemCount - 1
 
@@ -172,7 +163,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
 
     }
 
-    class ChatAdapter internal constructor(private val fragment: ChatListFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(fragment.context) {
+    class ChatAdapter(private val fragment: ChatListFragment) : LoadMoreSupportAdapter<RecyclerView.ViewHolder>(fragment.context) {
         private val inflater: LayoutInflater
         var data: List<Message>? = null
             set(value) {
@@ -181,7 +172,7 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             }
 
         init {
-            inflater = LayoutInflater.from(fragment.context)
+            inflater = LayoutInflater.from(context)
         }
 
 
@@ -256,8 +247,8 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
             return data!![position]
         }
 
-        private fun playAudio(attachment: FileAttachment) {
-            fragment.playAudio(attachment)
+        fun playAudio(attachment: FileAttachment) {
+            audioPlayer.clickedPlayPause(attachment.file.url)
         }
 
         fun findPosition(id: String): Int {
@@ -277,196 +268,8 @@ abstract class ChatListFragment : AbsContentRecyclerViewFragment<ChatListFragmen
                 return data!!.size
             }
 
-        private fun notifyStateClicked(position: Int) {
+        fun notifyStateClicked(position: Int) {
             fragment.onStateClicked(getMessage(position))
-        }
-
-        private open class MessageViewHolder(
-                itemView: View,
-                outgoing: Boolean,
-                protected val adapter: ChatAdapter
-        ) : RecyclerView.ViewHolder(itemView) {
-
-            protected val profileImageView by lazy { itemView.findViewById(R.id.profileImage) as ImageView? }
-            protected val profileImageViewOutgoing by lazy { itemView.findViewById(R.id.profileImageOutgoing) as ImageView? }
-            protected val messageBubbleView by lazy { itemView.findViewById(R.id.messageBubble) as MessageBubbleView }
-            protected val stateView: ImageView?
-            protected val text1: TextView
-
-            init {
-                text1 = itemView.findViewById(android.R.id.text1) as TextView
-                stateView = itemView.findViewById(R.id.state) as ImageView?
-                stateView?.setOnClickListener { adapter.notifyStateClicked(layoutPosition) }
-            }
-
-            open fun displayMessage(message: Message) {
-                text1.text = message.textContent
-                text1.visibility = if (text1.length() > 0) View.VISIBLE else View.GONE
-                profileImageView?.let {
-                    val sender = message.sender
-                    if (sender.avatarThumbUrl != it.tag || it.drawable == null) {
-                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl, it)
-                    }
-                    it.tag = sender.avatarThumbUrl
-                }
-                profileImageViewOutgoing?.let {
-                    val sender = message.sender
-                    if (sender.avatarThumbUrl != it.tag || it.drawable == null) {
-                        adapter.imageLoader.displayProfileImage(sender.avatarThumbUrl, it)
-                    }
-                    it.tag = sender.avatarThumbUrl
-                }
-                when (message.state) {
-                    MessageState.READ -> {
-                        stateView?.setImageDrawable(null)
-                    }
-                    MessageState.FAILED -> {
-                        stateView?.setImageResource(R.drawable.ic_message_state_retry)
-                    }
-                    MessageState.UNREAD -> {
-                        stateView?.setImageResource(R.drawable.ic_message_state_unread)
-                    }
-                    else -> {
-                        stateView?.setImageDrawable(null)
-                    }
-                }
-            }
-
-            open fun onRecycled() {
-
-            }
-        }
-
-        private class LocationChatViewHolder(itemView: View, outgoing: Boolean, adapter: ChatAdapter) : MessageViewHolder(itemView, outgoing, adapter) {
-            private val mapView: StaticMapView
-
-            init {
-                mapView = itemView.findViewById(R.id.map_view) as StaticMapView
-                mapView.setProvider(StaticMapUrlGenerator.AMapProvider(AMAP_WEB_API_KEY))
-                mapView.setScaleToDensity(true)
-            }
-
-            override fun displayMessage(message: Message) {
-                super.displayMessage(message)
-                val location = Location("")
-                location.latitude = message.latitude
-                location.longitude = message.longitude
-                mapView.display(location, 12)
-            }
-        }
-
-        private class ImageChatViewHolder(itemView: View,
-                                          outgoing: Boolean, adapter: ChatAdapter) : MessageViewHolder(itemView, outgoing, adapter) {
-            private val imageView: MediaSizeImageView
-
-            init {
-                imageView = itemView.findViewById(R.id.image_view) as MediaSizeImageView
-            }
-
-            override fun displayMessage(message: Message) {
-                super.displayMessage(message)
-                val url: String
-                val metadata: FileAttachment.ImageMetadata?
-                val localMetadata = message.localMetadata
-                val attachments = message.attachments
-                if (localMetadata != null && !localMetadata.isEmpty()) {
-                    url = Message.LocalMetadata.get(localMetadata, "image")
-                    metadata = JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), FileAttachment.ImageMetadata::class.java)
-                } else if (attachments != null && !attachments.isEmpty()) {
-                    val attachment = attachments[0] as FileAttachment
-                    url = attachment.file.url
-                    metadata = JsonSerializer.parse(attachment.metadata, FileAttachment.ImageMetadata::class.java)
-                } else {
-                    return
-                }
-                if (metadata != null) {
-                    imageView.setMediaSize(metadata.width, metadata.height)
-                    val imageLoader = adapter.imageLoader
-                    imageLoader.displayImage(url, imageView)
-                }
-            }
-        }
-
-        private class AudioChatViewHolder(
-                itemView: View,
-                outgoing: Boolean,
-                adapter: ChatAdapter
-        ) : MessageViewHolder(itemView, outgoing, adapter), View.OnClickListener {
-
-            private val playPauseView by lazy { itemView.playPause }
-            private val playPauseProgressView by lazy { itemView.playPauseProgress }
-            private val audioLengthView by lazy { itemView.audioLength }
-            private val sampleView by lazy { itemView.audioSample }
-
-            private var playListener: Any? = null
-
-            init {
-                playPauseView.setOnClickListener(this)
-            }
-
-            override fun displayMessage(message: Message) {
-                super.displayMessage(message)
-                val url = (message.attachments?.firstOrNull() as? FileAttachment)?.file?.url
-                val metadata = getAudioMetadata(message)
-                if (metadata != null) {
-                    audioLengthView.text = String.format(Locale.US, "%.1f\"", metadata.duration)
-                    sampleView.samples = metadata.samples
-                }
-                playListener = object {
-                    @Subscribe
-                    fun onAudioPlayEvent(event: AudioPlayEvent) {
-                        if (event.url != url) return
-                        when (event.what) {
-                            AudioPlayEvent.START -> {
-                                playPauseView.visibility = View.VISIBLE
-                                playPauseProgressView.visibility = View.GONE
-                                playPauseView.setImageResource(R.drawable.ic_btn_audio_pause)
-                            }
-                            AudioPlayEvent.PROGRESS -> {
-                                val sampleSize = sampleView.sampleSize
-                                if (sampleSize > 0 && !event.progress.isNaN()) {
-                                    sampleView.playedIndex = Math.round(sampleSize * event.progress)
-                                }
-                            }
-                            AudioPlayEvent.END -> {
-                                playPauseView.setImageResource(R.drawable.ic_btn_audio_play)
-                            }
-                            AudioPlayEvent.DOWNLOAD -> {
-                                playPauseView.visibility = View.GONE
-                                playPauseProgressView.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                }
-                adapter.fragment.bus.register(playListener)
-            }
-
-            private fun getAudioMetadata(message: Message): FileAttachment.AudioMetadata? {
-                val attachments = message.attachments
-                val localMetadata = message.localMetadata
-                if (localMetadata != null && !localMetadata.isEmpty()) {
-                    return JsonSerializer.parse(Message.LocalMetadata.get(localMetadata, "metadata"), FileAttachment.AudioMetadata::class.java)
-                } else if (attachments != null && !attachments.isEmpty()) {
-                    val attachment = attachments[0] as FileAttachment
-                    return JsonSerializer.parse(attachment.metadata, FileAttachment.AudioMetadata::class.java)
-                } else {
-                    return null
-                }
-            }
-
-            override fun onClick(v: View) {
-                val message = adapter.getMessage(layoutPosition) ?: return
-                if (message.mediaType != "audio") return
-                val attachment = message.attachments?.firstOrNull() as? FileAttachment ?: return
-                adapter.playAudio(attachment)
-            }
-
-            override fun onRecycled() {
-                if (playListener != null) {
-                    adapter.fragment.bus.unregister(playListener)
-                    playListener = null
-                }
-            }
         }
 
         companion object {

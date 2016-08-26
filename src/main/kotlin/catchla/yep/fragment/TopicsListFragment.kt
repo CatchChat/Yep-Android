@@ -36,6 +36,7 @@ import catchla.yep.model.*
 import catchla.yep.util.YepAPIFactory
 import catchla.yep.view.holder.SkillTopicRelatedUsersViewHolder
 import catchla.yep.view.holder.TopicViewHolder
+import catchla.yep.view.holder.iface.clickedPlayPause
 
 /**
  * Created by mariotaku on 15/10/12.
@@ -104,6 +105,10 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         }
         adapter.showSkillLabel = skill == null
         showProgress()
+    }
+
+    override fun onAudioClick(attachment: FileAttachment, clickedView: View) {
+        messageAudioPlayer.clickedPlayPause(attachment.file.url)
     }
 
     private fun hasUserId(): Boolean {

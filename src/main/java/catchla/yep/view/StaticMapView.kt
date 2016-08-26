@@ -1,9 +1,7 @@
 package catchla.yep.view
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.location.Location
-import android.os.Build
 import android.util.AttributeSet
 import android.widget.ImageView
 import catchla.yep.util.ImageLoaderWrapper
@@ -22,24 +20,13 @@ class StaticMapView : ImageView {
     private var zoomLevel: Int = 0
     private val scaleToDensity: Boolean = false
 
-    constructor(context: Context) : super(context) {
-        init(context)
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(context)
-    }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        init(context)
-    }
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
-        init(context)
-    }
-
-    private fun init(context: Context) {
+    init {
         if (!isInEditMode) {
             GeneralComponentHelper.build(context).inject(this)
         }
