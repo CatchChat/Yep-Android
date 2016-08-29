@@ -99,8 +99,11 @@ class TopicsListFragment : AbsContentListRecyclerViewFragment<TopicsAdapter>(),
         adapter.searchBoxClickListener = { holder ->
             val intent = Intent(context, TopicsSearchActivity::class.java)
             intent.putExtra(EXTRA_ACCOUNT, account)
-            if (arguments.containsKey(EXTRA_USER_ID)) {
-                intent.putExtra(EXTRA_USER_ID, arguments.getString(EXTRA_USER_ID))
+            arguments.getString(EXTRA_USER_ID)?.let {
+                intent.putExtra(EXTRA_USER_ID, it)
+            }
+            skill?.let {
+                intent.putExtra(EXTRA_SKILL_ID, it.id)
             }
             startActivity(intent)
         }

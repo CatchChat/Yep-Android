@@ -165,7 +165,9 @@ class TopicsSearchActivity : ContentActivity(), LoaderManager.LoaderCallbacks<Li
         }
         val oldData: List<Topic>? = topicsAdapter.topics
         val userId = intent.getStringExtra(EXTRA_USER_ID)
-        return TopicsSearchLoader(this, account, query, userId = userId, paging = paging, oldData = oldData)
+        val skillId = intent.getStringExtra(EXTRA_SKILL_ID)
+        return TopicsSearchLoader(this, account, query, userId = userId, skillId = skillId,
+                paging = paging, oldData = oldData)
     }
 
     override fun onLoadFinished(loader: Loader<List<Topic>?>, data: List<Topic>?) {
