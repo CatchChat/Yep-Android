@@ -20,9 +20,9 @@ class TopicsMenuFragment : FloatingActionMenuFragment(), AdapterView.OnItemSelec
         super.onActivityCreated(savedInstanceState)
         val adapter = ArrayAdapter<Entry>(context, android.R.layout.simple_list_item_1)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        adapter.add(Entry(TopicSortOrder.DEFAULT, getString(R.string.sort_order_default)))
-        adapter.add(Entry(TopicSortOrder.DISTANCE, getString(R.string.distance)))
+        adapter.add(Entry(TopicSortOrder.DISTANCE, getString(R.string.sort_order_nearby)))
         adapter.add(Entry(TopicSortOrder.TIME, getString(R.string.time)))
+        adapter.add(Entry(TopicSortOrder.DEFAULT, getString(R.string.sort_order_match)))
         spinner.adapter = adapter
         spinner.onItemSelectedListener = this
         val sortOrder = preferences[topicsSortOrderKey]

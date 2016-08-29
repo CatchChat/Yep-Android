@@ -52,7 +52,7 @@ class ChatEntryViewHolder(
     }
 
     fun displayCirclesEntry(conversation: Conversation) {
-        nameView.setText(R.string.circles)
+        nameView.setText(R.string.joined_topics)
         messageView.text = getConversationSummary(itemView.context, conversation)
         timeView.time = Utils.getTime(conversation.updatedAt)
     }

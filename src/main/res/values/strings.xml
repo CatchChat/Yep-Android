@@ -101,6 +101,7 @@
     <string name="record_audio_permission_required">Recording permission is needed to send audio</string>
     <string name="typing">Typing</string>
     <string name="distance">Distance</string>
+    <string name="sort_order_nearby">Nearby</string>
     <string name="time">Time</string>
     <string name="unable_to_create_topic">Unable to create topic</string>
     <string name="unable_to_update_profile">Unable to update profile</string>
@@ -111,6 +112,7 @@
     <string name="proxy_host">Proxy host</string>
     <string name="proxy_port">Proxy port</string>
     <string name="sort_order_default">Match</string>
+    <string name="sort_order_match">Match</string>
     <string name="blog">Blog</string>
     <string name="no_username">No username</string>
     <string name="swipe_up_to_cancel">Swipe up to cancel</string>

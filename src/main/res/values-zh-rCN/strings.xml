@@ -63,7 +63,7 @@
     <string name="record_audio">录音</string>
     <string name="ptt_hint">按下说话</string>
     <string name="please_wait">请稍等</string>
-    <string name="joined_topics">加入的话题</string>
+    <string name="joined_topics">参与的话题</string>
     <string name="following">正在关注</string>
     <string name="followers">关注者</string>
     <string name="finish">完成</string>
