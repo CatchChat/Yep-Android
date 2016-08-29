@@ -141,7 +141,7 @@ class ConversationsListFragment : AbsContentListRecyclerViewFragment<ChatsListAd
     }
 
     override fun getActionIcon(): Int {
-        return R.drawable.ic_action_search
+        return 0
     }
 
     override fun onActionPerformed() {
