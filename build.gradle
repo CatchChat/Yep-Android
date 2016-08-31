@@ -37,8 +37,8 @@ android {
         applicationId "catchla.yep"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 13
-        versionName "0.9.10"
+        versionCode 14
+        versionName "0.9.11"
 
         // Enabling multidex support.
         multiDexEnabled true
