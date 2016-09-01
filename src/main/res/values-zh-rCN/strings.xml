@@ -113,4 +113,27 @@
     <string name="introduction">自我介绍</string>
     <string name="do_not_disturb">免打扰</string>
     <string name="circles">圈子</string>
+    <string name="audio">声音</string>
+    <string name="feeds">更新</string>
+    <string name="github">Github</string>
+    <string name="instagram">Instagram</string>
+    <string name="media">媒体</string>
+    <string name="my_current_location">我的当前位置</string>
+    <string name="new_topic_hint">分享点什么吧 :)</string>
+    <string name="no_content">没有内容</string>
+    <string name="none">无</string>
+    <string name="plus_symbol">+</string>
+    <string name="proxy">代理服务器</string>
+    <string name="proxy_host">代理主机名</string>
+    <string name="sort_order_match">匹配</string>
+    <string name="sort_order_nearby">附近</string>
+    <string name="tab_title_chats">聊天</string>
+    <string name="tab_title_explore">发现</string>
+    <string name="tab_title_friends">好友</string>
+    <string name="unable_to_verify_phone">无法验证电话号码</string>
+    <string name="unable_to_update_profile">无法更新个人资料</string>
+    <string name="unable_to_register">无法注册</string>
+    <string name="unable_to_load_media">无法载入媒体</string>
+    <string name="rank">排行</string>
+    <string name="proxy_port">代理端口号</string>
 </resources>

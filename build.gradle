@@ -7,7 +7,7 @@ apply plugin: "androidsvgdrawable"
 import fr.avianey.androidsvgdrawable.gradle.SvgDrawableTask
 
 buildscript {
-    ext.kotlin_version = '1.0.4-eap-62'
+    ext.kotlin_version = '1.0.4-eap-100'
     repositories {
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
@@ -37,8 +37,8 @@ android {
         applicationId "catchla.yep"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 14
-        versionName "0.9.11"
+        versionCode 15
+        versionName "0.9.12"
 
         // Enabling multidex support.
         multiDexEnabled true
